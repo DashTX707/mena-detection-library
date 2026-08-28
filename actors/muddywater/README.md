@@ -25,18 +25,18 @@ _See the [MENA Threat Actor Tracker](https://github.com/DashTX707/MENA-Threat-Ac
 - [`navigator-layer.json`](navigator-layer.json) — ATT&CK Navigator heatmap
 - [`detections/`](detections/) — **32 Sigma rules**, all validated clean with `sigma-cli` 3.1.0 (0 errors)
 - [`hunts/`](hunts/) — **14 consolidated hunt hypotheses** covering the 35 hunt-lane techniques
-- [`iocs/`](iocs/) — publicly-sourced indicators (5; conservative — no hashes/IPs until the CISA AA22-055A appendix is ingested manually)
+- [`iocs/`](iocs/) — **30 publicly-sourced indicators** ingested from the CISA AA22-055A appendix (2 samples × MD5/SHA1/SHA256, 23 C2 IPs, 1 C2 URL; network indicators defanged)
 - [`intel/`](intel/) — pipeline provenance (`cti-pipeline.json`, `routing.json`)
 
 ## Coverage snapshot
 
 - TTPs mapped: **68** across 17 tactics
 - Lane split: **33 detection / 35 hunt** (see `intel/routing.json`)
-- Detections: **32 Sigma files** · Hunts: **14** · IOCs: **5**
+- Detections: **32 Sigma files** · Hunts: **14** · IOCs: **30** (CISA AA22-055A appendix)
 
 ## Provenance
 
 Produced via the mena-detection-library pipeline:
 `cti-expert` (extract TTPs from MITRE G0069 + CISA AA22-055A + tracker) → `decision-agent` (route detect vs. hunt) → `detection-engineer` (Sigma) + `threat-hunter` (hunts).
 
-> **Note:** the Stage-2 `routing.json` was reconstructed from the shipped detection rules after the decision-agent's write did not persist, so the lane split reflects exactly what ships. IOCs are deliberately minimal because the CISA advisory blocked automated fetch (HTTP 403) — its indicator appendix should be added manually.
+> **Note:** the Stage-2 `routing.json` was reconstructed from the shipped detection rules after the decision-agent's write did not persist, so the lane split reflects exactly what ships. IOCs were backfilled from the CISA AA22-055A machine-readable STIX appendix (fetched via a browser user-agent after the default fetch was WAF-blocked).

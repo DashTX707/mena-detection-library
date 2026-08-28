@@ -24,18 +24,18 @@ _See the [MENA Threat Actor Tracker](https://github.com/DashTX707/MENA-Threat-Ac
 - [`navigator-layer.json`](navigator-layer.json) — ATT&CK Navigator heatmap (lane-colored; ICS omitted from the enterprise layer)
 - [`detections/`](detections/) — **29 Sigma rules** covering 40 detection-lane techniques, all validated clean with `sigma-cli` (0 issues)
 - [`hunts/`](hunts/) — **12 consolidated hunt hypotheses** covering the 47 hunt-lane techniques
-- [`iocs/`](iocs/) — publicly-sourced indicators (minimal: only CVE-2024-30088; Trend Micro source blocked automated fetch — hashes/domains need manual ingestion)
+- [`iocs/`](iocs/) — **17 publicly-sourced indicators** ingested from the Trend Micro Earth Simnavaz report (16 SHA256 sample hashes + CVE-2024-30088)
 - [`intel/`](intel/) — pipeline provenance (`cti-pipeline.json`, `routing.json`)
 
 ## Coverage snapshot
 
 - TTPs mapped: **87** (82 Enterprise + 5 ICS)
 - Lane split: **40 detection / 47 hunt** (see `intel/routing.json`)
-- Detections: **29 Sigma files** · Hunts: **12** · IOCs: **1**
+- Detections: **29 Sigma files** · Hunts: **12** · IOCs: **17** (Trend Micro Earth Simnavaz appendix)
 
 ## Provenance
 
 Produced via the mena-detection-library pipeline:
 `cti-expert` → `decision-agent` → `detection-engineer` + `threat-hunter`.
 
-> **Notes:** ICS technique tags (T0853/T0865) are carried in filenames/descriptions rather than `attack.*` tags, because pySigma's validator only recognizes Enterprise IDs — ICS coverage is documented, not tag-asserted. `routing.json` is authored by the read-only decision-agent and persisted by the orchestrator. IOCs are minimal because the Trend Micro Earth Simnavaz report blocked automated fetch.
+> **Notes:** ICS technique tags (T0853/T0865) are carried in filenames/descriptions rather than `attack.*` tags, because pySigma's validator only recognizes Enterprise IDs — ICS coverage is documented, not tag-asserted. `routing.json` is authored by the read-only decision-agent and persisted by the orchestrator. IOCs were backfilled from the Trend Micro Earth Simnavaz report (fetched via a browser user-agent after the default fetch was WAF-blocked); Trend Micro publishes no C2 IPs/domains in the article body, so this set is the sample-hash appendix plus the exploited CVE.

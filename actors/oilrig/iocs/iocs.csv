@@ -1,2 +1,18 @@
 value,type,context,source
-CVE-2024-30088,cve,Exploited by OilRig (Earth Simnavaz),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+1169d8fe861054d99b10f7a3c87e3bbbd941e585ce932e9e543a2efd701deac2,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+1d2ff65ac590c8d0dec581f6b6efbf411a2ce5927419da31d50156d8f1e3a4ff,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+27a0e31ae16cbc6129b4321d25515b9435c35cc2fa1fc748c6f109275bee3d6c,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+43c83976d9b6d19c63aef8715f7929557e93102ff0271b3539ccf2ef485a01a7,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+54e8fbae0aa7a279aaedb6d8eec0f95971397fea7fcee6c143772c8ee6e6b498,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+6d8bdd3e087b266d493074569a85e1173246d1d71ee88eca94266b5802e28112,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+6e4f237ef084e400b43bc18860d9c781c851012652b558f57527cf61bee1e1ef,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+7ebbeb2a25da1b09a98e1a373c78486ed2c5a7f2a16eec63e576c99efe0c7a49,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+98fb12a9625d600535df342551d30b27ed216fed14d9c6f63e8bf677cb730301,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+a24303234e0cc6f403fca8943e7170c90b69976015b6a84d64a9667810023ed7,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+abfc8e9b4b02e196af83608d5aaef1771354b32c898852dff532bd8cfd2ce59d,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+af979580849cc4619b815551842f3265b06497972c61369798135145b82f3cd8,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+b3257f0c0ef298363f89c7a61ab27a706e9e308c22f1820dc4f02dfa0f68d897,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+c0189edde8fa030ff4a70492ced24e325847b04dba33821cf637219d0ddff3c9,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+ca98a24507d62afdb65e7ad7205dfe8cd9ef7d837126a3dfc95a74af873b1dc5,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+db79c39bc06e55a52741a9170d8007fa93ac712df506632d624a651345d33f91,sha256,OilRig/Earth Simnavaz sample (STEALHOOK/backdoor/tooling),https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+CVE-2024-30088,cve,Windows kernel EoP exploited by OilRig for privilege escalation,https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
