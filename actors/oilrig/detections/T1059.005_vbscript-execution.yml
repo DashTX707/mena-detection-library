@@ -1,0 +1,38 @@
+title: VBScript Execution via wscript/cscript (OilRig)
+id: 778c15c7-84f3-4bf9-8d27-223ddcd696b9
+status: experimental
+description: |
+    Detects wscript.exe or cscript.exe executing VBScript, matching OilRig's use of VBScript macros
+    and VBS droppers to deploy and deliver malware. Keys on the script hosts running a .vbs/.vbe file,
+    with elevated confidence when the parent is an Office application (macro-driven execution).
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_host:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+        CommandLine|contains:
+            - '.vbs'
+            - '.vbe'
+            - '.wsf'
+    selection_office_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+    condition: selection_host or (selection_office_parent and selection_host)
+falsepositives:
+    - Legacy business applications and logon scripts that legitimately run VBScript
+    - Software installers that ship .vbs helper scripts
+level: medium

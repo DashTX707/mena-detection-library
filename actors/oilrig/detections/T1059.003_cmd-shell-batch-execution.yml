@@ -1,0 +1,44 @@
+title: Windows Command Shell Execution from Anomalous Parent (OilRig)
+id: f35940fb-67c7-4bf9-8654-eac8c7c0f875
+status: experimental
+description: |
+    Detects cmd.exe or a batch script launched by an Office application or script host, matching
+    OilRig's use of macros to deliver malware and its use of batch scripts for execution. Keys on
+    document/script-host parents spawning cmd.exe (with /c chaining) so it fires on the delivery
+    lineage rather than on cmd usage generally.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\hh.exe'
+    selection_cmd:
+        Image|endswith: '\cmd.exe'
+    selection_batch:
+        Image|endswith: '\cmd.exe'
+        CommandLine|contains:
+            - '.bat'
+            - '.cmd'
+            - '/c '
+            - '/k '
+    condition: (selection_parent and selection_cmd) or (selection_parent and selection_batch)
+falsepositives:
+    - Office add-ins or document-automation workflows that legitimately shell out to cmd
+    - Login/logon batch scripts invoked by sanctioned wrapper processes
+level: high

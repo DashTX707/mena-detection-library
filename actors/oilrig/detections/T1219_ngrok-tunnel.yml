@@ -1,0 +1,39 @@
+title: ngrok Remote Access Tunnel Execution (OilRig)
+id: 9c3c8c10-24f4-4cdc-b284-048f0ff37472
+status: experimental
+description: |
+    Detects execution of the ngrok tunneling/remote-access tool, matching OilRig's incorporation of
+    ngrok into operations (notably the Earth Simnavaz campaign) to expose internal services and
+    tunnel C2. Keys on the ngrok binary name/metadata and on its characteristic tunnel arguments
+    (tcp/http start, authtoken) rather than a hash.
+references:
+    - https://attack.mitre.org/groups/G0049/
+    - https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.command-and-control
+    - attack.t1219
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith: '\ngrok.exe'
+        - OriginalFileName: 'ngrok.exe'
+        - Product|contains: 'ngrok'
+    selection_args:
+        CommandLine|contains:
+            - 'ngrok'
+        CommandLine|contains:
+            - ' tcp '
+            - ' http '
+            - 'start --all'
+            - 'authtoken'
+            - '.ngrok.io'
+            - '.ngrok-free.app'
+    condition: selection_tool or selection_args
+falsepositives:
+    - Developers legitimately using ngrok for tunneling/testing (should be sanctioned and baselined)
+level: high

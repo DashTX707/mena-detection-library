@@ -1,0 +1,42 @@
+title: Compiled HTML File Proxy Execution via hh.exe (OilRig)
+id: 263ee30b-c8ee-490a-a380-d2b7ca36f5ff
+status: experimental
+description: |
+    Detects the Microsoft HTML Help executable (hh.exe) running a CHM that loads and executes another
+    file, matching OilRig's use of a CHM payload to load and execute a malicious file. Keys on hh.exe
+    spawning a script interpreter or shell child process, a rare LOLBin pattern.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1218.001
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\hh.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    selection_hh_remote:
+        Image|endswith: '\hh.exe'
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+            - '\Temp\'
+            - '\AppData\'
+    condition: (selection_parent and selection_child) or selection_hh_remote
+falsepositives:
+    - Legitimate opening of local .chm help files (does not normally spawn interpreters or fetch remote content)
+level: high

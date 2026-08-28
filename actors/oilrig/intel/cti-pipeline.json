@@ -1,0 +1,896 @@
+{
+  "report_title": "OilRig (G0049 / APT34) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "MITRE ATT&CK G0049 (https://attack.mitre.org/groups/G0049/); Trend Micro 'Earth Simnavaz (aka APT34) Levies Advanced Cyberattacks Against UAE and Gulf Regions' (https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html); MENA-Threat-Actor-Tracker (iran-apt/apt-groups-iran.md, ksa-apt/apt-groups-ksa-high-confidence.md)",
+  "publication_date": "2026-08-28",
+  "actor": {
+    "name": "OilRig",
+    "mitre_id": "G0049",
+    "aliases": [
+      "APT34",
+      "COBALT GYPSY",
+      "IRN2",
+      "Helix Kitten",
+      "Evasive Serpens",
+      "Hazel Sandstorm",
+      "EUROPIUM",
+      "ITG13",
+      "Earth Simnavaz",
+      "Crambus",
+      "TA452"
+    ],
+    "attribution": "Iran-nexus; suspected Iranian state-sponsored group operating on behalf of the Iranian government (widely linked to Iran's Ministry of Intelligence and Security, MOIS), active against Middle Eastern and international targets since at least 2014, per MITRE ATT&CK G0049 and multiple vendor reports (Trend Micro, ESET, Palo Alto Unit 42).",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "United Arab Emirates",
+      "Saudi Arabia",
+      "Israel",
+      "Iraq",
+      "Kuwait",
+      "Qatar",
+      "Lebanon",
+      "Jordan",
+      "Turkey"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Europe",
+      "Asia",
+      "Africa"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Oil & gas / energy",
+      "Financial / banking",
+      "Telecommunications",
+      "Critical infrastructure",
+      "Chemical",
+      "Aviation / transportation",
+      "Defense"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Outer Space",
+        "date": "2021-01 to 2021-12",
+        "summary": "Espionage campaign leveraging OilRig custom downloaders and backdoors against Middle Eastern targets.",
+        "source_url": "https://attack.mitre.org/groups/G0049/"
+      },
+      {
+        "name": "Juicy Mix",
+        "date": "2022-01 to 2022-12",
+        "summary": "Campaign in which OilRig actively developed and deployed a series of custom downloaders (e.g. ODAgent, OilCheck, OilBooster, SampleCheck5000) abusing cloud/webmail services for C2.",
+        "source_url": "https://attack.mitre.org/groups/G0049/"
+      },
+      {
+        "name": "Earth Simnavaz cyberattacks against UAE and Gulf regions",
+        "date": "2024 (reported 2024-10)",
+        "summary": "Campaign against UAE and Gulf government/critical-infrastructure orgs. OilRig exploited Windows Kernel EoP CVE-2024-30088, dropped a password filter DLL to harvest plaintext credentials, abused MS Exchange to exfiltrate stolen credentials (STEALHOOK), established M365 accounts as C2, and used ngrok for tunneling and Windows-firewall modification for remote access. Trend Micro fetch returned HTTP 403 in this pass; malware/IOC indicators from that report are flagged for manual ingestion.",
+        "source_url": "https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html"
+      }
+    ]
+  },
+  "threat_actors": ["OilRig", "APT34", "Earth Simnavaz"],
+  "targeted_regions": ["UAE", "Saudi Arabia", "Israel", "Iraq", "Kuwait", "Qatar", "Lebanon", "Jordan", "Turkey"],
+  "targeted_sectors": ["Government", "Oil & gas / energy", "Financial", "Telecommunications", "Critical infrastructure", "Aviation", "Defense"],
+  "malware": [
+    "Helminth", "BONDUPDATER", "ISMAgent", "ISMInjector", "QUADAGENT", "OopsIE", "RDAT", "RGDoor",
+    "SideTwist", "POWRUNER", "SEASHARPEE", "TwoFace (webshell)", "Solar", "Mango", "ZeroCleare",
+    "ODAgent", "OilBooster", "OilCheck", "SampleCheck5000", "PowerExchange", "STEALHOOK", "Veaty", "Spearal",
+    "VALUEVAULT", "KEYPUNCH", "LONGWATCH", "CANDYKING", "MKG", "CDumper", "EDumper", "GOLDIRONY"
+  ],
+  "tooling_observed": [
+    "Mimikatz", "LaZagne", "PsExec", "certutil", "Plink", "Putty", "SoftPerfect Network Scanner",
+    "ngrok", "reg.exe", "net.exe", "tasklist", "systeminfo", "ipconfig", "netstat", "sc query",
+    "Wireshark (usbcapcmd)", "Adobe.exe (renamed Plink)", "requestbin.net"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1087.001",
+      "technique_name": "Account Discovery: Local Account",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has run net user, net user /domain, net group \"domain admins\" /domain, and related commands to enumerate accounts.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net user' / 'net group' enumeration is directly observable in command-line/process-creation logging",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has run net user, net user /domain, net group \"domain admins\" /domain, and related commands to enumerate accounts.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net user /domain' and net group domain enumeration are directly observable in command-line logging",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig has set up fake VPN portals, conference sign-ups, and job application websites.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim infrastructure acquisition is not endpoint-observable; intel/hunt candidate via lookalike-domain and registration monitoring",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig has used HTTP for C2 and has used HTTP to communicate between installed backdoors.",
+      "observed_tooling": ["Helminth", "QUADAGENT", "POWRUNER"],
+      "detection_feasibility": "medium — HTTP C2 detectable via proxy/beacon analytics and URI/JA3 anomalies, but blends with normal web traffic",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig has used DNS for C2 including the publicly available requestbin.net tunneling service. DNS tunneling is a signature OilRig tradecraft across Helminth, ISMAgent, BONDUPDATER and QUADAGENT.",
+      "observed_tooling": ["Helminth", "ISMAgent", "BONDUPDATER", "QUADAGENT", "requestbin.net"],
+      "detection_feasibility": "medium — DNS-tunneling C2 is detectable via DNS query-length/entropy/volume analytics and NXDOMAIN patterns, but requires full DNS logging that is frequently under-instrumented; strong hunt-and-detect candidate given it is a core OilRig behavior",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "OilRig has used automated collection.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — automated collection leaves little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1217",
+      "technique_name": "Browser Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used a Chrome data dumper named MKG, and has used CDumper and EDumper to collect cookies.",
+      "observed_tooling": ["MKG", "CDumper", "EDumper"],
+      "detection_feasibility": "medium — access to browser profile/cookie files by non-browser processes is detectable via file-access and known-tool telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used brute force techniques to obtain credentials.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — brute force is detectable via authentication-failure spikes (4625) and lockout telemetry, but the source is generic",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "procedure_description": "OilRig has used infostealer tools to copy clipboard data.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — clipboard-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "tactic": "execution",
+      "procedure_description": "OilRig has used various types of scripting for execution.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — generic parent; value comes from specific interpreter sub-techniques (PowerShell/VBS/cmd) with process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "OilRig has used PowerShell scripts for execution, including use of a macro to run a PowerShell command.",
+      "observed_tooling": ["QUADAGENT", "PowerExchange", "POWRUNER"],
+      "detection_feasibility": "high — script-block/module logging and suspicious PowerShell parenting (Office->PowerShell) are core, well-covered detections",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "OilRig has used macros to deliver malware and has used batch scripts.",
+      "observed_tooling": ["cmd.exe"],
+      "detection_feasibility": "high — cmd.exe/batch execution with anomalous parents (Office, script hosts) is visible in process-creation logs",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "OilRig has used VBScript macros for execution and has used VBS droppers to deploy/deliver malware.",
+      "observed_tooling": ["wscript.exe", "cscript.exe"],
+      "detection_feasibility": "high — wscript/cscript executing VBS, especially spawned by Office, is a strong detectable signal",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig has compromised email accounts to send phishing emails.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim account compromise is not endpoint-observable; intel/hunt candidate via sender-reputation and mail-flow analysis",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1584.004",
+      "technique_name": "Compromise Infrastructure: Server",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig has compromised an Israeli human resources site to use as a C2 server.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — adversary compromise of third-party servers is off-victim; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "OilRig has used a compromised Domain Controller to create a service on a remote host.",
+      "observed_tooling": ["PsExec"],
+      "detection_feasibility": "high — service creation (Event ID 7045 / 4697) and remote service install are strongly detectable",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used credential dumping tools such as LaZagne to steal credentials.",
+      "observed_tooling": ["LaZagne"],
+      "detection_feasibility": "medium — credential-store access detectable mainly through known-tool (LaZagne) execution signatures",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used credential dumping tools to steal credentials and has used CDumper and EDumper.",
+      "observed_tooling": ["CDumper", "EDumper", "LaZagne"],
+      "detection_feasibility": "medium — access to browser Login Data stores is detectable via file-access and known-tool telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1555.004",
+      "technique_name": "Credentials from Password Stores: Windows Credential Manager",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used a credential dumping tool named VALUEVAULT to steal credentials.",
+      "observed_tooling": ["VALUEVAULT"],
+      "detection_feasibility": "medium — Credential Manager/vault access is detectable via known-tool signatures and file/DPAPI access telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig has used a VBS script to send the Base64-encoded name of the compromised computer.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — Base64-encoded C2 content is detectable via network inspection and encoding heuristics where TLS is absent",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "OilRig has used PowerShell to upload files from compromised systems.",
+      "observed_tooling": ["PowerShell"],
+      "detection_feasibility": "medium — file collection is common; suspicious mainly via PowerShell upload command-lines and process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1025",
+      "technique_name": "Data from Removable Media",
+      "tactic": "collection",
+      "procedure_description": "OilRig has used Wireshark's usbcapcmd utility to capture USB traffic.",
+      "observed_tooling": ["Wireshark (usbcapcmd)"],
+      "detection_feasibility": "low — USB traffic capture leaves little routine log signal; hunt candidate via unexpected usbcapcmd/Wireshark execution",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "OilRig has used browser-data and credential-stealer tools to stage stolen files in %TEMP%.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — local staging in %TEMP% is common and noisy; better as a hunt over file-write telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "defense-evasion",
+      "procedure_description": "An OilRig macro has run a PowerShell command to decode file contents, and OilRig has used certutil to decode base64-encoded files.",
+      "observed_tooling": ["certutil", "PowerShell"],
+      "detection_feasibility": "high — 'certutil -decode' and FromBase64String decode routines are directly observable in command-line and script-block logging",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig actively developed and used a series of downloaders during 2022.",
+      "observed_tooling": ["ODAgent", "OilCheck", "OilBooster", "SampleCheck5000"],
+      "detection_feasibility": "low — capability development is not observable in victim telemetry; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1686.003",
+      "technique_name": "Disable or Modify System Firewall: Windows Host Firewall",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has modified Windows firewall rules to enable remote access (observed in the Earth Simnavaz campaign to enable inbound access alongside ngrok tunneling).",
+      "observed_tooling": ["netsh", "ngrok"],
+      "detection_feasibility": "high — Windows Firewall rule changes are detectable via netsh advfirewall command-lines and Firewall (2004/2006) / registry-modification telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/", "https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html"]
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig has used the PowerExchange utility and other tools to create tunnels to C2.",
+      "observed_tooling": ["PowerExchange"],
+      "detection_feasibility": "low — asymmetric-encrypted C2 defeats content inspection; hunt on beacon/traffic-shape anomalies",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1585.003",
+      "technique_name": "Establish Accounts: Cloud Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig has created M365 email accounts to be used as part of C2.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — adversary-created cloud accounts are off-victim; the downstream Exchange/M365 C2 use is where detection lands (see T1585/T1048.003); intel/hunt candidate here",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "procedure_description": "OilRig has exfiltrated data via Microsoft Exchange and over FTP separately. In Earth Simnavaz, the STEALHOOK tool exfiltrated stolen credentials through the compromised organization's Exchange server.",
+      "observed_tooling": ["STEALHOOK", "FTP"],
+      "detection_feasibility": "medium — Exchange/OWA-based exfil is detectable via mailbox-audit, unusual EWS/Exchange transport activity and outbound FTP; Exchange-credential-theft is a signature OilRig pattern and warrants targeted mail-flow analytics",
+      "sources": ["https://attack.mitre.org/groups/G0049/", "https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html"]
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "procedure_description": "OilRig has exploited CVE-2024-30088 to run arbitrary code in the context of SYSTEM.",
+      "observed_tooling": ["CVE-2024-30088"],
+      "detection_feasibility": "medium — client-side exploitation is detectable via anomalous child processes and crash/SYSTEM-context anomalies post-exploit; needs endpoint exploit-guard telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/", "https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html"]
+    },
+    {
+      "technique_id": "T1068",
+      "technique_name": "Exploitation for Privilege Escalation",
+      "tactic": "privilege-escalation",
+      "procedure_description": "OilRig has exploited the Windows Kernel Elevation of Privilege vulnerability CVE-2024-30088.",
+      "observed_tooling": ["CVE-2024-30088"],
+      "detection_feasibility": "medium — kernel EoP exploitation is detectable via EDR exploit-protection alerts and anomalous SYSTEM-token/process behavior; patch-state monitoring aids",
+      "sources": ["https://attack.mitre.org/groups/G0049/", "https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html"]
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "persistence",
+      "procedure_description": "OilRig uses remote services such as VPN, Citrix, or OWA to persist in an environment.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous VPN/Citrix/OWA logons are detectable via authentication logs, impossible-travel and new-device analytics; requires identity telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1008",
+      "technique_name": "Fallback Channels",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig's malware ISMAgent falls back to DNS tunneling if unable to reach the C2 server over HTTP.",
+      "observed_tooling": ["ISMAgent"],
+      "detection_feasibility": "low — fallback-channel switching is an architectural trait inferred from network analysis; hunt candidate (pairs with DNS-tunnel analytics)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has deleted files associated with their payload after execution.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — file-deletion is detectable via file-system audit / EDR delete events, but is noisy and needs correlation with prior payload writes",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig has downloaded remote files onto victim infrastructure.",
+      "observed_tooling": ["certutil", "PowerShell"],
+      "detection_feasibility": "high — remote downloads via certutil/PowerShell/bitsadmin and unexpected inbound file writes are strongly detectable in process + network telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has employed keyloggers including KEYPUNCH and LONGWATCH.",
+      "observed_tooling": ["KEYPUNCH", "LONGWATCH"],
+      "detection_feasibility": "low — keystroke-hooking APIs leave little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has used .doc file extensions to mask malicious executables.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — extension/content-type mismatch is detectable via file-magic vs extension analysis but needs dedicated inspection",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has named a downloaded copy of the Plink tunneling utility as \\ProgramData\\Adobe.exe.",
+      "observed_tooling": ["Plink", "Adobe.exe"],
+      "detection_feasibility": "medium — legit-looking names (Adobe.exe) in non-standard paths (\\ProgramData) are detectable via path/name baselining and signature mismatch",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1556.002",
+      "technique_name": "Modify Authentication Process: Password Filter DLL",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has registered a password filter DLL in order to capture plaintext credentials (a hallmark of the Earth Simnavaz campaign, dropping the filter DLL to harvest cleartext passwords on domain controllers).",
+      "observed_tooling": [],
+      "detection_feasibility": "high — registration of a Notification Package / password filter DLL under HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa is a rare, high-fidelity registry-modification detection",
+      "sources": ["https://attack.mitre.org/groups/G0049/", "https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html"]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has used reg.exe to modify system configuration.",
+      "observed_tooling": ["reg.exe"],
+      "detection_feasibility": "medium — reg.exe modifications are logged, but volume is high; value comes from watching sensitive keys (LSA, Run, proxy)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used the publicly available tool SoftPerfect Network Scanner and custom tool GOLDIRONY.",
+      "observed_tooling": ["SoftPerfect Network Scanner", "GOLDIRONY"],
+      "detection_feasibility": "medium — scanning bursts are detectable via network/connection-fanout analytics and known-tool execution signatures",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1027.005",
+      "technique_name": "Obfuscated Files or Information: Indicator Removal from Tools",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has tested malware samples to determine AV detection and subsequently modified samples.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — adversary-side AV-evasion tuning happens off-victim; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has encrypted and encoded data in malware, including by using base64.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — high-entropy/encoded payloads are detectable via file-entropy analytics but require dedicated scanning",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig has made use of publicly available tools including Plink and Mimikatz.",
+      "observed_tooling": ["Plink", "Mimikatz"],
+      "detection_feasibility": "low — tool acquisition itself is off-endpoint; downstream use (Plink tunneling, Mimikatz LSASS) is detectable — this entry is a hunt/intel candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1588.003",
+      "technique_name": "Obtain Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig has obtained stolen code signing certificates to digitally sign malware.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — certificate acquisition is off-victim; downstream signed-malware use maps to T1553.002; intel/hunt candidate here",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1137.004",
+      "technique_name": "Office Application Startup: Outlook Home Page",
+      "tactic": "persistence",
+      "procedure_description": "OilRig has abused the Outlook Home Page feature for persistence.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — Outlook Home Page registry (WebView\\URL under Outlook profile) modification is a rare, high-fidelity persistence detection",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used credential dumping tools such as Mimikatz to steal credentials.",
+      "observed_tooling": ["Mimikatz"],
+      "detection_feasibility": "high — process access to lsass.exe and Mimikatz signatures are highly observable in EDR and process-access telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1003.004",
+      "technique_name": "OS Credential Dumping: LSA Secrets",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used credential dumping tools such as LaZagne to steal credentials.",
+      "observed_tooling": ["LaZagne"],
+      "detection_feasibility": "high — LaZagne execution and LSA-secret registry access are detectable via process and registry telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1003.005",
+      "technique_name": "OS Credential Dumping: Cached Domain Credentials",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used credential dumping tools such as LaZagne to steal credentials.",
+      "observed_tooling": ["LaZagne"],
+      "detection_feasibility": "medium — cached-credential access is subtler; best caught via LaZagne process/behavior signatures and registry hive access",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1201",
+      "technique_name": "Password Policy Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used net.exe in a script with net accounts /domain to find password policy.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net accounts /domain' is directly observable in command-line logging",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used tools to identify if a mouse is connected to a targeted system.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the mouse-presence check is a sandbox-evasion macro behavior with little host log signal; hunt candidate (pairs with T1497.001)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1069.001",
+      "technique_name": "Permission Groups Discovery: Local Groups",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used net localgroup administrators to find local admins on systems.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net localgroup administrators' is directly observable in command-line logging",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used net group /domain, net group \"domain admins\" /domain, and related commands.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net group /domain' domain-group enumeration is directly observable in command-line logging",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "OilRig has sent spearphishing emails with malicious attachments to potential victims.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — attachment-based spearphishing is detectable via mail sandboxing and macro-content analysis at the gateway",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "OilRig has sent spearphishing emails with malicious links to potential victims.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — link-based spearphishing is detectable via URL rewriting/detonation and proxy telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "procedure_description": "OilRig has used LinkedIn to send spearphishing links.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — social-media-delivered lures bypass corporate mail controls; user-awareness/hunt candidate with limited endpoint signal",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has run tasklist on a victim's machine and used infostealers to capture processes.",
+      "observed_tooling": ["tasklist"],
+      "detection_feasibility": "medium — tasklist/Get-Process enumeration is common but meaningful in process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig has used the Plink utility and other tools to create tunnels to C2 servers.",
+      "observed_tooling": ["Plink", "ngrok"],
+      "detection_feasibility": "medium — tunneling utilities (Plink/ngrok) are detectable via process execution and outbound tunnel-endpoint network signatures",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1012",
+      "technique_name": "Query Registry",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used reg query \"HKEY_CURRENT_USER\\Software\\Microsoft\\Terminal Server Client\" on victim machines.",
+      "observed_tooling": ["reg.exe"],
+      "detection_feasibility": "medium — reg query of specific keys (Terminal Server Client) is detectable via command-line logging but noisy; targeted rule warranted",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig has incorporated remote monitoring and management tools including ngrok into operations.",
+      "observed_tooling": ["ngrok"],
+      "detection_feasibility": "high — unsanctioned RMM/tunneling tools (ngrok) are detectable via process, known-binary and network-endpoint signatures",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "OilRig has used Remote Desktop Protocol for lateral movement.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — RDP lateral movement is detectable via 4624 type-10 logons and internal-RDP fanout analytics",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "tactic": "lateral-movement",
+      "procedure_description": "OilRig has used Putty to access compromised systems.",
+      "observed_tooling": ["Putty"],
+      "detection_feasibility": "medium — SSH client (Putty) execution and outbound SSH from unusual hosts are detectable via process + network telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "OilRig has created scheduled tasks that run a VBScript to execute a payload on victim machines.",
+      "observed_tooling": ["schtasks.exe", "wscript.exe"],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable, especially with script actions",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "OilRig has a tool called CANDYKING to capture a screenshot of the user's desktop.",
+      "observed_tooling": ["CANDYKING"],
+      "detection_feasibility": "low — screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "OilRig has used web shells (e.g. TwoFace and RGDoor), often to maintain access to a victim network, frequently on Internet-facing IIS/Exchange servers.",
+      "observed_tooling": ["TwoFace (webshell)", "RGDoor"],
+      "detection_feasibility": "medium — web shells are detectable via web-server process anomalies (w3wp.exe spawning cmd/powershell), new/modified files in web roots and IIS-log request patterns; a signature OilRig tradecraft warranting targeted web-server detection and file-integrity hunting",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used browser-data dumper tools to create a list of users with Google Chrome.",
+      "observed_tooling": ["MKG"],
+      "detection_feasibility": "medium — installed-software enumeration is common; distinctive when tied to browser-dumper tooling in process lineage",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "OilRig has hosted malware on fake websites designed to target specific audiences.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — staging on adversary infrastructure is off-victim; intel/hunt candidate via lookalike-site and hosting monitoring",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has signed its malware with stolen certificates.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — signed-malware is detectable via certificate-reputation/thumbprint hunting and signature-anomaly analytics on loaded binaries",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1195",
+      "technique_name": "Supply Chain Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "OilRig has leveraged compromised organizations to conduct supply chain attacks.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — upstream supply-chain compromise is largely outside victim endpoint visibility; strategic intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1218.001",
+      "technique_name": "System Binary Proxy Execution: Compiled HTML File",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has used a CHM payload to load and execute another malicious file.",
+      "observed_tooling": ["hh.exe"],
+      "detection_feasibility": "high — hh.exe executing CHM that spawns script/child processes is a rare LOLBin pattern with low false-positive rate",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has run hostname and systeminfo on a victim machine.",
+      "observed_tooling": ["systeminfo", "hostname"],
+      "detection_feasibility": "medium — systeminfo/hostname discovery is common; suspicious mainly in tight process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has run ipconfig /all on a victim machine.",
+      "observed_tooling": ["ipconfig"],
+      "detection_feasibility": "medium — 'ipconfig /all' is common but suspicious when clustered with other recon in a short process-lineage window",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used netstat -an on a victim to get a listing of network connections.",
+      "observed_tooling": ["netstat"],
+      "detection_feasibility": "medium — 'netstat -an' is common; meaningful in recon-burst/process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has run whoami on a victim machine.",
+      "observed_tooling": ["whoami"],
+      "detection_feasibility": "medium — whoami is common; value is in process-lineage correlation (e.g. spawned by Office/script host)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1007",
+      "technique_name": "System Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "OilRig has used sc query on a victim to gather information about services.",
+      "observed_tooling": ["sc.exe"],
+      "detection_feasibility": "medium — 'sc query' is common; suspicious mainly in recon-burst/process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "procedure_description": "OilRig has used credential dumping tools to steal credentials to accounts.",
+      "observed_tooling": ["LaZagne"],
+      "detection_feasibility": "low — reading credential-bearing files leaves little discrete log signal; hunt candidate via file-access telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "OilRig has delivered malicious links to achieve execution on the target system.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — malicious-link clicks are detectable via email/URL-gateway and proxy logs; endpoint signal is indirect",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "OilRig has delivered macro-enabled documents requiring targets to click enable content.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — Office apps spawning script/child processes after macro enablement is a core detectable behavior",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has used compromised credentials to access other systems on a victim network.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — valid-account abuse is detectable via anomalous logon (impossible travel, new host/time) analytics but blends with legitimate use",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has used an exfiltration tool named STEALHOOK to retrieve valid domain credentials.",
+      "observed_tooling": ["STEALHOOK"],
+      "detection_feasibility": "medium — domain-account abuse is detectable via anomalous authentication analytics; the STEALHOOK/Exchange credential-theft chain warrants targeted identity monitoring",
+      "sources": ["https://attack.mitre.org/groups/G0049/", "https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html"]
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "defense-evasion",
+      "procedure_description": "OilRig has used macros to verify if a mouse is connected to a compromised machine.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — in-macro sandbox checks (mouse presence) execute pre-payload with little host log signal; hunt candidate via macro static analysis",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "OilRig has used WMI for execution.",
+      "observed_tooling": ["wmic.exe"],
+      "detection_feasibility": "high — WMI process creation and WMI-Activity operational logs provide strong telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T0817",
+      "technique_name": "Drive-by Compromise (ICS)",
+      "tactic": "initial-access",
+      "procedure_description": "OilRig utilized watering-hole attacks to collect credentials for ICS network access.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — watering-hole compromise occurs on third-party sites; largely off-victim-endpoint; intel/hunt candidate (ICS domain)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T0853",
+      "technique_name": "Scripting (ICS)",
+      "tactic": "execution",
+      "procedure_description": "OilRig embedded a macro with both a VBScript and a PowerShell script in emails.",
+      "observed_tooling": ["wscript.exe", "PowerShell"],
+      "detection_feasibility": "high — macro-embedded VBS/PowerShell execution is detectable via script-block logging and Office->script process lineage (ICS domain mapping of an IT-observable behavior)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T0865",
+      "technique_name": "Spearphishing Attachment (ICS)",
+      "tactic": "initial-access",
+      "procedure_description": "OilRig used spearphishing emails with malicious Microsoft Excel spreadsheet attachments.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — Excel-attachment spearphishing is detectable via mail sandboxing and macro-content analysis at the gateway (ICS domain)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T0869",
+      "technique_name": "Standard Application Layer Protocol (ICS)",
+      "tactic": "command-and-control",
+      "procedure_description": "OilRig communicated with command and control using HTTP requests.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — HTTP C2 is detectable via proxy/beacon analytics but blends with normal web traffic (ICS domain)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    },
+    {
+      "technique_id": "T0859",
+      "technique_name": "Valid Accounts (ICS)",
+      "tactic": "initial-access",
+      "procedure_description": "OilRig utilized stolen credentials to gain access to victim machines.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — stolen-credential access into ICS-adjacent systems is detectable via anomalous authentication analytics (ICS domain)",
+      "sources": ["https://attack.mitre.org/groups/G0049/"]
+    }
+  ],
+  "detection_signals": [
+    "DNS queries with abnormal length/entropy/subdomain volume or repeated NXDOMAIN to a single authoritative domain (DNS-tunneling C2 — Helminth/ISMAgent/BONDUPDATER/QUADAGENT)",
+    "w3wp.exe / IIS or Exchange worker process spawning cmd.exe or powershell.exe, and new/modified files in web roots (TwoFace / RGDoor web shells)",
+    "Registration of a password filter DLL under HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa 'Notification Packages'",
+    "Outlook Home Page WebView\\URL registry value set under an Outlook profile (persistence)",
+    "certutil.exe with -decode / -urlcache or PowerShell FromBase64String decoding payloads",
+    "'net user /domain', 'net group \"domain admins\" /domain', 'net localgroup administrators', 'net accounts /domain' enumeration in command-line logs",
+    "process access to lsass.exe or Mimikatz signatures; LaZagne execution",
+    "Plink or Putty renamed as \\ProgramData\\Adobe.exe creating outbound SSH tunnels; ngrok tunneling processes/endpoints",
+    "netsh advfirewall rule additions enabling inbound remote access",
+    "scheduled task creation (Event ID 4698) invoking wscript/VBScript payloads",
+    "Office application (winword/excel) spawning wscript.exe/powershell.exe after macro enable-content",
+    "hh.exe executing a CHM that spawns script/child processes",
+    "Exchange/OWA/EWS anomalous outbound activity or M365 newly-created mail accounts used for C2/exfil (STEALHOOK credential exfiltration)",
+    "reg query of HKCU\\Software\\Microsoft\\Terminal Server Client"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [],
+    "emails": [],
+    "hashes": [],
+    "cves": ["CVE-2024-30088"]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "All 87 seed ATT&CK techniques (82 Enterprise + 5 ICS: T0817/T0853/T0865/T0869/T0859) preserved and enriched with OilRig-specific procedure descriptions, observed tooling, a detection_feasibility hint (the field decision-agent routes on), and source citations. Attribution to Iran-nexus (APT34/OilRig, widely linked to MOIS) is high-confidence per MITRE ATT&CK G0049 and corroborated by the MENA-Threat-Actor-Tracker high-confidence tiering (iran-apt + ksa-apt). Non-canonical seed tactic labels were normalized to canonical ATT&CK tactics for decision-agent routing: 'stealth' -> 'defense-evasion', 'defense-impairment' -> 'defense-evasion'; multi-tactic strings collapsed to a single primary tactic (e.g. T1133 -> persistence, T1053.005 -> persistence, T1078/T1078.002 -> defense-evasion, T1201 -> discovery [seed mislabeled 'execution'], T1543.003 -> persistence). Technique IDs preserved verbatim from the seed, including T1686.003 (Disable or Modify System Firewall: Windows Host Firewall) and T1027.013 as supplied. IOCs are deliberately minimal/conservative: the only host-independent, publicly attributable indicator confidently sourced in this pass is CVE-2024-30088 (Windows Kernel EoP, exploited in the Earth Simnavaz campaign per MITRE G0049 and Trend Micro). No file hashes, C2 IPs, or malicious domains are included because the Trend Micro Earth Simnavaz report returned HTTP 403 to automated fetch and MITRE G0049 lists no concrete IOCs; the Trend Micro IOC appendix (hashes/domains for STEALHOOK/Veaty/Spearal/ngrok infrastructure) should be ingested directly from the source before those indicators are added. OilRig signature tradecraft flagged in feasibility hints: (1) DNS-tunneling C2 (medium — needs full DNS logging), (2) web shells on IIS/Exchange (medium — w3wp child-process + web-root file-integrity), (3) Exchange/M365 credential theft & exfiltration via STEALHOOK and the password filter DLL (T1556.002 high; T1048.003/T1078.002 medium). Low detection-feasibility techniques (hunt candidates rather than detection candidates): T1583.001, T1119, T1115, T1586.002, T1584.004, T1587.001, T1573.002, T1585.003, T1008, T1056.001, T1027.005, T1588.002, T1588.003, T1025, T1074.001, T1113, T1552.001, T1566.003, T1120, T1608.001, T1195, T1497.001, T0817."
+}

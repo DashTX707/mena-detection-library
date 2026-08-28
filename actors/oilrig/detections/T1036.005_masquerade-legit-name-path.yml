@@ -1,0 +1,42 @@
+title: Tunneling Utility Masquerading as Adobe.exe in ProgramData (OilRig)
+id: 1f6a5be3-5988-46af-bbb2-267a58477690
+status: experimental
+description: |
+    Detects OilRig's masquerading of the Plink tunneling utility as \ProgramData\Adobe.exe, and the
+    broader pattern of a legitimate-looking Adobe/Chrome/Java binary name running from a non-standard
+    user-writable path. Keys on the name/location mismatch rather than a hash.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_adobe_programdata:
+        Image|endswith: '\Adobe.exe'
+        Image|contains: '\ProgramData\'
+    selection_lookalike_path:
+        Image|endswith:
+            - '\Adobe.exe'
+            - '\AdobeUpdate.exe'
+            - '\GoogleUpdate.exe'
+            - '\chrome.exe'
+            - '\svchost.exe'
+        Image|contains:
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\AppData\Local\Temp\'
+    filter_legit:
+        Image|contains:
+            - '\Program Files\'
+            - '\Program Files (x86)\'
+            - '\Windows\System32\'
+    condition: selection_adobe_programdata or (selection_lookalike_path and not filter_legit)
+falsepositives:
+    - Portable or vendor updater binaries staged in ProgramData by legitimate installers (baseline names/paths)
+level: high

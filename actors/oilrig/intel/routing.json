@@ -1,0 +1,535 @@
+{
+  "actor": "OilRig (G0049 / APT34)",
+  "provenance": "Lane split authored by Stage-2 decision-agent (read-only agent, cannot write files) and persisted here from its output. technique_name/tactic reconciled against intel/cti-pipeline.json; rationale carries the Stage-1 detection_feasibility note.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1087.001",
+      "technique_name": "Account Discovery: Local Account",
+      "tactic": "discovery",
+      "rationale": "high \u2014 'net user' / 'net group' enumeration is directly observable in command-line/process-creation logging"
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "rationale": "high \u2014 'net user /domain' and net group domain enumeration are directly observable in command-line logging"
+    },
+    {
+      "technique_id": "T1217",
+      "technique_name": "Browser Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 access to browser profile/cookie files by non-browser processes is detectable via file-access and known-tool telemetry"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high \u2014 script-block/module logging and suspicious PowerShell parenting (Office->PowerShell) are core, well-covered detections"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "high \u2014 cmd.exe/batch execution with anomalous parents (Office, script hosts) is visible in process-creation logs"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high \u2014 wscript/cscript executing VBS, especially spawned by Office, is a strong detectable signal"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high \u2014 service creation (Event ID 7045 / 4697) and remote service install are strongly detectable"
+    },
+    {
+      "technique_id": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 credential-store access detectable mainly through known-tool (LaZagne) execution signatures"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 access to browser Login Data stores is detectable via file-access and known-tool telemetry"
+    },
+    {
+      "technique_id": "T1555.004",
+      "technique_name": "Credentials from Password Stores: Windows Credential Manager",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 Credential Manager/vault access is detectable via known-tool signatures and file/DPAPI access telemetry"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "defense-evasion",
+      "rationale": "high \u2014 'certutil -decode' and FromBase64String decode routines are directly observable in command-line and script-block logging"
+    },
+    {
+      "technique_id": "T1686.003",
+      "technique_name": "Disable or Modify System Firewall: Windows Host Firewall",
+      "tactic": "defense-evasion",
+      "rationale": "high \u2014 Windows Firewall rule changes are detectable via netsh advfirewall command-lines and Firewall (2004/2006) / registry-modification telemetry"
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "rationale": "medium \u2014 Exchange/OWA-based exfil is detectable via mailbox-audit, unusual EWS/Exchange transport activity and outbound FTP; Exchange-credential-theft is a signature OilRig pattern and warrants targeted mail-flow analytics"
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "rationale": "medium \u2014 client-side exploitation is detectable via anomalous child processes and crash/SYSTEM-context anomalies post-exploit; needs endpoint exploit-guard telemetry"
+    },
+    {
+      "technique_id": "T1068",
+      "technique_name": "Exploitation for Privilege Escalation",
+      "tactic": "privilege-escalation",
+      "rationale": "medium \u2014 kernel EoP exploitation is detectable via EDR exploit-protection alerts and anomalous SYSTEM-token/process behavior; patch-state monitoring aids"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high \u2014 remote downloads via certutil/PowerShell/bitsadmin and unexpected inbound file writes are strongly detectable in process + network telemetry"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 legit-looking names (Adobe.exe) in non-standard paths (\\ProgramData) are detectable via path/name baselining and signature mismatch"
+    },
+    {
+      "technique_id": "T1556.002",
+      "technique_name": "Modify Authentication Process: Password Filter DLL",
+      "tactic": "credential-access",
+      "rationale": "high \u2014 registration of a Notification Package / password filter DLL under HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa is a rare, high-fidelity registry-modification detection"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 scanning bursts are detectable via network/connection-fanout analytics and known-tool execution signatures"
+    },
+    {
+      "technique_id": "T1137.004",
+      "technique_name": "Office Application Startup: Outlook Home Page",
+      "tactic": "persistence",
+      "rationale": "high \u2014 Outlook Home Page registry (WebView\\URL under Outlook profile) modification is a rare, high-fidelity persistence detection"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high \u2014 process access to lsass.exe and Mimikatz signatures are highly observable in EDR and process-access telemetry"
+    },
+    {
+      "technique_id": "T1003.004",
+      "technique_name": "OS Credential Dumping: LSA Secrets",
+      "tactic": "credential-access",
+      "rationale": "high \u2014 LaZagne execution and LSA-secret registry access are detectable via process and registry telemetry"
+    },
+    {
+      "technique_id": "T1003.005",
+      "technique_name": "OS Credential Dumping: Cached Domain Credentials",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 cached-credential access is subtler; best caught via LaZagne process/behavior signatures and registry hive access"
+    },
+    {
+      "technique_id": "T1201",
+      "technique_name": "Password Policy Discovery",
+      "tactic": "discovery",
+      "rationale": "high \u2014 'net accounts /domain' is directly observable in command-line logging"
+    },
+    {
+      "technique_id": "T1069.001",
+      "technique_name": "Permission Groups Discovery: Local Groups",
+      "tactic": "discovery",
+      "rationale": "high \u2014 'net localgroup administrators' is directly observable in command-line logging"
+    },
+    {
+      "technique_id": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "tactic": "discovery",
+      "rationale": "high \u2014 'net group /domain' domain-group enumeration is directly observable in command-line logging"
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 attachment-based spearphishing is detectable via mail sandboxing and macro-content analysis at the gateway"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 link-based spearphishing is detectable via URL rewriting/detonation and proxy telemetry"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 tunneling utilities (Plink/ngrok) are detectable via process execution and outbound tunnel-endpoint network signatures"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "rationale": "high \u2014 unsanctioned RMM/tunneling tools (ngrok) are detectable via process, known-binary and network-endpoint signatures"
+    },
+    {
+      "technique_id": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "tactic": "lateral-movement",
+      "rationale": "medium \u2014 SSH client (Putty) execution and outbound SSH from unusual hosts are detectable via process + network telemetry"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high \u2014 scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable, especially with script actions"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 web shells are detectable via web-server process anomalies (w3wp.exe spawning cmd/powershell), new/modified files in web roots and IIS-log request patterns; a signature OilRig tradecraft warranting targeted web-server detection and file-integrity hunting"
+    },
+    {
+      "technique_id": "T1218.001",
+      "technique_name": "System Binary Proxy Execution: Compiled HTML File",
+      "tactic": "defense-evasion",
+      "rationale": "high \u2014 hh.exe executing CHM that spawns script/child processes is a rare LOLBin pattern with low false-positive rate"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium \u2014 malicious-link clicks are detectable via email/URL-gateway and proxy logs; endpoint signal is indirect"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "high \u2014 Office apps spawning script/child processes after macro enablement is a core detectable behavior"
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 domain-account abuse is detectable via anomalous authentication analytics; the STEALHOOK/Exchange credential-theft chain warrants targeted identity monitoring"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "rationale": "high \u2014 WMI process creation and WMI-Activity operational logs provide strong telemetry"
+    },
+    {
+      "technique_id": "T0853",
+      "technique_name": "Scripting (ICS)",
+      "tactic": "execution",
+      "rationale": "high \u2014 macro-embedded VBS/PowerShell execution is detectable via script-block logging and Office->script process lineage (ICS domain mapping of an IT-observable behavior)"
+    },
+    {
+      "technique_id": "T0865",
+      "technique_name": "Spearphishing Attachment (ICS)",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 Excel-attachment spearphishing is detectable via mail sandboxing and macro-content analysis at the gateway (ICS domain)"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 off-victim infrastructure acquisition is not endpoint-observable; intel/hunt candidate via lookalike-domain and registration monitoring"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 HTTP C2 detectable via proxy/beacon analytics and URI/JA3 anomalies, but blends with normal web traffic"
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 DNS-tunneling C2 is detectable via DNS query-length/entropy/volume analytics and NXDOMAIN patterns, but requires full DNS logging that is frequently under-instrumented; strong hunt-and-detect candidate given it is a core OilRig behavior"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "low \u2014 automated collection leaves little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 brute force is detectable via authentication-failure spikes (4625) and lockout telemetry, but the source is generic"
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "rationale": "low \u2014 clipboard-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "tactic": "execution",
+      "rationale": "medium \u2014 generic parent; value comes from specific interpreter sub-techniques (PowerShell/VBS/cmd) with process-lineage context"
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 off-victim account compromise is not endpoint-observable; intel/hunt candidate via sender-reputation and mail-flow analysis"
+    },
+    {
+      "technique_id": "T1584.004",
+      "technique_name": "Compromise Infrastructure: Server",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 adversary compromise of third-party servers is off-victim; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 Base64-encoded C2 content is detectable via network inspection and encoding heuristics where TLS is absent"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium \u2014 file collection is common; suspicious mainly via PowerShell upload command-lines and process-lineage context"
+    },
+    {
+      "technique_id": "T1025",
+      "technique_name": "Data from Removable Media",
+      "tactic": "collection",
+      "rationale": "low \u2014 USB traffic capture leaves little routine log signal; hunt candidate via unexpected usbcapcmd/Wireshark execution"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "low \u2014 local staging in %TEMP% is common and noisy; better as a hunt over file-write telemetry"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 capability development is not observable in victim telemetry; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 asymmetric-encrypted C2 defeats content inspection; hunt on beacon/traffic-shape anomalies"
+    },
+    {
+      "technique_id": "T1585.003",
+      "technique_name": "Establish Accounts: Cloud Accounts",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 adversary-created cloud accounts are off-victim; the downstream Exchange/M365 C2 use is where detection lands (see T1585/T1048.003); intel/hunt candidate here"
+    },
+    {
+      "technique_id": "T1008",
+      "technique_name": "Fallback Channels",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 fallback-channel switching is an architectural trait inferred from network analysis; hunt candidate (pairs with DNS-tunnel analytics)"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 file-deletion is detectable via file-system audit / EDR delete events, but is noisy and needs correlation with prior payload writes"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "rationale": "low \u2014 keystroke-hooking APIs leave little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 extension/content-type mismatch is detectable via file-magic vs extension analysis but needs dedicated inspection"
+    },
+    {
+      "technique_id": "T1027.005",
+      "technique_name": "Obfuscated Files or Information: Indicator Removal from Tools",
+      "tactic": "defense-evasion",
+      "rationale": "low \u2014 adversary-side AV-evasion tuning happens off-victim; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 high-entropy/encoded payloads are detectable via file-entropy analytics but require dedicated scanning"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 tool acquisition itself is off-endpoint; downstream use (Plink tunneling, Mimikatz LSASS) is detectable \u2014 this entry is a hunt/intel candidate"
+    },
+    {
+      "technique_id": "T1588.003",
+      "technique_name": "Obtain Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 certificate acquisition is off-victim; downstream signed-malware use maps to T1553.002; intel/hunt candidate here"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 reg.exe modifications are logged, but volume is high; value comes from watching sensitive keys (LSA, Run, proxy)"
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "rationale": "low \u2014 the mouse-presence check is a sandbox-evasion macro behavior with little host log signal; hunt candidate (pairs with T1497.001)"
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "rationale": "low \u2014 social-media-delivered lures bypass corporate mail controls; user-awareness/hunt candidate with limited endpoint signal"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 tasklist/Get-Process enumeration is common but meaningful in process-lineage context"
+    },
+    {
+      "technique_id": "T1012",
+      "technique_name": "Query Registry",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 reg query of specific keys (Terminal Server Client) is detectable via command-line logging but noisy; targeted rule warranted"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium \u2014 RDP lateral movement is detectable via 4624 type-10 logons and internal-RDP fanout analytics"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low \u2014 screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 installed-software enumeration is common; distinctive when tied to browser-dumper tooling in process lineage"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 staging on adversary infrastructure is off-victim; intel/hunt candidate via lookalike-site and hosting monitoring"
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 signed-malware is detectable via certificate-reputation/thumbprint hunting and signature-anomaly analytics on loaded binaries"
+    },
+    {
+      "technique_id": "T1195",
+      "technique_name": "Supply Chain Compromise",
+      "tactic": "initial-access",
+      "rationale": "low \u2014 upstream supply-chain compromise is largely outside victim endpoint visibility; strategic intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 systeminfo/hostname discovery is common; suspicious mainly in tight process-lineage context"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 'ipconfig /all' is common but suspicious when clustered with other recon in a short process-lineage window"
+    },
+    {
+      "technique_id": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 'netstat -an' is common; meaningful in recon-burst/process-lineage context"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 whoami is common; value is in process-lineage correlation (e.g. spawned by Office/script host)"
+    },
+    {
+      "technique_id": "T1007",
+      "technique_name": "System Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 'sc query' is common; suspicious mainly in recon-burst/process-lineage context"
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "rationale": "low \u2014 reading credential-bearing files leaves little discrete log signal; hunt candidate via file-access telemetry"
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 valid-account abuse is detectable via anomalous logon (impossible travel, new host/time) analytics but blends with legitimate use"
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "defense-evasion",
+      "rationale": "low \u2014 in-macro sandbox checks (mouse presence) execute pre-payload with little host log signal; hunt candidate via macro static analysis"
+    },
+    {
+      "technique_id": "T0817",
+      "technique_name": "Drive-by Compromise (ICS)",
+      "tactic": "initial-access",
+      "rationale": "low \u2014 watering-hole compromise occurs on third-party sites; largely off-victim-endpoint; intel/hunt candidate (ICS domain)"
+    },
+    {
+      "technique_id": "T0869",
+      "technique_name": "Standard Application Layer Protocol (ICS)",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 HTTP C2 is detectable via proxy/beacon analytics but blends with normal web traffic (ICS domain)"
+    },
+    {
+      "technique_id": "T0859",
+      "technique_name": "Valid Accounts (ICS)",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 stolen-credential access into ICS-adjacent systems is detectable via anomalous authentication analytics (ICS domain)"
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 anomalous VPN/Citrix/OWA logons are detectable via authentication logs, impossible-travel and new-device analytics; requires identity telemetry"
+    }
+  ],
+  "summary": {
+    "total": 87,
+    "detection": 40,
+    "hunt": 47
+  }
+}

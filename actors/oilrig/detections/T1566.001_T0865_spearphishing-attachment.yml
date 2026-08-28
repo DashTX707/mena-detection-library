@@ -1,0 +1,48 @@
+title: Spearphishing Attachment Execution from Outlook (OilRig)
+id: aeab3194-07fa-4bbe-8aef-0730252aa90f
+status: experimental
+description: |
+    Detects execution originating from an email attachment opened in Outlook, matching OilRig's
+    spearphishing emails carrying malicious attachments (including malicious Excel spreadsheets mapped
+    to the ICS spearphishing-attachment technique). Keys on outlook.exe spawning an Office app, script
+    host or archive/document handler, and on Office apps launched from the Outlook attachment temp path.
+    ICS-domain mapping: ATT&CK for ICS T0865 (Spearphishing Attachment) — carried in the
+    filename/description rather than an attack tag, as pySigma's ATT&CK validator only recognizes
+    Enterprise technique IDs.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_outlook_child:
+        ParentImage|endswith: '\outlook.exe'
+        Image|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\cmd.exe'
+            - '\powershell.exe'
+    selection_attachment_temp:
+        Image|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+        CommandLine|contains:
+            - '\Content.Outlook\'
+            - '\INetCache\Content.Outlook\'
+            - '\Temporary Internet Files\'
+    condition: selection_outlook_child or selection_attachment_temp
+falsepositives:
+    - Users legitimately opening documents attached to internal mail
+    - Mail-enabled business workflows that open attachments automatically (baseline senders)
+level: medium

@@ -1,0 +1,48 @@
+title: Suspicious PowerShell Execution Flags and Download Cradle (OilRig)
+id: da6532c5-784a-46d1-8b04-6ebcc23de484
+status: experimental
+description: |
+    Detects PowerShell launched with hidden/bypass execution flags and/or an in-memory download
+    cradle, matching OilRig's heavy PowerShell tradecraft (QUADAGENT, PowerExchange, POWRUNER) and its
+    use of macros that invoke a PowerShell command. Behavior-based on execution flags and
+    WebClient/IEX download-and-execute patterns rather than a specific payload.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_hidden:
+        CommandLine|contains|all:
+            - ' -w'
+            - 'hidden'
+        CommandLine|contains:
+            - '-nop'
+            - '-noprofile'
+            - '-ep bypass'
+            - '-executionpolicy bypass'
+            - '-enc'
+    selection_cradle:
+        CommandLine|contains:
+            - 'Net.WebClient'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'IEX(New-Object'
+            - 'Invoke-Expression'
+            - 'Invoke-WebRequest'
+            - 'FromBase64String'
+    condition: selection_ps and (selection_hidden or selection_cradle)
+falsepositives:
+    - Legitimate admin scripts using -WindowStyle Hidden or download cmdlets in deployment tooling
+    - Vendor agents that fetch and execute remote PowerShell
+level: medium

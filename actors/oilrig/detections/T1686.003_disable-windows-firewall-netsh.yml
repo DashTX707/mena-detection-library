@@ -1,0 +1,40 @@
+title: Windows Firewall Rule Modification via netsh advfirewall (OilRig)
+id: 6e84605c-1c28-4836-b914-d601c027a22d
+status: experimental
+description: |
+    Detects modification of the Windows host firewall via netsh, matching OilRig's Earth Simnavaz
+    tradecraft of adding firewall rules to enable inbound remote access alongside ngrok tunneling.
+    Keys on netsh advfirewall rule additions and on legacy netsh firewall opening ports.
+references:
+    - https://attack.mitre.org/groups/G0049/
+    - https://www.trendmicro.com/en_us/research/24/j/earth-simnavaz-cyberattacks.html
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1686.003
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_advfirewall:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains|all:
+            - 'advfirewall'
+            - 'add rule'
+    selection_legacy:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains|all:
+            - 'firewall'
+            - 'add'
+            - 'allowedprogram'
+    selection_openport:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains|all:
+            - 'portopening'
+    condition: selection_advfirewall or selection_legacy or selection_openport
+falsepositives:
+    - Administrators or GPO/software installers adding firewall exceptions for legitimate applications
+    - Endpoint-management tooling that manages host firewall rules
+level: medium

@@ -1,0 +1,48 @@
+title: Spearphishing Link Click Leading to Script/Download (OilRig)
+id: 5adbb3f3-4bb0-420b-a0a4-48927900a1f6
+status: experimental
+description: |
+    Detects the endpoint follow-on of a spearphishing link, matching OilRig's delivery of malicious
+    links that users click to achieve execution. Keys on outlook.exe launching a browser and on a
+    browser spawning a script interpreter, shell or LOLBin - the lineage that results when a phishing
+    link delivers a payload. Endpoint signal is indirect; pair with URL-gateway/proxy telemetry.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.t1566.002
+    - attack.t1204.001
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_browser_child:
+        ParentImage|endswith:
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\iexplore.exe'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\hh.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    selection_outlook_browser:
+        ParentImage|endswith: '\outlook.exe'
+        Image|endswith:
+            - '\iexplore.exe'
+            - '\mshta.exe'
+    condition: selection_browser_child or selection_outlook_browser
+falsepositives:
+    - Browsers legitimately launching helper processes via protocol handlers
+    - Web applications that invoke sanctioned client-side tooling (baseline before enabling)
+level: medium

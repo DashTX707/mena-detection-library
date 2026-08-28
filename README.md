@@ -54,6 +54,7 @@ scripts/                 helpers (validation, Navigator export)
 | Actor | Attribution | Status | TTPs | Detections | Hunts |
 |---|---|---|---|---|---|
 | [MuddyWater (G0069)](actors/muddywater/) | Iran-nexus (MOIS) | ✅ published | 68 | 32 | 14 |
+| [OilRig / APT34 (G0049)](actors/oilrig/) | Iran-nexus (MOIS) | ✅ published | 87 | 29 | 12 |
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

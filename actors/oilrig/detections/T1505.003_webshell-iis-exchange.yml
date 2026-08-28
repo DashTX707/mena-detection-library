@@ -1,0 +1,42 @@
+title: Web Shell - IIS/Exchange Worker Spawning Shell (OilRig TwoFace/RGDoor)
+id: 4ebc48b9-29d0-4f9b-84e2-70cdd59d5c11
+status: experimental
+description: |
+    Detects web shell activity on Internet-facing IIS/Exchange servers, matching OilRig's use of the
+    TwoFace and RGDoor web shells to maintain access. Keys on the IIS/Exchange worker process
+    (w3wp.exe) or Exchange transport worker spawning a command shell or script interpreter, which is
+    the execution signal of a deployed web shell.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\httpd.exe'
+            - '\UMWorkerProcess.exe'
+            - '\MSExchangeHMWorker.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\whoami.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\certutil.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Exchange management scripts or health probes that legitimately spawn PowerShell from a worker process (baseline these)
+    - Web-application diagnostics that shell out (rare; investigate)
+level: high

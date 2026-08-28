@@ -1,0 +1,40 @@
+title: Scheduled Task Running VBScript/Interpreter Payload (OilRig)
+id: 17cd28f1-80de-49f2-9c9d-a7d9c51d196a
+status: experimental
+description: |
+    Detects creation of a scheduled task whose action launches a script interpreter, matching OilRig's
+    creation of scheduled tasks that run a VBScript to execute a payload. Keys on schtasks.exe /create
+    with an interpreter/script action so it fires regardless of the (variable) task name.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_action:
+        CommandLine|contains:
+            - 'wscript'
+            - 'cscript'
+            - '.vbs'
+            - '.vbe'
+            - '.js'
+            - 'powershell'
+            - 'pwsh'
+            - 'mshta'
+            - 'rundll32'
+            - 'cmd /c'
+            - 'cmd.exe /c'
+    condition: selection_schtasks and selection_action
+falsepositives:
+    - Software installers and management agents that register scheduled tasks invoking scripts
+    - Sanctioned admin automation (baseline task names/authors)
+level: medium

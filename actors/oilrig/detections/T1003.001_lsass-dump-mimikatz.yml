@@ -1,0 +1,39 @@
+title: LSASS Credential Dumping via Mimikatz (OilRig)
+id: 14a870e9-ca4e-4cc7-abe5-520d0af70b9b
+status: experimental
+description: |
+    Detects OilRig's use of Mimikatz to dump credentials from LSASS memory. Keys on Mimikatz binary
+    metadata and its signature command modules (sekurlsa::logonpasswords, lsadump, etc.) rather than a
+    specific hash, so renamed Mimikatz is still caught.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_meta:
+        - Image|endswith: '\mimikatz.exe'
+        - OriginalFileName: 'mimikatz.exe'
+        - Product|contains: 'mimikatz'
+        - Description|contains: 'mimikatz'
+    selection_modules:
+        CommandLine|contains:
+            - 'sekurlsa::logonpasswords'
+            - 'sekurlsa::minidump'
+            - 'sekurlsa::pth'
+            - 'lsadump::sam'
+            - 'lsadump::lsa'
+            - 'lsadump::secrets'
+            - 'privilege::debug'
+            - 'crypto::capi'
+    condition: selection_meta or selection_modules
+falsepositives:
+    - Sanctioned red-team or penetration-testing engagements using Mimikatz
+    - Security research in an isolated lab (should not appear on production endpoints)
+level: high

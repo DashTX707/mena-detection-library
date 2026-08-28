@@ -1,0 +1,44 @@
+title: Windows Service Creation for Execution/Persistence (OilRig)
+id: 5b4711dd-c1e4-4c16-9050-6d4521f2a8b1
+status: experimental
+description: |
+    Detects creation of a Windows service via sc.exe or PsExec, matching OilRig's use of a compromised
+    Domain Controller to create a service on a remote host. Keys on sc create / PsExec service install
+    and on service actions that launch a script interpreter or run from a user-writable path.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_sc:
+        Image|endswith: '\sc.exe'
+        CommandLine|contains: 'create'
+        CommandLine|contains: 'binPath'
+    selection_psexec:
+        - Image|endswith:
+              - '\psexec.exe'
+              - '\psexesvc.exe'
+        - OriginalFileName: 'psexec.c'
+    selection_service_lolbin:
+        Image|endswith: '\sc.exe'
+        CommandLine|contains:
+            - 'powershell'
+            - 'cmd /c'
+            - 'cmd.exe /c'
+            - 'wscript'
+            - 'cscript'
+            - 'rundll32'
+            - '\Temp\'
+            - '\ProgramData\'
+    condition: selection_sc or selection_psexec or selection_service_lolbin
+falsepositives:
+    - Legitimate software installers and management agents that register services
+    - Sanctioned administrative use of PsExec for remote service deployment (baseline hosts/operators)
+level: medium

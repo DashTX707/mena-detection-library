@@ -1,0 +1,33 @@
+title: Network Service Discovery via SoftPerfect Scanner / GOLDIRONY (OilRig)
+id: 9d8f092b-9518-4a6f-8779-6b84d74f8504
+status: experimental
+description: |
+    Detects network service/host scanning, matching OilRig's use of the SoftPerfect Network Scanner
+    and the custom GOLDIRONY tool. Keys on the scanner binary names/metadata rather than on network
+    fan-out, so the detection fires on execution regardless of the scan target set.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.discovery
+    - attack.t1046
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        - Image|endswith:
+              - '\netscan.exe'
+              - '\netscan64.exe'
+              - '\goldirony.exe'
+        - OriginalFileName:
+              - 'netscan.exe'
+              - 'netscan64.exe'
+        - Product|contains: 'Network Scanner'
+        - Description|contains: 'SoftPerfect Network Scanner'
+    condition: selection
+falsepositives:
+    - IT/network teams legitimately using SoftPerfect Network Scanner for asset inventory (baseline hosts/operators)
+level: medium

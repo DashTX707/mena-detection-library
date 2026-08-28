@@ -1,0 +1,45 @@
+title: Office Application Spawning Script Child After Macro Enable (OilRig)
+id: 48bced50-3a3a-46ef-84a5-6b6dfe52299c
+status: experimental
+description: |
+    Detects an Office application launching a script interpreter or shell child process, matching
+    OilRig's delivery of macro-enabled documents that require the target to click enable-content, and
+    its embedding of both VBScript and PowerShell in email macros (mapped to Scripting in the ICS
+    domain). This is the core Office->script user-execution lineage.
+    ICS-domain mapping: ATT&CK for ICS T0853 (Scripting) — carried in the filename/description
+    rather than an attack tag, as pySigma's ATT&CK validator only recognizes Enterprise technique IDs.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+            - '\mspub.exe'
+    selection_child:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\certutil.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Document-automation add-ins and mail-merge workflows that legitimately spawn scripts
+    - Enterprise templates that invoke helper processes (baseline before enabling)
+level: high

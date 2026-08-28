@@ -1,0 +1,38 @@
+title: Domain Account, Group and Password-Policy Enumeration via net (OilRig)
+id: 46577557-9a66-4805-a587-e2f2d46da1df
+status: experimental
+description: |
+    Detects domain reconnaissance using the Windows net command, matching OilRig's documented use of
+    'net user /domain', 'net group "domain admins" /domain' and 'net accounts /domain' to enumerate
+    domain accounts, privileged groups and the domain password policy. Behavior-based on the net /
+    net1 command with the /domain switch or the accounts subcommand.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.discovery
+    - attack.t1087.002
+    - attack.t1069.002
+    - attack.t1201
+    - mena-detection-library.oilrig
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+    selection_domain:
+        CommandLine|contains:
+            - 'user /domain'
+            - 'group /domain'
+            - 'group "domain admins" /domain'
+            - 'accounts /domain'
+            - 'user /do'
+    condition: selection_img and selection_domain
+falsepositives:
+    - Administrators and helpdesk staff enumerating domain accounts, groups or password policy
+    - IAM and inventory automation querying domain membership
+level: medium

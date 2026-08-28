@@ -1,0 +1,33 @@
+title: Outlook Home Page Persistence via WebView URL Registry (OilRig)
+id: 74bf5859-b6e4-4df4-8033-311c3b65c45f
+status: experimental
+description: |
+    Detects abuse of the Outlook Home Page feature for persistence, matching OilRig's documented use
+    of this technique. Setting a URL value under the Outlook profile WebView key causes Outlook to
+    load and execute remote content on startup; this registry write is a rare, high-fidelity signal.
+references:
+    - https://attack.mitre.org/groups/G0049/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.persistence
+    - attack.t1137.004
+    - mena-detection-library.oilrig
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection:
+        TargetObject|contains:
+            - '\Software\Microsoft\Office\'
+            - '\Outlook\WebView\'
+        TargetObject|endswith:
+            - '\WebView\Inbox\URL'
+            - '\WebView\Calendar\URL'
+            - '\URL'
+    selection_folderhomepage:
+        TargetObject|contains: '\Outlook\WebView\'
+    condition: selection and selection_folderhomepage
+falsepositives:
+    - Legitimate Outlook add-ins or GPO that configure a folder home page (rare in modern deployments)
+level: high
