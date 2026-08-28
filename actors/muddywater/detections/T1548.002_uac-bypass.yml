@@ -1,0 +1,40 @@
+title: UAC Bypass via Known LOLBin Hijack (MuddyWater)
+id: d2732b42-d609-431b-8084-364d4e5f46fd
+status: experimental
+description: |
+    Detects common User Account Control bypass techniques MuddyWater is reported to use, based on the
+    well-known auto-elevating binaries (fodhelper, eventvwr, sdclt, computerdefaults) spawning a
+    non-standard child such as a shell or script interpreter. Behavior-based on the auto-elevate
+    parent-to-interpreter lineage.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.privilege-escalation
+    - attack.stealth
+    - attack.t1548.002
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        ParentImage|endswith:
+            - '\fodhelper.exe'
+            - '\eventvwr.exe'
+            - '\sdclt.exe'
+            - '\computerdefaults.exe'
+            - '\slui.exe'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\rundll32.exe'
+    condition: selection
+falsepositives:
+    - Event Viewer legitimately launching MMC snap-ins (excluded by the interpreter child list)
+level: high

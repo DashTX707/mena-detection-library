@@ -1,0 +1,37 @@
+title: Rclone Exfiltration to Cloud Storage (MuddyWater)
+id: 8ed70bdc-5941-4a68-9174-499d4bb1edb8
+status: experimental
+description: |
+    Detects execution of Rclone for data exfiltration to cloud storage, matching MuddyWater's attempt
+    to exfiltrate data to Wasabi using Rclone. Keys on the Rclone binary/metadata and its transfer
+    subcommands/flags (copy/sync/--config, remote:) rather than a hash, so renamed Rclone is caught.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.exfiltration
+    - attack.t1567.002
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        - Image|endswith: '\rclone.exe'
+        - OriginalFileName: 'rclone.exe'
+        - Description|contains: 'Rclone'
+    selection_flags:
+        CommandLine|contains:
+            - ' copy '
+            - ' sync '
+            - ' move '
+            - '--config'
+            - '--transfers'
+            - '--multi-thread-streams'
+            - ':wasabi'
+            - 'wasabisys.com'
+    condition: selection_img and selection_flags
+falsepositives:
+    - Sanctioned Rclone-based backup jobs (allowlist the known config/destination)
+level: high

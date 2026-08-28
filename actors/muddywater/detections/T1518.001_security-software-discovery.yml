@@ -1,0 +1,43 @@
+title: Security Software Discovery via Process List Check (MuddyWater)
+id: df4c2401-fd68-44c2-ae7f-834a8e6e0c56
+status: experimental
+description: |
+    Detects enumeration of running processes filtered against security/AV and researcher-tool names,
+    matching MuddyWater malware that checks running processes against a hard-coded list of security
+    tools used by malware researchers. Keys on tasklist/Get-Process piped to a security-product filter.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_enum:
+        CommandLine|contains:
+            - 'tasklist'
+            - 'Get-Process'
+            - 'Win32_Process'
+    selection_secproduct:
+        CommandLine|contains:
+            - 'MsMpEng'
+            - 'wireshark'
+            - 'procexp'
+            - 'procmon'
+            - 'x64dbg'
+            - 'ollydbg'
+            - 'windbg'
+            - 'fiddler'
+            - 'sbiedll'
+            - 'vmtoolsd'
+            - 'kaspersky'
+            - 'avp.exe'
+            - 'bdagent'
+    condition: selection_enum and selection_secproduct
+falsepositives:
+    - IT scripts that check whether a specific security agent is running (scope by parent/context)
+level: medium

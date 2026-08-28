@@ -1,0 +1,31 @@
+title: AV-Vendor Keyword Enumeration in ProgramData (MuddyWater)
+id: d9d1b60c-a105-488b-b431-602238f4bad7
+status: experimental
+description: |
+    Detects the distinctive MuddyWater file/directory discovery pattern that checks the ProgramData
+    folder for entries containing the keywords 'Kasper', 'Panda', or 'ESET' to fingerprint installed
+    antivirus. Keys on the co-occurrence of these AV vendor strings with ProgramData enumeration in
+    command lines / script blocks.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.discovery
+    - attack.t1083
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_path:
+        CommandLine|contains: 'ProgramData'
+    selection_keywords:
+        CommandLine|contains:
+            - 'Kasper'
+            - 'Panda'
+            - 'ESET'
+    condition: selection_path and selection_keywords
+falsepositives:
+    - Legitimate inventory or software-audit scripts that enumerate installed security products
+level: high

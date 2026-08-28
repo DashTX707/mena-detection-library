@@ -1,0 +1,41 @@
+title: JavaScript Execution via WScript/MSHTA (MuddyWater)
+id: 382c51f6-faf7-4a50-b6d4-f5b6104cf247
+status: experimental
+description: |
+    Detects execution of JavaScript through wscript.exe or mshta.exe, matching MuddyWater's use of
+    JavaScript files to execute the POWERSTATS payload. Keys on script hosts running .js files and on
+    Office-spawned script hosts.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1059.007
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_js:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+        CommandLine|contains:
+            - '.js'
+            - '.jse'
+            - 'javascript:'
+    selection_office_js:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+        Image|endswith:
+            - '\wscript.exe'
+            - '\mshta.exe'
+    condition: selection_js or selection_office_js
+falsepositives:
+    - Enterprise web applications or installers that legitimately invoke .js via script hosts
+level: high

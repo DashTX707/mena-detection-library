@@ -1,0 +1,37 @@
+title: Windows Defender Masquerading in Non-Standard Path (MuddyWater)
+id: 88568d60-d856-496a-8572-7074bc9be408
+status: experimental
+description: |
+    Detects executables that masquerade as Windows Defender components but run from non-standard
+    directories, matching MuddyWater's use of Defender-themed filenames and Registry key names to
+    disguise malware. Legitimate Defender binaries live under Program Files\Windows Defender or the
+    Platform path; the same names elsewhere are suspicious.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_name:
+        Image|endswith:
+            - '\MsMpEng.exe'
+            - '\MpCmdRun.exe'
+            - '\NisSrv.exe'
+            - '\MsSense.exe'
+            - '\WinDefend.exe'
+    filter_legit_path:
+        Image|contains:
+            - '\Program Files\Windows Defender\'
+            - '\ProgramData\Microsoft\Windows Defender\Platform\'
+            - '\Program Files\Microsoft Security Client\'
+    condition: selection_name and not filter_legit_path
+falsepositives:
+    - Third-party security products that ship binaries with Microsoft-lookalike names
+    - Non-standard but sanctioned Defender deployment paths (baseline the environment)
+level: high

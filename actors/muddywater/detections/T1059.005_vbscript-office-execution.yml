@@ -1,0 +1,40 @@
+title: VBScript Execution via WScript/CScript from Office (MuddyWater)
+id: f07b532d-cad6-47c6-abb4-dba11df6de2a
+status: experimental
+description: |
+    Detects wscript.exe or cscript.exe executing a VBScript, especially when spawned by an Office
+    application, matching MuddyWater's use of VBScript files and macros to execute the POWERSTATS
+    payload. Office spawning a script host is a strong maldoc-execution signal.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_scripthost:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+    selection_vbs:
+        CommandLine|contains:
+            - '.vbs'
+            - '.vbe'
+            - '.wsf'
+    selection_office_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+            - '\mspub.exe'
+    condition: selection_scripthost and (selection_vbs or selection_office_parent)
+falsepositives:
+    - Legacy line-of-business VBScript automation launched interactively
+    - Login scripts and management agents that run .vbs files
+level: high

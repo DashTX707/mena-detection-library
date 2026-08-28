@@ -1,0 +1,32 @@
+title: Word Normal.dotm Template Tampering for Persistence (MuddyWater)
+id: 72a0e1df-df58-4bfe-8ce8-a534de073ef0
+status: experimental
+description: |
+    Detects modification of the Word global template Normal.dotm (or other Office STARTUP templates)
+    by a non-Office process, matching MuddyWater's use of Normal.dotm for persistence via Office
+    application startup macros. File-write telemetry on the template path is the primary signal.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.persistence
+    - attack.t1137.001
+    - mena-detection-library.muddywater
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        TargetFilename|endswith:
+            - '\Templates\Normal.dotm'
+            - '\Word\STARTUP\'
+    filter_office:
+        Image|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+    condition: selection and not filter_office
+falsepositives:
+    - Users legitimately customizing their default Word template through a non-Word helper is rare
+    - Backup/sync agents writing to the template path (scope the filter to known agents)
+level: high

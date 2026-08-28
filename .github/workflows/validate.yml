@@ -1,0 +1,63 @@
+name: Validate detection content
+
+on:
+  push:
+    paths:
+      - "actors/**/detections/**"
+      - "templates/**/detections/**"
+  pull_request:
+    paths:
+      - "actors/**/detections/**"
+      - "templates/**/detections/**"
+
+jobs:
+  sigma-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install sigma-cli
+        run: pip install sigma-cli
+
+      - name: Validate all Sigma rules
+        run: |
+          set -e
+          shopt -s nullglob
+          found=0
+          for dir in actors/*/detections templates/*/detections; do
+            rules=("$dir"/*.yml "$dir"/*.yaml)
+            # skip dirs that only hold the sigma-template.yml placeholder
+            real=()
+            for r in "${rules[@]}"; do
+              case "$r" in */sigma-template.yml) ;; *) real+=("$r");; esac
+            done
+            if [ ${#real[@]} -gt 0 ]; then
+              found=1
+              echo "::group::sigma check $dir"
+              # --fail-on-issues makes CI a hard gate; -x namespace_tag allows our
+              # intentional `mena-detection-library.<actor>` filter tag (see LICENSE/CONTRIBUTING).
+              sigma check --fail-on-issues -x namespace_tag "$dir"
+              echo "::endgroup::"
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No Sigma rules found yet — nothing to validate."
+          fi
+
+  yaml-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: actors templates
+          config_data: |
+            extends: relaxed
+            rules:
+              line-length: disable

@@ -1,0 +1,44 @@
+title: Office/PDF Reader Spawning Script Child After User Execution (MuddyWater)
+id: fc3f7957-feb3-412a-8a73-3f1a0b9238f0
+status: experimental
+description: |
+    Detects a document viewer (Word/Excel/Outlook or a PDF reader) launching a script interpreter or
+    shell child process, matching MuddyWater's lures that entice users to open malicious PDF attachments
+    and to enable macros in weaponized Word documents (e.g., Cybersecurity.doc). Distinct from the
+    CVE-2017-0199 rule by covering the macro-enable and malicious-PDF user-execution paths.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\outlook.exe'
+            - '\AcroRd32.exe'
+            - '\Acrobat.exe'
+            - '\FoxitPDFReader.exe'
+    selection_child:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\cmstp.exe'
+            - '\regsvr32.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Document-automation add-ins and mail-merge workflows that legitimately spawn scripts
+    - Enterprise PDF forms that invoke helper processes (baseline before enabling)
+level: high

@@ -1,0 +1,41 @@
+title: ClickFix Copy-Paste PowerShell from Explorer/RunMRU (MuddyWater)
+id: 76ecf7a0-a468-4876-bdad-bbbecae027b5
+status: experimental
+description: |
+    Detects the ClickFix social-engineering pattern where a user is tricked into pasting malicious
+    PowerShell into the Run dialog, matching MuddyWater's use of ClickFix-style lures. Keys on
+    PowerShell spawned by explorer.exe with a download/execute or hidden payload command line.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1204.004
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        ParentImage|endswith: '\explorer.exe'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\mshta.exe'
+            - '\cmd.exe'
+    selection_payload:
+        CommandLine|contains:
+            - 'Invoke-WebRequest'
+            - 'Invoke-Expression'
+            - 'IEX'
+            - 'DownloadString'
+            - 'FromBase64String'
+            - '-enc'
+            - 'curl '
+            - '.hta'
+            - 'iwr '
+    condition: selection and selection_payload
+falsepositives:
+    - Power users pasting legitimate one-liners into the Run dialog (rare in managed fleets)
+level: high

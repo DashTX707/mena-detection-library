@@ -1,0 +1,41 @@
+title: Obfuscated / Encoded PowerShell Command (MuddyWater)
+id: c161a337-58ce-44bc-b37d-78a510f35022
+status: experimental
+description: |
+    Detects command-line PowerShell obfuscation patterns consistent with MuddyWater's use of
+    Invoke-Obfuscation and Base64-obfuscated PowerShell/VBScript. Matches encoded-command flags and
+    the string-reassembly / format-operator / char-array constructs typical of obfuscated one-liners.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1027.010
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_encoded:
+        CommandLine|contains:
+            - ' -enc '
+            - ' -encodedcommand'
+            - ' -ec '
+            - 'FromBase64String'
+            - '[char]'
+            - '-join'
+            - '-f}'
+            - '${'
+            - "'+'"
+            - '`'
+    condition: selection_ps and selection_encoded
+falsepositives:
+    - Rare legitimate management scripts that pass Base64-encoded commands (e.g., some GPO/SCCM wrappers)
+    - Backtick line continuation in hand-written admin scripts
+level: high

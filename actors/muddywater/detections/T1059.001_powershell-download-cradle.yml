@@ -1,0 +1,46 @@
+title: Suspicious PowerShell Execution Flags and Download Cradle (MuddyWater)
+id: d177f324-99e8-475c-963a-6465b7fb605c
+status: experimental
+description: |
+    Detects PowerShell launched with the hidden/non-interactive/bypass flag combination and/or an
+    in-memory download cradle, matching MuddyWater's heavy PowerShell tradecraft (POWERSTATS,
+    SHARPSTATS). Behavior-based on execution flags and Net.WebClient/IEX download-and-execute patterns.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_hidden:
+        CommandLine|contains|all:
+            - ' -w'
+            - 'hidden'
+        CommandLine|contains:
+            - '-nop'
+            - '-noprofile'
+            - '-ep bypass'
+            - '-executionpolicy bypass'
+    selection_cradle:
+        CommandLine|contains:
+            - 'Net.WebClient'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'IEX(New-Object'
+            - 'Invoke-Expression'
+            - 'Invoke-WebRequest'
+    condition: selection_ps and (selection_hidden or selection_cradle)
+falsepositives:
+    - Legitimate admin scripts using -WindowStyle Hidden or download cmdlets in deployment tooling
+    - Vendor agents that fetch and execute remote PowerShell
+level: medium

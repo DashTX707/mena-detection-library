@@ -1,0 +1,37 @@
+title: csc.exe Compile-After-Delivery Spawned by Script Interpreter (MuddyWater)
+id: baa0c388-1d52-4b21-a788-ce1b52d58871
+status: experimental
+description: |
+    Detects the .NET C# compiler (csc.exe) being launched by a script interpreter or LOLBin,
+    matching MuddyWater's use of csc.exe to compile executables from downloaded C# code at runtime
+    (compile-after-delivery). Legitimate builds spawn csc.exe from Visual Studio / MSBuild, not
+    from mshta, wscript, powershell, or Office.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1027.004
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\csc.exe'
+        ParentImage|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\rundll32.exe'
+    condition: selection
+falsepositives:
+    - Developer workstations compiling code from a scripted build wrapper
+    - Some management agents that JIT-compile C# helpers (baseline before enabling)
+level: high

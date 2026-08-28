@@ -1,0 +1,47 @@
+title: Unsanctioned RMM / Remote Desktop Software Execution (MuddyWater)
+id: e388a04f-2a47-4d03-be23-436916b91e5f
+status: experimental
+description: |
+    Detects execution of remote-management and remote-desktop software that MuddyWater abuses for
+    hands-on-keyboard access: ScreenConnect (ConnectWise), AteraAgent, SimpleHelp, Action1, Level,
+    PDQ, and RemoteUtilities. Keys on the RMM binary names and metadata. This is a signature
+    MuddyWater TTP; deployments outside the sanctioned RMM should be treated as suspicious.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.command-and-control
+    - attack.t1219.002
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith:
+            - '\ScreenConnect.ClientService.exe'
+            - '\ScreenConnect.WindowsClient.exe'
+            - '\AteraAgent.exe'
+            - '\AgentPackageNetworkDiscovery.exe'
+            - '\SimpleService.exe'
+            - '\Action1.exe'
+            - '\action1_agent.exe'
+            - '\rutserv.exe'
+            - '\rfusclient.exe'
+            - '\pdq.exe'
+            - '\PDQInventory.exe'
+            - '\PDQDeploy.exe'
+        # 'Level' RMM (level.io) agent
+    selection_meta:
+        Product|contains:
+            - 'ScreenConnect'
+            - 'Atera'
+            - 'SimpleHelp'
+            - 'Remote Utilities'
+    condition: selection or selection_meta
+falsepositives:
+    - Organizations that legitimately license one of these RMM products — allowlist the sanctioned
+      vendor/path and alert only on the others
+level: medium

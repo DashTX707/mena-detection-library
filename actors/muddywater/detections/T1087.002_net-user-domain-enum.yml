@@ -1,0 +1,33 @@
+title: Domain Account Enumeration via net user /domain (MuddyWater)
+id: f25c66be-ec67-4980-b6b4-f5854d11e67e
+status: experimental
+description: |
+    Detects domain account/group enumeration using the Windows net command, matching MuddyWater's
+    documented use of 'cmd.exe net user /domain' to enumerate domain users. Behavior-based on the
+    net / net1 command with the /domain switch against user or group objects.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.discovery
+    - attack.t1087.002
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - 'user /domain'
+            - 'group /domain'
+            - 'group "domain admins" /domain'
+            - 'user /do'
+    condition: selection
+falsepositives:
+    - Administrators and helpdesk staff enumerating domain accounts
+    - Inventory and IAM automation querying domain membership
+level: medium

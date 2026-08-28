@@ -1,0 +1,39 @@
+title: Registry Run Key Persistence 'SystemTextEncoding' (MuddyWater)
+id: e0f05037-008f-4fca-b249-025a35c5d9fd
+status: experimental
+description: |
+    Detects creation of the MuddyWater-specific Run key value 'SystemTextEncoding' under
+    HKCU\Software\Microsoft\Windows\CurrentVersion\Run, used to establish persistence. Also flags
+    Run/RunOnce values whose data invokes a script interpreter or LOLBin from a user-writable path.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.muddywater
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_named_value:
+        TargetObject|contains: '\CurrentVersion\Run'
+        TargetObject|endswith: '\SystemTextEncoding'
+    selection_runkey_lolbin:
+        TargetObject|contains:
+            - '\CurrentVersion\Run\'
+            - '\CurrentVersion\RunOnce\'
+        Details|contains:
+            - 'powershell'
+            - 'mshta'
+            - 'wscript'
+            - 'cscript'
+            - 'rundll32'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection_named_value or selection_runkey_lolbin
+falsepositives:
+    - Legitimate applications registering Run keys that point to script launchers (baseline value names)
+level: high

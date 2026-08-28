@@ -1,0 +1,22 @@
+title: <Concise behavior-based title>
+id: <generate-a-uuid>
+status: experimental
+description: <What this detects and the actor procedure it maps to.>
+references:
+    - <source URL the detection is derived from>
+author: mena-detection-library
+date: 2026-01-01
+tags:
+    - attack.<tactic>            # e.g. attack.execution
+    - attack.t<technique>        # e.g. attack.t1059.001
+    - mena-detection-library.<actor-slug>
+logsource:
+    category: <e.g. process_creation>
+    product: <e.g. windows>
+detection:
+    selection:
+        <field>: <value or pattern>
+    condition: selection
+falsepositives:
+    - <realistic benign scenario>
+level: <informational | low | medium | high | critical>

@@ -1,0 +1,35 @@
+title: Rundll32 Executing DLL from Registry Run Key (MuddyWater)
+id: 7c0bd773-0cfe-47e4-b124-ccb5f081b881
+status: experimental
+description: |
+    Detects rundll32.exe launching a DLL from a user-writable or non-standard location, matching
+    MuddyWater malware that leveraged rundll32.exe in a Registry Run key to execute a .dll for
+    persistence. Keys on rundll32 loading a DLL from Temp/AppData/ProgramData and on rundll32 spawned
+    by explorer at logon (Run-key execution).
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.persistence
+    - attack.t1218.011
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_rundll:
+        Image|endswith: '\rundll32.exe'
+    selection_path:
+        CommandLine|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Windows\Temp\'
+    condition: selection_rundll and selection_path
+falsepositives:
+    - Some installers and updaters invoke rundll32 against DLLs staged in AppData/ProgramData
+    - Baseline the specific DLL names/exports before enabling high severity
+level: medium

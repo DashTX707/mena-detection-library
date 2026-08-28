@@ -1,0 +1,43 @@
+title: cmd.exe Reverse Shell Pattern from Anomalous Parent (MuddyWater)
+id: ccdb23ed-aa21-4cb7-a1e8-158009c87d53
+status: experimental
+description: |
+    Detects Windows command-shell reverse-shell patterns, matching MuddyWater's use of a custom tool
+    for creating reverse shells. Keys on cmd.exe piping to/from network redirection constructs and on
+    cmd.exe spawned by script interpreters or Office rather than on a specific binary.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_pipe:
+        CommandLine|contains:
+            - 'cmd.exe <'
+            - '<&'
+            - '>/dev/tcp/'
+            - '-e cmd'
+            - '/c echo open'
+            - '0<&196;exec 196'
+    selection_anomalous_parent:
+        Image|endswith: '\cmd.exe'
+        ParentImage|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+        CommandLine|contains|all:
+            - '/c'
+            - '2>&1'
+    condition: selection_pipe or selection_anomalous_parent
+falsepositives:
+    - Legitimate scripts that redirect stderr to stdout with 2>&1 (tune with parent-process context)
+level: medium

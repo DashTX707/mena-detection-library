@@ -1,0 +1,39 @@
+title: makecab.exe Data Compression Outside Servicing Context (MuddyWater)
+id: 278e65e0-33e6-44b0-b25d-19e8c40630b7
+status: experimental
+description: |
+    Detects use of the native cabinet tool makecab.exe to compress data, matching MuddyWater's use of
+    makecab.exe to likely compress stolen data before exfiltration. Keys on makecab spawned by a script
+    interpreter/shell or operating on user-data directories rather than Windows servicing paths.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.collection
+    - attack.t1560.001
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_makecab:
+        Image|endswith: '\makecab.exe'
+    selection_context:
+        - ParentImage|endswith:
+              - '\powershell.exe'
+              - '\pwsh.exe'
+              - '\cmd.exe'
+              - '\wscript.exe'
+              - '\cscript.exe'
+              - '\mshta.exe'
+        - CommandLine|contains:
+              - '\Users\'
+              - '\AppData\'
+              - '\Temp\'
+              - '\Desktop\'
+              - '\Documents\'
+    condition: selection_makecab and selection_context
+falsepositives:
+    - Windows servicing, driver packaging, and log-collection scripts that legitimately use makecab
+level: medium

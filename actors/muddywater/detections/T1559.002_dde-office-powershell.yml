@@ -1,0 +1,31 @@
+title: DDE-Driven Office Spawning PowerShell (MuddyWater)
+id: 082d7fe1-504f-4d0c-b833-90a512f1e07a
+status: experimental
+description: |
+    Detects Dynamic Data Exchange (DDE) abuse in which an Office document causes the Office application
+    to spawn PowerShell, matching MuddyWater malware that executes PowerShell scripts via DDE. Keys on
+    the Office-parent-to-PowerShell lineage (DDE has no macro but yields the same child-process signal).
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.execution
+    - attack.t1559.002
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\outlook.exe'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    condition: selection
+falsepositives:
+    - Office add-ins that legitimately launch PowerShell (rare; baseline and allowlist by add-in)
+level: high

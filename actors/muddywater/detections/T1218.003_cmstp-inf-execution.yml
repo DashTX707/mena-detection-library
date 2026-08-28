@@ -1,0 +1,38 @@
+title: CMSTP.exe Executing INF (System Binary Proxy Execution, MuddyWater)
+id: 1f869e8b-41e3-4edf-9e0b-a0347ba43736
+status: experimental
+description: |
+    Detects CMSTP.exe being used to execute a malicious INF, matching MuddyWater's use of CMSTP.exe
+    and a crafted INF to proxy-execute its POWERSTATS payload. CMSTP invoking an INF outside of a
+    genuine VPN/connection-manager profile install is a rare, high-fidelity LOLBin abuse pattern.
+references:
+    - https://attack.mitre.org/groups/G0069/
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1218.003
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\cmstp.exe'
+        CommandLine|contains:
+            - '.inf'
+            - '/s'
+            - '/ni'
+            - '/au'
+    selection_child:
+        ParentImage|endswith: '\cmstp.exe'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\cmd.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    condition: selection or selection_child
+falsepositives:
+    - Legitimate deployment of Connection Manager VPN profiles via signed INF packages
+level: high

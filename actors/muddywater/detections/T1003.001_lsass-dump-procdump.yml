@@ -1,0 +1,34 @@
+title: LSASS Memory Dump via ProcDump (MuddyWater)
+id: e0c175e9-bd88-4b39-9f03-3b82009c17e4
+status: experimental
+description: |
+    Detects use of Sysinternals ProcDump to dump the memory of lsass.exe, the technique MuddyWater
+    uses for OS credential dumping (documented as procdump64.exe against LSASS). Keys on the ProcDump
+    binary metadata plus the dump command line rather than a specific hash so renamed ProcDump is caught.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_procdump:
+        - Image|endswith:
+              - '\procdump.exe'
+              - '\procdump64.exe'
+        - OriginalFileName: 'procdump'
+    selection_lsass:
+        CommandLine|contains:
+            - 'lsass'
+            - ' -ma '
+    condition: selection_procdump and selection_lsass
+falsepositives:
+    - Legitimate administrator or DFIR responder collecting an LSASS dump for troubleshooting or forensics
+    - Crash-dump collection tooling explicitly configured against lsass
+level: high

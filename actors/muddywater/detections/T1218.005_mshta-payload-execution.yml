@@ -1,0 +1,41 @@
+title: MSHTA Executing Script / Spawning PowerShell (MuddyWater)
+id: 10b44060-3a05-49f9-875e-b7485724e5db
+status: experimental
+description: |
+    Detects mshta.exe executing inline script, a remote HTA/URL, or spawning PowerShell, matching
+    MuddyWater's use of mshta.exe to execute its POWERSTATS payload and to pass a PowerShell one-liner.
+    Keys on mshta with vbscript:/javascript:/http(s) arguments and on mshta spawning an interpreter.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.stealth
+    - attack.t1218.005
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mshta_args:
+        Image|endswith: '\mshta.exe'
+        CommandLine|contains:
+            - 'vbscript:'
+            - 'javascript:'
+            - 'http://'
+            - 'https://'
+            - '.hta'
+            - 'GetObject('
+    selection_mshta_child:
+        ParentImage|endswith: '\mshta.exe'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+    condition: selection_mshta_args or selection_mshta_child
+falsepositives:
+    - Legacy internal web applications delivered as HTA files
+level: high

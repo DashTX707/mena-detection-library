@@ -1,0 +1,34 @@
+title: Mimikatz Credential Dumping Indicators (MuddyWater)
+id: f77913a9-c3b3-4e9e-b0fb-0cc3c30ceb8c
+status: experimental
+description: |
+    Detects execution of Mimikatz through its characteristic command modules and function names,
+    matching MuddyWater's documented credential dumping with Mimikatz. Behavior-based on the
+    Mimikatz command grammar (sekurlsa::logonpasswords, lsadump, etc.) so it survives renamed binaries.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_modules:
+        CommandLine|contains:
+            - 'sekurlsa::'
+            - 'lsadump::'
+            - 'privilege::debug'
+            - 'crypto::'
+            - 'kerberos::'
+            - 'DumpCreds'
+            - 'gentilkiwi'
+    condition: selection_modules
+falsepositives:
+    - Authorized red-team or penetration-test engagements
+    - Security research or detection-validation labs
+level: high

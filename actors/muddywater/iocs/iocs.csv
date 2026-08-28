@@ -1,0 +1,5 @@
+value,type,context,source
+microsoftonlines[.]com,domain,MuddyWater phishing/C2 infrastructure (defanged),https://attack.mitre.org/groups/G0069/
+support@microsoftonlines[.]com,email,Sender used in MuddyWater phishing (defanged),https://attack.mitre.org/groups/G0069/
+8043,port,Observed MuddyWater C2 port,https://attack.mitre.org/groups/G0069/
+8848,port,Observed MuddyWater C2 port,https://attack.mitre.org/groups/G0069/

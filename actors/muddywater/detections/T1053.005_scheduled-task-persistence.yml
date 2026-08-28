@@ -1,0 +1,42 @@
+title: Scheduled Task Creation Running Script Interpreter/LOLBin (MuddyWater)
+id: c85d2f1c-51b3-48b4-ab1f-42611c2358f2
+status: experimental
+description: |
+    Detects creation of a scheduled task whose action launches a script interpreter or LOLBin,
+    matching MuddyWater's use of scheduled tasks for persistence. Keys on schtasks.exe /create with
+    an interpreter action so it fires regardless of the (variable) task name.
+references:
+    - https://attack.mitre.org/groups/G0069/
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a
+author: mena-detection-library
+date: 2026-08-28
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.muddywater
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_action:
+        CommandLine|contains:
+            - 'powershell'
+            - 'pwsh'
+            - 'mshta'
+            - 'wscript'
+            - 'cscript'
+            - 'rundll32'
+            - 'cmd /c'
+            - 'cmd.exe /c'
+            - 'regsvr32'
+            - '.vbs'
+            - '.js'
+            - '.hta'
+    condition: selection_schtasks and selection_action
+falsepositives:
+    - Software installers and management agents that register scheduled tasks invoking scripts
+    - Sanctioned admin automation (baseline task names/authors)
+level: medium
