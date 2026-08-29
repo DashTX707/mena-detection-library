@@ -1,0 +1,43 @@
+title: Lateral Tool Transfer - Admin-Share Write plus Remote Scheduled Task (WIRTE InfectAD)
+id: 15c0e084-59d3-4b6b-a901-4158fc5bb283
+status: experimental
+description: |
+    Detects the WIRTE SameCoin InfectAD routine (csrs.exe) and the Feb-2024 'Tasks Spreader' propagating
+    the wiper across an Active Directory environment: copying the executable to a remote host's ADMIN$/C$
+    share and then scheduling its remote execution. Keys on command lines that reference a UNC admin-share
+    path (\\host\ADMIN$ / \\host\C$) for a copy/write, or a remote scheduled-task creation targeting
+    another host (schtasks /create /s). Either behavior alone is suspicious in most environments.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.lateral-movement
+    - attack.t1570
+    - mena-detection-library.wirte
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_admin_share_copy:
+        CommandLine|contains:
+            - '\ADMIN$\'
+            - '\C$\'
+        CommandLine|contains:
+            - 'copy '
+            - 'xcopy'
+            - 'robocopy'
+            - 'move '
+            - '.exe'
+    selection_remote_task:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+        CommandLine|contains:
+            - '/s '
+            - '/S '
+    condition: selection_admin_share_copy or selection_remote_task
+falsepositives:
+    - Software distribution and remote administration suites that stage binaries to admin shares (baseline the tool/account)
+    - IT scripts creating scheduled tasks on remote hosts for maintenance (baseline source host and target set)
+level: high

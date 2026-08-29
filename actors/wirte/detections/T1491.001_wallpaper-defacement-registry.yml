@@ -1,0 +1,42 @@
+title: Internal Defacement - Desktop Wallpaper Registry Change to Dropped Image (WIRTE SameCoin)
+id: 48f9db4e-7c7f-4c5a-a5b0-380676d47031
+status: experimental
+description: |
+    Detects the WIRTE SameCoin defacement stage, which changes the victim's desktop wallpaper to an
+    Al-Qassam-Brigades image (dropped as image.jpg / 'Microsoft Connection Agent.jpg') alongside a Hamas
+    propaganda video, as an overt political accompaniment to the wipe. Keys on a registry set of the
+    desktop wallpaper value (Control Panel\Desktop\Wallpaper or the policy System\Wallpaper) pointing at
+    an image staged in a user-writable path (ProgramData/AppData/Temp/Public), which is anomalous versus
+    the user's own Themes/personalization directory. Requires registry-value auditing (Sysmon EID 13).
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1491.001
+    - mena-detection-library.wirte
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|endswith:
+            - '\Control Panel\Desktop\Wallpaper'
+            - '\Policies\System\Wallpaper'
+            - '\Control Panel\Desktop\WallPaper'
+    selection_dropped_path:
+        Details|contains:
+            - '\ProgramData\'
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\Downloads\'
+            - 'image.jpg'
+            - 'Microsoft Connection Agent.jpg'
+    condition: selection_key and selection_dropped_path
+falsepositives:
+    - Enterprise wallpaper/branding management pushing a corporate image from a staging path (baseline the GPO/tool)
+    - User personalization software that stages wallpapers under AppData (baseline the vendor)
+level: high

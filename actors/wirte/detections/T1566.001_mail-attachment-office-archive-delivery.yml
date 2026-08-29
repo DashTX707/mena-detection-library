@@ -1,0 +1,49 @@
+title: Malicious Attachment Delivery via Outlook - Office Macro Doc or Archive (WIRTE)
+id: 180a82a6-70e1-4f2b-a8c6-2a41457008ee
+status: experimental
+description: |
+    Detects the mail-borne delivery moment of a WIRTE spear-phishing attachment: the Outlook client
+    spawning an Office application, a script host, an archive tool, or a dropped Setup.exe to open a
+    just-received attachment. WIRTE delivers Excel documents with hidden Excel-4.0 (XLM) macros, Word
+    VBA droppers, and ZIP archives (e.g. ESETUnleashed_081024.zip) bundling legitimate DLLs beside a
+    malicious Setup.exe. Keys on outlook.exe as the parent of the attachment-handling child process so
+    it fires regardless of the (variable) lure filename.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.wirte
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\outlook.exe'
+    selection_child_office_script:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\mshta.exe'
+            - '\cmd.exe'
+            - '\regsvr32.exe'
+            - '\rundll32.exe'
+    selection_child_archive_exec:
+        Image|endswith:
+            - '\winrar.exe'
+            - '\rar.exe'
+            - '\unrar.exe'
+            - '\7z.exe'
+            - '\7zfm.exe'
+            - '\Setup.exe'
+    condition: selection_parent and (selection_child_office_script or selection_child_archive_exec)
+falsepositives:
+    - Users legitimately extracting archives or running installers received by email (baseline senders)
+    - Line-of-business Office documents that invoke scripting for benign automation
+level: medium

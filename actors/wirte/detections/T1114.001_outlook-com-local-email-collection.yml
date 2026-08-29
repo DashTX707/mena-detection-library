@@ -1,0 +1,44 @@
+title: Non-Outlook Process Loading Outlook/MAPI COM for Local Email Collection (WIRTE SameCoin)
+id: 9214815d-e6dc-48b8-a6a3-e83ca28b6a4b
+status: experimental
+description: |
+    Detects the WIRTE SameCoin infector (csrs.exe) harvesting local Outlook contacts. Its InfectOutlook
+    routine reads other recipient addresses in the same organization from Outlook via COM/MAPI in order
+    to re-send the malicious Setup.exe to them. Keys on a non-Office process loading Outlook/MAPI
+    automation libraries (olmapi32.dll, msmapi32.dll, mapi32.dll, the Outlook interop assembly) - normal
+    for outlook.exe itself, anomalous for a binary in a user-writable path. Requires image-load telemetry
+    (Sysmon EID 7).
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.collection
+    - attack.t1114.001
+    - mena-detection-library.wirte
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_mapi:
+        ImageLoaded|endswith:
+            - '\olmapi32.dll'
+            - '\msmapi32.dll'
+            - '\mapi32.dll'
+            - '\Microsoft.Office.Interop.Outlook.dll'
+    filter_legit_office:
+        Image|endswith:
+            - '\outlook.exe'
+            - '\excel.exe'
+            - '\winword.exe'
+            - '\powerpnt.exe'
+            - '\onenote.exe'
+        Image|contains:
+            - '\Program Files\Microsoft Office\'
+            - '\Program Files (x86)\Microsoft Office\'
+    condition: selection_mapi and not filter_legit_office
+falsepositives:
+    - Legitimate mail/CRM add-ins or backup tools that automate Outlook via MAPI (baseline the vendor binary)
+    - Endpoints without image-load logging will not populate this rule (visibility gap)
+level: medium

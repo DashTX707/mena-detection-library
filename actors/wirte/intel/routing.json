@@ -1,0 +1,247 @@
+{
+  "actor": "WIRTE (G0090)",
+  "provenance": "Lane split authored by Stage-2 decision-agent (read-only; returns JSON in reply) and persisted by the orchestrator. technique_name/tactic reconciled against intel/cti-pipeline.json. All 39 IDs verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "high \u2014 Office documents containing XLM/VBA macros and executables inside ZIP archives arriving by email are strongly detectable via mail-gateway content inspection, macro-bearing-attachment policy, and mark-of-the-web enforcement"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium \u2014 Office apps (EXCEL.EXE/WINWORD.EXE) spawning script hosts, or user launching an EXE from a temp/archive-extraction path, is detectable via process-lineage analytics, though it hinges on user interaction"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "medium \u2014 wscript/cscript executing a VBS from %ProgramData% invoked by explorer.exe is detectable via process-lineage and script-host command-line telemetry, though VBS is a legitimate admin scripting language"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high \u2014 PowerShell script-block logging / AMSI captures IEX of downloaded content, WMI recon one-liners, and the characteristic 60-100s sleep loop; high-fidelity if PS logging is enabled"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "execution",
+      "rationale": "high \u2014 scheduled-task creation (Event ID 4698 / Task Scheduler operational log) referencing a VBS/COM trigger or an unusual binary, and remote task creation across AD hosts, are strong, well-covered signals"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL Search Order Hijacking",
+      "tactic": "persistence",
+      "rationale": "high \u2014 a signed/legitimate binary loading a same-named DLL from its own working/archive-extraction directory (rather than System32) is a strong sideloading signal via image-load (Sysmon EID 7) analytics"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "high \u2014 a script querying root\\SecurityCenter2 AntiVirusProduct is an uncommon, high-fidelity discovery behavior detectable via PowerShell script-block logging and WMI activity monitoring"
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 HTTPS/TLS to non-standard high ports is detectable via egress port-usage baselining and TLS-certificate common-name inspection, though it can be tuned out as noise"
+    },
+    {
+      "technique_id": "T1114.001",
+      "technique_name": "Email Collection: Local Email Collection",
+      "tactic": "collection",
+      "rationale": "medium \u2014 a non-Outlook process programmatically enumerating Outlook addresses/contacts and driving mail send is detectable via Office add-in/COM automation monitoring and outbound-mail anomaly analytics"
+    },
+    {
+      "technique_id": "T1534",
+      "technique_name": "Internal Spearphishing",
+      "tactic": "lateral-movement",
+      "rationale": "high \u2014 internal mail carrying an EXE attachment sent programmatically from a user endpoint to many internal recipients is a strong, detectable anomaly via internal mail-flow and attachment-policy monitoring"
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "rationale": "high \u2014 executable file writes to remote admin shares (ADMIN$/C$) followed by remote scheduled-task creation across AD hosts is a high-fidelity lateral-spread signal via SMB and task-creation telemetry"
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "rationale": "medium \u2014 a process performing mass sequential file overwrites with random/zero bytes produces a detectable burst of file-modify I/O; detection value is early containment, since by wipe time impact is already occurring \u2014 prioritize the pre-wipe precursors (oref.org.il geofence check, Hebrew-locale check, dropped MicrosoftEdge.exe/csrs.exe, wallpaper change)"
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "rationale": "high \u2014 a process writing a new wallpaper image and modifying the desktop-wallpaper registry value/Control-Panel key, especially paired with a dropped media file, is a discrete high-fidelity signal (and, in this chain, a late-stage impact confirmation)"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 off-victim domain registration is not visible in host/network logs; hunt candidate via the health/finance/country domain-naming convention, Cloudflare fronting, and TLS-certificate common-name pivoting"
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 abuse of a legitimate third-party mailbox defeats sender-reputation checks; hunt candidate via anomalous outbound volume/recipients from a trusted partner and DMARC/authentication anomalies on inbound partner mail"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "medium \u2014 Havoc has published default profiles, named-pipe patterns and sleep/beacon characteristics detectable via network signatures and in-memory scanning, though operators can customize them"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 attacker-side staging is not visible to the defender until delivery; hunt candidate via retro-hunt of archive/PDF downloads from newly-registered themed domains"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 capability development is off-victim; the shared XOR routine is a code-overlap attribution/hunting signal for sample triage rather than a host detection"
+    },
+    {
+      "technique_id": "T1684.001",
+      "technique_name": "Improper Impersonation: Impersonation",
+      "tactic": "stealth",
+      "rationale": "low \u2014 brand/authority impersonation is a social-engineering behavior with little host telemetry; hunt candidate via lure-theme clustering and lookalike-domain/sender monitoring plus user-reported phishing"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 embedded links to newly-registered/URL-shortener domains and credential-harvest pages are detectable via URL reputation, mail-link rewriting/detonation, and proxy category, though redirection and IP-gating reduce sandbox visibility"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium \u2014 detectable at the click via proxy/URL-detonation telemetry, but depends on user action and attacker IP-gating of the destination"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium \u2014 a sideloaded/lure-host process spawning cmd.exe to open a PDF is detectable via process-lineage, though cmd usage is ubiquitous"
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactic": "execution",
+      "rationale": "low \u2014 direct native-API use for in-memory payload assembly leaves little discrete host telemetry; hunt candidate via sample/behavioral analysis rather than log detection"
+    },
+    {
+      "technique_id": "T1218.010",
+      "technique_name": "System Binary Proxy Execution: Regsvr32",
+      "tactic": "stealth",
+      "rationale": "medium \u2014 regsvr32 loading remote/scriptlet or unusual DLLs (squiblydoo-style) is detectable via command-line and network telemetry, but regsvr32 is a common LOLBIN with many benign uses"
+    },
+    {
+      "technique_id": "T1546.015",
+      "technique_name": "Event Triggered Execution: Component Object Model Hijacking",
+      "tactic": "persistence",
+      "rationale": "low \u2014 HKCU CLSID\\LocalServer32 writes pointing at a user-writable script path are stealthy and blend with benign registry activity; hunt candidate via registry-write monitoring on Classes\\CLSID keys referencing .vbs/%ProgramData% paths"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "rationale": "low \u2014 name-based masquerading defeats name allow-lists; hunt candidate via signer/hash validation, path anomalies (e.g. MicrosoftEdge.exe/csrs.exe outside expected locations), and original-filename metadata mismatch"
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "rationale": "low \u2014 obfuscation is designed to defeat static inspection; hunt candidate via entropy/AMSI-decoded content analysis and unusual-user-agent C2 responses rather than direct log detection"
+    },
+    {
+      "technique_id": "T1027.015",
+      "technique_name": "Obfuscated Files or Information: Compression",
+      "tactic": "stealth",
+      "rationale": "medium \u2014 archives arriving by email/download that expand to an EXE + same-named DLL sideload set are detectable via recursive archive inspection at the mail gateway, but nested/multi-file archives can slip past shallow scanning"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium \u2014 runtime decode routines are partly observable via AMSI/script-block content and file-write of freshly-decrypted executables, but the key-from-network-response design frustrates static/sandbox analysis"
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "stealth",
+      "rationale": "low \u2014 the evasion logic runs inside the document before any host artifact is created; hunt candidate via static XLM/macro inspection for GET.WORKSPACE anti-analysis patterns"
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Location Discovery: System Language Discovery",
+      "tactic": "discovery",
+      "rationale": "low \u2014 a language/locale query is trivially common and the geofence is benign-looking; hunt candidate only in correlation with the surrounding wiper drop chain and the oref.org.il connectivity check"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 scripted WMI enumeration bursts and an early outbound HTTP POST of host inventory to an unfamiliar domain are detectable, though individual host-info queries are common"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 the scripted admin/privilege check is visible in PowerShell script-block logs, but user-context queries are also routine"
+    },
+    {
+      "technique_id": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 scripted domain/Domain-Admins membership enumeration is detectable via PS logging and directory-query telemetry, though it overlaps with legitimate admin tooling"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 the anomalous/rare hardcoded User-Agent strings, HTML-tag-embedded payloads, and consistent beacon+sleep pattern are detectable via web-proxy and JA3/TLS + user-agent analytics, though Cloudflare fronting hides true C2 IPs"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 second-stage downloads from C2 (payloads embedded in HTML, executable pulls) are detectable via proxy content and file-write-then-execute correlation, though obfuscated-in-HTML delivery reduces clarity"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium \u2014 PowerShell using GDI/screen-capture APIs and writing image files to %AppData% is detectable via script-block logging and file-create telemetry, though screenshotting has benign analogues"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium \u2014 accumulation of script/text/image artifacts in %ProgramData% and %AppData% is detectable via file-path monitoring, though these are common, high-volume directories"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium \u2014 HTTP POST of screenshots/host data back to the beaconing C2 is detectable via outbound-volume anomalies and proxy content inspection, though it blends with the C2 traffic itself"
+    }
+  ],
+  "summary": {
+    "total": 39,
+    "detection": 13,
+    "hunt": 26
+  }
+}

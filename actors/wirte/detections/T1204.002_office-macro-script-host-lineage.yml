@@ -1,0 +1,52 @@
+title: Office Application Spawning Script Host or Sideload EXE from Archive Path (WIRTE)
+id: b9450e86-dd98-4cc7-8a43-16dee23b5127
+status: experimental
+description: |
+    Detects user execution of a WIRTE malicious document or archived sideload host. After the victim
+    clicks 'enable content', the Ferocious Excel-4.0/VBA dropper causes EXCEL.EXE/WINWORD.EXE to spawn a
+    script host (wscript/cscript/powershell/mshta/cmd/regsvr32); alternatively the victim extracts and
+    runs a renamed legitimate EXE (DLL-sideload host) or Setup.exe from a temp/Downloads/archive path.
+    Keys on Office-app-to-script-host lineage and on execution from user-writable extraction directories.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.wirte
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_office_parent:
+        ParentImage|endswith:
+            - '\excel.exe'
+            - '\winword.exe'
+            - '\powerpnt.exe'
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\mshta.exe'
+            - '\cmd.exe'
+            - '\regsvr32.exe'
+            - '\rundll32.exe'
+    selection_extracted_exec:
+        Image|contains:
+            - '\AppData\Local\Temp\'
+            - '\Downloads\'
+            - '\Temp\Rar$'
+            - '\Temp\7z'
+        Image|endswith:
+            - '\Setup.exe'
+            - '\PinEnrollmentBroker.exe'
+            - '\setup_wm.exe'
+    condition: selection_office_parent or selection_extracted_exec
+falsepositives:
+    - Office documents that legitimately launch scripting or child processes for business automation
+    - Users running trusted installers from Downloads/Temp (baseline signed installers)
+level: medium

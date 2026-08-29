@@ -57,6 +57,7 @@ scripts/                 helpers (validation, Navigator export)
 | [OilRig / APT34 (G0049)](actors/oilrig/) | Iran-nexus (MOIS) | ✅ published | 87 | 29 | 12 |
 | [Gaza Cybergang / Molerats (G0021)](actors/gaza-cybergang/) | Palestinian-nexus | ✅ published | 36 | 17 | 7 |
 | [Agrius (G1030)](actors/agrius/) | Iran-nexus · destructive | ✅ published | 34 | 18 | 6 |
+| [WIRTE (G0090)](actors/wirte/) | Palestinian-nexus · +wiper | ✅ published | 39 | 13 | 9 |
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

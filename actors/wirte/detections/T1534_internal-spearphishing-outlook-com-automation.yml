@@ -1,0 +1,37 @@
+title: Outlook Launched as COM Automation Server by Non-Office Binary (WIRTE InfectOutlook)
+id: 1cf271ca-7bf9-479b-b9a4-cef915647db3
+status: experimental
+description: |
+    Detects the WIRTE SameCoin InfectOutlook internal-spearphishing routine, which drives the local
+    Outlook client via COM to mail the malicious Setup.exe as an attachment to other addresses in the
+    same organization, abusing trusted internal mail to widen the wiper's blast radius. Keys on
+    outlook.exe being spawned (COM-automated) by a parent process running from a user-writable path
+    (ProgramData/Temp/AppData/Public) - e.g. csrs.exe - rather than by the shell/click-to-run, which is
+    anomalous for interactive mail use.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.lateral-movement
+    - attack.t1534
+    - mena-detection-library.wirte
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_outlook:
+        Image|endswith: '\outlook.exe'
+    selection_parent_userpath:
+        ParentImage|contains:
+            - '\ProgramData\'
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\Downloads\'
+    condition: selection_outlook and selection_parent_userpath
+falsepositives:
+    - Legitimate mail-merge or reporting tools that COM-automate Outlook (baseline the parent binary)
+    - Portable Outlook add-in launchers staged under AppData (rare; baseline the vendor)
+level: medium

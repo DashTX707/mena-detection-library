@@ -1,0 +1,43 @@
+title: VBScript Stager Executed from ProgramData via Script Host (WIRTE Ferocious)
+id: 11135369-2a54-4cd4-9f28-e05109d94578
+status: experimental
+description: |
+    Detects the WIRTE Ferocious dropper's VBScript stage: wscript.exe/cscript.exe executing a .vbs from
+    %ProgramData% (or another user-writable working directory), often invoked by explorer.exe. WIRTE
+    writes winrm.vbs / slmgr.vbs to %ProgramData% and abuses these names; the same VBS is also the target
+    of the actor's COM-hijacking persistence. Keys on the script-host command line referencing a .vbs in
+    ProgramData/AppData/Public so it fires regardless of the specific script name.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.wirte
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_host:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+    selection_vbs_path:
+        CommandLine|contains:
+            - '.vbs'
+            - '.vbe'
+        CommandLine|contains:
+            - '\ProgramData\'
+            - '\AppData\'
+            - '\Users\Public\'
+    selection_named:
+        CommandLine|contains:
+            - 'winrm.vbs'
+            - 'slmgr.vbs'
+    condition: selection_host and (selection_vbs_path or selection_named)
+falsepositives:
+    - Legitimate admin/logon VBScript automation staged under ProgramData (baseline the script and author)
+    - Software installers that drop and run helper VBScripts (baseline the vendor path)
+level: medium

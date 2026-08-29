@@ -1,0 +1,807 @@
+{
+  "report_title": "WIRTE / Ashen Lepus (G0090) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "MITRE ATT&CK G0090 (https://attack.mitre.org/groups/G0090/); Kaspersky Securelist 'WIRTE's campaign in the Middle East — living off the land since at least 2019', Maher Yamout, 2021-11-29 (https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/); Check Point Research 'Hamas-affiliated Threat Actor WIRTE Continues its Middle East Operations and Moves to Disruptive Activity', 2024-11-12 (https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/). Espionage LotL chain (Excel-4.0/VBA macro droppers, Ferocious dropper, LitePower PowerShell stager, COM-hijacking persistence, IronWind/Havoc loaders) is drawn from Securelist and Check Point; the destructive SameCoin wiper turn (Feb + Oct 2024 waves against Israel) is drawn from Check Point. No local seed; the TTP set is the full MITRE G0090 group set (26 techniques) enriched with report-sourced additions.",
+  "publication_date": "2026-08-29",
+  "actor": {
+    "name": "WIRTE",
+    "mitre_id": "G0090",
+    "mitre_canonical_name": "WIRTE",
+    "aliases": [
+      "WIRTE",
+      "Ashen Lepus"
+    ],
+    "related_clusters": [
+      "Gaza Cybergang (assessed parent umbrella)",
+      "Molerats (historically associated)",
+      "TA402 (Proofpoint tracks WIRTE as a TA402 subgroup)"
+    ],
+    "attribution": "Palestinian-nexus cyber-espionage actor, assessed to be a Hamas-affiliated subgroup of the Gaza Cybergang, active since at least August 2018. Kaspersky attributes the LotL espionage campaign to WIRTE with high confidence and suspects (low confidence) a Gaza Cybergang relationship. Check Point assesses WIRTE is 'likely' aligned with Hamas, based on consistent targeting of the Palestinian Authority (Hamas's rival), Al-Qassam-Brigades branding in the SameCoin wiper wallpaper/propaganda, and historical ties to Molerats/Gaza Cybergang; Check Point notes the Al-Qassam branding could be a false flag but that such messaging is not seen from Iranian wiper actors. The group persisted throughout the 2023-2024 Israel-Hamas war, complicating precise geographic attribution to Gaza. Hamas affiliation is an assessed judgement ('likely'), not a confirmed unit designation.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Palestinian Authority / Palestine",
+      "Jordan",
+      "Egypt",
+      "Iraq",
+      "Saudi Arabia",
+      "Lebanon",
+      "Syria",
+      "Israel (destructive/wiper operations only)"
+    ],
+    "targeted_regions_global": [
+      "Armenia",
+      "Cyprus",
+      "Turkey",
+      "Europe"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Diplomatic / foreign affairs",
+      "Financial institutions",
+      "Law firms / legal",
+      "Military / defense",
+      "Technology",
+      "Healthcare / hospitals (Israel, wiper)",
+      "Municipalities / local government (Israel, wiper)"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Lab52-documented initial activity (regsvr32 LotL espionage)",
+        "date": "2019 (first public reference, Lab52)",
+        "summary": "Earliest publicly referenced WIRTE activity: VBS-based implants delivered via documents with Arabic/Palestinian-themed decoys, using regsvr32.exe as a living-off-the-land defense-evasion/execution technique, and C2 over non-standard TCP ports (e.g. 2096, 2087). Referenced and corroborated by Kaspersky.",
+        "source_url": "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      },
+      {
+        "name": "Living-off-the-land espionage campaign (Ferocious dropper + LitePower stager)",
+        "date": "December 2019 to 2021 (reported 2021-11)",
+        "summary": "Spear-phishing delivered malicious Excel (Excel-4.0/XLM macros in hidden sheets) and Word (VBA macro) documents dropping the Ferocious VBS/PowerShell dropper, which established COM-hijacking persistence (Class ID in HKCU referencing a malicious winrm.vbs/slmgr.vbs) and delivered the LitePower PowerShell stager. LitePower beacons to Cloudflare-fronted C2 with unique per-intrusion user agents (tracked via the 'rv' field), runs IEX-based commands, performs AV/privilege/host recon, and takes screenshots. Victims across Armenia, Cyprus, Egypt, Jordan, Lebanon, Palestine, Syria and Turkey in government, diplomatic, financial, legal and military verticals.",
+        "source_url": "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      },
+      {
+        "name": "IronWind loader espionage campaign",
+        "date": "October 2023 to 2024",
+        "summary": "RAR archives (Arabic geopolitical lures re: Palestinian Authority finances, Jordan-Iran security dialogue, Lebanon war) containing a legitimate renamed EXE, a lure PDF, and a first-stage DLL (version.dll) side-loaded via DLL-sideloading. The IronWind chain profiles the victim (Office/OS version, hostname, username, installed programs) to requestinspector.com, then decrypts a second stage (stagerx64/propsys.dll, Base64+XOR key '53') that pulls payloads embedded in HTML tags from C2, gated by a hardcoded user agent. Targeting: Palestinian Authority, Jordan, Egypt, Iraq, Saudi Arabia.",
+        "source_url": "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      },
+      {
+        "name": "September 2024 Havoc delivery campaign",
+        "date": "September 2024",
+        "summary": "Infection chain beginning with a lure PDF containing a URL-shortener-style link (theshortner[.]com) redirecting to a RAR archive (Beirut/Lebanon-war themed) using DLL-sideloading (renamed PinEnrollmentBroker.exe + malicious propsys.dll). propsys.dll reconstructs the next stage by decoding a long list of embedded IP-formatted strings via RtlIpv4StringToAddressA, delivering a Havoc Demon post-exploitation agent that beacons to master-dental[.]com.",
+        "source_url": "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      },
+      {
+        "name": "SameCoin wiper — disruptive operations against Israel (two waves)",
+        "date": "February 2024 (INCD impersonation) and October 2024 (ESET reseller impersonation)",
+        "summary": "WIRTE's destructive turn. Wave 1 (Feb 24) impersonated the Israeli National Cyber Directorate (INCD) with a multi-platform SameCoin wiper (Windows + Android APK) posing as a security update; the Windows variant checks for Hebrew system language, drops Hamas propaganda video + Al-Qassam-Brigades wallpaper, a wiper component, and a 'Tasks Spreader' that copies the loader to networked machines via remote scheduled tasks. Wave 2 (Oct 24) was sent from a compromised legitimate Israeli ESET reseller mailbox to hospitals and municipalities, delivering a ZIP (ESETUnleashed_081024.zip) with legit DLLs + malicious Setup.exe; it connects to the Israel Home Front Command site oref.org.il (Israel-only) to derive an XOR key and geofence to Israel, drops a wiper (MicrosoftEdge.exe) and an infector (csrs.exe) implementing InfectOutlook (mails Setup.exe to org contacts) and InfectAD (copies wiper to AD machines + schedules execution). The wiper overwrites all files outside protected dirs with random bytes (Android variant zero-fills then deletes). A unique XOR encryption routine links the SameCoin wiper directly to the IronWind loader, indicating a shared developer.",
+        "source_url": "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      }
+    ]
+  },
+  "threat_actors": [
+    "WIRTE",
+    "Ashen Lepus",
+    "Gaza Cybergang (parent umbrella)",
+    "TA402 (Proofpoint overlap)"
+  ],
+  "targeted_regions": [
+    "Palestine",
+    "Jordan",
+    "Egypt",
+    "Iraq",
+    "Saudi Arabia",
+    "Lebanon",
+    "Syria",
+    "Israel",
+    "Armenia",
+    "Cyprus",
+    "Turkey"
+  ],
+  "targeted_sectors": [
+    "Government",
+    "Diplomatic",
+    "Financial institutions",
+    "Law firms",
+    "Military",
+    "Technology",
+    "Healthcare",
+    "Municipalities"
+  ],
+  "malware": [
+    "SameCoin wiper (Windows + Android, multi-platform)",
+    "IronWind (custom loader; propsys.dll / version.dll / stagerx64)",
+    "Ferocious dropper (Excel-4.0/VBS/PowerShell first stage)",
+    "LitePower stager (PowerShell downloader/backdoor)",
+    "Havoc Demon (open-source post-exploitation framework agent)",
+    "MsDataSvc / NgcCtrlSvc (service backdoors referenced in PDB paths)",
+    "exit-DN4-core.dll (.NET cleanup/kill payload)"
+  ],
+  "tooling_observed": [
+    "Excel 4.0 (XLM) macros in hidden spreadsheets",
+    "VBA macros (Word droppers)",
+    "VBScript (winrm.vbs / slmgr.vbs abuse)",
+    "PowerShell (LitePower, IEX command execution)",
+    "regsvr32.exe (LotL, per Lab52)",
+    "COM hijacking (Scripting.Dictionary CLSID in HKCU)",
+    "explorer.exe (VBS invocation)",
+    "cmd.exe (lure PDF opening)",
+    "DLL side-loading (renamed legitimate EXEs + malicious DLLs)",
+    "Havoc C2 framework",
+    "Donut shellcode loader",
+    "Cloudflare (C2 fronting)",
+    "Scheduled Tasks (persistence + wiper propagation)",
+    "Outlook (InfectOutlook mass-mailing)",
+    "Active Directory / remote scheduled tasks (InfectAD lateral spread)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "WIRTE registers themed domains following a consistent naming convention (health, finance, and regional-country themes, e.g. saudiday[.]org, jordansons[.]com, egyptican[.]com, king-pharmacy[.]com, master-dental[.]com) used as C2 and phishing infrastructure, frequently fronted by Cloudflare to hide the real VPS IP.",
+      "observed_tooling": [
+        "Cloudflare",
+        "themed C2/phishing domains"
+      ],
+      "detection_feasibility": "low — off-victim domain registration is not visible in host/network logs; hunt candidate via the health/finance/country domain-naming convention, Cloudflare fronting, and TLS-certificate common-name pivoting",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "In the October 2024 SameCoin wave, WIRTE sent the wiper-laden phishing email from the legitimate, compromised mailbox of an Israeli ESET reseller, lending credibility to the lure targeting Israeli hospitals and municipalities.",
+      "observed_tooling": [
+        "compromised ESET-reseller mailbox"
+      ],
+      "detection_feasibility": "low — abuse of a legitimate third-party mailbox defeats sender-reputation checks; hunt candidate via anomalous outbound volume/recipients from a trusted partner and DMARC/authentication anomalies on inbound partner mail",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "WIRTE obtained and operationalized the open-source Havoc post-exploitation framework (Havoc Demon agent) as a delivered payload in the September 2024 campaign, alongside donut shellcode loading.",
+      "observed_tooling": [
+        "Havoc",
+        "Donut"
+      ],
+      "detection_feasibility": "medium — Havoc has published default profiles, named-pipe patterns and sleep/beacon characteristics detectable via network signatures and in-memory scanning, though operators can customize them",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "WIRTE stages malicious payloads on its own domains/servers — RAR/ZIP archives, lure PDFs, and next-stage payloads embedded within HTML tags on C2 servers — served only to requests bearing the expected hardcoded user agent (otherwise redirected to a legitimate news/health site).",
+      "observed_tooling": [
+        "themed C2 domains",
+        "URL-shortener-style redirect (theshortner[.]com)"
+      ],
+      "detection_feasibility": "low — attacker-side staging is not visible to the defender until delivery; hunt candidate via retro-hunt of archive/PDF downloads from newly-registered themed domains",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "WIRTE develops custom malware in-house: the Ferocious dropper, LitePower PowerShell stager, the IronWind loader, and the SameCoin wiper. A unique XOR encryption routine shared between the IronWind loader (propsys.dll) and the SameCoin wiper component (MicrosoftEdge.exe) indicates the same developer and likely the same build environment.",
+      "observed_tooling": [
+        "SameCoin",
+        "IronWind",
+        "LitePower",
+        "Ferocious"
+      ],
+      "detection_feasibility": "low — capability development is off-victim; the shared XOR routine is a code-overlap attribution/hunting signal for sample triage rather than a host detection",
+      "sources": [
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1684.001",
+      "technique_name": "Improper Impersonation: Impersonation",
+      "tactic": "stealth",
+      "procedure_description": "WIRTE impersonates trusted institutions and brands to increase lure credibility: SameCoin posed as an Israeli National Cyber Directorate (INCD) security update (Feb 2024) and as an ESET security notice (Oct 2024); espionage lures mimicked the Palestinian Authority and used official-looking Arabic government/diplomatic themes.",
+      "observed_tooling": [
+        "INCD-themed lure",
+        "ESET-themed lure",
+        "Palestinian Authority decoys"
+      ],
+      "detection_feasibility": "low — brand/authority impersonation is a social-engineering behavior with little host telemetry; hunt candidate via lure-theme clustering and lookalike-domain/sender monitoring plus user-reported phishing",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "WIRTE sends spear-phishing emails with malicious attachments: Excel documents with hidden Excel-4.0 (XLM) macro spreadsheets and Word documents with VBA macros (espionage), and ZIP archives containing a malicious Setup.exe alongside legitimate DLLs (the Oct 2024 SameCoin wave).",
+      "observed_tooling": [
+        "Excel 4.0 macro droppers",
+        "Word VBA droppers",
+        "ESETUnleashed_081024.zip"
+      ],
+      "detection_feasibility": "high — Office documents containing XLM/VBA macros and executables inside ZIP archives arriving by email are strongly detectable via mail-gateway content inspection, macro-bearing-attachment policy, and mark-of-the-web enforcement",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "WIRTE delivers links to malicious payloads and phishing pages: lure PDFs embed a URL-shortener-style link (theshortner[.]com) redirecting to a RAR archive, and WIRTE hosts Docdroid-mimicking phishing pages (suppertools[.]com, healthscratches[.]com) that serve content or a document conditionally on visitor IP.",
+      "observed_tooling": [
+        "theshortner[.]com redirect",
+        "Docdroid-lookalike phishing pages"
+      ],
+      "detection_feasibility": "medium — embedded links to newly-registered/URL-shortener domains and credential-harvest pages are detectable via URL reputation, mail-link rewriting/detonation, and proxy category, though redirection and IP-gating reduce sandbox visibility",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Infection requires the victim to open the malicious document and click 'enable editing'/'enable content' to run the Excel-4.0 or VBA macro, or to extract and run the renamed legitimate EXE (DLL-sideload host) / Setup.exe from the delivered archive.",
+      "observed_tooling": [
+        "Excel 4.0 macros",
+        "VBA macros",
+        "renamed sideload EXEs"
+      ],
+      "detection_feasibility": "medium — Office apps (EXCEL.EXE/WINWORD.EXE) spawning script hosts, or user launching an EXE from a temp/archive-extraction path, is detectable via process-lineage analytics, though it hinges on user interaction",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "WIRTE relies on the victim clicking an embedded link in a lure PDF or email (e.g. the theshortner[.]com shortener) to fetch the malicious archive or reach a phishing page.",
+      "observed_tooling": [
+        "lure PDFs with embedded links"
+      ],
+      "detection_feasibility": "medium — detectable at the click via proxy/URL-detonation telemetry, but depends on user action and attacker IP-gating of the destination",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "The Ferocious dropper writes and executes VBScript stagers (winrm.vbs) via explorer.exe; the malicious VBS is also the target of COM-hijacking persistence. Word droppers use VBA macros to download the payload. XOR-encrypted strings (key such as '01-01-1900') are used within the sideloaded stages.",
+      "observed_tooling": [
+        "winrm.vbs",
+        "slmgr.vbs (abused)",
+        "VBA macros"
+      ],
+      "detection_feasibility": "medium — wscript/cscript executing a VBS from %ProgramData% invoked by explorer.exe is detectable via process-lineage and script-host command-line telemetry, though VBS is a legitimate admin scripting language",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "The LitePower stager is a PowerShell downloader that beacons to C2, parses returned PowerShell functions, and executes them via IEX; it runs WMI-based recon (disk, AV, OS architecture, admin check) and screenshot functions. Ferocious writes an embedded PowerShell snippet and a PowerShell one-liner stager wrapped in VB.",
+      "observed_tooling": [
+        "LitePower",
+        "PowerShell IEX"
+      ],
+      "detection_feasibility": "high — PowerShell script-block logging / AMSI captures IEX of downloaded content, WMI recon one-liners, and the characteristic 60-100s sleep loop; high-fidelity if PS logging is enabled",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "The IronWind/Havoc chains save the lure document as a PDF and open it via cmd.exe (CMD) to appear benign to the user while the sideloaded DLL executes in the background.",
+      "observed_tooling": [
+        "cmd.exe"
+      ],
+      "detection_feasibility": "medium — a sideloaded/lure-host process spawning cmd.exe to open a PDF is detectable via process-lineage, though cmd usage is ubiquitous",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactic": "execution",
+      "procedure_description": "The propsys.dll loader reconstructs its next-stage payload by iterating a long embedded list of IP-formatted strings and calling the RtlIpv4StringToAddressA API to convert each string into bytes, concatenating them into the payload — using a native Windows API for payload decoding/assembly.",
+      "observed_tooling": [
+        "RtlIpv4StringToAddressA"
+      ],
+      "detection_feasibility": "low — direct native-API use for in-memory payload assembly leaves little discrete host telemetry; hunt candidate via sample/behavioral analysis rather than log detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1218.010",
+      "technique_name": "System Binary Proxy Execution: Regsvr32",
+      "tactic": "stealth",
+      "procedure_description": "In the earliest (Lab52-documented) WIRTE activity, the actor used regsvr32.exe as a living-off-the-land technique to proxy execution and evade defenses; later intrusions shifted to COM hijacking as the LotL mechanism.",
+      "observed_tooling": [
+        "regsvr32.exe"
+      ],
+      "detection_feasibility": "medium — regsvr32 loading remote/scriptlet or unusual DLLs (squiblydoo-style) is detectable via command-line and network telemetry, but regsvr32 is a common LOLBIN with many benign uses",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "execution",
+      "procedure_description": "LitePower creates a legitimate-looking scheduled task that triggers 'Scripting.Dictionary' COM programs (via slmgr.vbs/winrm.vbs), which is the trigger that activates the COM-hijacking persistence. In the SameCoin operation, the csrs.exe InfectAD function and the earlier 'Tasks Spreader' component copy the wiper to remote/AD machines and schedule its execution using remote scheduled tasks.",
+      "observed_tooling": [
+        "schtasks / Task Scheduler",
+        "csrs.exe (InfectAD)",
+        "Tasks Spreader"
+      ],
+      "detection_feasibility": "high — scheduled-task creation (Event ID 4698 / Task Scheduler operational log) referencing a VBS/COM trigger or an unusual binary, and remote task creation across AD hosts, are strong, well-covered signals",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1546.015",
+      "technique_name": "Event Triggered Execution: Component Object Model Hijacking",
+      "tactic": "persistence",
+      "procedure_description": "WIRTE's signature persistence: the Ferocious VBS stager adds a Class ID under HKCU\\Software\\Classes\\CLSID\\{...}\\LocalServer32 that references the malicious winrm.vbs, hijacking the 'Scripting.Dictionary' COM object so the VBS is invoked whenever a program/script (e.g. the legitimate winrm.vbs/slmgr.vbs) references that COM programmatic ID. Observed CLSIDs include {50236F14-2C02-4291-93AB-B5A80F9666B0} and {14C34482-E07F-44CF-B261-385B616C54EC}.",
+      "observed_tooling": [
+        "HKCU CLSID keys",
+        "Scripting.Dictionary hijack"
+      ],
+      "detection_feasibility": "low — HKCU CLSID\\LocalServer32 writes pointing at a user-writable script path are stealthy and blend with benign registry activity; hunt candidate via registry-write monitoring on Classes\\CLSID keys referencing .vbs/%ProgramData% paths",
+      "sources": [
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL Search Order Hijacking",
+      "tactic": "persistence",
+      "procedure_description": "The IronWind and Havoc infection chains use DLL side-loading: a legitimate, digitally trusted executable (renamed to an Arabic lure name, e.g. setup_wm.exe or PinEnrollmentBroker.exe) is shipped alongside a malicious DLL (version.dll / propsys.dll) that is loaded in place of the expected system library when the trusted EXE runs.",
+      "observed_tooling": [
+        "version.dll",
+        "propsys.dll",
+        "renamed legitimate EXEs"
+      ],
+      "detection_feasibility": "high — a signed/legitimate binary loading a same-named DLL from its own working/archive-extraction directory (rather than System32) is a strong sideloading signal via image-load (Sysmon EID 7) analytics",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "WIRTE names payloads to impersonate legitimate software and system components: a fake 'Kaspersky Update Agent.exe' dropper, wiper/infector components named MicrosoftEdge.exe, csrs.exe, 'Microsoft System Manager.exe', 'Windows Defender Agent.exe', and 'Microsoft Connection Agent.jpg', plus legitimate EXEs renamed to Arabic lure titles to host DLL sideloading.",
+      "observed_tooling": [
+        "Kaspersky Update Agent.exe",
+        "MicrosoftEdge.exe",
+        "csrs.exe",
+        "Windows Defender Agent.exe"
+      ],
+      "detection_feasibility": "low — name-based masquerading defeats name allow-lists; hunt candidate via signer/hash validation, path anomalies (e.g. MicrosoftEdge.exe/csrs.exe outside expected locations), and original-filename metadata mismatch",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "procedure_description": "WIRTE obfuscates payloads and strings throughout the chain: Excel-4.0 formulas hidden in secondary spreadsheets/columns, XOR-encrypted strings (keys such as '01-01-1900' and 'Saturday, October 07, 2023, 6:29:00 AM'), Base64+XOR-encoded second stages (IronWind key '53'), and payloads embedded between HTML tags served only to a specific user agent.",
+      "observed_tooling": [
+        "XOR encoding",
+        "Base64",
+        "hidden XLM sheets",
+        "HTML-tag-embedded payloads"
+      ],
+      "detection_feasibility": "low — obfuscation is designed to defeat static inspection; hunt candidate via entropy/AMSI-decoded content analysis and unusual-user-agent C2 responses rather than direct log detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1027.015",
+      "technique_name": "Obfuscated Files or Information: Compression",
+      "tactic": "stealth",
+      "procedure_description": "WIRTE packages the multi-file infection sets inside RAR and ZIP archives (e.g. the Arabic-titled RAR archives containing a renamed EXE + lure PDF + malicious DLL, and ESETUnleashed_081024.zip containing legit DLLs + Setup.exe) to bundle payloads and hinder inspection during delivery.",
+      "observed_tooling": [
+        "RAR archives",
+        "ZIP archives"
+      ],
+      "detection_feasibility": "medium — archives arriving by email/download that expand to an EXE + same-named DLL sideload set are detectable via recursive archive inspection at the mail gateway, but nested/multi-file archives can slip past shallow scanning",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The chain decodes/decrypts staged content at runtime: IronWind Base64-decodes then XOR-decrypts the propsys.dll second stage (key '53'); the SameCoin Oct-2024 loader derives its XOR key from the first bytes of the oref.org.il HTTP response and decrypts the dropped wiper/infector/wallpaper/video files; propsys.dll decodes IP-string-encoded payload bytes.",
+      "observed_tooling": [
+        "XOR",
+        "Base64",
+        "runtime key derivation from oref.org.il"
+      ],
+      "detection_feasibility": "medium — runtime decode routines are partly observable via AMSI/script-block content and file-write of freshly-decrypted executables, but the key-from-network-response design frustrates static/sandbox analysis",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "stealth",
+      "procedure_description": "The Ferocious Excel dropper runs three anti-sandbox checks via the Excel-4.0 GET.WORKSPACE function: environment name/version (compared against predefined Windows version strings to bail on analysis VMs), presence of a mouse (arg 19), and sound-playback capability (arg 42). If any check fails or the OS version matches a blocklisted value, execution halts.",
+      "observed_tooling": [
+        "Excel 4.0 GET.WORKSPACE checks"
+      ],
+      "detection_feasibility": "low — the evasion logic runs inside the document before any host artifact is created; hunt candidate via static XLM/macro inspection for GET.WORKSPACE anti-analysis patterns",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Location Discovery: System Language Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The SameCoin wiper geofences its destruction to Israel: the Windows variant checks whether the system language is set to Hebrew before dropping and detonating its wiper/propaganda payload, and the Oct-2024 variant additionally verifies the target is inside Israel by requiring a successful response from the Israel-only Home Front Command site oref.org.il (also using that response as its XOR key).",
+      "observed_tooling": [
+        "Hebrew system-language check",
+        "oref.org.il reachability check"
+      ],
+      "detection_feasibility": "low — a language/locale query is trivially common and the geofence is benign-looking; hunt candidate only in correlation with the surrounding wiper drop chain and the oref.org.il connectivity check",
+      "sources": [
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "IronWind profiles the victim on first contact, sending Office version, OS version, computer name, username, and the list of installed programs to requestinspector.com. LitePower separately queries OS caption/architecture and local disk volume serial number via WMI.",
+      "observed_tooling": [
+        "WMI (Win32_OperatingSystem, Win32_logicaldisk)",
+        "requestinspector.com beacon"
+      ],
+      "detection_feasibility": "medium — scripted WMI enumeration bursts and an early outbound HTTP POST of host inventory to an unfamiliar domain are detectable, though individual host-info queries are common",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "LitePower queries installed antivirus via the WMI 'SELECT * FROM AntiVirusProduct' query against root\\SecurityCenter2, returning the product display name (or 'N/A'), to assess defenses before follow-on activity.",
+      "observed_tooling": [
+        "WMI root\\SecurityCenter2 AntiVirusProduct query"
+      ],
+      "detection_feasibility": "high — a script querying root\\SecurityCenter2 AntiVirusProduct is an uncommon, high-fidelity discovery behavior detectable via PowerShell script-block logging and WMI activity monitoring",
+      "sources": [
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "LitePower checks whether the current user holds Administrator privileges (WindowsPrincipal IsInRole Administrator) and reports the username; IronWind includes the username in its initial victim-profiling beacon.",
+      "observed_tooling": [
+        "WindowsPrincipal admin check"
+      ],
+      "detection_feasibility": "medium — the scripted admin/privilege check is visible in PowerShell script-block logs, but user-context queries are also routine",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "tactic": "discovery",
+      "procedure_description": "LitePower's Get-ServiceStatus function checks whether the host is part of a domain and whether the current user is a member of 'Domain Admins', informing lateral-movement and escalation decisions.",
+      "observed_tooling": [
+        "Get-ServiceStatus (Domain Admins membership check)"
+      ],
+      "detection_feasibility": "medium — scripted domain/Domain-Admins membership enumeration is detectable via PS logging and directory-query telemetry, though it overlaps with legitimate admin tooling",
+      "sources": [
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "WIRTE C2 rides HTTP/HTTPS: LitePower sends command results via HTTP POST and fetches PowerShell commands via HTTP GET, using a unique hardcoded User-Agent (Mozilla/5.0 ... rv:FTS_06 ...) whose 'rv' field is varied per intrusion for tracking. IronWind/Havoc beacon over HTTP, retrieving next-stage payloads embedded within HTML tags and responding only to the expected user agent (otherwise redirecting to a legitimate site).",
+      "observed_tooling": [
+        "LitePower HTTP GET/POST",
+        "IronWind HTML-tag payloads",
+        "Havoc",
+        "Cloudflare-fronted C2"
+      ],
+      "detection_feasibility": "medium — the anomalous/rare hardcoded User-Agent strings, HTML-tag-embedded payloads, and consistent beacon+sleep pattern are detectable via web-proxy and JA3/TLS + user-agent analytics, though Cloudflare fronting hides true C2 IPs",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "Older WIRTE intrusions used non-standard C2 ports — TLS listeners observed on TCP 2083, 2087, 8443 (and, per Lab52, 2096/2087) with per-port certificate common names (firstohiobank[.]com on 2083/8443, dentalmatrix[.]net on 2087) — while newer intrusions consolidated onto TCP/443.",
+      "observed_tooling": [
+        "TCP 2083 / 2087 / 8443 TLS C2"
+      ],
+      "detection_feasibility": "medium — HTTPS/TLS to non-standard high ports is detectable via egress port-usage baselining and TLS-certificate common-name inspection, though it can be tuned out as noise",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "LitePower downloads and deploys further payloads/commands from its C2, and the IronWind/Havoc loaders pull next-stage payloads (embedded in HTML tags, or Havoc Demon) down onto the victim for execution.",
+      "observed_tooling": [
+        "LitePower downloader",
+        "IronWind",
+        "Havoc"
+      ],
+      "detection_feasibility": "medium — second-stage downloads from C2 (payloads embedded in HTML, executable pulls) are detectable via proxy content and file-write-then-execute correlation, though obfuscated-in-HTML delivery reduces clarity",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "LitePower includes a Screenshot function that captures the victim's screen, saves the image to %AppData%, and exfiltrates it to the C2 via an HTTP POST request.",
+      "observed_tooling": [
+        "LitePower Screenshot function"
+      ],
+      "detection_feasibility": "medium — PowerShell using GDI/screen-capture APIs and writing image files to %AppData% is detectable via script-block logging and file-create telemetry, though screenshotting has benign analogues",
+      "sources": [
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1114.001",
+      "technique_name": "Email Collection: Local Email Collection",
+      "tactic": "collection",
+      "procedure_description": "The SameCoin infector component csrs.exe implements InfectOutlook, which reads other recipient addresses within the same organization from Outlook in order to re-send the malicious Setup.exe to them, harvesting local mailbox contacts to fuel internal spread.",
+      "observed_tooling": [
+        "csrs.exe (InfectOutlook)"
+      ],
+      "detection_feasibility": "medium — a non-Outlook process programmatically enumerating Outlook addresses/contacts and driving mail send is detectable via Office add-in/COM automation monitoring and outbound-mail anomaly analytics",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "WIRTE stages collected data and working artifacts locally before exfiltration/execution, using %ProgramData% as a consistent working directory (winrm.vbs/winrm.txt/regionh.txt) and saving captured screenshots to %AppData% prior to POSTing them to the C2.",
+      "observed_tooling": [
+        "%ProgramData% working dir",
+        "%AppData% screenshot staging"
+      ],
+      "detection_feasibility": "medium — accumulation of script/text/image artifacts in %ProgramData% and %AppData% is detectable via file-path monitoring, though these are common, high-volume directories",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1534",
+      "technique_name": "Internal Spearphishing",
+      "tactic": "lateral-movement",
+      "procedure_description": "The SameCoin InfectOutlook function (csrs.exe) spreads by sending the malicious Setup.exe as an attachment from the compromised host to other addresses within the same organization, abusing trusted internal mail relationships to move laterally and widen the wiper's blast radius.",
+      "observed_tooling": [
+        "csrs.exe (InfectOutlook)",
+        "Outlook"
+      ],
+      "detection_feasibility": "high — internal mail carrying an EXE attachment sent programmatically from a user endpoint to many internal recipients is a strong, detectable anomaly via internal mail-flow and attachment-policy monitoring",
+      "sources": [
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "procedure_description": "The SameCoin InfectAD function (csrs.exe) and the Feb-2024 'Tasks Spreader' component copy the wiper/loader to other machines within the same Active Directory environment and schedule remote execution, propagating the destructive payload across the network.",
+      "observed_tooling": [
+        "csrs.exe (InfectAD)",
+        "Tasks Spreader",
+        "remote scheduled tasks"
+      ],
+      "detection_feasibility": "high — executable file writes to remote admin shares (ADMIN$/C$) followed by remote scheduled-task creation across AD hosts is a high-fidelity lateral-spread signal via SMB and task-creation telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "WIRTE exfiltrates over its existing C2 channel: LitePower returns command output and captured screenshots to the C2 via HTTP POST, and IronWind POSTs the initial host-profile inventory to its collection endpoint.",
+      "observed_tooling": [
+        "LitePower HTTP POST",
+        "IronWind beacon"
+      ],
+      "detection_feasibility": "medium — HTTP POST of screenshots/host data back to the beaconing C2 is detectable via outbound-volume anomalies and proxy content inspection, though it blends with the C2 traffic itself",
+      "sources": [
+        "https://attack.mitre.org/groups/G0090/",
+        "https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/"
+      ]
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "procedure_description": "WIRTE's destructive turn: the SameCoin wiper enumerates all files outside protected directories (Program Files, Windows, Users) and, unless a filename contains 'desktop.ini' or 'conf.conf', overwrites each file with random bytes, rendering data irrecoverable. The Android variant (libexampleone.so) lists targeted files, fills them with zeros, then deletes them from the filesystem.",
+      "observed_tooling": [
+        "SameCoin wiper (MicrosoftEdge.exe / Microsoft System Manager.exe)",
+        "SameCoin Android (libexampleone.so)"
+      ],
+      "detection_feasibility": "medium — a process performing mass sequential file overwrites with random/zero bytes produces a detectable burst of file-modify I/O; detection value is early containment, since by wipe time impact is already occurring — prioritize the pre-wipe precursors (oref.org.il geofence check, Hebrew-locale check, dropped MicrosoftEdge.exe/csrs.exe, wallpaper change)",
+      "sources": [
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "procedure_description": "As part of the SameCoin destructive payload, WIRTE changes the victim's desktop wallpaper to an image referencing Hamas's military wing, the Al-Qassam Brigades (dropped as image.jpg / 'Microsoft Connection Agent.jpg'), and drops/plays a Hamas propaganda video (video.mp4) showing footage from the October 7 attacks — an overt political defacement accompanying the wipe.",
+      "observed_tooling": [
+        "image.jpg (Al-Qassam wallpaper)",
+        "video.mp4 (propaganda)"
+      ],
+      "detection_feasibility": "high — a process writing a new wallpaper image and modifying the desktop-wallpaper registry value/Control-Panel key, especially paired with a dropped media file, is a discrete high-fidelity signal (and, in this chain, a late-stage impact confirmation)",
+      "sources": [
+        "https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "EXCEL.EXE/WINWORD.EXE spawning a script host (wscript/cscript/powershell) after macro enable, or Excel-4.0 (XLM) macro documents using GET.WORKSPACE anti-sandbox checks — Ferocious dropper",
+    "wscript/cscript executing winrm.vbs or slmgr.vbs from %ProgramData% invoked by explorer.exe — Ferocious VBS stager",
+    "Registry write to HKCU\\Software\\Classes\\CLSID\\{...}\\LocalServer32 referencing a .vbs in %ProgramData% (e.g. CLSID {50236F14-2C02-4291-93AB-B5A80F9666B0} or {14C34482-E07F-44CF-B261-385B616C54EC}) — COM-hijacking persistence",
+    "Scheduled task created to trigger a 'Scripting.Dictionary' COM program via slmgr.vbs/winrm.vbs (COM-hijack activation), or remote scheduled tasks created across AD hosts to launch a dropped EXE — SameCoin InfectAD / Tasks Spreader",
+    "PowerShell IEX of downloaded content with a 60-100 second randomized sleep loop and a hardcoded Mozilla/5.0 ... rv:FTS_xx ... Firefox/2.0 User-Agent — LitePower stager",
+    "PowerShell WMI query 'SELECT * FROM AntiVirusProduct' against root\\SecurityCenter2, or WindowsPrincipal Administrator/Domain-Admins membership checks — LitePower recon",
+    "A signed/legitimate EXE (renamed, e.g. setup_wm.exe / PinEnrollmentBroker.exe) loading a same-named DLL (version.dll / propsys.dll) from its own extraction directory rather than System32 — IronWind/Havoc DLL sideloading",
+    "Outbound HTTP POST of host inventory (Office/OS version, hostname, username, program list) to requestinspector.com, or Havoc beacon to master-dental[.]com — IronWind/Havoc C2",
+    "HTTPS/TLS C2 on non-standard ports (2083/2087/8443) with themed certificate common names (firstohiobank[.]com, dentalmatrix[.]net), or Cloudflare-fronted beacons to health/finance/country-themed domains",
+    "Process reaching out to oref.org.il and using the response bytes as an XOR key, or a Hebrew system-language check immediately before dropping MicrosoftEdge.exe/csrs.exe/image.jpg/video.mp4 — SameCoin geofence + drop",
+    "csrs.exe (or non-Outlook process) driving Outlook to mail Setup.exe to internal recipients (InfectOutlook), or writing the wiper to remote ADMIN$/C$ shares (InfectAD) — internal spread",
+    "Process performing mass file overwrite with random bytes skipping only desktop.ini/conf.conf, and/or changing the desktop wallpaper registry value to an Al-Qassam-Brigades image — SameCoin wipe + defacement"
+  ],
+  "iocs": {
+    "ips": [
+      "185.158.248.161",
+      "193.168.141.29",
+      "140.99.164.56",
+      "160.119.251.181",
+      "188.92.78.148",
+      "45.134.9.202",
+      "213.252.244.234",
+      "5.42.221.151",
+      "80.77.25.49",
+      "37.221.65.254",
+      "91.211.89.33",
+      "91.203.6.27",
+      "45.129.96.174",
+      "45.129.97.207"
+    ],
+    "domains": [
+      "master-dental.com",
+      "requestinspector.com",
+      "theshortner.com",
+      "saudiday.org",
+      "jordansons.com",
+      "egyptican.com",
+      "healthcarb.com",
+      "inclusive-economy.com",
+      "king-pharmacy.com",
+      "bankjordan.com",
+      "saudiarabianow.org",
+      "jordanrefugees.com",
+      "egyptskytours.com",
+      "egypttourism-online.com",
+      "suppertools.com",
+      "healthscratches.com",
+      "stgeorgebankers.com",
+      "kneeexercises.net",
+      "firstohiobank.com",
+      "dentalmatrix.net",
+      "nutrition-information.org"
+    ],
+    "emails": [],
+    "hashes": [
+      "b7c5af2d7e1eb7651b1fe3a224121d3461f3473d081990c02ef8ab4ace13f785",
+      "2700142c0b78fdbf3df30125a72443e2317d5079a01ff26022a66d0b7bd4c5b1",
+      "3fc92e8a440ca16172f7d93bd9de3c6f9391e26d3a1cb964e966ee1ee31770df",
+      "5d773e734290b93649a41ccda63772560b4fa25ba715b17df7b9f18883679160",
+      "0a4397f7d5da024b10c778910d6db84a6ba0fc3375fe6fe9b470f7e269ddc716",
+      "9fe7b2f4c17dd0c7a00aaa6a779c30e2cb3faa4b14766e02f616d00e6f6e9007",
+      "3d2409c7834287178f61116c9b653e3520172a10ebef58f58f99d27a34b839bd",
+      "5b7e8e685f6ee6b4810ed94b4420e08a10a977516b47fea356173cfaec2c41a0",
+      "41112f36fc17f57f0e476c9ffa9e1ecbff796dc31a7ff0372d0d8708a5e9c50b",
+      "2d55c68aa7781db7f2324427508947f057a6baca78073fee9a5ad254147c8232",
+      "ecaaab9e2fc089eefb6accae9750ac60",
+      "a7802c9a4046edbcbe3f5a503de61867",
+      "3a7425539f8853e7b89624890a5de25b",
+      "5ae4505a5ca7235c842680c557d05383",
+      "b2f8cce7b03e7aa70dab4a5d377375b5",
+      "8ade05c4b4e98cc89fa09bd513ea1a99"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "TTP set = the full MITRE ATT&CK G0090 group set (26 techniques, all retained: T1027.010, T1027.015, T1036.005, T1041, T1059.001, T1059.003, T1059.005, T1071.001, T1074.001, T1105, T1106, T1114.001, T1140, T1204.001, T1204.002, T1218.010, T1497.001, T1566.001, T1566.002, T1571, T1574.001, T1583.001, T1586.002, T1588.002, T1608.001, T1684.001) enriched with 13 report-sourced additions, each vendor-cited: T1587.001 (custom malware dev + shared-XOR code overlap), T1546.015 (COM-hijacking persistence — WIRTE signature), T1053.005 (scheduled-task COM trigger + SameCoin remote-task spread), T1614.001 (Hebrew-locale + oref.org.il geofence), T1082/T1518.001/T1033/T1069.002 (LitePower recon), T1113 (LitePower screenshots), T1534 (SameCoin InfectOutlook), T1570 (SameCoin InfectAD), T1485 (SameCoin data destruction), T1491.001 (Al-Qassam wallpaper/propaganda defacement). Total 39 techniques. FRAMEWORK-VERSION NOTE: this ATT&CK build uses reorganized IDs — the defense-evasion tactic is emitted as 'stealth' and impair-defenses as 'defense-impairment'; 'Disable or Modify Tools' is T1685 with sub-technique T1685.005 'Clear Windows Event Logs' (legacy T1562.001/T1070.001 not used). WIRTE's two SameCoin reports do not source any tool-disabling or event-log-clearing behavior, so no T1685/T1685.005 is emitted here — IDs are included in this note only to confirm the convention was checked. Tactic strings follow the dataset canon (stealth, defense-impairment, resource-development, etc.); IDs verified via get_technique where non-obvious (T1684.001 Impersonation, T1027.015 Compression, T1685.005). IMPACT TACTIC (2 techniques — WIRTE's destructive SameCoin turn): T1485 Data Destruction (mass file overwrite with random bytes; Android zero-fill+delete) and T1491.001 Internal Defacement (Al-Qassam-Brigades wallpaper + Oct-7 propaganda video). NOTE ON UNSOURCED IMPACT IDs: SameCoin as documented in these two reports overwrites FILES (T1485), not raw disk sectors/MBR — so T1561.x Disk Wipe, T1490 Inhibit System Recovery, and T1489 Service Stop are NOT emitted (not sourced here); they are deliberately omitted rather than fabricated. LOW detection-feasibility techniques (route to HUNTING, not signature detection): T1583.001/T1586.002/T1608.001/T1587.001/T1684.001 (off-victim resource dev + impersonation), T1546.015 (stealthy HKCU CLSID COM hijack — the highest-value hunt for the espionage chain), T1036.005 (name masquerading — MicrosoftEdge.exe/csrs.exe/Kaspersky Update Agent.exe), T1027.010 (XOR/Base64/HTML-tag obfuscation), T1106 (RtlIpv4StringToAddressA payload assembly), T1497.001 (in-document GET.WORKSPACE sandbox checks), T1614.001 (locale/oref geofence). HIGHEST-VALUE DETECTIONS (route to DETECTION): T1546.015 registry-write for COM hijack (if you can baseline Classes\\CLSID), T1053.005 scheduled task, T1574.001 DLL sideload (signed EXE loading same-named DLL from working dir), T1059.001 PowerShell IEX+60-100s-sleep+FTS user-agent, T1518.001 SecurityCenter2 AntiVirusProduct WMI query, T1534 internal EXE-attachment spearphishing, T1570 remote ADMIN$ write + remote task, T1485 mass-overwrite burst, T1491.001 wallpaper-registry change. ATTRIBUTION is set 'medium': Kaspersky attributes the LotL campaign to WIRTE with high confidence but only LOW confidence on the Gaza Cybergang link; Check Point assesses Hamas alignment as 'likely' (Al-Qassam branding could be a false flag, though not seen from Iranian actors). IOCs (publicly sourced, conservative): 14 IPs (Check Point backend-server IPs + Kaspersky C2 IPs), 21 domains (themed C2/phishing incl. redirect frontends + Kaspersky C2 domains + master-dental.com Havoc C2 + requestinspector.com IronWind recon endpoint), 16 hashes (Check Point SHA-256 PE/archive/PDF samples + Kaspersky MD5 document/dropper hashes). oref.org.il is a LEGITIMATE Israeli site abused for geofencing and is intentionally excluded from IOC domains. IOCs expire fast — the TTPs and detection_signals are the durable value. No verbatim YARA rule appeared in either source report, so yara_rules is empty (never authored from scratch)."
+}

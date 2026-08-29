@@ -1,0 +1,39 @@
+title: Non-Standard Port TLS C2 on TCP 2083/2087/8443 (WIRTE)
+id: 92ed5967-272a-424f-861d-0359a3b11b8e
+status: experimental
+description: |
+    Detects WIRTE command-and-control over TLS on non-standard high ports. Older WIRTE intrusions ran
+    TLS listeners on TCP 2083, 2087 and 8443 (and, per Lab52, 2096) with per-port certificate common
+    names (firstohiobank[.]com on 2083/8443, dentalmatrix[.]net on 2087) before consolidating onto
+    TCP/443. Keys on outbound-initiated connections to these ports. Tune to your environment, since these
+    ports also serve legitimate cPanel/WHM services; pair with TLS certificate common-name inspection.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.command-and-control
+    - attack.t1571
+    - mena-detection-library.wirte
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort:
+            - 2083
+            - 2087
+            - 2096
+            - 8443
+    filter_browsers:
+        Image|endswith:
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+    condition: selection and not filter_browsers
+falsepositives:
+    - Legitimate cPanel/WHM/Webmail administration on 2083/2087/8443 (baseline destination and admin host)
+    - Enterprise apps using 8443 as an alternate HTTPS port (baseline known internal endpoints)
+level: medium

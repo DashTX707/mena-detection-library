@@ -217,11 +217,11 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <p class="lede">An open library of <b>deployable Sigma rules</b> and <b>threat-hunt hypotheses</b>, organized around the specific adversaries that operate against the region — every item mapped to MITRE ATT&amp;CK and traceable to public reporting. Each actor pack is produced by a transparent four-stage analyst pipeline anyone can re-run.</p>
 
     <div class="stats" id="stats">
-      <div class="stat"><div class="n tnum" data-to="4">4</div><div class="k">actors · 2 clusters</div></div>
-      <div class="stat"><div class="n tnum" data-to="225">225</div><div class="k">ATT&amp;CK techniques</div></div>
-      <div class="stat hl"><div class="n tnum" data-to="96">96</div><div class="k">Sigma detections</div></div>
-      <div class="stat"><div class="n tnum" data-to="39">39</div><div class="k">hunt packages</div></div>
-      <div class="stat"><div class="n tnum" data-to="172">172</div><div class="k">sourced IOCs</div></div>
+      <div class="stat"><div class="n tnum" data-to="5">5</div><div class="k">actors · 2 clusters</div></div>
+      <div class="stat"><div class="n tnum" data-to="264">264</div><div class="k">ATT&amp;CK techniques</div></div>
+      <div class="stat hl"><div class="n tnum" data-to="109">109</div><div class="k">Sigma detections</div></div>
+      <div class="stat"><div class="n tnum" data-to="48">48</div><div class="k">hunt packages</div></div>
+      <div class="stat"><div class="n tnum" data-to="223">223</div><div class="k">sourced IOCs</div></div>
     </div>
   </div>
 </header>
@@ -255,8 +255,8 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <div class="sec-head">
       <div>
         <div class="sec-num">02 / ACTOR DOSSIERS</div>
-        <h2>Four actors, two threat clusters</h2>
-        <p>Iran-nexus espionage, a Palestinian-nexus operator, and an Iran-nexus <em>wiper</em> — chosen for documented, sourced MENA targeting. More to follow.</p>
+        <h2>Five actors, two threat clusters</h2>
+        <p>Iran-nexus espionage, a Palestinian-nexus operator, and an Iran-nexus <em>wiper</em>, and a Palestinian-nexus actor that turned destructive — chosen for documented, sourced MENA targeting. More to follow.</p>
       </div>
     </div>
     <div class="actors" id="cards"></div>
@@ -347,9 +347,9 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
       <div>
         <h5>Coverage</h5>
         <ul>
-          <li><span class="mono">4</span> actor packs published</li>
-          <li><span class="mono">96</span> Sigma · <span class="mono">39</span> hunts</li>
-          <li><span class="mono">225</span> techniques mapped</li>
+          <li><span class="mono">5</span> actor packs published</li>
+          <li><span class="mono">109</span> Sigma · <span class="mono">48</span> hunts</li>
+          <li><span class="mono">264</span> techniques mapped</li>
           <li>CI-validated on every change</li>
         </ul>
       </div>
@@ -393,7 +393,11 @@ var ACTORS=[
  {name:"Agrius",id:"G1030",cluster:"dest",clbl:"Iran · destructive",
   targ:"Israel (primary), UAE", sect:"Education, technology, diamond, critical infrastructure",
   ttps:34,sig:18,hunts:6,iocs:26,
-  t:{"resource-development":[0,1],"initial-access":[1,1],"persistence":[2,0],"execution":[2,0],"defense-evasion":[3,4],"credential-access":[4,0],"discovery":[0,2],"lateral-movement":[1,1],"collection":[0,4],"exfiltration":[1,0],"impact":[6,1]}}
+  t:{"resource-development":[0,1],"initial-access":[1,1],"persistence":[2,0],"execution":[2,0],"defense-evasion":[3,4],"credential-access":[4,0],"discovery":[0,2],"lateral-movement":[1,1],"collection":[0,4],"exfiltration":[1,0],"impact":[6,1]}},
+ {name:"WIRTE",id:"G0090",cluster:"pal",clbl:"Palestinian · +wiper",
+  targ:"Palestinian Territories, Jordan, Iraq, Egypt, Saudi Arabia, Israel", sect:"Diplomatic, government, military, finance",
+  ttps:39,sig:13,hunts:9,iocs:51,
+  t:{"resource-development":[0,5],"defense-evasion":[0,7],"initial-access":[1,1],"execution":[4,3],"persistence":[1,1],"discovery":[1,4],"command-and-control":[1,2],"collection":[1,2],"lateral-movement":[2,0],"exfiltration":[0,1],"impact":[2,0]}}
 ];
 
 // global max cell total for bar scaling

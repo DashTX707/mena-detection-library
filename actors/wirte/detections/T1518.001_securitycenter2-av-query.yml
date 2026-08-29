@@ -1,0 +1,32 @@
+title: Security Software Discovery via root\SecurityCenter2 AntiVirusProduct Query (WIRTE LitePower)
+id: cc9d9cb4-f479-4233-832e-2b2a1a60ed32
+status: experimental
+description: |
+    Detects the WIRTE LitePower stager enumerating installed antivirus by querying the WMI
+    root\SecurityCenter2 namespace for AntiVirusProduct to assess defenses before follow-on activity.
+    Keys on the SecurityCenter2 namespace together with the AntiVirusProduct class in PowerShell
+    script-block content or in a wmic/Get-CimInstance command line - an uncommon, high-fidelity discovery
+    behavior. Best served by PowerShell Script Block Logging (4104); the process_creation branch covers
+    wmic.exe invocation.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - mena-detection-library.wirte
+logsource:
+    product: windows
+    category: ps_script
+detection:
+    selection_namespace:
+        ScriptBlockText|contains: 'SecurityCenter2'
+    selection_class:
+        ScriptBlockText|contains: 'AntiVirusProduct'
+    condition: selection_namespace and selection_class
+falsepositives:
+    - Endpoint management/inventory tools that legitimately enumerate installed AV via SecurityCenter2 (baseline the agent)
+    - Security-posture assessment scripts run by IT (baseline the account and host)
+level: high

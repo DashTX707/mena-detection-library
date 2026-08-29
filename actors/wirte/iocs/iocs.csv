@@ -1,0 +1,52 @@
+value,type,context,source
+185[.]158[.]248[.]161,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+193[.]168[.]141[.]29,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+140[.]99[.]164[.]56,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+160[.]119[.]251[.]181,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+188[.]92[.]78[.]148,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+45[.]134[.]9[.]202,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+213[.]252[.]244[.]234,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+5[.]42[.]221[.]151,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+80[.]77[.]25[.]49,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+37[.]221[.]65[.]254,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+91[.]211[.]89[.]33,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+91[.]203[.]6[.]27,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+45[.]129[.]96[.]174,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+45[.]129[.]97[.]207,ip,WIRTE C2 / operational IP (defanged),https://attack.mitre.org/groups/G0090/
+master-dental[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+requestinspector[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+theshortner[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+saudiday[.]org,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+jordansons[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+egyptican[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+healthcarb[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+inclusive-economy[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+king-pharmacy[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+bankjordan[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+saudiarabianow[.]org,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+jordanrefugees[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+egyptskytours[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+egypttourism-online[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+suppertools[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+healthscratches[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+stgeorgebankers[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+kneeexercises[.]net,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+firstohiobank[.]com,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+dentalmatrix[.]net,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+nutrition-information[.]org,domain,WIRTE C2/staging domain (defanged),https://attack.mitre.org/groups/G0090/
+b7c5af2d7e1eb7651b1fe3a224121d3461f3473d081990c02ef8ab4ace13f785,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+2700142c0b78fdbf3df30125a72443e2317d5079a01ff26022a66d0b7bd4c5b1,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+3fc92e8a440ca16172f7d93bd9de3c6f9391e26d3a1cb964e966ee1ee31770df,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+5d773e734290b93649a41ccda63772560b4fa25ba715b17df7b9f18883679160,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+0a4397f7d5da024b10c778910d6db84a6ba0fc3375fe6fe9b470f7e269ddc716,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+9fe7b2f4c17dd0c7a00aaa6a779c30e2cb3faa4b14766e02f616d00e6f6e9007,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+3d2409c7834287178f61116c9b653e3520172a10ebef58f58f99d27a34b839bd,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+5b7e8e685f6ee6b4810ed94b4420e08a10a977516b47fea356173cfaec2c41a0,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+41112f36fc17f57f0e476c9ffa9e1ecbff796dc31a7ff0372d0d8708a5e9c50b,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+2d55c68aa7781db7f2324427508947f057a6baca78073fee9a5ad254147c8232,sha256,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+ecaaab9e2fc089eefb6accae9750ac60,md5,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+a7802c9a4046edbcbe3f5a503de61867,md5,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+3a7425539f8853e7b89624890a5de25b,md5,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+5ae4505a5ca7235c842680c557d05383,md5,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+b2f8cce7b03e7aa70dab4a5d377375b5,md5,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/
+8ade05c4b4e98cc89fa09bd513ea1a99,md5,WIRTE sample (SameCoin/LotL tooling),https://attack.mitre.org/groups/G0090/

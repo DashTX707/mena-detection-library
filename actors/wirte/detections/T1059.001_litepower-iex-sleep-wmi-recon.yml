@@ -1,0 +1,44 @@
+title: LitePower PowerShell Stager - IEX Download, Sleep Loop and WMI Recon (WIRTE)
+id: 35222270-d5fa-4121-9912-73f6d91c6806
+status: experimental
+description: |
+    Detects the WIRTE LitePower PowerShell stager via script-block logging. LitePower beacons to C2,
+    executes returned PowerShell via IEX, sleeps a randomized 60-100 seconds between beacons, runs WMI
+    recon (OS, disk volume serial, AV) and privilege checks, and carries a hardcoded Mozilla rv:FTS
+    User-Agent. Keys on the co-occurrence of IEX/DownloadString-style remote execution with the
+    characteristic sleep loop, WMI recon primitives, or the FTS user-agent string. Requires PowerShell
+    Script Block Logging (Event ID 4104).
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.wirte
+logsource:
+    product: windows
+    category: ps_script
+detection:
+    selection_exec:
+        ScriptBlockText|contains:
+            - 'IEX'
+            - 'Invoke-Expression'
+            - 'DownloadString'
+            - 'DownloadData'
+    selection_behavior:
+        ScriptBlockText|contains:
+            - 'Start-Sleep'
+            - 'FTS_'
+            - 'Get-Random'
+            - 'AntiVirusProduct'
+            - 'SecurityCenter2'
+            - 'Win32_LogicalDisk'
+            - 'VolumeSerialNumber'
+            - 'WindowsPrincipal'
+    condition: selection_exec and selection_behavior
+falsepositives:
+    - Legitimate PowerShell tooling that downloads and evaluates remote content (baseline admin scripts)
+    - Monitoring agents that poll on a sleep interval and query WMI (baseline the source module)
+level: high

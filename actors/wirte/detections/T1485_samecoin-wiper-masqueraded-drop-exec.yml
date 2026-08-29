@@ -1,0 +1,48 @@
+title: SameCoin Wiper Precursor - Masqueraded Wiper/Infector Executed from User Path (WIRTE)
+id: 41b49d28-5930-4dfb-8cd9-fabe3eaaec5e
+status: experimental
+description: |
+    Detects the WIRTE SameCoin data-destruction precursor. The wiper enumerates all files outside
+    protected directories (Program Files, Windows, Users) and overwrites each with random bytes unless
+    its name contains 'desktop.ini' or 'conf.conf', rendering data irrecoverable. Because the mass
+    overwrite is a late, high-volume I/O burst, this rule keys on the earlier, discrete precursor: the
+    masqueraded wiper/infector binaries (MicrosoftEdge.exe, csrs.exe, 'Microsoft System Manager.exe',
+    'Windows Defender Agent.exe', Setup.exe) executing from a user-writable path rather than their
+    legitimate system location. Pair with the wallpaper-defacement (T1491.001) and remote-spread (T1570)
+    rules for chain confirmation.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1485
+    - mena-detection-library.wirte
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_masq_name:
+        Image|endswith:
+            - '\MicrosoftEdge.exe'
+            - '\csrs.exe'
+            - '\Microsoft System Manager.exe'
+            - '\Windows Defender Agent.exe'
+            - '\Microsoft Connection Agent.exe'
+    selection_user_path:
+        Image|contains:
+            - '\ProgramData\'
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\Downloads\'
+    filter_legit_edge:
+        Image|contains:
+            - '\Microsoft\Edge\Application\'
+            - '\Windows\System32\'
+    condition: selection_masq_name and selection_user_path and not filter_legit_edge
+falsepositives:
+    - A legitimately-named tool copied to a staging directory by IT (rare; verify signature and hash)
+    - Portable utilities run from Downloads sharing one of these names (baseline the signer)
+level: high

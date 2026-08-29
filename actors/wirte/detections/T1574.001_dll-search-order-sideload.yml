@@ -1,0 +1,46 @@
+title: DLL Search-Order Hijack - version.dll/propsys.dll Sideloaded from Working Directory (WIRTE)
+id: 3f81aa21-5f66-4b65-91de-9af528f88c5b
+status: experimental
+description: |
+    Detects the WIRTE IronWind/Havoc DLL-sideloading pattern via image-load telemetry (Sysmon EID 7): a
+    renamed legitimate/signed EXE (e.g. setup_wm.exe, PinEnrollmentBroker.exe) loading a malicious
+    same-named DLL (version.dll / propsys.dll) from its own archive-extraction working directory rather
+    than System32. Keys on the commonly hijacked DLL names being loaded from a user-writable path
+    (Temp/Downloads/AppData/ProgramData) instead of the expected Windows system directories.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1574.001
+    - mena-detection-library.wirte
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_dll:
+        ImageLoaded|endswith:
+            - '\version.dll'
+            - '\propsys.dll'
+            - '\profapi.dll'
+            - '\dbghelp.dll'
+    selection_userpath:
+        ImageLoaded|contains:
+            - '\AppData\Local\Temp\'
+            - '\Downloads\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\Rar$'
+            - '\Temp\7z'
+    filter_system:
+        ImageLoaded|contains:
+            - '\Windows\System32\'
+            - '\Windows\SysWOW64\'
+            - '\Windows\WinSxS\'
+    condition: selection_dll and selection_userpath and not filter_system
+falsepositives:
+    - Portable applications that legitimately ship a private copy of a common DLL in their folder (baseline the app)
+    - Software installers unpacking to Temp that carry bundled runtime DLLs (baseline the vendor)
+level: high

@@ -1,0 +1,42 @@
+title: Scheduled Task Triggering VBS/COM or Remote Task Spread (WIRTE)
+id: cd938d61-0d08-4dd0-9d38-dc8b773c211f
+status: experimental
+description: |
+    Detects WIRTE scheduled-task abuse. In the espionage chain, LitePower creates a legitimate-looking
+    scheduled task that triggers a 'Scripting.Dictionary' COM program via slmgr.vbs/winrm.vbs, activating
+    the COM-hijacking persistence. In the SameCoin destructive chain, the csrs.exe InfectAD routine and
+    the Feb-2024 'Tasks Spreader' create remote scheduled tasks (schtasks /s) across AD hosts to launch a
+    dropped wiper. Keys on schtasks /create referencing a VBS/COM/script action or a remote host target.
+references:
+    - https://attack.mitre.org/groups/G0090/
+    - https://securelist.com/wirtes-campaign-in-the-middle-east-living-off-the-land-since-at-least-2019/105044/
+    - https://research.checkpoint.com/2024/hamas-affiliated-threat-actor-expands-to-disruptive-activity/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1053.005
+    - mena-detection-library.wirte
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_action_or_remote:
+        CommandLine|contains:
+            - '.vbs'
+            - 'wscript'
+            - 'cscript'
+            - 'Scripting.Dictionary'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '/s '
+            - '/S '
+            - '/ru '
+    condition: selection_schtasks and selection_action_or_remote
+falsepositives:
+    - Management agents and installers registering scheduled tasks that call scripts (baseline the author)
+    - Sanctioned remote task administration by IT (baseline source host/account and target set)
+level: medium
