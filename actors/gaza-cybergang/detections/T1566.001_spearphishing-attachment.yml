@@ -1,0 +1,50 @@
+title: Spearphishing Attachment Execution from Outlook (Gaza Cybergang)
+id: 7da856ee-7626-4e46-b202-def85ffcc1a6
+status: experimental
+description: |
+    Detects execution originating from an email attachment opened in Outlook, matching Gaza Cybergang /
+    Molerats spearphishing emails carrying malicious Word/Excel/PDF attachments (and IronWind's weaponized
+    XLL Excel add-ins and Microsoft Access .accdb droppers) with regional-politics lures to deliver Spark,
+    SharpStage and IronWind. Keys on outlook.exe spawning an Office app, script host, msaccess.exe or
+    document/archive handler, and on Office apps launched from the Outlook attachment temp path.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://unit42.paloaltonetworks.com/molerats-delivers-spark-backdoor/
+    - https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_outlook_child:
+        ParentImage|endswith: '\outlook.exe'
+        Image|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\msaccess.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\cmd.exe'
+            - '\powershell.exe'
+    selection_attachment_temp:
+        Image|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\msaccess.exe'
+        CommandLine|contains:
+            - '\Content.Outlook\'
+            - '\INetCache\Content.Outlook\'
+            - '\Temporary Internet Files\'
+    condition: selection_outlook_child or selection_attachment_temp
+falsepositives:
+    - Users legitimately opening documents attached to internal mail
+    - Mail-enabled business workflows that open attachments automatically (baseline senders)
+level: medium

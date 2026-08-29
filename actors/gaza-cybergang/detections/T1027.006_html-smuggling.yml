@@ -1,0 +1,45 @@
+title: HTML Smuggling - Browser Dropping Archive/Executable Payload (Gaza Cybergang)
+id: 792b2922-9f90-43c7-82de-bf74bebd0ec2
+status: experimental
+description: |
+    Detects a browser writing an archive, disk-image or executable payload to a user download path, the
+    client-side result of HTML smuggling, matching Gaza Cybergang / Molerats IronWind initial-access chains
+    that use HTML smuggling to reconstruct and drop the malicious archive/payload in the browser and evade
+    gateway inspection. Keys on a browser process creating a suspicious file type in Downloads. Pair with
+    proxy JS blob/anchor-download inspection for higher fidelity.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1027.006
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_browser:
+        Image|endswith:
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\iexplore.exe'
+    selection_payload_ext:
+        TargetFilename|endswith:
+            - '.iso'
+            - '.img'
+            - '.vhd'
+            - '.rar'
+            - '.zip'
+            - '.7z'
+            - '.hta'
+            - '.js'
+            - '.vbs'
+            - '.xll'
+            - '.accdb'
+    condition: selection_browser and selection_payload_ext
+falsepositives:
+    - Users legitimately downloading archives, ISOs or documents through the browser (tune to rarer types such as .iso/.img/.hta/.xll)
+level: medium

@@ -1,0 +1,49 @@
+title: Spearphishing Link Click Leading to Script/Download (Gaza Cybergang)
+id: c5ef98c8-c62f-460f-8342-1314afb02d23
+status: experimental
+description: |
+    Detects the endpoint follow-on of a spearphishing link, matching Gaza Cybergang / Molerats delivery of
+    malicious (often geofenced) links — including NimbleMamba actor-controlled domains and IronWind
+    Dropbox-hosted links — that users click to fetch and run a payload. Keys on outlook.exe launching a
+    browser and on a browser spawning a script interpreter, shell or LOLBin. Endpoint signal is indirect;
+    pair with URL-gateway/proxy detonation telemetry.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan
+    - https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.t1566.002
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_browser_child:
+        ParentImage|endswith:
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\iexplore.exe'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\msiexec.exe'
+    selection_outlook_browser:
+        ParentImage|endswith: '\outlook.exe'
+        Image|endswith:
+            - '\iexplore.exe'
+            - '\mshta.exe'
+    condition: selection_browser_child or selection_outlook_browser
+falsepositives:
+    - Browsers legitimately launching helper processes via protocol handlers
+    - Web applications that invoke sanctioned client-side tooling (baseline before enabling)
+level: medium

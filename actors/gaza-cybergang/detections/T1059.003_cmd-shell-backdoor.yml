@@ -1,0 +1,47 @@
+title: Command Shell Spawned by Office or Backdoor Lineage (Gaza Cybergang)
+id: b5d52855-6dee-4453-97ea-b5ec8dbbfc4a
+status: experimental
+description: |
+    Detects cmd.exe launched by an anomalous parent (Office application, script host, or a payload staged
+    from a user-writable path), matching Gaza Cybergang / Molerats execution of commands via the Windows
+    command shell by Spark, SharpStage, DropBook, MoleNet and Pierogi. Keys on the parent lineage and
+    payload staging location rather than a specific command line.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://attack.mitre.org/software/S0543/
+    - https://attack.mitre.org/software/S0546/
+    - https://attack.mitre.org/software/S0547/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        Image|endswith: '\cmd.exe'
+    selection_office_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\msaccess.exe'
+            - '\mspub.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+    selection_staged_parent:
+        ParentImage|contains:
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\_MEI'
+    condition: selection_cmd and (selection_office_parent or selection_staged_parent)
+falsepositives:
+    - Office add-ins or portable tooling that legitimately shell out to cmd.exe
+    - Installers staged in ProgramData that invoke cmd for setup steps (baseline)
+level: medium

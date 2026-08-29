@@ -1,0 +1,46 @@
+title: Office / XLL / Access Spawning Script Child After User Enable (Gaza Cybergang)
+id: 2e43eaaf-9b77-4e6f-8e03-f45b485dfc6c
+status: experimental
+description: |
+    Detects an Office application, Excel loading an XLL add-in, or Microsoft Access (.accdb) launching a
+    script interpreter or shell child process, matching Gaza Cybergang / Molerats delivery of macro-enabled
+    documents that require enable-content and IronWind's weaponized XLL and .accdb initial-access files.
+    This is the core document->script user-execution lineage leading to SharpStage and the IronWind loader.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\msaccess.exe'
+            - '\outlook.exe'
+            - '\mspub.exe'
+    selection_child:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\certutil.exe'
+            - '\msiexec.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Document-automation add-ins and mail-merge workflows that legitimately spawn scripts
+    - Enterprise templates or Access applications that invoke helper processes (baseline before enabling)
+level: high

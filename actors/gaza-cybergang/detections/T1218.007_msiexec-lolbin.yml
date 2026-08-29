@@ -1,0 +1,43 @@
+title: Msiexec Proxy Execution of MSI from Temp or Remote Source (Gaza Cybergang)
+id: 551a44c2-eecb-467b-b5e1-edd9af74f921
+status: experimental
+description: |
+    Detects msiexec.exe installing/executing an MSI package from a user-writable/temp path or directly
+    from a remote HTTP(S) source, matching Gaza Cybergang / Molerats use of msiexec.exe to proxy-execute
+    an MSI payload. Keys on the LOLBin install action combined with a suspicious package location rather
+    than on a specific package.
+references:
+    - https://attack.mitre.org/groups/G0021/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1218.007
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_msiexec:
+        Image|endswith: '\msiexec.exe'
+    selection_install:
+        CommandLine|contains:
+            - ' /i'
+            - ' -i'
+            - '/package'
+            - ' /q'
+            - ' -q'
+    selection_source:
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Downloads\'
+    condition: selection_msiexec and selection_install and selection_source
+falsepositives:
+    - Software deployment tools that install MSIs staged in temp/ProgramData (baseline packages and signers)
+    - Legitimate vendor installers invoked from a download folder
+level: medium

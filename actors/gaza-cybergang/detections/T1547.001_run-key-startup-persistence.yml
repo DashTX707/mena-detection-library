@@ -1,0 +1,45 @@
+title: Run Key Persistence Pointing to User-Writable Payload (Gaza Cybergang)
+id: 7ac87942-2b4b-4be5-bc86-bdb192cd9215
+status: experimental
+description: |
+    Detects registry Run/RunOnce key writes whose value references a payload staged under AppData,
+    ProgramData, Public or Temp, or a script interpreter, matching Gaza Cybergang / Molerats persistence
+    in which SharpStage and MoleNet save malicious files within AppData and Startup and set Run keys.
+    Keys on the value-data location rather than a specific file name. Startup-folder file drops are a
+    complementary signal best covered by file-creation telemetry on the Startup path.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://attack.mitre.org/software/S0546/
+    - https://attack.mitre.org/software/S0553/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_runkey:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+            - '\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\Startup'
+    selection_payload:
+        Details|contains:
+            - '\AppData\Roaming\'
+            - '\AppData\Local\Temp\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - 'wscript'
+            - 'cscript'
+            - 'powershell'
+            - 'mshta'
+            - 'rundll32'
+            - '.vbs'
+            - '.js'
+    condition: selection_runkey and selection_payload
+falsepositives:
+    - Legitimate software that registers a Run key to an updater staged in ProgramData/AppData (baseline vendor names)
+level: high

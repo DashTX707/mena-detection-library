@@ -1,0 +1,42 @@
+title: PyInstaller _MEI Runtime Extraction and Bundled-Python Execution (Gaza Cybergang)
+id: 1b428eed-acd8-4465-b0c1-dc54f917c6f3
+status: experimental
+description: |
+    Detects the runtime artifacts of a PyInstaller-packed executable, matching Gaza Cybergang / Molerats
+    DropBook — a Python backdoor compiled with PyInstaller. On launch, PyInstaller extracts the bundled
+    Python runtime to a _MEIxxxxx folder under %TEMP% and runs the payload from there. Keys on a process
+    image or parent executing from a _MEI extraction folder, or python.exe running from a user temp path,
+    rather than a python.exe command line (DropBook ships no python.exe on disk).
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://attack.mitre.org/software/S0547/
+    - https://www.cybereason.com/blog/new-malware-arsenal-abusing-cloud-services-in-middle-east-espionage-campaign
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.006
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mei:
+        Image|contains: '\_MEI'
+        Image|contains:
+            - '\AppData\Local\Temp\'
+            - '\Temp\'
+    selection_mei_parent:
+        ParentImage|contains: '\_MEI'
+    selection_bundled_python:
+        Image|endswith:
+            - '\python.exe'
+            - '\pythonw.exe'
+        Image|contains:
+            - '\AppData\Local\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+    condition: selection_mei or selection_mei_parent or selection_bundled_python
+falsepositives:
+    - Legitimate PyInstaller-packaged software (some commercial agents and internal tools ship this way) — baseline by signer/path
+level: medium

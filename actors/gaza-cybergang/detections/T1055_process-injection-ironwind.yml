@@ -1,0 +1,44 @@
+title: Remote Thread Injection from User-Writable Source (Gaza Cybergang)
+id: 79a0674d-ecfa-4395-a62e-d67f6cd9fa59
+status: experimental
+description: |
+    Detects a process creating a thread in a remote process where the source executable runs from a
+    user-writable staging path, matching Gaza Cybergang / Molerats IronWind multi-stage loader that
+    downloads and injects shellcode into a target process to run follow-on stages in memory. Keys on the
+    CreateRemoteThread source-path anomaly and injection into common host/browser targets. Requires
+    Sysmon Event ID 8 (or equivalent EDR remote-thread telemetry).
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1055
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: create_remote_thread
+    product: windows
+detection:
+    selection_source:
+        SourceImage|contains:
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\_MEI'
+    selection_target:
+        TargetImage|endswith:
+            - '\explorer.exe'
+            - '\svchost.exe'
+            - '\rundll32.exe'
+            - '\werfault.exe'
+            - '\iexplore.exe'
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\notepad.exe'
+    condition: selection_source or selection_target
+falsepositives:
+    - Security products, debuggers and injection-based application shims that legitimately create remote threads
+    - Portable software staged in ProgramData that self-injects (baseline signer/path)
+level: medium

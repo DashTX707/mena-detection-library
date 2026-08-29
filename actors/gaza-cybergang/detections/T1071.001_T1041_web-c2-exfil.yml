@@ -1,0 +1,48 @@
+title: Backdoor Process Beaconing/Exfil over Web Protocols (Gaza Cybergang)
+id: df83169c-9329-4bf7-8215-dbc9b6bec8ba
+status: experimental
+description: |
+    Detects a process running from a user-writable staging path (or a PyInstaller _MEI folder) making
+    outbound HTTP/HTTPS connections, matching Gaza Cybergang / Molerats C2 over web protocols by Spark and
+    IronWind and Spark's exfiltration of collected data back over its established C2 channel. Keys on the
+    process-location anomaly plus a web-port network connection rather than a specific C2 host, because
+    this actor rotates infrastructure and also abuses trusted SaaS. Pair with proxy/beacon analytics.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://attack.mitre.org/software/S0543/
+    - https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.001
+    - attack.t1041
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort:
+            - 80
+            - 443
+            - 8080
+        Image|contains:
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\_MEI'
+    filter_browsers:
+        Image|endswith:
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\iexplore.exe'
+    condition: selection and not filter_browsers
+falsepositives:
+    - Portable applications and updaters legitimately staged in ProgramData/AppData that call home (baseline signer/destination)
+    - Vendor agents packaged with PyInstaller making outbound web calls
+level: medium

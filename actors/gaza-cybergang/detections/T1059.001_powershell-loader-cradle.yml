@@ -1,0 +1,50 @@
+title: Suspicious PowerShell Execution Flags and Download Cradle (Gaza Cybergang)
+id: 38b291a2-e117-4fc1-8053-1c5d3d36ced8
+status: experimental
+description: |
+    Detects PowerShell launched with hidden/bypass execution flags and/or an in-memory download cradle,
+    matching Gaza Cybergang / Molerats PowerShell execution stages observed in the SharpStage and MoleNet
+    chains and macro-driven PowerShell commands. Behavior-based on execution flags and
+    WebClient/IEX/base64 download-and-execute patterns rather than a specific payload.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://attack.mitre.org/software/S0546/
+    - https://attack.mitre.org/software/S0553/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_hidden:
+        CommandLine|contains|all:
+            - ' -w'
+            - 'hidden'
+        CommandLine|contains:
+            - '-nop'
+            - '-noprofile'
+            - '-ep bypass'
+            - '-executionpolicy bypass'
+            - '-enc'
+    selection_cradle:
+        CommandLine|contains:
+            - 'Net.WebClient'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'IEX(New-Object'
+            - 'Invoke-Expression'
+            - 'Invoke-WebRequest'
+            - 'FromBase64String'
+    condition: selection_ps and (selection_hidden or selection_cradle)
+falsepositives:
+    - Legitimate admin scripts using -WindowStyle Hidden or download cmdlets in deployment tooling
+    - Vendor agents that fetch and execute remote PowerShell
+level: medium

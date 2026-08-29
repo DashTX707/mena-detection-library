@@ -1,0 +1,54 @@
+title: Ingress Tool Transfer via certutil / PowerShell / bitsadmin (Gaza Cybergang)
+id: c9d7d12d-fb79-4229-aabd-833198d18423
+status: experimental
+description: |
+    Detects remote file download to disk, matching Gaza Cybergang / Molerats use of backdoors (DropBook,
+    SharpStage, MoleNet, IronWind, Pierogi) to download additional malicious files and follow-on stages
+    onto the victim. Keys on DownloadFile/Invoke-WebRequest-to-path, certutil -urlcache and
+    bitsadmin/curl fetching remote content to a user-writable path.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://attack.mitre.org/software/S0546/
+    - https://attack.mitre.org/software/S0547/
+    - https://attack.mitre.org/software/S0553/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps_download:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        CommandLine|contains:
+            - 'DownloadFile('
+            - 'Invoke-WebRequest'
+            - 'Start-BitsTransfer'
+            - 'wget '
+            - 'curl '
+        CommandLine|contains:
+            - '-outfile'
+            - '.exe'
+            - '.dll'
+            - '\Temp\'
+            - '\ProgramData\'
+    selection_lolbin_download:
+        Image|endswith:
+            - '\certutil.exe'
+            - '\bitsadmin.exe'
+            - '\curl.exe'
+        CommandLine|contains:
+            - '-urlcache'
+            - '/transfer'
+            - 'http://'
+            - 'https://'
+    condition: selection_ps_download or selection_lolbin_download
+falsepositives:
+    - Software deployment and patching tools that download installers
+    - Legitimate use of BITS/certutil for content delivery (baseline destinations)
+level: medium

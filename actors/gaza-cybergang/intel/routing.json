@@ -1,0 +1,229 @@
+{
+  "actor": "Gaza Cybergang / Molerats (G0021)",
+  "provenance": "Lane split authored by Stage-2 decision-agent (read-only; returns JSON in its reply) and persisted here by the orchestrator. technique_name/tactic reconciled against intel/cti-pipeline.json; rationale carries the Stage-1 detection_feasibility note.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 attachment-based spearphishing is detectable via mail sandboxing and macro/XLL/.accdb content analysis at the gateway"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 link-based spearphishing is detectable via URL rewriting/detonation and proxy telemetry, though geofencing degrades sandbox coverage"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "high \u2014 Office/Excel spawning script or child processes after macro/XLL enablement is a core detectable behavior"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high \u2014 script-block/module logging and suspicious PowerShell parenting (Office->PowerShell) are well-covered detections"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "high \u2014 cmd.exe execution with anomalous parents (Office, script hosts, backdoor processes) is visible in process-creation logs"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high \u2014 wscript/cscript executing VBS, especially spawned by Office, is a strong detectable signal"
+    },
+    {
+      "technique_id": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "tactic": "execution",
+      "rationale": "medium \u2014 PyInstaller-packed binaries are detectable via unusual temp _MEI extraction folders and bundled-python process behavior rather than a python.exe command line"
+    },
+    {
+      "technique_id": "T1059.007",
+      "technique_name": "Command and Scripting Interpreter: JavaScript",
+      "tactic": "execution",
+      "rationale": "medium \u2014 wscript/mshta-hosted JS is detectable via script-host process lineage and script-block logging"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "rationale": "high \u2014 WMI process creation and WMI-Activity operational logs provide strong telemetry"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high \u2014 scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable, especially with script actions"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high \u2014 Run-key writes and Startup-folder file drops are detectable via registry and file-creation telemetry"
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 injection is detectable via EDR memory/API telemetry (CreateRemoteThread, RWX allocations) but requires endpoint depth"
+    },
+    {
+      "technique_id": "T1218.007",
+      "technique_name": "System Binary Proxy Execution: Msiexec",
+      "tactic": "defense-evasion",
+      "rationale": "high \u2014 msiexec.exe executing MSI packages from user-writable/temp paths or with network sources is a detectable LOLBin pattern"
+    },
+    {
+      "technique_id": "T1027.006",
+      "technique_name": "Obfuscated Files or Information: HTML Smuggling",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 HTML smuggling is detectable via JS blob/anchor-download inspection at the proxy and browser-download telemetry, but bypasses attachment scanning"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 runtime decode routines are detectable via script-block logging and certutil/PowerShell decode command-lines where used"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high \u2014 remote downloads and unexpected inbound file writes are strongly detectable in process + network telemetry"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 HTTP C2 is detectable via proxy/beacon analytics and URI/JA3 anomalies but blends with normal web traffic"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium \u2014 exfil over the C2 channel is detectable via outbound-volume/beacon analytics on the same session, but blends with C2 traffic"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 access to browser Login Data stores and known-tool execution are detectable via file-access and process signatures"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium \u2014 link clicks are visible in email/URL-gateway and proxy logs; endpoint signal is indirect until the archive is opened"
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "defense-evasion",
+      "rationale": "medium \u2014 signed-malware is detectable via certificate-reputation/thumbprint hunting and signature-anomaly analytics on loaded binaries"
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "defense-evasion",
+      "rationale": "low \u2014 packed binaries are common and packing alone is weakly indicative; hunt candidate via packer-signature/entropy analytics rather than a standalone alert"
+    },
+    {
+      "technique_id": "T1027.015",
+      "technique_name": "Obfuscated Files or Information: Compression",
+      "tactic": "defense-evasion",
+      "rationale": "low \u2014 archive delivery is ubiquitous; better as gateway archive-inspection/hunt than a standalone endpoint detection"
+    },
+    {
+      "technique_id": "T1497.002",
+      "technique_name": "Virtualization/Sandbox Evasion: User Activity Based Checks",
+      "tactic": "defense-evasion",
+      "rationale": "low \u2014 pre-payload sandbox/user-activity checks leave little host log signal; hunt candidate via static analysis of the sample"
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Location Discovery: System Language Discovery",
+      "tactic": "discovery",
+      "rationale": "low \u2014 a single locale/keyboard-layout API query is near-invisible in host logs; hunt candidate via sample analysis, not endpoint detection"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 systeminfo-style discovery is common; suspicious mainly in tight backdoor process-lineage context"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 whoami/user-context queries are common; value is in process-lineage correlation with the backdoor"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "low \u2014 file/directory enumeration is high-volume and hard to isolate; behavioral hunt candidate"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 AV-product enumeration (WMI SecurityCenter / registry / service queries) is detectable when tied to a backdoor's process lineage"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 process enumeration is common but meaningful in backdoor process-lineage context"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low \u2014 screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 base64-encoded C2 content is detectable via network inspection and encoding heuristics where TLS is absent"
+    },
+    {
+      "technique_id": "T1102",
+      "technique_name": "Web Service",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 cloud-service C2 rides trusted SaaS domains and TLS; not detectable by domain reputation alone. Hunt candidate via anomalous process-to-SaaS-API behavior (backdoor/PyInstaller process talking to Dropbox/Facebook APIs) and CASB/egress analytics"
+    },
+    {
+      "technique_id": "T1102.002",
+      "technique_name": "Web Service: Bidirectional Communication",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 bidirectional SaaS-API C2 is indistinguishable from legitimate cloud use at the network layer; hunt candidate via endpoint process-behavior baselining and cloud-app API-token anomaly detection"
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "rationale": "low \u2014 exfil to trusted SaaS blends with sanctioned cloud use; hunt candidate via DLP/CASB upload-volume anomalies and unusual process-to-cloud API activity"
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
+      "tactic": "exfiltration",
+      "rationale": "low \u2014 uploads to Dropbox are trusted by default; hunt candidate via CASB/egress upload-size anomalies and non-browser processes calling cloud-storage APIs"
+    }
+  ],
+  "summary": {
+    "total": 36,
+    "detection": 19,
+    "hunt": 17
+  }
+}

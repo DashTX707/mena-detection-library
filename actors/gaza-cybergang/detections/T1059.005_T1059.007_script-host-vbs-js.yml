@@ -1,0 +1,52 @@
+title: Script Host Executing VBScript/JScript from Office or Staged Path (Gaza Cybergang)
+id: db5cc002-7354-4478-9f0a-f9067c0c2674
+status: experimental
+description: |
+    Detects wscript.exe/cscript.exe/mshta.exe executing VBScript or JScript, matching Gaza Cybergang /
+    Molerats use of VBScript and JavaScript implants and macro-embedded VBS droppers (SneakyPastes RAT
+    toolset). Keys on a script host running a .vbs/.vbe/.js/.jse/.wsf file, spawned by an Office parent or
+    from a user-writable staging path, which distinguishes malicious droppers from benign logon scripts.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://securelist.com/gaza-cybergang-group1-operation-sneakypastes/90068/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - attack.t1059.007
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_host:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+    selection_script:
+        CommandLine|contains:
+            - '.vbs'
+            - '.vbe'
+            - '.js'
+            - '.jse'
+            - '.wsf'
+    selection_context:
+        - ParentImage|endswith:
+              - '\winword.exe'
+              - '\excel.exe'
+              - '\powerpnt.exe'
+              - '\msaccess.exe'
+              - '\outlook.exe'
+              - '\mshta.exe'
+        - CommandLine|contains:
+              - '\AppData\Local\Temp\'
+              - '\AppData\Roaming\'
+              - '\Users\Public\'
+              - '\ProgramData\'
+    condition: selection_host and selection_script and selection_context
+falsepositives:
+    - Enterprise logon/GPO scripts and software installers that run signed VBScript/JScript
+    - Legitimate admin automation staged in ProgramData (baseline paths and script names)
+level: medium

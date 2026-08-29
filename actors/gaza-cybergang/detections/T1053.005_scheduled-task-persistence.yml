@@ -1,0 +1,45 @@
+title: Scheduled Task Creation Running Script/Interpreter Payload (Gaza Cybergang)
+id: b7ef0243-8fa0-472c-8ece-047e4fd4e3a3
+status: experimental
+description: |
+    Detects creation of a scheduled task whose action launches a script interpreter or a payload staged
+    under a user-writable path, matching Gaza Cybergang / Molerats creation of scheduled tasks to
+    persistently run VBScripts and to relaunch the SharpStage backdoor. Keys on schtasks.exe /create with
+    an interpreter/script or AppData action so it fires regardless of the (variable) task name.
+references:
+    - https://attack.mitre.org/groups/G0021/
+    - https://attack.mitre.org/software/S0546/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.gaza-cybergang
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_action:
+        CommandLine|contains:
+            - 'wscript'
+            - 'cscript'
+            - '.vbs'
+            - '.vbe'
+            - '.js'
+            - 'powershell'
+            - 'pwsh'
+            - 'mshta'
+            - 'rundll32'
+            - 'cmd /c'
+            - 'cmd.exe /c'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    condition: selection_schtasks and selection_action
+falsepositives:
+    - Software installers and management agents that register scheduled tasks invoking scripts
+    - Sanctioned admin automation (baseline task names/authors)
+level: medium
