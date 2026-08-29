@@ -1,0 +1,44 @@
+title: Data Destruction via Overwrite/Secure-Delete Utilities (Agrius Wipers)
+id: 0d6882f4-3626-499d-ab27-50cc098e2cbe
+status: experimental
+description: |
+    Detects data-destruction behavior, matching Agrius's defining pattern of deploying wipers (Apostle,
+    DEADWOOD/Detbosit, Fantasy, MultiLayer, PartialWasher, BFG Agonizer) after data theft to destroy data
+    on victim endpoints and servers, often masqueraded as ransomware. Keys on built-in destructive
+    utilities used to overwrite/zero file content (cipher /w, fsutil setzerodata, format, sdelete) - a
+    behavioral signal that fires as destruction begins. Pair with the pre-wipe precursor rules (VSS
+    deletion, BYOVD, log clearing, raw-disk access) for earlier warning.
+references:
+    - https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1485
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cipher:
+        Image|endswith: '\cipher.exe'
+        CommandLine|contains: '/w'
+    selection_fsutil:
+        Image|endswith: '\fsutil.exe'
+        CommandLine|contains: 'setzerodata'
+    selection_sdelete:
+        - Image|endswith:
+              - '\sdelete.exe'
+              - '\sdelete64.exe'
+        - OriginalFileName: 'sdelete'
+    selection_format:
+        Image|endswith: '\format.com'
+        CommandLine|contains:
+            - '/y'
+            - '/p:'
+    condition: selection_cipher or selection_fsutil or selection_sdelete or selection_format
+falsepositives:
+    - Sanctioned secure-wipe of decommissioned media by IT (baseline operators/hosts)
+    - Disk-hygiene tooling that zeroes free space on a schedule (baseline)
+level: high

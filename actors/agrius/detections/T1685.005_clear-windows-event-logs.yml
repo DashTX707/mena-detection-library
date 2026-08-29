@@ -1,0 +1,40 @@
+title: Windows Event Log Clearing via wevtutil/PowerShell (Agrius MultiLayer)
+id: ce4b166c-fc8e-4375-962a-ade4e56453cc
+status: experimental
+description: |
+    Detects clearing of Windows Event Logs, matching the Agrius MultiLayer wiper, which clears all
+    Windows Event Logs via a scheduled batch script as an anti-forensic step during its destructive
+    routine. Keys on wevtutil clear-log / PowerShell Clear-EventLog / WMI event-log clearing command
+    lines. The corresponding Security 1102 and System 104 log-cleared events are the corroborating
+    signal and should be forwarded off-host before the wipe completes.
+references:
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+    - https://attack.mitre.org/groups/G1030/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1685.005
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_wevtutil:
+        Image|endswith: '\wevtutil.exe'
+        CommandLine|contains:
+            - ' cl '
+            - ' clear-log'
+            - ' cl"'
+    selection_powershell:
+        CommandLine|contains:
+            - 'Clear-EventLog'
+            - 'Limit-EventLog'
+            - '.ClearEventLog('
+            - 'wevtutil cl'
+            - 'wevtutil.exe cl'
+    condition: selection_wevtutil or selection_powershell
+falsepositives:
+    - Sanctioned administrative log maintenance or forensic scripts that clear specific logs (baseline operators/hosts)
+    - Software uninstallers that clear their own application event log (rare)
+level: high

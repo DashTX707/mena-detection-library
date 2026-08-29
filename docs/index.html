@@ -12,7 +12,7 @@
   --detect:#0c8172; --detect-ink:#0c8172; --detect-fill:#0c8172;
   --hunt:#a9691a; --hunt-ink:#a9691a; --hunt-fill:#c07d24;
   --accent:#0c8172; --accent-ink:#0a6c5f;
-  --iran:#8a5a2b; --pal:#2e6f4e;
+  --iran:#8a5a2b; --pal:#2e6f4e; --dest:#b23b30;
   --shadow:0 1px 2px rgba(10,20,25,.06),0 8px 24px -12px rgba(10,20,25,.18);
   --grid-line:rgba(20,26,30,.05);
 }
@@ -24,7 +24,7 @@
     --detect:#37d6bb; --detect-ink:#43dcc2; --detect-fill:#1f9d89;
     --hunt:#e6ab48; --hunt-ink:#eeb559; --hunt-fill:#c98f34;
     --accent:#37d6bb; --accent-ink:#5ee0ca;
-    --iran:#d59a5f; --pal:#6cc496;
+    --iran:#d59a5f; --pal:#6cc496; --dest:#e8776b;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 40px -18px rgba(0,0,0,.7);
     --grid-line:rgba(255,255,255,.04);
   }
@@ -36,7 +36,7 @@
   --detect:#37d6bb; --detect-ink:#43dcc2; --detect-fill:#1f9d89;
   --hunt:#e6ab48; --hunt-ink:#eeb559; --hunt-fill:#c98f34;
   --accent:#37d6bb; --accent-ink:#5ee0ca;
-  --iran:#d59a5f; --pal:#6cc496;
+  --iran:#d59a5f; --pal:#6cc496; --dest:#e8776b;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 40px -18px rgba(0,0,0,.7);
   --grid-line:rgba(255,255,255,.04);
 }
@@ -129,6 +129,7 @@ tr.tot-row th{font-size:13px}
 .chip{display:inline-flex;align-items:center;gap:6px;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;letter-spacing:.04em;padding:4px 9px;border-radius:100px;border:1px solid;text-transform:uppercase}
 .chip.iran{color:var(--iran);border-color:color-mix(in srgb,var(--iran) 45%,transparent);background:color-mix(in srgb,var(--iran) 10%,transparent)}
 .chip.pal{color:var(--pal);border-color:color-mix(in srgb,var(--pal) 45%,transparent);background:color-mix(in srgb,var(--pal) 10%,transparent)}
+.chip.dest{color:var(--dest);border-color:color-mix(in srgb,var(--dest) 48%,transparent);background:color-mix(in srgb,var(--dest) 11%,transparent)}
 .card h3{font-size:1.32rem;margin:15px 0 2px;letter-spacing:-.015em}
 .card .mid{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
 .card .meta{margin:14px 0 0;font-size:13.5px;color:var(--muted);line-height:1.5}
@@ -216,11 +217,11 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <p class="lede">An open library of <b>deployable Sigma rules</b> and <b>threat-hunt hypotheses</b>, organized around the specific adversaries that operate against the region — every item mapped to MITRE ATT&amp;CK and traceable to public reporting. Each actor pack is produced by a transparent four-stage analyst pipeline anyone can re-run.</p>
 
     <div class="stats" id="stats">
-      <div class="stat"><div class="n tnum" data-to="3">3</div><div class="k">actors · 2 clusters</div></div>
-      <div class="stat"><div class="n tnum" data-to="191">191</div><div class="k">ATT&amp;CK techniques</div></div>
-      <div class="stat hl"><div class="n tnum" data-to="78">78</div><div class="k">Sigma detections</div></div>
-      <div class="stat"><div class="n tnum" data-to="33">33</div><div class="k">hunt packages</div></div>
-      <div class="stat"><div class="n tnum" data-to="47">47</div><div class="k">sourced IOCs</div></div>
+      <div class="stat"><div class="n tnum" data-to="4">4</div><div class="k">actors · 2 clusters</div></div>
+      <div class="stat"><div class="n tnum" data-to="225">225</div><div class="k">ATT&amp;CK techniques</div></div>
+      <div class="stat hl"><div class="n tnum" data-to="96">96</div><div class="k">Sigma detections</div></div>
+      <div class="stat"><div class="n tnum" data-to="39">39</div><div class="k">hunt packages</div></div>
+      <div class="stat"><div class="n tnum" data-to="73">73</div><div class="k">sourced IOCs</div></div>
     </div>
   </div>
 </header>
@@ -254,8 +255,8 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <div class="sec-head">
       <div>
         <div class="sec-num">02 / ACTOR DOSSIERS</div>
-        <h2>Three actors, two threat clusters</h2>
-        <p>Iran-nexus espionage and a Palestinian-nexus operator — chosen for documented, sourced MENA targeting. More to follow.</p>
+        <h2>Four actors, two threat clusters</h2>
+        <p>Iran-nexus espionage, a Palestinian-nexus operator, and an Iran-nexus <em>wiper</em> — chosen for documented, sourced MENA targeting. More to follow.</p>
       </div>
     </div>
     <div class="actors" id="cards"></div>
@@ -346,9 +347,9 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
       <div>
         <h5>Coverage</h5>
         <ul>
-          <li><span class="mono">3</span> actor packs published</li>
-          <li><span class="mono">78</span> Sigma · <span class="mono">33</span> hunts</li>
-          <li><span class="mono">191</span> techniques mapped</li>
+          <li><span class="mono">4</span> actor packs published</li>
+          <li><span class="mono">96</span> Sigma · <span class="mono">39</span> hunts</li>
+          <li><span class="mono">225</span> techniques mapped</li>
           <li>CI-validated on every change</li>
         </ul>
       </div>
@@ -373,7 +374,7 @@ var TAC=[
  ["reconnaissance","Recon"],["resource-development","ResDev"],["initial-access","Initial"],
  ["execution","Exec"],["persistence","Persist"],["privilege-escalation","PrivEsc"],
  ["defense-evasion","Evasion"],["credential-access","CredAcc"],["discovery","Discov"],
- ["lateral-movement","Lateral"],["collection","Collect"],["command-and-control","C2"],["exfiltration","Exfil"]
+ ["lateral-movement","Lateral"],["collection","Collect"],["command-and-control","C2"],["exfiltration","Exfil"],["impact","Impact"]
 ];
 // [detections, hunts] per tactic
 var ACTORS=[
@@ -388,7 +389,11 @@ var ACTORS=[
  {name:"Gaza Cybergang",id:"G0021",cluster:"pal",clbl:"Palestinian-nexus",
   targ:"Palestinian Territories, Jordan, Israel, Lebanon, Egypt", sect:"Diplomatic, government, NGOs, media",
   ttps:36,sig:17,hunts:7,iocs:0,
-  t:{"initial-access":[2,0],"execution":[7,1],"persistence":[2,0],"defense-evasion":[4,4],"credential-access":[1,0],"discovery":[0,6],"collection":[0,1],"command-and-control":[2,3],"exfiltration":[1,2]}}
+  t:{"initial-access":[2,0],"execution":[7,1],"persistence":[2,0],"defense-evasion":[4,4],"credential-access":[1,0],"discovery":[0,6],"collection":[0,1],"command-and-control":[2,3],"exfiltration":[1,2]}},
+ {name:"Agrius",id:"G1030",cluster:"dest",clbl:"Iran · destructive",
+  targ:"Israel (primary), UAE", sect:"Education, technology, diamond, critical infrastructure",
+  ttps:34,sig:18,hunts:6,iocs:26,
+  t:{"resource-development":[0,1],"initial-access":[1,1],"persistence":[2,0],"execution":[2,0],"defense-evasion":[3,4],"credential-access":[4,0],"discovery":[0,2],"lateral-movement":[1,1],"collection":[0,4],"exfiltration":[1,0],"impact":[6,1]}}
 ];
 
 // global max cell total for bar scaling

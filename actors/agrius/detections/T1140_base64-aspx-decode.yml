@@ -1,0 +1,45 @@
+title: Base64-Encoded ASPXSpy Web Shell Content Written to Disk (Agrius)
+id: 578bf59a-0ed4-43fb-95a9-44486ad4d3b9
+status: experimental
+description: |
+    Detects server-side web pages containing base64/runtime-decode routines written into a web-root or
+    Exchange path, matching Agrius deployment of base64-encoded ASPXSpy web-shell variants that decode at
+    runtime to evade static detection. Keys on the co-occurrence of an .aspx/.ashx file in a web path
+    with .NET runtime-decode primitives (FromBase64String / eval / Assembly.Load) in the written content.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1140
+    - mena-detection-library.agrius
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_webfile:
+        TargetFilename|contains:
+            - '\inetpub\'
+            - '\wwwroot\'
+            - '\Microsoft\Exchange Server\'
+            - '\FrontEnd\HttpProxy\'
+        TargetFilename|endswith:
+            - '.aspx'
+            - '.ashx'
+            - '.asmx'
+    selection_decode:
+        Contents|contains:
+            - 'FromBase64String'
+            - 'System.Convert'
+            - 'Assembly.Load'
+            - 'eval('
+            - 'Request.Item'
+            - 'System.Reflection'
+    condition: selection_webfile and selection_decode
+falsepositives:
+    - Legitimate .NET web applications that perform base64 decoding of request data (baseline known apps)
+    - Endpoints without file-content (Contents) capture will not populate this rule (visibility gap)
+level: medium

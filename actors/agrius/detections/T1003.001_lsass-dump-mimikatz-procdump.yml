@@ -1,0 +1,47 @@
+title: LSASS Credential Dumping via Mimikatz/ProcDump (Agrius)
+id: 4406332e-814f-4085-b4e6-a1a85678f446
+status: experimental
+description: |
+    Detects Agrius / Agonizing Serpens credential theft from LSASS memory using Mimikatz (observed as
+    Mimi.exe) and ProcDump. Keys on Mimikatz binary metadata and signature command modules, and on
+    ProcDump invoked against lsass, rather than a specific hash, so renamed copies are still caught.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mimikatz_meta:
+        - Image|endswith: '\mimikatz.exe'
+        - OriginalFileName: 'mimikatz.exe'
+        - Product|contains: 'mimikatz'
+        - Description|contains: 'mimikatz'
+    selection_mimikatz_modules:
+        CommandLine|contains:
+            - 'sekurlsa::logonpasswords'
+            - 'sekurlsa::minidump'
+            - 'sekurlsa::pth'
+            - 'lsadump::sam'
+            - 'lsadump::lsa'
+            - 'privilege::debug'
+    selection_procdump:
+        - Image|endswith:
+              - '\procdump.exe'
+              - '\procdump64.exe'
+        - OriginalFileName: 'procdump'
+    selection_procdump_lsass:
+        CommandLine|contains:
+            - 'lsass'
+            - ' -ma '
+    condition: selection_mimikatz_meta or selection_mimikatz_modules or (selection_procdump and selection_procdump_lsass)
+falsepositives:
+    - Sanctioned red-team engagements or DFIR responders collecting an LSASS dump for troubleshooting
+    - Crash-dump tooling explicitly configured against lsass (rare on production)
+level: high

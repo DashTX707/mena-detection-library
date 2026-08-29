@@ -56,6 +56,7 @@ scripts/                 helpers (validation, Navigator export)
 | [MuddyWater (G0069)](actors/muddywater/) | Iran-nexus (MOIS) | ✅ published | 68 | 32 | 14 |
 | [OilRig / APT34 (G0049)](actors/oilrig/) | Iran-nexus (MOIS) | ✅ published | 87 | 29 | 12 |
 | [Gaza Cybergang / Molerats (G0021)](actors/gaza-cybergang/) | Palestinian-nexus | ✅ published | 36 | 17 | 7 |
+| [Agrius (G1030)](actors/agrius/) | Iran-nexus · destructive | ✅ published | 34 | 18 | 6 |
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

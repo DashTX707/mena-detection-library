@@ -1,0 +1,47 @@
+title: IIS Worker Process Spawning Command Shell - Web Shell Execution (Agrius)
+id: b649ae12-ca55-45e3-9380-cebed571481b
+status: experimental
+description: |
+    Detects an IIS/Exchange worker process (w3wp.exe) or other web-server parent spawning a command
+    shell or discovery utility, matching Agrius / Agonizing Serpens use of ASPXSpy web shells to run
+    follow-on commands via cmd.exe on compromised servers. Keys on the anomalous web-worker parent
+    lineage rather than a specific command line, so it catches web-shell command execution generally.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\httpd.exe'
+            - '\UMWorkerProcess.exe'
+            - '\MSExchangeHMWorker.exe'
+            - '\W3SVC.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\whoami.exe'
+            - '\ipconfig.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\certutil.exe'
+            - '\xcopy.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Web-application health probes or management scripts that legitimately shell out from a worker process (baseline these)
+    - Application deployment steps invoked by the app pool identity (rare; investigate)
+level: high

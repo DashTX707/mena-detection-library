@@ -1,0 +1,45 @@
+title: SAM/SYSTEM Registry Hive Dump for Credential Access (Agrius)
+id: 9cedd135-2f90-4f68-9bae-f5529eb0b0ec
+status: experimental
+description: |
+    Detects dumping of the local SAM database, matching Agrius dumping of the SAM database on victim
+    machines to capture local account credentials. Keys on reg.exe save/export of the SAM/SYSTEM/SECURITY
+    hives and on shadow-copy/esentutl hive-copy techniques, which are the command-line signatures of
+    offline SAM credential extraction.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.credential-access
+    - attack.t1003.002
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_reg_save:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains:
+            - ' save '
+            - ' export '
+        CommandLine|contains:
+            - 'hklm\sam'
+            - 'hklm\system'
+            - 'hklm\security'
+            - 'HKLM\SAM'
+            - 'HKLM\SYSTEM'
+            - 'HKLM\SECURITY'
+    selection_hive_copy:
+        CommandLine|contains:
+            - 'esentutl'
+            - '\HarddiskVolumeShadowCopy'
+        CommandLine|contains:
+            - '\config\SAM'
+            - '\config\SYSTEM'
+    condition: selection_reg_save or selection_hive_copy
+falsepositives:
+    - Legitimate backup or migration tooling exporting registry hives (baseline the tool/account)
+    - Sanctioned administrative registry backups (rare against SAM/SECURITY specifically)
+level: high

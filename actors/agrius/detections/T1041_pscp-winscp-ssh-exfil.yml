@@ -1,0 +1,44 @@
+title: Exfiltration over SSH/SCP via pscp/WinSCP (Agrius)
+id: 55f5b01e-7529-4099-b739-fe13a7155dc7
+status: experimental
+description: |
+    Detects data exfiltration over SSH/SCP, matching Agrius / Agonizing Serpens exfiltration of staged
+    data using PuTTY, pscp.exe and WinSCP, connecting outbound to command-and-control servers. Keys on
+    the pscp/WinSCP binaries (including renamed copies via metadata) and command lines referencing staged
+    archive/dump artifacts (.7z / .ezip / .dmp / the C:\windows\temp\s\ staging folder) transferred to a
+    remote host.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith:
+              - '\pscp.exe'
+              - '\winscp.exe'
+              - '\winscp.com'
+        - OriginalFileName:
+              - 'pscp'
+              - 'WinSCP'
+    selection_transfer_context:
+        CommandLine|contains:
+            - '.7z'
+            - '.ezip'
+            - '.dmp'
+            - '\windows\temp\s\'
+            - ' -pw '
+            - 'scp '
+            - '@'
+    condition: selection_tool and selection_transfer_context
+falsepositives:
+    - Administrators legitimately using pscp/WinSCP to transfer files to managed SSH endpoints (baseline hosts/destinations)
+    - Backup or file-sync automation over SCP (baseline the destination and schedule)
+level: high

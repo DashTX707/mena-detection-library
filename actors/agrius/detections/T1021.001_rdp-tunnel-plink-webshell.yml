@@ -1,0 +1,46 @@
+title: RDP Tunneling via Plink/Web Shell for Lateral Movement (Agrius)
+id: 75483ed2-6847-468c-8c5e-da17a16fedfd
+status: experimental
+description: |
+    Detects RDP tunneling for lateral movement, matching Agrius tunneling of RDP traffic through deployed
+    web shells and via the Plink tool (observed renamed to systems.exe) to access victim environments with
+    compromised accounts. Keys on Plink/PuTTY (including renamed copies via metadata) building a port
+    forward that references the RDP port 3389 or a localhost relay - the signature of web-shell/SSH-relayed
+    RDP - rather than on a specific host.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith:
+              - '\plink.exe'
+              - '\putty.exe'
+              - '\systems.exe'
+        - OriginalFileName:
+              - 'Plink'
+              - 'PuTTY'
+        - Product|contains: 'PuTTY suite'
+    selection_tunnel_args:
+        CommandLine|contains:
+            - ' -R '
+            - ' -L '
+            - ' -D '
+        CommandLine|contains:
+            - ':3389'
+            - '3389:'
+            - ':127.0.0.1:'
+            - ':localhost:'
+    condition: selection_tool and selection_tunnel_args
+falsepositives:
+    - Administrators legitimately using PuTTY/Plink to forward RDP to managed devices (baseline hosts/operators)
+    - Sanctioned jump-host automation building SSH tunnels to internal RDP endpoints
+level: high

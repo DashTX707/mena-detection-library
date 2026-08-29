@@ -1,0 +1,40 @@
+title: Raw PhysicalDrive Handle Access - Disk Content/Structure Wipe (Agrius MultiLayer/BFG Agonizer)
+id: 8166202b-d7e7-4992-b13a-b5fcf4eb6698
+status: experimental
+description: |
+    Detects a user-mode process obtaining a raw handle to a physical disk device, matching the Agrius
+    MultiLayer and BFG Agonizer wipers, which open \\.\PhysicalDrive0 and overwrite the first sectors
+    (MultiLayer wipes the first 512 bytes; BFG Agonizer overwrites the first 6 sectors / MBR-GPT boot
+    area) and destroy on-disk content so the system can no longer boot. Keys on the raw disk-device
+    access primitive (Sysmon RawAccessRead / EDR raw-disk-handle analytics), which is rare and
+    high-fidelity outside of disk utilities. Covers both disk content wipe (T1561.001) and structure
+    wipe (T1561.002).
+references:
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+    - https://attack.mitre.org/groups/G1030/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1561.001
+    - attack.t1561.002
+    - mena-detection-library.agrius
+logsource:
+    category: raw_access_read
+    product: windows
+detection:
+    selection:
+        Device|contains:
+            - '\Device\Harddisk'
+            - '\Device\HarddiskVolume'
+    filter_known_tools:
+        Image|endswith:
+            - '\dd.exe'
+            - '\defrag.exe'
+            - '\chkdsk.exe'
+            - '\dismhost.exe'
+    condition: selection and not filter_known_tools
+falsepositives:
+    - Disk-imaging, backup, defragmentation and forensic tools that legitimately open raw disk handles (baseline the signed binaries)
+    - Antivirus/EDR agents performing raw sector reads (baseline vendor images)
+level: high

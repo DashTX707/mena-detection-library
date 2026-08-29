@@ -1,0 +1,41 @@
+title: Scheduled Task Created to Run One-Time Log-Clearing Batch (Agrius MultiLayer)
+id: 3233882b-4dc0-4d94-9aaf-860ba93cce63
+status: experimental
+description: |
+    Detects creation of a scheduled task whose action launches cmd.exe/a batch script, matching the
+    Agrius MultiLayer wiper DeleteLogs() routine, which creates a scheduled task that launches a batch
+    script once to remove all Windows Event Logs before self-cleanup. Keys on schtasks /create with a
+    cmd/batch action so it fires regardless of the (variable) task name, and pairs well with the
+    T1070.001 event-log-clear rule for chain confirmation.
+references:
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+    - https://attack.mitre.org/groups/G1030/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1053.005
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_action:
+        CommandLine|contains:
+            - 'cmd /c'
+            - 'cmd.exe /c'
+            - '.bat'
+            - '.cmd'
+            - 'wevtutil'
+            - 'powershell'
+            - '\Windows\Temp\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    condition: selection_schtasks and selection_action
+falsepositives:
+    - Software installers and management agents that register scheduled tasks invoking scripts
+    - Sanctioned admin automation running batch maintenance jobs (baseline task names/authors)
+level: medium

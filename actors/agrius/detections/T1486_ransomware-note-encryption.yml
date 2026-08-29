@@ -1,0 +1,46 @@
+title: Ransom Note Drop / Data Encrypted for Impact - Wiper-as-Ransomware Ruse (Agrius Apostle/Moneybird)
+id: 344c96c0-8db2-4e9d-97c3-d7ab6983fcb8
+status: experimental
+description: |
+    Detects ransom-note creation and mass file-extension changes, matching Agrius masquerading of
+    destructive operations as ransomware - dropping ransom notes as a ruse, the Apostle wiper rewritten
+    into functional ransomware, and the Moneybird ransomware deployed in later Israeli-targeted attacks.
+    Keys on creation of ransom-note filenames and renamed/encrypted extensions across the file system.
+    Note: in many Agrius incidents the "ransomware" is cover for irrecoverable wiping, so treat as
+    destructive impact regardless of any decryption offer.
+references:
+    - https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1486
+    - mena-detection-library.agrius
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_note:
+        TargetFilename|contains:
+            - 'README'
+            - 'HOW_TO_DECRYPT'
+            - 'HOW-TO-DECRYPT'
+            - 'DECRYPT_INSTRUCTION'
+            - 'RECOVER'
+            - 'RESTORE_FILES'
+        TargetFilename|endswith:
+            - '.txt'
+            - '.hta'
+            - '.html'
+    selection_ext:
+        TargetFilename|endswith:
+            - '.apostle'
+            - '.moneybird'
+            - '.encrypted'
+            - '.locked'
+    condition: selection_note or selection_ext
+falsepositives:
+    - Software distributing legitimate README.txt/README.html files (baseline install directories)
+    - Backup/archive tools creating .encrypted or .locked artifacts (baseline the tool)
+level: high

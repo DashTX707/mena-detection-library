@@ -1,0 +1,57 @@
+title: Service Stop/Removal of Security and Backup Services (Agrius)
+id: 7cc9dc8f-07fe-4e10-8e3b-1c70146384a4
+status: experimental
+description: |
+    Detects stopping or removing services to enable destruction and disable defenses, matching Agrius
+    behavior of stopping and removing security-software services (also abused via GMER/Rentdrv2 drivers)
+    and removing the Volume Shadow Copy (VSS) service during the MultiLayer wipe. Keys on net stop /
+    sc stop / sc delete / sc config disabled command lines targeting security, EDR/AV, backup and VSS
+    service names. Note: driver-level (BYOVD) process termination can bypass service-control logging, so
+    pair with the vulnerable-driver-load rule.
+references:
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+    - https://attack.mitre.org/groups/G1030/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1489
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        - Image|endswith:
+              - '\net.exe'
+              - '\net1.exe'
+              - '\sc.exe'
+              - '\powershell.exe'
+              - '\pwsh.exe'
+        - CommandLine|contains:
+              - 'stop '
+              - 'delete '
+              - 'config '
+              - 'Stop-Service'
+              - 'Remove-Service'
+              - 'Set-Service'
+    selection_targets:
+        CommandLine|contains:
+            - 'VSS'
+            - 'Sense'
+            - 'WinDefend'
+            - 'MsMpSvc'
+            - 'SentinelAgent'
+            - 'CSFalcon'
+            - 'CrowdStrike'
+            - 'CarbonBlack'
+            - 'SophosAgent'
+            - 'McAfee'
+            - 'Veeam'
+            - 'SQLWriter'
+            - 'sqlserver'
+    condition: selection_cmd and selection_targets
+falsepositives:
+    - Administrators or installers legitimately reconfiguring backup/AV services during maintenance (baseline operators/hosts)
+    - Backup-agent upgrades that stop the VSS writer service (baseline the vendor process)
+level: high

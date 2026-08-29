@@ -1,0 +1,34 @@
+title: SMB Network Logon Failure Burst - Brute Force / Password Spraying (Agrius)
+id: d741a08b-1ec8-4cb4-80b3-0707d0ab1b7b
+status: experimental
+description: |
+    Detects failed network (SMB/NTLM) logon events, matching Agrius / Agonizing Serpens brute-forcing
+    and password spraying via SMB within victim environments to obtain valid credentials. Keys on
+    Security 4625 network logon failures; operationalize with a threshold correlation - many failures
+    from one source host indicate brute force, while a single failure fanned across many accounts from
+    one source indicates password spraying. Tune the aggregation window/count in the SIEM.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.credential-access
+    - attack.t1110
+    - attack.t1110.003
+    - mena-detection-library.agrius
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4625
+        LogonType:
+            - 3
+            - 2
+    condition: selection
+falsepositives:
+    - Misconfigured service accounts or applications with stale cached credentials generating repeated failures
+    - Vulnerability scanners and legitimate authentication load tests (baseline scanner source IPs)
+    - Users mistyping passwords after a domain password change (low volume; tune threshold)
+level: medium

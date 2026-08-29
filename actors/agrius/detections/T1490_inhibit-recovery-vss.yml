@@ -1,0 +1,48 @@
+title: Inhibit System Recovery - Shadow Copy Deletion and VSS Service Removal (Agrius MultiLayer)
+id: 34e8f453-9827-4892-8c54-e31b80ccb412
+status: experimental
+description: |
+    Detects destruction of recovery options, matching the Agrius MultiLayer wiper, which deletes all
+    Volume Shadow Copies and then removes the Volume Shadow Copy (VSS) service itself to prevent data
+    restoration before destroying the disk. Keys on the well-known shadow-copy deletion and
+    boot-recovery-disable command lines (vssadmin/wmic/wbadmin/bcdedit) and on removal of the VSS
+    service - among the highest-fidelity wiper/ransomware early-warning signals.
+references:
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+    - https://attack.mitre.org/groups/G1030/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1490
+    - mena-detection-library.agrius
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_vss_delete:
+        CommandLine|contains:
+            - 'vssadmin delete shadows'
+            - 'vssadmin.exe delete shadows'
+            - 'wmic shadowcopy delete'
+            - 'Delete-VssShadow'
+            - 'win32_shadowcopy'
+    selection_wbadmin:
+        Image|endswith: '\wbadmin.exe'
+        CommandLine|contains: 'delete'
+    selection_bcdedit:
+        Image|endswith: '\bcdedit.exe'
+        CommandLine|contains:
+            - 'recoveryenabled no'
+            - 'bootstatuspolicy ignoreallfailures'
+    selection_vss_service_remove:
+        CommandLine|contains:
+            - 'sc delete VSS'
+            - 'sc.exe delete VSS'
+            - 'sc config VSS start= disabled'
+            - 'net stop VSS'
+    condition: selection_vss_delete or selection_wbadmin or selection_bcdedit or selection_vss_service_remove
+falsepositives:
+    - Backup software that rotates or prunes shadow copies as part of normal operation (baseline the tool/account)
+    - Sanctioned administrative maintenance disabling recovery on a specific host (rare; verify)
+level: high

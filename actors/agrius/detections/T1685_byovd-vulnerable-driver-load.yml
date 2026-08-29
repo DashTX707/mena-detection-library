@@ -1,0 +1,34 @@
+title: BYOVD - Vulnerable GMER/Rentdrv2 Driver Load and EDR Service Tampering (Agrius)
+id: 2bd68099-4b05-4e56-91c1-04b3caa3f18a
+status: experimental
+description: |
+    Detects Agrius / Agonizing Serpens attempts to disable security tooling via Bring-Your-Own-
+    Vulnerable-Driver: loading the GMER driver (gmer64.sys, renamed AGMT.sys via loader agmt.exe) or the
+    Rentdrv2 driver (via loader drvIX.exe) to selectively stop and remove security-software processes.
+    Keys on the vulnerable-driver filenames and their loaders. Note that kernel action via BYOVD can
+    blind the very sensor meant to see it, so pair with service-state and EDR-health monitoring.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1685
+    - mena-detection-library.agrius
+logsource:
+    category: driver_load
+    product: windows
+detection:
+    selection_driver:
+        ImageLoaded|endswith:
+            - '\gmer64.sys'
+            - '\gmer.sys'
+            - '\AGMT.sys'
+            - '\rentdrv2.sys'
+            - '\rentdrv.sys'
+    condition: selection_driver
+falsepositives:
+    - Legitimate use of the GMER anti-rootkit tool by an administrator or DFIR responder (rare on production; verify)
+    - A signed but genuinely-needed third-party driver sharing one of these names (verify hash/signature)
+level: high

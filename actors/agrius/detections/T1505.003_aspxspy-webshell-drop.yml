@@ -1,0 +1,45 @@
+title: ASPXSpy Web Shell Dropped in IIS Web Root (Agrius)
+id: 6ed50d07-05b3-4393-b00c-48c573b396af
+status: experimental
+description: |
+    Detects creation of an .aspx/.ashx web shell file under an IIS web-root or Exchange path, matching
+    Agrius / Agonizing Serpens deployment of ASPXSpy web-shell variants (observed filenames
+    Uploader.aspx, xcopy.aspx, css.aspx) on internet-facing servers to maintain access and proxy
+    follow-on commands. Keys on the web-writable path plus server-script extension and the observed
+    ASPXSpy filenames, so it fires on the drop regardless of file content.
+references:
+    - https://attack.mitre.org/groups/G1030/
+    - https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.agrius
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_path:
+        TargetFilename|contains:
+            - '\inetpub\wwwroot\'
+            - '\inetpub\'
+            - '\Microsoft\Exchange Server\'
+            - '\FrontEnd\HttpProxy\'
+            - '\ClientAccess\'
+            - '\wwwroot\'
+        TargetFilename|endswith:
+            - '.aspx'
+            - '.ashx'
+            - '.asmx'
+            - '.asp'
+    selection_names:
+        TargetFilename|endswith:
+            - '\Uploader.aspx'
+            - '\xcopy.aspx'
+            - '\css.aspx'
+    condition: selection_path or selection_names
+falsepositives:
+    - Legitimate web-application deployments and updates writing server-side pages (baseline deployment tooling/accounts)
+    - Exchange cumulative updates writing OWA/ECP content
+level: high
