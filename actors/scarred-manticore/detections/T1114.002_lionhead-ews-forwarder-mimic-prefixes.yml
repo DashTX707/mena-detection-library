@@ -1,0 +1,34 @@
+title: LIONHEAD EWS Forwarder - Exchange Mimic URL Prefixes / Localhost EWS Relay (Scarred Manticore)
+id: a1cff293-75a4-40d2-9bf3-d42529ea0b3c
+status: experimental
+description: |
+    Detects Scarred Manticore's LIONHEAD web forwarder used for remote email collection (T1114.002).
+    Deployed on compromised Exchange servers, LIONHEAD registers listen_urls under Exchange-mimicking
+    prefixes and, for each request, copies the content-type/cookie/body and forwards them to
+    localhost:444 /ews/exchange.asmx, returning the EWS response to an external requester to conceal
+    external mailbox consumption. The LIONTAIL/SDD listeners register lookalike prefixes such as
+    /autodiscover/autodiscovers/, /ews/exchanges/ and /ews/ews/ (note the doubled/plural segments that
+    do not match genuine Exchange virtual directories). Keys on web-server access to these malformed
+    Exchange lookalike URIs. Requires IIS/web request logging.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.collection
+    - attack.t1114.002
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: webserver
+detection:
+    selection_mimic_uri:
+        cs-uri-stem|contains:
+            - '/autodiscover/autodiscovers/'
+            - '/ews/exchanges/'
+            - '/ews/ews/'
+            - '/Temporary_Listen_Addresses/'
+    condition: selection_mimic_uri
+falsepositives:
+    - Rare typo'd client requests to Exchange virtual directories - genuine clients use /autodiscover/ and
+      /ews/exchange.asmx, not the doubled/plural forms, so sustained access is high-fidelity
+level: high

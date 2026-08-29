@@ -58,6 +58,7 @@ scripts/                 helpers (validation, Navigator export)
 | [Gaza Cybergang / Molerats (G0021)](actors/gaza-cybergang/) | Palestinian-nexus | ✅ published | 36 | 17 | 7 |
 | [Agrius (G1030)](actors/agrius/) | Iran-nexus · destructive | ✅ published | 34 | 18 | 6 |
 | [WIRTE (G0090)](actors/wirte/) | Palestinian-nexus · +wiper | ✅ published | 39 | 13 | 9 |
+| [Scarred Manticore (Storm-0861)](actors/scarred-manticore/) | Iran-nexus · LIONTAIL | ✅ published | 28 | 10 | 7 |
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

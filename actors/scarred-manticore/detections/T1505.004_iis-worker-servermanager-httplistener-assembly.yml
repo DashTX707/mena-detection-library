@@ -1,0 +1,42 @@
+title: IIS Worker Loading ServerManager/HttpListener or Masqueraded SDD Assembly (Scarred Manticore)
+id: fc5b9271-4982-4b71-bcec-93b7b959cc2b
+status: experimental
+description: |
+    Detects Scarred Manticore's SDD passive backdoor / WINTAPIX .NET payload installing itself as an
+    IIS-resident component (T1505.004) via image-load telemetry (Sysmon EID 7). The SDD backdoor
+    (masquerading as System.Drawing.Design.dll) uses the IIS ServerManager class
+    (Microsoft.Web.Administration) to enumerate site bindings and programmatically builds HttpListener URL
+    prefixes to listen on. Keys on the IIS worker (w3wp.exe) loading Microsoft.Web.Administration.dll
+    (ServerManager - abnormal inside a request-serving worker) or loading a System.Drawing.Design.dll from
+    outside the GAC/framework directories (the SDD masquerade).
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1505.004
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_worker:
+        Image|endswith: '\w3wp.exe'
+    selection_servermanager:
+        ImageLoaded|endswith: '\Microsoft.Web.Administration.dll'
+    selection_sdd_masq:
+        ImageLoaded|endswith: '\System.Drawing.Design.dll'
+    filter_gac:
+        ImageLoaded|contains:
+            - '\assembly\GAC_MSIL\'
+            - '\assembly\NativeImages'
+            - '\Microsoft.NET\Framework\'
+            - '\Microsoft.NET\Framework64\'
+            - '\WinSxS\'
+    condition: selection_worker and (selection_servermanager or (selection_sdd_masq and not filter_gac))
+falsepositives:
+    - Legitimate IIS management/monitoring extensions that reference Microsoft.Web.Administration in-worker
+      (baseline installed IIS modules and management add-ins)
+    - Applications that genuinely ship System.Drawing.Design in their bin folder (verify signature/hash)
+level: high

@@ -1,0 +1,181 @@
+{
+  "actor": "Scarred Manticore (Storm-0861)",
+  "provenance": "Lane split authored by Stage-2 decision-agent (read-only; returns JSON in reply) and persisted by the orchestrator. technique_name/tactic reconciled against intel/cti-pipeline.json. Stage-1 ID T1562.002 was remapped to the env-canonical T1685.001 before routing; all IDs verified in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 web-server exploitation is detectable via WAF/IPS signatures and anomalous server-process child spawns (e.g. w3wp.exe launching cmd.exe), but n-day/0-day exploitation of a public app can precede the first host artifact"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL Search Order Hijacking",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 an image-load (Sysmon EID 7) of wlanapi.dll/wlbsctrl.dll from System32 on a Windows Server (where these are phantom/absent by default), especially unsigned, is a strong and well-known hunt signal, though it requires baselining server DLL loads"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 'sc.exe config <svc> start=auto' on normally-disabled services (Eaphost/IKEEXT) and service-config-change events (Event ID 7040 / 4697) are discrete, high-fidelity signals on servers, though sc.exe has admin-legitimate uses"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 creation of new/modified .aspx or dynamically-compiled App_Web_*.dll files in IIS web-content directories, and w3wp.exe spawning command shells, are detectable via file-integrity monitoring and web-directory write telemetry, though heavy obfuscation defeats content signatures"
+    },
+    {
+      "technique_id": "T1505.004",
+      "technique_name": "Server Software Component: IIS Components",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 a non-standard .NET assembly loaded into the IIS worker process that enumerates site bindings and opens HttpListener prefixes is detectable via IIS-module/assembly-load auditing and unexpected loaded-module review, though it blends with legitimate .NET server code"
+    },
+    {
+      "technique_id": "T1114.002",
+      "technique_name": "Email Collection: Remote Email Collection",
+      "tactic": "collection",
+      "rationale": "medium \u2014 abnormal EWS access volumes, EWS impersonation/mailbox-access auditing, and a rogue forwarder relaying to /ews/exchange.asmx are detectable via Exchange/mailbox audit logs, though the forwarder's localhost relay design reduces network visibility"
+    },
+    {
+      "technique_id": "T1014",
+      "technique_name": "Rootkit",
+      "tactic": "stealth",
+      "rationale": "medium \u2014 malicious driver loads are detectable via kernel-module/driver-load telemetry (Sysmon EID 6), Microsoft vulnerable/blocked-driver policy, and signature/hash review, though a loaded kernel rootkit can then subvert host-based visibility"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium \u2014 a server web/worker process (w3wp.exe or the SDD host) spawning cmd.exe is detectable via process-lineage analytics on servers where interactive shells are abnormal, though cmd usage is ubiquitous"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium \u2014 file/email exfiltration riding the passive-listener response channel blends with the C2 itself; detectable via outbound-response-size anomalies and EWS/mailbox audit correlation, though the passive/localhost-relay design limits visibility"
+    },
+    {
+      "technique_id": "T1685.001",
+      "technique_name": "Impair Defenses: Disable or Modify Windows Event Log",
+      "tactic": "stealth",
+      "rationale": "medium \u2014 thread suspension of the EventLog service (svchost hosting EventLog) and a sudden cessation/gap in event logging are detectable via EDR thread-manipulation telemetry and log-continuity monitoring, though the technique is quiet by design"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 capability development is off-victim; the shared XOR/obfuscation/heartbeat-string overlaps are a code-similarity attribution and sample-triage hunting signal, not a host detection"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "medium \u2014 Donut-generated shellcode and Tunna-derived web shells have documented structural/behavioral signatures amenable to memory scanning and web-content YARA, though heavy customization erodes off-the-shelf detections"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "rationale": "low \u2014 name/location masquerading defeats name-based allow-lists; hunt candidate via signer/hash validation, original-filename metadata mismatch, and path/signature anomalies (e.g. a 'Cyvera Console' EXE not signed by Palo Alto, or System.Drawing.Design.dll outside the GAC)"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 THE defining hunt case for this actor: by driving HTTP.sys directly the implant bypasses IIS logs and the HTTP Server API that most host/network monitoring watches, leaves no beaconing/outbound C2 to catch, and blends with legitimate server ports 80/443/444. Hunt candidate via HTTP.sys/http registry URL-reservation review (netsh http show urlacl / registered UrlGroups) for unexpected prefixes, unusual system-process URL registrations, and memory scanning for the loader \u2014 not signature detection"
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 internal named-pipe C2 produces no external network artifact; hunt candidate via named-pipe creation telemetry (Sysmon EID 17/18) for pipes with a permissive Everyone-File-All-Access DACL or anomalous names, correlated with the loader on internal servers"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 proxying rides the compromised server's own web channel and mimics legitimate service traffic; hunt candidate via anomalous internal RDP/service connections sourced from a web server, and web-shell-adjacent socket activity, rather than a discrete signature"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 tunnelled traffic is wrapped in ordinary-looking HTTP to/from a web server; hunt candidate via traffic-volume/timing anomalies and encrypted (XOR/base64) payloads inside HTTP bodies to web content, not straightforward log detection"
+    },
+    {
+      "technique_id": "T1090.002",
+      "technique_name": "Proxy: External Proxy",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 the forwarder terminates on the Exchange host itself and relays to localhost EWS, so it looks like local EWS traffic; hunt candidate via unexpected listener/service DLLs on Exchange and anomalous localhost EWS request patterns, not network signatures"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 the custom XOR/base64 layer sits inside otherwise-normal HTTP and is designed to defeat content inspection; hunt candidate via high-entropy base64 blobs in requests to web endpoints and YARA on the shared encryption constants in samples, not log detection"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "low \u2014 encoding/encryption is designed to defeat static inspection; hunt candidate via entropy analysis and in-memory/decoded-content inspection rather than direct log detection"
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "rationale": "low \u2014 obfuscation/packing defeats static AV signatures; hunt candidate via obfuscator-artifact YARA and behavioral (in-memory) analysis rather than log detection"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium \u2014 runtime decode-then-execute is partly observable via .NET/AMSI in-memory content and freshly-decoded artifacts, but the passive, memory-resident, server-side design leaves little host telemetry"
+    },
+    {
+      "technique_id": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "tactic": "stealth",
+      "rationale": "low \u2014 reflective/in-memory loading avoids disk artifacts and masks execution within legitimate processes (w3wp.exe, a system-privileged process); hunt candidate via in-memory scanning, unusual .NET Assembly.Load from web processes, and CLR-load anomalies rather than file-based detection"
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "rationale": "low \u2014 kernel-driver-initiated injection into a system-privileged process is largely invisible to user-mode EDR; hunt candidate via kernel-callback/driver-behavior telemetry and memory forensics, not standard logs"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "low \u2014 process enumeration performed from kernel mode leaves essentially no user-mode telemetry; only detectable via driver/kernel behavioral analysis or memory forensics"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low \u2014 the fingerprinting runs as in-memory shellcode using benign Windows APIs and registry reads, leaving little discrete telemetry; hunt candidate via memory/behavioral analysis of the LIONTAIL host process, not log detection"
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "rationale": "low \u2014 reading IIS site configuration is a routine administrative operation and, done in-process by a loaded .NET assembly, produces little distinguishing telemetry; hunt candidate only in correlation with the rogue listener/backdoor"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 payloads arrive inbound to a passive listener and are frequently loaded straight into memory (Rundll assembly load), so there is often no clear file-write-then-execute chain; hunt candidate via correlating listener activity with new assembly loads"
+    }
+  ],
+  "summary": {
+    "total": 28,
+    "detection": 10,
+    "hunt": 18
+  }
+}

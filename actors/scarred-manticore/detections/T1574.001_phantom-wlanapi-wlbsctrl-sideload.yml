@@ -1,0 +1,37 @@
+title: Phantom DLL Hijack - wlanapi.dll/wlbsctrl.dll Loaded from System32 (Scarred Manticore LIONTAIL)
+id: b29bccbc-d6ae-41b1-bf56-01e4a5d39d3b
+status: experimental
+description: |
+    Detects Scarred Manticore's LIONTAIL/LIONHEAD phantom DLL hijacking via image-load telemetry
+    (Sysmon EID 7). When installed as a DLL, the implant is dropped to C:\Windows\System32 as wlanapi.dll
+    or wlbsctrl.dll - DLL names that do NOT exist by default on Windows Server installations. wlbsctrl.dll
+    is loaded at the start of the 'IKE and AuthIP IPsec Keying Modules' (IKEEXT) service; wlanapi.dll is
+    loaded when the actor enables the 'Extensible Authentication Protocol' (Eaphost) service. Keys on an
+    image-load of either phantom DLL from System32, optionally unsigned. Baseline: on genuine Windows
+    Server these names are absent, so any load is anomalous.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1574.001
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_dll:
+        ImageLoaded|endswith:
+            - '\System32\wlanapi.dll'
+            - '\System32\wlbsctrl.dll'
+    filter_signed_ms:
+        Signed: 'true'
+        SignatureStatus: 'Valid'
+        Signature|contains: 'Microsoft'
+    condition: selection_dll and not filter_signed_ms
+falsepositives:
+    - Windows client SKUs / servers with the WLAN AutoConfig or NLB features installed genuinely ship
+      wlanapi.dll / wlbsctrl.dll - scope the rule to servers where these features are absent
+    - Endpoints without image-load logging or without Signed/Signature fields populated will under-report
+level: high

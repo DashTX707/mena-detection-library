@@ -217,11 +217,11 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <p class="lede">An open library of <b>deployable Sigma rules</b> and <b>threat-hunt hypotheses</b>, organized around the specific adversaries that operate against the region — every item mapped to MITRE ATT&amp;CK and traceable to public reporting. Each actor pack is produced by a transparent four-stage analyst pipeline anyone can re-run.</p>
 
     <div class="stats" id="stats">
-      <div class="stat"><div class="n tnum" data-to="5">5</div><div class="k">actors · 2 clusters</div></div>
-      <div class="stat"><div class="n tnum" data-to="264">264</div><div class="k">ATT&amp;CK techniques</div></div>
-      <div class="stat hl"><div class="n tnum" data-to="109">109</div><div class="k">Sigma detections</div></div>
-      <div class="stat"><div class="n tnum" data-to="48">48</div><div class="k">hunt packages</div></div>
-      <div class="stat"><div class="n tnum" data-to="223">223</div><div class="k">sourced IOCs</div></div>
+      <div class="stat"><div class="n tnum" data-to="6">6</div><div class="k">actors · 2 clusters</div></div>
+      <div class="stat"><div class="n tnum" data-to="292">292</div><div class="k">ATT&amp;CK techniques</div></div>
+      <div class="stat hl"><div class="n tnum" data-to="119">119</div><div class="k">Sigma detections</div></div>
+      <div class="stat"><div class="n tnum" data-to="55">55</div><div class="k">hunt packages</div></div>
+      <div class="stat"><div class="n tnum" data-to="241">241</div><div class="k">sourced IOCs</div></div>
     </div>
   </div>
 </header>
@@ -255,7 +255,7 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <div class="sec-head">
       <div>
         <div class="sec-num">02 / ACTOR DOSSIERS</div>
-        <h2>Five actors, two threat clusters</h2>
+        <h2>Six actors, two threat clusters</h2>
         <p>Iran-nexus espionage, a Palestinian-nexus operator, and an Iran-nexus <em>wiper</em>, and a Palestinian-nexus actor that turned destructive — chosen for documented, sourced MENA targeting. More to follow.</p>
       </div>
     </div>
@@ -347,9 +347,9 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
       <div>
         <h5>Coverage</h5>
         <ul>
-          <li><span class="mono">5</span> actor packs published</li>
-          <li><span class="mono">109</span> Sigma · <span class="mono">48</span> hunts</li>
-          <li><span class="mono">264</span> techniques mapped</li>
+          <li><span class="mono">6</span> actor packs published</li>
+          <li><span class="mono">119</span> Sigma · <span class="mono">55</span> hunts</li>
+          <li><span class="mono">292</span> techniques mapped</li>
           <li>CI-validated on every change</li>
         </ul>
       </div>
@@ -397,7 +397,11 @@ var ACTORS=[
  {name:"WIRTE",id:"G0090",cluster:"pal",clbl:"Palestinian · +wiper",
   targ:"Palestinian Territories, Jordan, Iraq, Egypt, Saudi Arabia, Israel", sect:"Diplomatic, government, military, finance",
   ttps:39,sig:13,hunts:9,iocs:51,
-  t:{"resource-development":[0,5],"defense-evasion":[0,7],"initial-access":[1,1],"execution":[4,3],"persistence":[1,1],"discovery":[1,4],"command-and-control":[1,2],"collection":[1,2],"lateral-movement":[2,0],"exfiltration":[0,1],"impact":[2,0]}}
+  t:{"resource-development":[0,5],"defense-evasion":[0,7],"initial-access":[1,1],"execution":[4,3],"persistence":[1,1],"discovery":[1,4],"command-and-control":[1,2],"collection":[1,2],"lateral-movement":[2,0],"exfiltration":[0,1],"impact":[2,0]}},
+ {name:"Scarred Manticore",id:"Storm-0861",cluster:"iran",clbl:"Iran · LIONTAIL",
+  targ:"Saudi Arabia, UAE, Jordan, Kuwait, Oman, Iraq, Israel", sect:"Government, military, telecom, IT services",
+  ttps:28,sig:10,hunts:7,iocs:18,
+  t:{"resource-development":[0,2],"initial-access":[1,0],"persistence":[4,0],"defense-evasion":[2,6],"command-and-control":[0,7],"collection":[1,0],"discovery":[0,3],"execution":[1,0],"exfiltration":[1,0]}}
 ];
 
 // global max cell total for bar scaling

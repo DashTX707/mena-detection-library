@@ -1,0 +1,34 @@
+title: SDD/WINTAPIX Backdoor Heartbeat over Web Channel - Exfil Correlation (Scarred Manticore)
+id: 0bf236eb-59aa-4656-892b-d7b8f31cc3bf
+status: experimental
+description: |
+    Detects Scarred Manticore's SDD backdoor / WINTAPIX payload C2-and-exfil channel (T1041) via web-server
+    request logging. The SDD 'Download' command sends victim files back to operators over the same encrypted
+    HTTP channel; the backdoor is driven by a POST body (including a base64 'Vet' parameter) and the toolset
+    shares fixed heartbeat strings across samples - a request URL/parameter containing 'wOxhuoSBgpGcnLQZxipa'
+    answered with 'UsEPTIkCRUwarKZfRnyjcG13DFA' and 200 OK. Keys on those durable shared heartbeat strings
+    appearing in the request URI or query, which is a protocol-level marker of the passive backdoor rather
+    than a fast-expiring host IOC. Corroborate with anomalously large response sizes from the same endpoint.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: webserver
+detection:
+    selection_heartbeat:
+        - cs-uri-query|contains:
+              - 'wOxhuoSBgpGcnLQZxipa'
+              - 'UsEPTIkCRUwarKZfRnyjcG13DFA'
+        - cs-uri-stem|contains:
+              - 'wOxhuoSBgpGcnLQZxipa'
+              - 'UsEPTIkCRUwarKZfRnyjcG13DFA'
+    condition: selection_heartbeat
+falsepositives:
+    - These are fixed, unique shared strings from the Scarred Manticore toolset; benign traffic matching
+      them is effectively nil - any hit warrants investigation
+level: high

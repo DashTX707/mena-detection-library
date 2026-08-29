@@ -1,0 +1,43 @@
+title: Service Enablement of Eaphost/IKEEXT to Trigger Phantom DLL Load (Scarred Manticore)
+id: 2046149a-51a6-49a6-8130-1764c010ab2c
+status: experimental
+description: |
+    Detects Scarred Manticore enabling normally-disabled Windows services in order to trigger loading of
+    its phantom hijack DLLs (T1574.001). To load the malicious wlanapi.dll, the actor runs
+    'sc.exe config Eaphost start=auto' followed by 'sc.exe start Eaphost'; the 'IKE and AuthIP IPsec Keying
+    Modules' (IKEEXT) service is relied on to load wlbsctrl.dll. Both services are disabled by default on
+    servers, so reconfiguring them to auto/demand start and starting them is a discrete, high-fidelity
+    signal. Keys on sc.exe (or PowerShell Set-Service) reconfiguring or starting Eaphost/IKEEXT.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_sc:
+        Image|endswith: '\sc.exe'
+        CommandLine|contains:
+            - ' config '
+            - ' start '
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        CommandLine|contains:
+            - 'Set-Service'
+            - 'Start-Service'
+    selection_service:
+        CommandLine|contains:
+            - 'Eaphost'
+            - 'IKEEXT'
+    condition: (selection_sc or selection_ps) and selection_service
+falsepositives:
+    - Administrators legitimately enabling EAP/IPsec (802.1X, VPN, NLB) on a server that requires it
+      (baseline the change-management window and the operator account)
+level: high

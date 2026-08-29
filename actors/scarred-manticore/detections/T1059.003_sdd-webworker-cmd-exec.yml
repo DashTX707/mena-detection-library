@@ -1,0 +1,38 @@
+title: Server Web/Worker Process Spawning cmd.exe - SDD Backdoor Command Execution (Scarred Manticore)
+id: bcd5a952-fa71-493e-bc64-b804e0b8e949
+status: experimental
+description: |
+    Detects Scarred Manticore's SDD passive backdoor executing operator commands via the Windows command
+    shell (T1059.003). On a POST carrying a 'Vet' parameter the SDD backdoor base64-decodes the value and
+    runs it with 'cmd /c'; its 'Command' capability likewise executes a process. Because SDD runs inside
+    the IIS worker (w3wp.exe) or a local-system host process injected by WINTAPIX, the tell is a server
+    web/worker process spawning cmd.exe with /c - abnormal on a hardened server where interactive shells
+    are not expected. Complements the broader T1190 web-worker-recon rule by keying specifically on
+    cmd.exe /c descendants of the web/worker process.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\MicrosoftSharePointServerManager.exe'
+            - '\svchost.exe'
+        Image|endswith: '\cmd.exe'
+        CommandLine|contains:
+            - ' /c '
+            - ' /c'
+            - ' /k '
+    condition: selection
+falsepositives:
+    - Web applications or SharePoint jobs that legitimately invoke cmd /c (baseline per app pool)
+    - svchost-parented cmd is rare; scope to servers and verify the hosting service to reduce noise
+level: high

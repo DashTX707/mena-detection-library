@@ -1,0 +1,43 @@
+title: Unsigned/Non-Standard Kernel Driver Load - WINTAPIX/SRVNET2 (Scarred Manticore)
+id: 864e450e-9f10-418e-a31d-5a5c06692d56
+status: experimental
+description: |
+    Detects the load of the WINTAPIX / SRVNET2 kernel-mode driver associated with Scarred Manticore via
+    driver-load telemetry (Sysmon EID 6). WINTAPIX (Fortinet-named; Check Point tracks version SRVNET2)
+    enumerates user-mode processes, finds one running as local-system, and injects Donut-generated
+    shellcode that loads an encrypted .NET payload combining SDD-backdoor and FOXSHELL functionality.
+    Keys on a kernel driver loading from a non-standard/user-writable path or with an invalid/absent
+    Authenticode signature - abnormal for a production Windows Server driver stack.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1014
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: driver_load
+    product: windows
+detection:
+    selection:
+        ImageLoaded|endswith: '.sys'
+    selection_unsigned:
+        Signed: 'false'
+    selection_badsig:
+        SignatureStatus|contains:
+            - 'Expired'
+            - 'Unavailable'
+            - 'Error'
+    selection_userpath:
+        ImageLoaded|contains:
+            - '\Temp\'
+            - '\ProgramData\'
+            - '\Users\'
+            - '\Windows\Temp\'
+            - '\PerfLogs\'
+    condition: selection and (selection_unsigned or selection_badsig or selection_userpath)
+falsepositives:
+    - Legitimate third-party drivers that are self-signed or load from vendor paths (baseline the driver
+      catalog and enable Microsoft vulnerable/blocked-driver policy to corroborate)
+level: high

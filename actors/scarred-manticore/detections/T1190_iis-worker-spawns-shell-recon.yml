@@ -1,0 +1,47 @@
+title: IIS/SharePoint Worker Process Spawning Shell or Discovery Utilities (Scarred Manticore)
+id: d49483a2-1210-41c0-8460-8d6519d04f7e
+status: experimental
+description: |
+    Detects post-exploitation of an Internet-facing IIS/SharePoint/Exchange server consistent with
+    Scarred Manticore initial access (T1190). The actor exploited an Internet-facing Microsoft SharePoint
+    server (May 2021, Albanian government) and dropped the compiled FOXSHELL web shell (ClientBin.aspx) to
+    proxy connections. Once a web shell executes inside the IIS worker (w3wp.exe) or the SharePoint/Exchange
+    worker, operator commands surface as the web process spawning command interpreters and discovery
+    utilities. Keys on w3wp.exe / SharePoint / Exchange worker processes spawning shells or recon binaries,
+    which is abnormal on a hardened production web server.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.t1190
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\MicrosoftSharePointServerManager.exe'
+            - '\Microsoft.Exchange.RpcClientAccess.Service.exe'
+            - '\UMWorkerProcess.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\whoami.exe'
+            - '\systeminfo.exe'
+            - '\ipconfig.exe'
+            - '\hostname.exe'
+            - '\tasklist.exe'
+            - '\reg.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Web applications that legitimately shell out (build agents, admin panels) - baseline per app pool
+    - SharePoint/Exchange maintenance scripts run under the worker identity (baseline maintenance windows)
+level: high

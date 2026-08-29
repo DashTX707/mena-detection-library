@@ -1,0 +1,561 @@
+{
+  "report_title": "Scarred Manticore (Storm-0861) Actor Intelligence Pack \u2014 Stage-1 CTI Extraction",
+  "source": "Primary: Check Point Research 'From Albania to the Middle East, the Scarred Manticore is Listening', 2023-10-31 (https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/). Supporting context on the WINTAPIX kernel driver: Fortinet (referenced within the Check Point report). The TTP set was built by ENRICHING an analyst-derived 21-technique tracker seed (itself mapped from the Check Point report) with a re-read of the primary report, adding 8 report-sourced techniques. Scarred Manticore has NO official MITRE ATT&CK Group page; techniques are vendor-report-derived analyst judgement, not an official MITRE group-technique mapping. Technique IDs verified against MITRE ATT&CK technique pages via tooling where non-obvious.",
+  "publication_date": "2026-08-29",
+  "actor": {
+    "name": "Scarred Manticore",
+    "mitre_id": "",
+    "mitre_canonical_name": "n/a (Storm-0861) \u2014 no official MITRE ATT&CK Group ID exists for this actor",
+    "aliases": [
+      "Scarred Manticore",
+      "Storm-0861",
+      "DEV-0861"
+    ],
+    "related_clusters": [
+      "MOIS-affiliated (Iran Ministry of Intelligence and Security) espionage cluster",
+      "DEV-0861 (Microsoft cluster assessed by Check Point to align with Scarred Manticore; exposed for the Albanian-government intrusion)",
+      "OilRig / APT34 (some FOXSHELL-lineage web shells were previously attributed indirectly to OilRig; code/tooling overlap noted, not identity)",
+      "VOID MANTICORE (G1055) \u2014 a SEPARATE MITRE-documented Iranian actor that MITRE describes as a COLLABORATOR with, not the same group as, Scarred Manticore; do not conflate"
+    ],
+    "attribution": "Iran-nexus cyber-espionage actor assessed to be affiliated with Iran's Ministry of Intelligence and Security (MOIS). Check Point attributes the LIONTAIL/FOXSHELL/SDD-backdoor/WINTAPIX toolset to a single actor (Scarred Manticore) on the basis of multiple code overlaps (shared obfuscation, shared XOR-with-first-byte string encryption, shared backdoor command types and heartbeat strings such as 'wOxhuoSBgpGcnLQZxipa'/'UsEPTIkCRUwarKZfRnyjcG13DFA') and shared victimology, and states it is not aware of any other actor using these tools. The DEV-0861 cluster (assessed to align with Scarred Manticore) was publicly exposed for initial access to and data exfiltration from Albanian government networks (the May 2021 SharePoint intrusion, later tied to the 2022 disruptive attack) and for email exfiltration from Middle Eastern organizations. Targeting profile (government, telecoms, military, financial across the Gulf/Levant) is aligned with Iranian MOIS espionage interests. Attribution to a single actor is high-confidence at the tooling level; the MOIS affiliation is an assessed judgement.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Saudi Arabia",
+      "United Arab Emirates",
+      "Jordan",
+      "Kuwait",
+      "Oman",
+      "Iraq",
+      "Israel",
+      "Qatar",
+      "Turkey"
+    ],
+    "targeted_regions_global": [
+      "Albania"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Telecommunications",
+      "Military / defense",
+      "Financial institutions",
+      "IT services providers",
+      "Non-profit / humanitarian (regional affiliate of a global humanitarian network)"
+    ],
+    "key_campaigns": [
+      {
+        "name": "LIONTAIL campaign (latest wave \u2014 passive HTTP.sys implants across the Middle East)",
+        "date": "Observed through 2023 (reported 2023-10-31)",
+        "summary": "Deployment of the LIONTAIL framework \u2014 a passive shellcode loader that listens for attacker HTTP requests by interacting directly with the low-level Windows HTTP stack driver (HTTP.sys) via undocumented IOCTLs, deliberately avoiding IIS/HTTP API to evade monitoring. Variants: a PE implant installed via phantom DLL hijacking or as a standalone EXE (some disguised as Cyvera Console / Cortex XDR), a LIONTAIL .NET web shell, and a named-pipe variant for internal servers with no web access. Paired with LIONHEAD, a tiny web forwarder on Exchange servers that relays traffic to EWS endpoints to conceal external email exfiltration. Victims in Saudi Arabia, UAE, Jordan, Kuwait, Oman, Iraq and Israel across government, telecoms, military, financial and IT-services sectors.",
+        "source_url": "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      },
+      {
+        "name": "FOXSHELL / SDD-backdoor lineage (historical web-deployed proxies and passive backdoors)",
+        "date": "2019 to 2023",
+        "summary": "Multi-year evolution of Internet-facing-server tooling: from a Tunna-based tunnelling web shell (internal version 'Tunna v1.1g') through the FOXSHELL family (XORO, Bsae64, and compiled App_Web_*.dll versions) used to proxy connections (often RDP) and facilitate lateral movement, to a standalone .NET passive backdoor ('SDD', masquerading as System.Drawing.Design.dll) that uses IIS ServerManager + HTTPListener to build listener URL prefixes and execute cmd.exe commands / upload-download files / load .NET assemblies. The compiled FOXSHELL (ClientBin.aspx) was used in the May 2021 exploitation of an Internet-facing Microsoft SharePoint server in the attack on the Albanian government. Targeting across Saudi Arabia, Qatar and the UAE.",
+        "source_url": "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      },
+      {
+        "name": "WINTAPIX kernel-driver activity (Fortinet-documented, overlapping toolset)",
+        "date": "Reported 2023 (Fortinet)",
+        "summary": "A wave of attacks against Middle Eastern IIS servers (mostly Saudi Arabia; also Jordan, Qatar, UAE) using the WINTAPIX kernel-mode driver, which enumerates user-mode processes, finds one running with local-system privileges, and injects Donut-generated shellcode that loads an encrypted .NET payload combining SDD-backdoor and FOXSHELL (v1.7) functionality \u2014 including an Event Log bypass that suspends EventLog Service threads. Check Point ties WINTAPIX/SRVNET2 to Scarred Manticore via shared codebase, heartbeat strings, command types, encryption keys and obfuscation.",
+        "source_url": "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Scarred Manticore",
+    "Storm-0861",
+    "DEV-0861"
+  ],
+  "targeted_regions": [
+    "Saudi Arabia",
+    "United Arab Emirates",
+    "Jordan",
+    "Kuwait",
+    "Oman",
+    "Iraq",
+    "Israel",
+    "Qatar",
+    "Turkey",
+    "Albania"
+  ],
+  "targeted_sectors": [
+    "Government",
+    "Telecommunications",
+    "Military",
+    "Financial institutions",
+    "IT services",
+    "Non-profit / humanitarian"
+  ],
+  "malware": [
+    "LIONTAIL (passive shellcode loader/backdoor \u2014 PE, web shell, and named-pipe variants)",
+    "LIONHEAD (tiny web forwarder deployed on Exchange servers to relay to EWS)",
+    "FOXSHELL (web shell proxy family: Tunna-based, XORO, Bsae64, compiled App_Web_*.dll versions)",
+    "SDD backdoor (standalone .NET passive backdoor masquerading as System.Drawing.Design.dll)",
+    "WINTAPIX / SRVNET2 (kernel-mode driver; Fortinet-named; overlapping payload with SDD/FOXSHELL)",
+    "Tunna v1.1g (open-source tunnelling web shell, customized)"
+  ],
+  "tooling_observed": [
+    "HTTP.sys undocumented IOCTLs (UlCreateServerSessionIoctl, UlAddUrlToUrlGroupIoctl, UlReceiveHttpRequestIoctl, UlSendHttpResponseIoctl, etc.)",
+    "WCF URL reservation prefix http://+:80/Temporary_Listen_Addresses/",
+    "Exchange-mimicking URL prefixes (/autodiscover/autodiscovers/, /ews/exchanges/, /ews/ews/)",
+    "phantom DLL hijacking (wlanapi.dll / wlbsctrl.dll dropped to C:\\Windows\\System32)",
+    "sc.exe config Eaphost start=auto ; sc.exe start Eaphost (service enablement to trigger DLL load)",
+    "IKE and AuthIP IPsec Keying Modules service (loads wlbsctrl.dll)",
+    "named pipe \\\\.\\pipe\\test-pipe with security descriptor D:(A;;FA;;;WD)",
+    ".NET ServerManager (System.Web.Administration) + HttpListener",
+    "Donut shellcode generator",
+    "Reflection.Assembly.Load / App_Web_*.dll dynamic ASP.NET assemblies",
+    "XOR-with-first-byte + base64 payload/string encryption; XORO.dll / Base64.dll (Bsae64) encryption modules; AES in compiled FOXSHELL",
+    "Cyvera Console / Cortex XDR masquerade (standalone EXE)",
+    "EventLog Service thread-suspension log bypass (FOXSHELL 1.7)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Scarred Manticore develops and iteratively refines a custom, in-house toolset over several years: the LIONTAIL passive loader/backdoor and its web-shell and named-pipe variants, the LIONHEAD web forwarder, the FOXSHELL web-shell family (evolved from an open-source Tunna base into custom XORO/Bsae64/compiled versions), and the SDD .NET passive backdoor. Check Point ties these together (and to WINTAPIX) through shared obfuscation, a shared XOR-with-first-byte string-encryption scheme, shared backdoor command types, and shared heartbeat strings \u2014 indicating a common developer/build framework.",
+      "observed_tooling": [
+        "LIONTAIL",
+        "LIONHEAD",
+        "FOXSHELL",
+        "SDD backdoor"
+      ],
+      "detection_feasibility": "low \u2014 capability development is off-victim; the shared XOR/obfuscation/heartbeat-string overlaps are a code-similarity attribution and sample-triage hunting signal, not a host detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "The actor adopts and customizes open-source offensive tooling: the Tunna HTTP-tunnelling web shell (used as the FOXSHELL lineage's origin, customized to 'Tunna v1.1g' with added XOR encryption) and the Donut shellcode-generation project (used by the WINTAPIX driver to produce position-independent shellcode that loads .NET assemblies from memory).",
+      "observed_tooling": [
+        "Tunna",
+        "Donut"
+      ],
+      "detection_feasibility": "medium \u2014 Donut-generated shellcode and Tunna-derived web shells have documented structural/behavioral signatures amenable to memory scanning and web-content YARA, though heavy customization erodes off-the-shelf detections",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Scarred Manticore gains initial access by exploiting Internet-facing Windows servers. The May 2021 attack on the Albanian government began with exploitation of an Internet-facing Microsoft SharePoint server, on which the actor deployed the compiled FOXSHELL web shell (ClientBin.aspx) to proxy external connections and enable lateral movement. The actor's toolset is broadly oriented around compromised Internet-facing IIS/Exchange/SharePoint servers.",
+      "observed_tooling": [
+        "SharePoint exploitation",
+        "ClientBin.aspx (compiled FOXSHELL)"
+      ],
+      "detection_feasibility": "medium \u2014 web-server exploitation is detectable via WAF/IPS signatures and anomalous server-process child spawns (e.g. w3wp.exe launching cmd.exe), but n-day/0-day exploitation of a public app can precede the first host artifact",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL Search Order Hijacking",
+      "tactic": "persistence",
+      "procedure_description": "When installed as a DLL, LIONTAIL abuses 'phantom' DLL hijacking: the implant is dropped to C:\\Windows\\System32 as wlanapi.dll or wlbsctrl.dll \u2014 DLL names that do not exist by default on Windows Server installations. wlbsctrl.dll is loaded at the start of the 'IKE and AuthIP IPsec Keying Modules' service; wlanapi.dll is loaded when the actor enables the 'Extensible Authentication Protocol' (Eaphost) service, or directly by processes such as Explorer.exe. LIONHEAD is installed the same way.",
+      "observed_tooling": [
+        "wlanapi.dll",
+        "wlbsctrl.dll",
+        "IKEEXT / Eaphost services"
+      ],
+      "detection_feasibility": "medium \u2014 an image-load (Sysmon EID 7) of wlanapi.dll/wlbsctrl.dll from System32 on a Windows Server (where these are phantom/absent by default), especially unsigned, is a strong and well-known hunt signal, though it requires baselining server DLL loads",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "To trigger loading of its phantom hijack DLLs at boot, the actor enables specific Windows services that are disabled by default and that depend on the target DLL \u2014 e.g. running 'sc.exe config Eaphost start=auto' followed by 'sc.exe start Eaphost' to have the Extensible Authentication Protocol service load the malicious wlanapi.dll, and relying on the IKE and AuthIP IPsec Keying Modules service to load wlbsctrl.dll. LIONTAIL and LIONHEAD are also described as installed as services.",
+      "observed_tooling": [
+        "sc.exe config Eaphost start=auto",
+        "sc.exe start Eaphost",
+        "IKEEXT service"
+      ],
+      "detection_feasibility": "medium \u2014 'sc.exe config <svc> start=auto' on normally-disabled services (Eaphost/IKEEXT) and service-config-change events (Event ID 7040 / 4697) are discrete, high-fidelity signals on servers, though sc.exe has admin-legitimate uses",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "Scarred Manticore's core persistence on compromised servers is a lineage of web shells: a customized Tunna v1.1g tunnelling shell; the FOXSHELL family (XORO, Bsae64, and compiled App_Web_*.dll versions listening on relative path ~/1.aspx, e.g. ClientBin.aspx used against the Albanian government); a heavily-obfuscated Xsl Exec Shell (XML/XSL transform) variant; the LIONTAIL .NET web shell; and web shells previously attributed indirectly to OilRig. All retain class/method obfuscation and XOR-with-first-byte string encryption.",
+      "observed_tooling": [
+        "FOXSHELL (App_Web_*.dll / ClientBin.aspx)",
+        "Tunna v1.1g",
+        "LIONTAIL web shell",
+        "Xsl Exec Shell"
+      ],
+      "detection_feasibility": "medium \u2014 creation of new/modified .aspx or dynamically-compiled App_Web_*.dll files in IIS web-content directories, and w3wp.exe spawning command shells, are detectable via file-integrity monitoring and web-directory write telemetry, though heavy obfuscation defeats content signatures",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1505.004",
+      "technique_name": "Server Software Component: IIS Components",
+      "tactic": "persistence",
+      "procedure_description": "The SDD standalone .NET passive backdoor (masquerading as System.Drawing.Design.dll) uses the IIS ServerManager class (System.Web.Administration) to enumerate the sites and bindings configured on the IIS server and programmatically build the set of URL prefixes it will listen on via HttpListener \u2014 installing itself as an IIS-server-resident .NET component to observe/handle HTTP requests. The WINTAPIX driver's final payload uses the same IIS ServerManager mechanism (which is why it only targets IIS servers).",
+      "observed_tooling": [
+        "SDD backdoor",
+        ".NET ServerManager / HttpListener",
+        "WINTAPIX payload"
+      ],
+      "detection_feasibility": "medium \u2014 a non-standard .NET assembly loaded into the IIS worker process that enumerates site bindings and opens HttpListener prefixes is detectable via IIS-module/assembly-load auditing and unexpected loaded-module review, though it blends with legitimate .NET server code",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "The actor disguises implants as legitimate software/system components: standalone LIONTAIL executables are disguised as 'Cyvera Console', a component of Palo Alto Cortex XDR; the SDD backdoor masquerades as the legitimate .NET library System.Drawing.Design.dll; and phantom hijack DLLs use trusted system DLL names (wlanapi.dll, wlbsctrl.dll) placed in System32.",
+      "observed_tooling": [
+        "Cyvera Console masquerade",
+        "System.Drawing.Design.dll masquerade",
+        "wlanapi.dll / wlbsctrl.dll names"
+      ],
+      "detection_feasibility": "low \u2014 name/location masquerading defeats name-based allow-lists; hunt candidate via signer/hash validation, original-filename metadata mismatch, and path/signature anomalies (e.g. a 'Cyvera Console' EXE not signed by Palo Alto, or System.Drawing.Design.dll outside the GAC)",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "LIONTAIL's primary variant is a PASSIVE backdoor: instead of beaconing out, it listens for inbound attacker HTTP(S) requests on registered URL prefixes and executes received shellcode, returning results in the HTTP response. Critically, it does NOT use IIS or the HTTP Server API \u2014 it interacts directly with the low-level HTTP.sys kernel driver via undocumented IOCTLs (UlCreateServerSessionIoctl, UlCreateUrlGroupIoctl, UlAddUrlToUrlGroupIoctl, UlReceiveHttpRequestIoctl, UlSendHttpResponseIoctl), specifically to avoid the IIS/HTTP-API layers that security tools monitor. URL prefixes mimic legitimate services (http://+:80/Temporary_Listen_Addresses/, https://+:443/autodiscover/autodiscovers/, /ews/exchanges/, /ews/ews/). The SDD backdoor similarly uses the .NET HttpListener class as an HTTP-request-handling C2 listener supporting command execution and file upload/download.",
+      "observed_tooling": [
+        "LIONTAIL (HTTP.sys IOCTL listener)",
+        "SDD backdoor (HttpListener)",
+        "Exchange/Autodiscover URL-prefix mimicry"
+      ],
+      "detection_feasibility": "low \u2014 THE defining hunt case for this actor: by driving HTTP.sys directly the implant bypasses IIS logs and the HTTP Server API that most host/network monitoring watches, leaves no beaconing/outbound C2 to catch, and blends with legitimate server ports 80/443/444. Hunt candidate via HTTP.sys/http registry URL-reservation review (netsh http show urlacl / registered UrlGroups) for unexpected prefixes, unusual system-process URL registrations, and memory scanning for the loader \u2014 not signature detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "A named-pipe variant of LIONTAIL, intended for internal servers with no access to the public web, receives its shellcode payloads over a named pipe instead of HTTP. It creates a named pipe (observed as \\\\.\\pipe\\test-pipe) using a security descriptor string 'D:(A;;FA;;;WD)' that grants File All Access to Everyone, and uses standard kernel32.dll APIs (CreateNamedPipe, ReadFile/WriteFile). The encryption scheme and in-memory shellcode payload structure are identical to the HTTP version.",
+      "observed_tooling": [
+        "LIONTAIL named-pipe variant",
+        "\\\\.\\pipe\\test-pipe",
+        "CreateNamedPipe"
+      ],
+      "detection_feasibility": "low \u2014 internal named-pipe C2 produces no external network artifact; hunt candidate via named-pipe creation telemetry (Sysmon EID 17/18) for pipes with a permissive Everyone-File-All-Access DACL or anomalous names, correlated with the loader on internal servers",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "FOXSHELL (originating from the open-source Tunna framework) is a web-shell proxy that lets the actor connect from outside to any service on the compromised host \u2014 including services blocked at the firewall \u2014 because all external communication is tunnelled through the web shell over HTTP. The IP/port of the target service is supplied in a configuration ('Config'/'RDPconfig' PackageType), and Tunna/FOXSHELL is frequently used to proxy RDP connections into the victim environment.",
+      "observed_tooling": [
+        "FOXSHELL",
+        "Tunna v1.1g",
+        "RDP proxying"
+      ],
+      "detection_feasibility": "low \u2014 proxying rides the compromised server's own web channel and mimics legitimate service traffic; hunt candidate via anomalous internal RDP/service connections sourced from a web server, and web-shell-adjacent socket activity, rather than a discrete signature",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "FOXSHELL tunnels arbitrary TCP service traffic over its HTTP web-shell channel: it opens a new socket to a remote machine specified in its configuration and relays 'Data'-type packages between that socket and the HTTP channel, encapsulating firewall-blocked internal service traffic (notably RDP) inside HTTP requests/responses.",
+      "observed_tooling": [
+        "FOXSHELL Package/Data tunnelling",
+        "Tunna"
+      ],
+      "detection_feasibility": "low \u2014 tunnelled traffic is wrapped in ordinary-looking HTTP to/from a web server; hunt candidate via traffic-volume/timing anomalies and encrypted (XOR/base64) payloads inside HTTP bodies to web content, not straightforward log detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1090.002",
+      "technique_name": "Proxy: External Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "The LIONHEAD web forwarder, deployed on compromised Exchange servers and installed via the same phantom DLL hijacking technique as LIONTAIL, registers listen_urls (e.g. https://+:443/<redacted>/) and, for each request, copies the content type, cookie, and body and forwards them to a configured forward_server/forward_path/forward_port (localhost:444 /ews/exchange.asmx). It returns the EWS response to the original requester \u2014 acting as an external-facing proxy that bypasses restrictions on external EWS connections and conceals that the true consumer of the Exchange Web Services data is external.",
+      "observed_tooling": [
+        "LIONHEAD",
+        "EWS (/ews/exchange.asmx)"
+      ],
+      "detection_feasibility": "low \u2014 the forwarder terminates on the Exchange host itself and relays to localhost EWS, so it looks like local EWS traffic; hunt candidate via unexpected listener/service DLLs on Exchange and anomalous localhost EWS request patterns, not network signatures",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1114.002",
+      "technique_name": "Email Collection: Remote Email Collection",
+      "tactic": "collection",
+      "procedure_description": "Scarred Manticore's LIONHEAD forwarder is deployed on Exchange servers to reach Exchange Web Services (EWS) endpoints, used to bypass external-EWS restrictions and conceal external consumption of mailbox data \u2014 enabling email exfiltration. The DEV-0861 cluster (assessed to align with Scarred Manticore) was publicly exposed for email exfiltration from multiple Middle Eastern organizations (Kuwait, Saudi Arabia, Turkey, UAE, Jordan).",
+      "observed_tooling": [
+        "LIONHEAD",
+        "EWS / Exchange"
+      ],
+      "detection_feasibility": "medium \u2014 abnormal EWS access volumes, EWS impersonation/mailbox-access auditing, and a rogue forwarder relaying to /ews/exchange.asmx are detectable via Exchange/mailbox audit logs, though the forwarder's localhost relay design reduces network visibility",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "Across the toolset, C2 request/response bodies are protected with a custom symmetric scheme rather than relying on TLS alone: LIONTAIL base64-decodes the request then XORs the whole payload with the first byte of the data; responses are XOR-encoded with a randomly chosen key byte that is prepended to the result before base64 encoding. The web shells (Tunna v1.1g, FOXSHELL XORO/Bsae64, SDD backdoor) use the same XOR-with-first-byte(s) scheme (with AES additionally in compiled FOXSHELL), sometimes via embedded encryption DLLs (XORO.dll, Base64.dll).",
+      "observed_tooling": [
+        "XOR-with-first-byte + base64",
+        "XORO.dll / Base64.dll",
+        "AES (compiled FOXSHELL)"
+      ],
+      "detection_feasibility": "low \u2014 the custom XOR/base64 layer sits inside otherwise-normal HTTP and is designed to defeat content inspection; hunt candidate via high-entropy base64 blobs in requests to web endpoints and YARA on the shared encryption constants in samples, not log detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Payloads and configurations are stored encoded/encrypted at rest: LIONTAIL one-byte-XOR-decrypts its configuration structure at runtime; received payloads are base64-decoded then XOR-decrypted; FOXSHELL embeds its encryption module (XORO.dll / Base64.dll) as a base64-encoded .NET DLL inside the web-shell body; the WINTAPIX driver carries an encrypted .NET payload.",
+      "observed_tooling": [
+        "XOR-encoded config/payload",
+        "base64-embedded EncryptionDll"
+      ],
+      "detection_feasibility": "low \u2014 encoding/encryption is designed to defeat static inspection; hunt candidate via entropy analysis and in-memory/decoded-content inspection rather than direct log detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "procedure_description": "The .NET web shells and backdoors retain heavy class-, method- and string-level obfuscation, and the final WINTAPIX .NET payload is additionally obfuscated with a commercial obfuscator on top of the familiar class/method/string obfuscation. URL prefixes and paths are chosen to mimic legitimate services so malware communication blends into normal server traffic.",
+      "observed_tooling": [
+        "commercial .NET obfuscator",
+        "class/method/string obfuscation"
+      ],
+      "detection_feasibility": "low \u2014 obfuscation/packing defeats static AV signatures; hunt candidate via obfuscator-artifact YARA and behavioral (in-memory) analysis rather than log detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "At runtime the implants reverse their own encoding: LIONTAIL base64-decodes then XOR-decrypts each received C2 payload before executing it in memory and one-byte-XOR-decrypts its configuration; FOXSHELL base64-decodes and loads its embedded encryption DLL and decrypts request/response Packages; the SDD backdoor base64+XOR-decodes POST-body commands (and base64-decodes the 'Vet' parameter value) before executing them.",
+      "observed_tooling": [
+        "runtime base64+XOR decode",
+        "SDD 'Vet' param decode"
+      ],
+      "detection_feasibility": "medium \u2014 runtime decode-then-execute is partly observable via .NET/AMSI in-memory content and freshly-decoded artifacts, but the passive, memory-resident, server-side design leaves little host telemetry",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "tactic": "stealth",
+      "procedure_description": "The framework runs payloads directly in memory rather than from disk: LIONTAIL creates a new thread and executes received shellcode in-memory (payload TYPE=1 runs another shellcode; nested shellcodes culminate in a fingerprinting payload), the compiled FOXSHELL loads an App_Web_*.dll via System.Reflection.Assembly.Load and invokes ProcessRequest, and WINTAPIX injects Donut-generated position-independent shellcode that loads and executes an encrypted .NET assembly from memory.",
+      "observed_tooling": [
+        "in-memory shellcode execution",
+        "Reflection.Assembly.Load",
+        "Donut .NET-from-memory"
+      ],
+      "detection_feasibility": "low \u2014 reflective/in-memory loading avoids disk artifacts and masks execution within legitimate processes (w3wp.exe, a system-privileged process); hunt candidate via in-memory scanning, unusual .NET Assembly.Load from web processes, and CLR-load anomalies rather than file-based detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "procedure_description": "The WINTAPIX kernel-mode driver enumerates user-mode processes to find one running with local-system privileges and injects an embedded Donut-generated shellcode into it; that shellcode then loads and executes the encrypted .NET payload (combining SDD-backdoor and FOXSHELL functionality). LIONTAIL likewise runs received shellcode in a newly created thread in its host process.",
+      "observed_tooling": [
+        "WINTAPIX driver",
+        "Donut shellcode",
+        "LIONTAIL in-memory thread"
+      ],
+      "detection_feasibility": "low \u2014 kernel-driver-initiated injection into a system-privileged process is largely invisible to user-mode EDR; hunt candidate via kernel-callback/driver-behavior telemetry and memory forensics, not standard logs",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The WINTAPIX kernel driver enumerates the system's user-mode processes in order to identify a suitable target process running with local-system privileges into which it can inject its Donut shellcode.",
+      "observed_tooling": [
+        "WINTAPIX driver process enumeration"
+      ],
+      "detection_feasibility": "low \u2014 process enumeration performed from kernel mode leaves essentially no user-mode telemetry; only detectable via driver/kernel behavioral analysis or memory forensics",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1014",
+      "technique_name": "Rootkit",
+      "tactic": "stealth",
+      "procedure_description": "WINTAPIX is a kernel-mode driver (Fortinet-named; tracked by Check Point via version SRVNET2) used to operate from the kernel \u2014 enumerating user-mode processes and injecting shellcode into a system-privileged process from kernel level, providing stealthy, high-privilege execution consistent with rootkit-enabling functionality.",
+      "observed_tooling": [
+        "WINTAPIX / SRVNET2 kernel driver"
+      ],
+      "detection_feasibility": "medium \u2014 malicious driver loads are detectable via kernel-module/driver-load telemetry (Sysmon EID 6), Microsoft vulnerable/blocked-driver policy, and signature/hash review, though a loaded kernel rootkit can then subvert host-based visibility",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "A LIONTAIL fingerprinting payload (delivered as a nested shellcode) profiles the host: Computer Name (GetComputerNameW), Domain Name (GetEnvironmentVariableA), 64-bit flag and processor count (GetNativeSystemInfo), physical RAM (GetPhysicallyInstalledSystemMemory), and data read from the CurrentVersion, SecureBoot\\State and System\\Bios registry keys \u2014 returning the values plus per-API last-error codes to the operators.",
+      "observed_tooling": [
+        "GetComputerNameW / GetNativeSystemInfo",
+        "CurrentVersion / SecureBoot\\State / System\\Bios registry reads"
+      ],
+      "detection_feasibility": "low \u2014 the fingerprinting runs as in-memory shellcode using benign Windows APIs and registry reads, leaving little discrete telemetry; hunt candidate via memory/behavioral analysis of the LIONTAIL host process, not log detection",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The SDD backdoor uses the .NET ServerManager (IIS) class to extract the list of sites and bindings hosted by the IIS server, in order to build a matching HashSet of URL prefixes to listen on \u2014 enumerating installed server-application configuration to blend its listener into legitimate sites.",
+      "observed_tooling": [
+        "SDD backdoor",
+        "IIS ServerManager site enumeration"
+      ],
+      "detection_feasibility": "low \u2014 reading IIS site configuration is a routine administrative operation and, done in-process by a loaded .NET assembly, produces little distinguishing telemetry; hunt candidate only in correlation with the rogue listener/backdoor",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "The SDD backdoor executes operator commands via the Windows command shell: on a POST request carrying a 'Vet' parameter it base64-decodes the value and runs it with 'cmd /c', and its 'Command' capability executes a process with a specified argument. cmd.exe execution is also among the backdoor's core command set.",
+      "observed_tooling": [
+        "cmd /c",
+        "SDD backdoor 'Vet' / 'Command'"
+      ],
+      "detection_feasibility": "medium \u2014 a server web/worker process (w3wp.exe or the SDD host) spawning cmd.exe is detectable via process-lineage analytics on servers where interactive shells are abnormal, though cmd usage is ubiquitous",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The SDD backdoor supports 'Upload' (writes an operator-supplied file to a specified path on the infected system) and 'Rundll' (loads an operator-delivered additional .NET assembly and runs it), and LIONTAIL receives arbitrary shellcode/payloads from the operators \u2014 allowing staging of further tooling onto compromised servers.",
+      "observed_tooling": [
+        "SDD 'Upload' / 'Rundll'",
+        "LIONTAIL payload delivery"
+      ],
+      "detection_feasibility": "low \u2014 payloads arrive inbound to a passive listener and are frequently loaded straight into memory (Rundll assembly load), so there is often no clear file-write-then-execute chain; hunt candidate via correlating listener activity with new assembly loads",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "The SDD backdoor's 'Download' command sends a specified file from the infected system back to the operators over the same encrypted HTTP C2 channel; more broadly, Scarred Manticore/DEV-0861 leveraged its server access to systematically exfiltrate data \u2014 including email exfiltration via EWS/LIONHEAD \u2014 from victims across the Middle East over months.",
+      "observed_tooling": [
+        "SDD 'Download'",
+        "LIONHEAD/EWS email exfiltration"
+      ],
+      "detection_feasibility": "medium \u2014 file/email exfiltration riding the passive-listener response channel blends with the C2 itself; detectable via outbound-response-size anomalies and EWS/mailbox audit correlation, though the passive/localhost-relay design limits visibility",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    },
+    {
+      "technique_id": "T1685.001",
+      "technique_name": "Impair Defenses: Disable or Modify Windows Event Log",
+      "tactic": "stealth",
+      "procedure_description": "FOXSHELL version 1.7 (the variant carried in the WINTAPIX driver payload) includes an Event Log bypass implemented via the known technique of suspending the EventLog Service's threads, preventing Windows event logging while the implant operates.",
+      "observed_tooling": [
+        "FOXSHELL 1.7 EventLog thread-suspension bypass"
+      ],
+      "detection_feasibility": "medium \u2014 thread suspension of the EventLog service (svchost hosting EventLog) and a sudden cessation/gap in event logging are detectable via EDR thread-manipulation telemetry and log-continuity monitoring, though the technique is quiet by design",
+      "sources": [
+        "https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "Image-load of wlanapi.dll or wlbsctrl.dll from C:\\Windows\\System32 on a Windows Server (these are phantom/absent by default), especially unsigned \u2014 LIONTAIL/LIONHEAD phantom DLL hijacking (Sysmon EID 7)",
+    "sc.exe config Eaphost start=auto / sc.exe start Eaphost, or enabling the IKE and AuthIP IPsec Keying Modules (IKEEXT) service on a server where it is normally disabled \u2014 service enablement to trigger the hijack DLL (Event ID 7040/4697)",
+    "Unexpected HTTP.sys URL reservations / registered UrlGroups on a server (e.g. review netsh http show urlacl and HTTP.sys registrations) for prefixes like /Temporary_Listen_Addresses/, /autodiscover/autodiscovers/, /ews/exchanges/, /ews/ews/ not tied to a legitimate application \u2014 LIONTAIL passive listener",
+    "Named-pipe creation (Sysmon EID 17/18) for a pipe with a permissive 'Everyone: File All Access' DACL (security descriptor D:(A;;FA;;;WD)) or an anomalous name such as \\\\.\\pipe\\test-pipe on an internal server \u2014 LIONTAIL named-pipe variant",
+    "New or modified .aspx web shells or dynamically-compiled App_Web_*.dll files (e.g. ClientBin.aspx, ~/1.aspx artifacts) in IIS web-content directories, and w3wp.exe spawning cmd.exe \u2014 FOXSHELL/LIONTAIL web shells",
+    "A standalone EXE masquerading as 'Cyvera Console' (not signed by Palo Alto), or a System.Drawing.Design.dll loaded from outside the GAC \u2014 LIONTAIL/SDD masquerading",
+    "A non-standard .NET assembly loaded into w3wp.exe that enumerates IIS site bindings (ServerManager) and opens HttpListener prefixes \u2014 SDD backdoor / WINTAPIX payload",
+    "Kernel driver load (Sysmon EID 6) of an unknown/unsigned driver followed by injection into a local-system process \u2014 WINTAPIX / SRVNET2",
+    "Suspension of EventLog Service threads and/or an abrupt gap in Windows event logging on a server \u2014 FOXSHELL 1.7 log bypass",
+    "Rogue forwarder on an Exchange server relaying request content-type/cookie/body to localhost /ews/exchange.asmx (port 444), or anomalous EWS access volumes \u2014 LIONHEAD / remote email collection",
+    "High-entropy base64 blobs in HTTP request/response bodies to server endpoints that decode to XOR-with-first-byte-encrypted content \u2014 LIONTAIL/FOXSHELL/SDD C2 encryption",
+    "SDD backdoor heartbeat: a request URL containing 'wOxhuoSBgpGcnLQZxipa' answered with 'UsEPTIkCRUwarKZfRnyjcG13DFA' and 200 OK \u2014 SDD/WINTAPIX shared heartbeat strings"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [],
+    "emails": [],
+    "hashes": [
+      "daa362f070ba121b9a2fa3567abc345edcde33c54cabefa71dd2faad78c10c33",
+      "f4639c63fb01875946a4272c3515f005d558823311d0ee4c34896c2b66122596",
+      "2097320e71990865f04b9484858d279875cf5c66a5f6d12c819a34e2385da838",
+      "67560e05383e38b2fcc30df84f0792ad095d5594838087076b214d849cde9542",
+      "4f6351b8fb3f49ff0061ee6f338cd1af88893ed20e71e211e8adb6b90e50a3b8",
+      "f6c316e2385f2694d47e936b0ac4bc9b55e279d530dd5e805f0d963cb47c3c0d",
+      "1485c0ed3e875cbdfc6786a5bd26d18ea9d31727deb8df290a1c00c780419a4e",
+      "8578bff36e3b02cc71495b647db88c67c3c5ca710b5a2bd539148550595d0330",
+      "c5b4542d61af74cf7454d7f1c8d96218d709de38f94ccfa7c16b15f726dc08c0",
+      "9117bd328e37be121fb497596a2d0619a0eaca44752a1854523b8af46a5b0ceb",
+      "e1ad173e49eee1194f2a55afa681cef7c3b8f6c26572f474dec7a42e9f0cdc9d",
+      "a2598161e1efff623de6128ad8aafba9da0300b6f86e8c951e616bd19f0a572b",
+      "7495c1ea421063845eb8f4599a1c17c105f700ca0671ca874c5aa5aef3764c1c",
+      "6f0a38c9eb9171cd323b0f599b74ee571620bc3f34aa07435e7c5822663de605",
+      "3875ed58c0d42e05c83843b32ed33d6ba5e94e18ffe8fb1bf34fd7dedf3f82a7",
+      "1146b1f38e420936b7c5f6b22212f3aa93515f3738c861f499ed1047865549cb",
+      "b71aa5f27611a2089a5bbe34fd1aafb45bd71824b4f8c2465cf4754db746aa79",
+      "da450c639c9a50377233c0f195c3f6162beb253f320ed57d5c9bb9c7f0e83999"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "TTP set = 21-technique analyst-derived tracker seed (all preserved) ENRICHED with 8 report-sourced additions (29 techniques total), each cited to the Check Point primary report. The 8 additions: T1587.001 (custom-malware development + shared code/obfuscation/heartbeat overlaps), T1588.002 (open-source Tunna + Donut adoption), T1505.004 (SDD/WINTAPIX use of IIS ServerManager as an IIS-resident component), T1114.002 (EWS/LIONHEAD remote email collection), T1573.001 (custom XOR symmetric-crypto C2 channel), T1140 (runtime base64+XOR decode), T1620 (reflective/in-memory code loading \u2014 LIONTAIL shellcode, Assembly.Load, Donut), and T1057 (WINTAPIX user-mode process enumeration). NOTE ON DUP TECHNIQUE ID: T1071.001 appears once but covers BOTH the LIONTAIL HTTP.sys passive listener and the SDD HttpListener (the seed listed them separately); merged into a single procedure entry. ATT&CK FRAMEWORK-VERSION CONVENTION (this dataset): defense-evasion tactic emitted as 'stealth' (applied to T1036.005, T1027.013, T1027.002, T1140, T1620, T1055, T1014, T1562.002); 'Disable or Modify Tools'/'Clear Windows Event Logs' would be T1685/T1685.005 \u2014 but Scarred Manticore's only sourced defense-impairment is SUSPENDING EventLog service threads = T1562.002 (Disable Windows Event Logging), which is NOT remapped, so no T1685/T1685.005 is emitted (IDs noted only to confirm the convention was checked). No T1543.003\u2192 note conflict. ACTOR HAS NO OFFICIAL MITRE GROUP ID: mitre_id = '' (Storm-0861 is Microsoft's designation, DEV-0861 the legacy Microsoft cluster; VOID MANTICORE G1055 is a SEPARATE collaborating actor, not this one). LOW detection-feasibility techniques = HUNT candidates, not signature detection (route to threat-hunter): T1071.001 (LIONTAIL passive HTTP.sys listener \u2014 the defining hunt case: bypasses IIS/HTTP-API logging, no outbound beacon, blends with server ports), T1095 (named-pipe LIONTAIL \u2014 internal, no network artifact), T1090/T1572/T1090.002 (FOXSHELL/LIONHEAD proxy/tunnel/EWS-forward \u2014 ride the server's own channel), T1055/T1057 (WINTAPIX kernel injection/enumeration \u2014 invisible to user-mode EDR), T1620 (reflective in-memory loading), T1573.001/T1027.013/T1027.002 (custom encryption/obfuscation), T1036.005 (name masquerade), T1082/T1518/T1105 (in-memory/passive discovery and delivery), T1587.001 (off-victim dev). HIGHER-FEASIBILITY DETECTIONS (route to detection-engineer): T1574.001 (wlanapi.dll/wlbsctrl.dll phantom load from System32 on servers), T1543.003 (sc.exe config Eaphost start=auto / IKEEXT enablement), T1505.003/T1505.004 (new .aspx / App_Web_*.dll web shells + IIS-module assembly loads), T1014 (unsigned kernel driver load), T1562.002 (EventLog thread suspension / log gap), T1059.003 (server process spawning cmd.exe). ATTRIBUTION 'medium': tooling attribution to a single actor is high-confidence (multiple code overlaps, shared XOR encryption, shared heartbeat strings 'wOxhuoSBgpGcnLQZxipa'/'UsEPTIkCRUwarKZfRnyjcG13DFA', shared victimology, no other actor known to use the tools); the MOIS/Iran affiliation and DEV-0861 alignment are assessed judgements. IOCs: 18 SHA-256 hashes from the Check Point IOC appendix \u2014 NO C2 IPs or domains are published, which is expected and characteristic of this actor: LIONTAIL/LIONHEAD/SDD are PASSIVE inbound implants that receive attacker connections rather than beacon out, so there is no outbound C2 infrastructure to list. Hashes expire fast; the passive-listener TTPs and detection_signals (HTTP.sys URL-reservation review, phantom-DLL image loads, service enablement, heartbeat strings) are the durable value. No verbatim YARA rule appears in the primary report, so yara_rules is empty (never authored from scratch)."
+}

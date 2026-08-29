@@ -1,0 +1,41 @@
+title: EventLog Service Thread Suspension / Access for Log Bypass (Scarred Manticore FOXSHELL 1.7)
+id: c5ae43d5-b55b-4c92-89ef-a97b12a3ec73
+status: experimental
+description: |
+    Detects the Event Log bypass carried in Scarred Manticore's FOXSHELL v1.7 (the variant delivered by the
+    WINTAPIX driver payload), which suspends the EventLog Service's threads to halt Windows event logging
+    while the implant operates (T1685.001). Keys on cross-process access (Sysmon EID 10) to the svchost.exe
+    instance hosting the EventLog service requesting thread-suspend / thread-manipulation rights
+    (THREAD_SUSPEND_RESUME 0x0800, or a broad access mask granting it), from a non-service-control process.
+    Pair with log-continuity monitoring: an abrupt cessation/gap in Security or System channel events on the
+    same host corroborates the bypass.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1685.001
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: process_access
+    product: windows
+detection:
+    selection:
+        TargetImage|endswith: '\svchost.exe'
+        GrantedAccess|contains:
+            - '0x800'
+            - '0x1400'
+            - '0x1fffff'
+    filter_service_control:
+        SourceImage|endswith:
+            - '\services.exe'
+            - '\svchost.exe'
+            - '\MsMpEng.exe'
+            - '\wininit.exe'
+    condition: selection and not filter_service_control
+falsepositives:
+    - Debuggers, EDR agents or performance tools that legitimately open threads in svchost (baseline the
+      SourceImage set); GrantedAccess masks vary by tool - tune to the EventLog-hosting svchost PID
+    - Without Sysmon EID 10 (ProcessAccess) telemetry this rule will not populate (visibility gap)
+level: high

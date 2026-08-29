@@ -1,0 +1,57 @@
+title: Web Shell Written to IIS Content Directory - .aspx / App_Web_*.dll (Scarred Manticore FOXSHELL)
+id: 2f17a6cd-209c-4730-bf11-1c4c826840c3
+status: experimental
+description: |
+    Detects Scarred Manticore's FOXSHELL/LIONTAIL web-shell persistence via file-creation telemetry
+    (Sysmon EID 11). The actor deploys a lineage of .aspx web shells (customized Tunna v1.1g, the FOXSHELL
+    family including the compiled ClientBin.aspx used against the Albanian government, and a LIONTAIL .NET
+    web shell) and dynamically-compiled App_Web_*.dll assemblies into IIS web-content directories. Keys on
+    creation/modification of .aspx/.asmx/.ashx or App_Web_*.dll files under IIS content roots
+    (inetpub\wwwroot, SharePoint/Exchange virtual dirs) by the IIS worker (w3wp.exe) or a shell, which is
+    abnormal outside a controlled deployment.
+references:
+    - https://research.checkpoint.com/2023/from-albania-to-the-middle-east-the-scarred-manticore-is-listening/
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.scarred-manticore
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_path:
+        TargetFilename|contains:
+            - '\inetpub\wwwroot\'
+            - '\inetpub\'
+            - '\Web Server Extensions\'
+            - '\FrontEnd\HttpProxy\'
+            - '\ClientAccess\'
+            - '\owa\'
+            - '\ecp\'
+    selection_ext:
+        TargetFilename|endswith:
+            - '.aspx'
+            - '.asmx'
+            - '.ashx'
+            - '.asax'
+    selection_appweb:
+        TargetFilename|contains: '\App_Web_'
+        TargetFilename|endswith: '.dll'
+    selection_writer:
+        Image|endswith:
+            - '\w3wp.exe'
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    filter_compiler:
+        Image|endswith:
+            - '\csc.exe'
+            - '\vbc.exe'
+            - '\aspnet_compiler.exe'
+    condition: (selection_path and selection_ext and selection_writer or selection_appweb and selection_writer) and not filter_compiler
+falsepositives:
+    - Legitimate application deployments/updates writing .aspx or precompiled assemblies (scope to change windows)
+    - Runtime ASP.NET compilation of App_Web_*.dll by aspnet_compiler/csc (excluded) may still surface if spawned oddly
+level: high
