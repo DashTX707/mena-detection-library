@@ -1,0 +1,1307 @@
+{
+  "report_title": "Charming Kitten (APT35 / Magic Hound / APT42) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Primary sources: (1) MITRE ATT&CK Group G0059 'Magic Hound' official group-technique mapping (https://attack.mitre.org/groups/G0059), retrieved via ATT&CK tooling; (2) Google Cloud / Mandiant, 'Uncharmed: Untangling Iran's APT42 Operations', 2024-05-01 (https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations). Charming Kitten (APT35) and APT42 are closely related / overlapping IRGC-nexus clusters; MITRE tracks them together under G0059. Every technique_id in the ttps array is drawn from the official G0059 mapping OR is a well-sourced addition explicitly verified to exist in this ATT&CK dataset via get_technique and cited to the Mandiant APT42 report. Technique IDs and canonical names were verified against the CI validator's (newer/reorganized) ATT&CK dataset; the defense-evasion tactic is emitted as 'stealth' and the T1685.x 'Impair Defenses' family uses the remapped IDs per this dataset's convention.",
+  "publication_date": "2026-08-29",
+  "actor": {
+    "name": "Charming Kitten",
+    "mitre_id": "G0059",
+    "mitre_canonical_name": "Magic Hound",
+    "aliases": [
+      "Charming Kitten",
+      "Magic Hound",
+      "APT35",
+      "APT42",
+      "TA453",
+      "TA455",
+      "COBALT ILLUSION",
+      "ITG18",
+      "Phosphorus",
+      "Mint Sandstorm",
+      "Newscaster",
+      "Yellow Garuda",
+      "CharmingCypress"
+    ],
+    "related_clusters": [
+      "APT42 (Mandiant) — IRGC-IO-affiliated credential-harvesting/cloud-operations cluster that MITRE folds into G0059; the Mandiant 'Uncharmed' report is attributed to this cluster",
+      "TA453 / TA455 (Proofpoint) — spearphishing-for-information and fake-persona operations against academics, journalists and think-tanks",
+      "Phosphorus / Mint Sandstorm (Microsoft) — same IRGC-nexus actor; overlaps with BitLocker/ransomware 'Phosphorus' sub-operations",
+      "IRGC Intelligence Organization (IRGC-IO) — assessed sponsoring body per Mandiant"
+    ],
+    "attribution": "Iranian state-sponsored cyber-espionage actor. MITRE assesses Magic Hound (G0059) operates 'likely on behalf of the Islamic Revolutionary Guard Corps' and has conducted long-term, resource-intensive espionage since at least 2014. Mandiant assesses the overlapping APT42 cluster operates on behalf of the IRGC Intelligence Organization (IRGC-IO). Attribution rests on years of convergent reporting (FireEye APT35 2018, ClearSky, Certfa, Secureworks COBALT ILLUSION, Proofpoint TA453, Microsoft, Mandiant) tying a consistent identity-centric social-engineering tradecraft, persona infrastructure, credential-harvesting kit and custom backdoors (NICECURL/TAMECAT, POWERSTAR/CharmPower) to a single Iran-nexus actor. Group/tooling attribution is high-confidence; the specific IRGC vs IRGC-IO organizational placement is an assessed judgement.",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "Israel",
+      "Saudi Arabia",
+      "United Arab Emirates",
+      "Iran (domestic dissidents / diaspora)",
+      "Iraq",
+      "Bahrain",
+      "Kuwait"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "United Kingdom",
+      "Europe (broad)"
+    ],
+    "targeted_sectors": [
+      "Government and military personnel",
+      "NGOs and human-rights organizations",
+      "Media / journalists",
+      "Academia and think-tanks / policy researchers",
+      "Legal services",
+      "Activists and dissidents (incl. women's-rights and Iranian diaspora)",
+      "Healthcare / international organizations (e.g. WHO)"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Credential-harvesting via fake login pages and typo-squatted domains (APT42)",
+        "date": "March 2023 – March 2024",
+        "summary": "Highly tailored spear-phishing delivering links to typo-squatted domains masquerading as news articles, conference invitations or cloud-hosted documents that redirect victims to fake Google/Gmail, Google Meet, Google Drive, Microsoft 365, Yahoo, Hotmail, YouTube and LinkedIn login pages to harvest credentials. Examples: ksview[.]top -> honest-halcyon-fresher[.]buzz (fake Gmail, freelance journalist); review[.]modification-check[.]online via n9[.]cl shortener (fake Google Drive, media/non-profit); nterview[.]site -> admin-stable-right[.]top (fake Gmail, women's-rights activist); shortlinkview[.]live -> panel-view[.]live (fake Gmail, Persian-language news editor). Fake personas (e.g. 'Mona Louri' human-rights-activist Twitter persona; lures spoofing 'Jamileh Nedai', 'David Webb', 'Daniel Serwer') build trust before the credential ask.",
+        "source_url": "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      },
+      {
+        "name": "Microsoft 365 cloud intrusion and covert data exfiltration (APT42)",
+        "date": "2022 – 2023",
+        "summary": "After harvesting credentials (often following extended trust-building correspondence impersonating high-ranking personnel), APT42 accessed victims' M365 environments in the U.S. and U.K. legal-services and NGO sectors. MFA was bypassed via cloned MFA-token-capture pages, MFA push-notification bombing (successful), KMSI abuse, and Microsoft app-password generation for continuous MFA-free access. Operators logged into Citrix + RDP, enumerated and staged data in password-protected 7-Zip archives, ran PowerShell (Invoke-HuntSMBShares from PowerHuntShares), and exfiltrated OneDrive documents and Outlook email to an attacker OneDrive masquerading as the victim org (<victim_org>@outlook.com), using ExpressVPN nodes, Cloudflare-fronted domains and ephemeral VPS to blend in.",
+        "source_url": "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      },
+      {
+        "name": "NICECURL and TAMECAT custom backdoor spear-phishing (APT42)",
+        "date": "June 2023 – March 2024",
+        "summary": "Malware-based operations delivering two custom backdoors via spear phishing to NGOs, government and intergovernmental targets. NICECURL is a VBScript backdoor (e.g. kuzen.vbs) delivered by an LNK (onedrive-form.pdf.lnk) with an Interview-Feedback-Form PDF decoy spoofing the Harvard T.H. Chan School of Public Health; it downloads modules (incl. a datamining module) and executes commands over HTTPS, with commands 'kill', 'SetNewConfig', 'Module', using curl. TAMECAT is a PowerShell toehold dropped by malicious macro documents that executes arbitrary PowerShell or C# content, communicates over HTTP expecting Base64 data, and carries an AES-encrypted payload. C2s used glitch.me subdomains (prism-west-candy[.]glitch[.]me, accurate-sprout-porpoise[.]glitch[.]me) and object storage (s3[.]tebi[.]io).",
+        "source_url": "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      },
+      {
+        "name": "Long-running social-engineering espionage (G0059, since 2014)",
+        "date": "2014 – present",
+        "summary": "MITRE-documented long-term IRGC-nexus espionage against European, U.S. and Middle Eastern government/military personnel, academics, journalists and organizations such as the WHO, via complex social-engineering campaigns — the historical baseline (NEWSCASTER personas, FireEye APT35 2018, ClearSky Kittens, Certfa, Secureworks COBALT ILLUSION) underpinning the G0059 technique mapping.",
+        "source_url": "https://attack.mitre.org/groups/G0059"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Charming Kitten",
+    "Magic Hound",
+    "APT35",
+    "APT42",
+    "TA453",
+    "Phosphorus",
+    "Mint Sandstorm",
+    "COBALT ILLUSION"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "Saudi Arabia",
+    "United Arab Emirates",
+    "Iran",
+    "Iraq",
+    "Bahrain",
+    "Kuwait",
+    "United States",
+    "United Kingdom",
+    "Europe"
+  ],
+  "targeted_sectors": [
+    "Government",
+    "Military",
+    "NGOs / human rights",
+    "Media / journalists",
+    "Academia / think-tanks",
+    "Legal services",
+    "Activists / dissidents",
+    "Healthcare / international organizations"
+  ],
+  "malware": [
+    "NICECURL (BASICSTAR-adjacent VBScript backdoor; downloads modules incl. datamining, arbitrary command execution over HTTPS via curl)",
+    "TAMECAT (PowerShell toehold executing arbitrary PowerShell/C#; AES-encrypted payload; HTTP C2 with Base64 data)",
+    "POWERSTAR / CharmPower (PowerShell modular backdoor — historical Charming Kitten tooling)",
+    "Fake login-page / credential-harvesting phishing kits (Google, Gmail, Google Meet, Google Drive, Microsoft 365, SharePoint, LinkedIn, Yahoo, Hotmail, YouTube, DUO)",
+    "PowerHuntShares (open-source; Invoke-HuntSMBShares used for SMB share hunting)",
+    "7-Zip (password-protected archives for staging/exfil)"
+  ],
+  "tooling_observed": [
+    "Typo-squatted / lookalike domains on TLDs .top .online .site .live .buzz (hyphen-separated words, e.g. panel-live-check[.]online)",
+    "URL shorteners (n9[.]cl) and multi-hop redirect chains to credential-harvesting pages",
+    "Fake social-media personas (e.g. 'Mona Louri' Twitter human-rights-activist persona) and impersonated journalists/event-organizers",
+    "Cloned MFA pages, MFA push-notification bombing, KMSI (Keep-Me-Signed-In), Microsoft app-password abuse for MFA bypass",
+    "glitch.me (prism-west-candy, accurate-sprout-porpoise) and s3.tebi.io object storage as C2 / staging",
+    "ExpressVPN exit nodes, Cloudflare-fronted domains, ephemeral VPS for access anonymization",
+    "Citrix + Windows RDP for hands-on-keyboard access",
+    "PowerShell (Set-ExecutionPolicy, Import-Module, Invoke-HuntSMBShares), curl, conhost, cmd.exe, Wget",
+    "LNK droppers (onedrive-form.pdf.lnk), macro-enabled Office documents, PDF decoys spoofing real institutions/individuals",
+    "Attacker OneDrive masquerading as victim org (<victim_org>@outlook.com) for exfiltration"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "procedure_description": "Charming Kitten's signature vector: spear-phishing emails carrying links (often via typo-squatted domains posing as news articles, conference invitations or cloud-hosted documents, sometimes behind the n9[.]cl shortener) that redirect targets to cloned login portals (Gmail, Google Meet, Google Drive, Microsoft 365, SharePoint, LinkedIn, Yahoo, Hotmail, YouTube, DUO) to elicit credentials and MFA tokens. Lures are highly tailored to each victim (journalists, activists, academics).",
+      "observed_tooling": [
+        "typo-squatted domains (.top/.online/.site/.live/.buzz)",
+        "n9[.]cl URL shortener",
+        "fake Gmail/Google Meet/M365/LinkedIn login pages"
+      ],
+      "detection_feasibility": "medium — the sending and lure infrastructure is off-victim (hunt/threat-intel space), but inbound email URL analysis, newly-registered-domain and lookalike-domain detection, and secure-email-gateway link detonation make the delivery observable at the perimeter",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1589.002",
+      "technique_name": "Gather Victim Identity Information: Email Addresses",
+      "tactic": "reconnaissance",
+      "procedure_description": "The actor collects target email addresses (of journalists, activists, academics, NGO and government personnel) to seed tailored spear-phishing and credential-harvesting campaigns.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — email-address harvesting occurs off-victim against public sources; not observable in victim telemetry, this is a threat-intel/hunt awareness item",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1589.001",
+      "technique_name": "Gather Victim Identity Information: Credentials",
+      "tactic": "reconnaissance",
+      "procedure_description": "Charming Kitten's operations are fundamentally oriented around obtaining victim credentials, harvested through fake login pages and social-engineering correspondence, then reused for account and cloud access.",
+      "observed_tooling": [
+        "credential-harvesting pages"
+      ],
+      "detection_feasibility": "low — credential collection happens on attacker-controlled harvesting pages off-victim; the downstream reuse is where detection becomes feasible (see T1078)",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "Broadly, the actor profiles targets' identities — names, roles, affiliations and relationships — to build convincing personas and select spoofed institutions/individuals for lures (e.g. spoofing Harvard T.H. Chan School, 'Daniel Serwer', 'David Webb', 'Jamileh Nedai').",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim OSINT reconnaissance; not detectable in defender telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1591.001",
+      "technique_name": "Gather Victim Org Information: Determine Physical Locations",
+      "tactic": "reconnaissance",
+      "procedure_description": "Charming Kitten gathers organizational information about targets to inform targeting and lure content per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim reconnaissance",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1590.005",
+      "technique_name": "Gather Victim Network Information: IP Addresses",
+      "tactic": "reconnaissance",
+      "procedure_description": "The actor gathers victim network/IP information, including via tracking pixels/web beacons embedded in phishing content that profile recipient IP addresses.",
+      "observed_tooling": [
+        "tracking pixels / web beacons"
+      ],
+      "detection_feasibility": "low — off-victim; beacon callbacks are only faintly observable at the mail-render stage",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1592.002",
+      "technique_name": "Gather Victim Host Information: Software",
+      "tactic": "reconnaissance",
+      "procedure_description": "The actor gathers information about victim host software/defensive products (e.g. presence of Windows Defender influences the TAMECAT execution path) to tailor payload delivery.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — largely off-victim; on-host defender-presence checks are covered under T1518-style behavior in TAMECAT",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "procedure_description": "Charming Kitten conducts active scanning for vulnerabilities on internet-facing targets per the G0059 mapping, supporting exploitation of public-facing applications.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — scanning against internet-facing assets is detectable via perimeter/IDS and honeypot telemetry, though attribution to this actor is hard",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "A hallmark of the actor: cultivating fake social-media personas (e.g. the 'Mona Louri' Twitter account posing as a human-rights activist/researcher) to build rapport and credibility with targets before delivering credential-harvesting links or malware. Descends from the historical NEWSCASTER persona network.",
+      "observed_tooling": [
+        "fake Twitter/LinkedIn personas"
+      ],
+      "detection_feasibility": "low — persona creation is entirely off-victim; a HUNT/attribution artifact (persona-infrastructure tracking, avatar reuse, cross-platform linkage), not a host or log detection",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "The actor registers email accounts under fabricated personas (journalists, event organizers, activists) used for trust-building correspondence and to send spear-phishing lures; also registers attacker mailboxes such as <victim_org>@outlook.com used as exfiltration destinations.",
+      "observed_tooling": [
+        "persona email accounts",
+        "<victim_org>@outlook.com exfil mailbox"
+      ],
+      "detection_feasibility": "low — account creation is off-victim; the exfil-mailbox naming pattern is a hunt indicator visible only once exfiltration occurs",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "The actor leverages compromised legitimate email accounts (harvested credentials) to lend authenticity to correspondence and to hijack existing trust relationships when phishing further targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the compromised account is off your perimeter (a third party's); visible only as anomalous inbound mail from an otherwise-trusted sender",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "The actor registers large numbers of typo-squatted / lookalike domains on TLDs such as .top, .online, .site, .live and .buzz — often several hyphen-separated words (e.g. panel-live-check[.]online, review[.]modification-check[.]online, drive-file-share[.]site) — to host credential-harvesting pages, redirects and malware staging.",
+      "observed_tooling": [
+        "lookalike domains on .top/.online/.site/.live/.buzz"
+      ],
+      "detection_feasibility": "low — domain registration is off-victim; a HUNT signal via newly-registered-domain feeds, registrar/hosting pivots and naming-pattern clustering rather than a host detection",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "The actor abuses legitimate web/cloud services for infrastructure: glitch.me subdomains (prism-west-candy[.]glitch[.]me, accurate-sprout-porpoise[.]glitch[.]me) as NICECURL/TAMECAT C2, s3[.]tebi[.]io object storage for payload hosting, Dropbox/Google Drive for decoy documents, and Cloudflare-fronted domains — to blend malicious traffic into trusted destinations.",
+      "observed_tooling": [
+        "glitch.me",
+        "s3.tebi.io",
+        "Dropbox / Google Drive",
+        "Cloudflare"
+      ],
+      "detection_feasibility": "low — off-victim acquisition; on-victim the resulting traffic to legitimate cloud services is hard to distinguish (see T1102.002). A hunt for anomalous glitch.me/tebi.io connections is the practical angle",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1584.001",
+      "technique_name": "Compromise Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "The actor compromises and repurposes existing domains/infrastructure for redirects and hosting of credential-harvesting content per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim; hunt via passive-DNS and hosting-pivot analysis",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "The actor obtains and uses open-source/legitimate tooling, e.g. PowerHuntShares (Invoke-HuntSMBShares) for SMB share enumeration and 7-Zip for archiving, living off open-source and built-in utilities to reduce custom-malware exposure during cloud operations.",
+      "observed_tooling": [
+        "PowerHuntShares",
+        "7-Zip"
+      ],
+      "detection_feasibility": "medium — execution of Invoke-HuntSMBShares and mass share enumeration on hosts is detectable via PowerShell script-block logging, though the tools themselves are legitimate",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector: spear-phishing emails with malicious links leading to credential-harvesting pages or malware droppers (e.g. LNK/macro-document delivery of NICECURL/TAMECAT), frequently after extended trust-building correspondence posing as journalists or conference organizers.",
+      "observed_tooling": [
+        "spear-phishing email",
+        "LNK / macro droppers",
+        "credential-harvesting links"
+      ],
+      "detection_feasibility": "medium — inbound link/attachment analysis, sandbox detonation, and user-reported-phish workflows make delivery detectable at the email perimeter",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "procedure_description": "The actor initiates contact and delivers lures through social-media/messaging services using fake personas (e.g. LinkedIn/Twitter personas, fake Google Meet invitations), leveraging non-email channels to build rapport before phishing.",
+      "observed_tooling": [
+        "fake social-media/messaging personas",
+        "fake Google Meet invitations"
+      ],
+      "detection_feasibility": "low — delivery over third-party services is largely outside enterprise email/network visibility; user-awareness and reported-contact reporting are the main levers (hunt/awareness)",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Charming Kitten uses malicious/compromised web content and redirect chains that can compromise or harvest from visitors per the G0059 mapping, complementing its link-based phishing.",
+      "observed_tooling": [
+        "redirect chains",
+        "malicious web content"
+      ],
+      "detection_feasibility": "medium — web-proxy/DNS logging of redirect chains to lookalike domains and browser-exploit telemetry provide detection surface",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "The actor exploits vulnerabilities in internet-facing applications (historically including ProxyShell/Log4j-class and VPN/appliance flaws in Phosphorus/Mint Sandstorm operations) to gain initial access per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — WAF/IPS signatures and anomalous server-process child spawns detect exploitation, though n-day/0-day can precede the first artifact",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1078.004",
+      "technique_name": "Valid Accounts: Cloud Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "After harvesting credentials and defeating MFA, APT42 logs into victims' Microsoft 365 / cloud environments as legitimate users to explore, enumerate and exfiltrate data — the core of its cloud operations against U.S./U.K. legal and NGO targets. This is a well-sourced addition beyond the G0059 sub-technique list (verified present in this ATT&CK dataset), directly documented by Mandiant.",
+      "observed_tooling": [
+        "harvested M365 credentials",
+        "ExpressVPN / VPS anonymized logins"
+      ],
+      "detection_feasibility": "medium — highly feasible identity detection: impossible-travel, anomalous sign-ins from VPN/VPS ASNs, new-device/KMSI events and Azure AD/Entra sign-in-log analytics catch valid-account cloud abuse even when the credential itself is legitimate",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "The actor reuses harvested/valid domain credentials to access on-premises and hybrid systems (e.g. Citrix + RDP) and move through victim networks per the G0059 mapping and Mandiant cloud-operations reporting.",
+      "observed_tooling": [
+        "harvested domain credentials",
+        "Citrix / RDP"
+      ],
+      "detection_feasibility": "medium — anomalous domain-account logon (Event ID 4624/4768) from unusual sources, and RDP/Citrix access-pattern analytics, provide detection surface",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1078.001",
+      "technique_name": "Valid Accounts: Default Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "The actor leverages default/valid accounts as mapped in G0059 to obtain and retain access.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — use of default accounts is detectable via authentication auditing where such accounts should be dormant/disabled",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1621",
+      "technique_name": "Multi-Factor Authentication Request Generation",
+      "tactic": "credential-access",
+      "procedure_description": "To bypass MFA on accounts for which it holds valid credentials, APT42 sends repeated MFA push notifications to victims upon login attempts ('MFA fatigue' / push bombing), which Mandiant observed succeeding after cloned-page token capture failed. Well-sourced addition beyond the G0059 list (verified present in this dataset), directly documented by Mandiant.",
+      "observed_tooling": [
+        "MFA push-notification bombing",
+        "DUO / Microsoft Authenticator prompts"
+      ],
+      "detection_feasibility": "medium — highly feasible: bursts of denied/repeated MFA prompts followed by an approval, and MFA-fatigue analytics in the IdP sign-in logs, are strong high-fidelity signals",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1550.004",
+      "technique_name": "Use Alternate Authentication Material: Web Session Cookie",
+      "tactic": "lateral-movement",
+      "procedure_description": "APT42 captured MFA tokens / session material via cloned login pages and abused the KMSI (Keep-Me-Signed-In) feature to avoid re-authentication, effectively using authenticated session material to maintain access without re-verifying MFA. Well-sourced addition beyond the G0059 list (verified present in this dataset).",
+      "observed_tooling": [
+        "cloned MFA-token-capture pages",
+        "KMSI abuse"
+      ],
+      "detection_feasibility": "medium — anomalous session reuse, sign-ins with valid session but new device/IP, and KMSI/persistent-session anomalies are detectable in cloud sign-in logs, though stolen-cookie reuse can look legitimate",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1556.006",
+      "technique_name": "Modify Authentication Process: Multi-Factor Authentication",
+      "tactic": "defense-impairment",
+      "procedure_description": "APT42 abused Microsoft's app-password feature — which generates single-use passwords that do not require MFA — to establish continuous MFA-free access to compromised M365 accounts. ATT&CK cites the Mandiant APT42 report directly for this technique. Verified present in this dataset.",
+      "observed_tooling": [
+        "Microsoft app-password generation"
+      ],
+      "detection_feasibility": "medium — feasible: app-password creation events and new legacy-auth/app-password sign-ins are auditable in Entra ID; alerting on app-password registration is a strong control",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Victims are induced to click links leading to credential-harvesting pages or malware download URLs (e.g. drive-file-share[.]site/OneDrive-Form.pdf.lnk), a required user action in the actor's link-centric campaigns.",
+      "observed_tooling": [
+        "malicious redirect/download links"
+      ],
+      "detection_feasibility": "medium — web-proxy/DNS logs of clicks to newly-registered lookalike domains and browser-download telemetry provide detection",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Victims are lured into opening malicious files: LNK droppers disguised as PDFs (onedrive-form.pdf.lnk) and macro-enabled Office documents that drop TAMECAT, each paired with a decoy document spoofing a real institution or individual (e.g. Harvard T.H. Chan interview feedback form).",
+      "observed_tooling": [
+        "onedrive-form.pdf.lnk",
+        "macro documents",
+        "PDF decoys"
+      ],
+      "detection_feasibility": "medium — double-extension LNK execution, LNK-spawned command interpreters and macro-document child processes are detectable via process-creation and EDR telemetry",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "PowerShell is central: TAMECAT is a PowerShell toehold that executes arbitrary PowerShell or C# content and carries an AES-encrypted payload decrypted at runtime; TAMECAT uses conhost to run a Wget-based PowerShell download when Windows Defender is present; and cloud operators ran Set-ExecutionPolicy, Import-Module and Invoke-HuntSMBShares.",
+      "observed_tooling": [
+        "TAMECAT",
+        "conhost + PowerShell + Wget",
+        "Set-ExecutionPolicy / Import-Module / Invoke-HuntSMBShares"
+      ],
+      "detection_feasibility": "medium — PowerShell script-block/module logging, AMSI, and suspicious cmdlet sequences (ExecutionPolicy change + Invoke-HuntSMBShares) are strong detections; obfuscation/AES-decrypt-in-memory reduces static visibility",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "NICECURL is a VBScript backdoor (e.g. kuzen.vbs) that reverses the string 'llehS.tpircsW' to instantiate WScript.Shell, base64-decodes operator commands, and uses curl to communicate; the YARA rule keys on these VBScript artifacts. Office macro lures (VBA) also drop TAMECAT.",
+      "observed_tooling": [
+        "NICECURL (kuzen.vbs)",
+        "WScript.Shell",
+        "VBA macros"
+      ],
+      "detection_feasibility": "medium — wscript/cscript executing .vbs that spawns curl/cmd, and StrReverse('llehS.tpircsW') obfuscation, are detectable via process-creation telemetry and the published NICECURL YARA rule",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "NICECURL launches 'cmd /C start /MIN curl ...' to fetch commands, and TAMECAT uses cmd.exe to execute a curl download in the non-Defender path — cmd.exe is used to spawn curl-based C2 fetches.",
+      "observed_tooling": [
+        "cmd /C start /MIN curl",
+        "TAMECAT cmd.exe curl"
+      ],
+      "detection_feasibility": "medium — cmd.exe spawning curl with C2 URLs, especially from a script host, is detectable via command-line process auditing",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "The actor uses WMI for execution and discovery on compromised hosts per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — WMI process-creation and WMI-Activity operational logging detect anomalous WMI execution",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "The actor creates scheduled tasks for execution/persistence of its implants per the G0059 mapping.",
+      "observed_tooling": [
+        "schtasks"
+      ],
+      "detection_feasibility": "medium — scheduled-task creation (Event ID 4698, Sysmon) with suspicious actions/paths is a reliable detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "The actor establishes persistence via Registry Run keys / Startup folder entries per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — Run-key writes and Startup-folder drops are classic, well-covered autostart-monitoring detections",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "tactic": "persistence",
+      "procedure_description": "The actor creates local accounts to maintain access to compromised systems per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — local-account creation (Event ID 4720) on servers/endpoints is a high-fidelity persistence signal",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1098.002",
+      "technique_name": "Account Manipulation: Additional Email Delegate Permissions",
+      "tactic": "persistence",
+      "procedure_description": "Consistent with FireEye's APT35 reporting, the actor grants additional mailbox delegate permissions (e.g. Add-MailboxPermission) to retain persistent access to targeted mailboxes in Exchange/Office 365.",
+      "observed_tooling": [
+        "Add-MailboxPermission"
+      ],
+      "detection_feasibility": "medium — feasible: mailbox-permission and delegate-grant changes are captured in Exchange/Unified Audit logs and are strong identity-persistence signals",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1098.007",
+      "technique_name": "Account Manipulation: Additional Local or Domain Groups",
+      "tactic": "persistence",
+      "procedure_description": "The actor adds controlled accounts to local/domain groups (e.g. administrators, Remote Desktop Users) to maintain and elevate access per the G0059 mapping.",
+      "observed_tooling": [
+        "net localgroup / net group"
+      ],
+      "detection_feasibility": "medium — group-membership-change auditing (Event ID 4728/4732) detects additions to privileged/RDP groups",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "The actor deploys web shells on compromised internet-facing servers for persistence and remote command execution per the G0059 mapping.",
+      "observed_tooling": [
+        "web shells"
+      ],
+      "detection_feasibility": "medium — new/modified web-content files and web-server processes spawning shells are detectable via FIM and process-lineage analytics",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1564.008",
+      "technique_name": "Hide Artifacts: Email Hiding Rules",
+      "tactic": "stealth",
+      "procedure_description": "Consistent with FireEye's APT35 2018 findings and the actor's mailbox-centric tradecraft, Charming Kitten creates inbox/forwarding rules in compromised mailboxes to hide security alerts and conceal its access and email theft. Well-aligned addition emphasizing the actor's identity/email signature (verified present in this dataset).",
+      "observed_tooling": [
+        "New-InboxRule / Set-InboxRule",
+        "mailbox forwarding/hiding rules"
+      ],
+      "detection_feasibility": "medium — highly feasible identity detection: inbox-rule creation/modification and auto-forwarding rules are logged in Exchange/Unified Audit and are a well-known BEC/espionage signal",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "The actor disguises malicious files and infrastructure as legitimate: LNK named onedrive-form.pdf.lnk to look like a PDF, domains masquerading as Google/OneDrive/Drive services, and an attacker OneDrive/mailbox masquerading as the victim organization (<victim_org>@outlook.com).",
+      "observed_tooling": [
+        "onedrive-form.pdf.lnk",
+        "service-lookalike domains",
+        "<victim_org>@outlook.com"
+      ],
+      "detection_feasibility": "low — name/location masquerade defeats name-based trust; a HUNT via double-extension detection, signer/metadata mismatch and lookalike-domain analysis rather than a single signature",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1036.004",
+      "technique_name": "Masquerading: Masquerade Task or Service",
+      "tactic": "stealth",
+      "procedure_description": "The actor names scheduled tasks/services to resemble legitimate ones to blend persistence into normal system activity per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — masqueraded task/service names evade name-based review; hunt via task/service action-vs-name inconsistency",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1036.010",
+      "technique_name": "Masquerading: Masquerade Account Name",
+      "tactic": "stealth",
+      "procedure_description": "The actor names attacker-created accounts/personas to approximate legitimate ones (e.g. mailbox/OneDrive naming echoing the victim organization) to make them appear benign.",
+      "observed_tooling": [
+        "victim-org-lookalike account names"
+      ],
+      "detection_feasibility": "low — name-approximation defeats name-based allow-listing; hunt via account-creation review and naming-anomaly analytics",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Payloads are stored encrypted/encoded: TAMECAT is delivered as an obfuscated, AES-encrypted backdoor inside nconf.txt (AES key kNz0CXiP0wEQnhZXYbvraigXvRVYHk1B, unique key value T2r0y1M1e1n1o0w1) decrypted by a companion PowerShell; NICECURL base64-decodes operator commands; TAMECAT expects Base64-encoded C2 data.",
+      "observed_tooling": [
+        "AES-encrypted TAMECAT (nconf.txt)",
+        "base64-encoded commands"
+      ],
+      "detection_feasibility": "low — encryption/encoding defeats static inspection; hunt via entropy analysis, AMSI-visible decrypted content and the published YARA constants rather than log detection",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "procedure_description": "NICECURL obfuscates its logic (e.g. StrReverse of 'llehS.tpircsW' to build 'WScript.Shell', base64-decoded commands), and TAMECAT wraps its logic in layered obfuscation, to impede signature analysis.",
+      "observed_tooling": [
+        "StrReverse obfuscation",
+        "base64 command encoding"
+      ],
+      "detection_feasibility": "low — command obfuscation is designed to defeat static signatures; hunt via de-obfuscated script-block logging and behavioral analysis",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "At runtime the implants reverse their own encoding: TAMECAT's loader AES-decrypts the embedded backdoor and its C2 parameters; NICECURL base64-decodes commands before execution.",
+      "observed_tooling": [
+        "AES decrypt loader",
+        "base64 decode"
+      ],
+      "detection_feasibility": "medium — runtime decode-then-execute is partly observable via AMSI/script-block logging of the decrypted stage",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1564.003",
+      "technique_name": "Hide Artifacts: Hidden Window",
+      "tactic": "stealth",
+      "procedure_description": "NICECURL launches its curl C2 fetch with 'cmd /C start /MIN' to run minimized/hidden, concealing the command window from the user.",
+      "observed_tooling": [
+        "cmd /C start /MIN"
+      ],
+      "detection_feasibility": "medium — 'start /MIN' and hidden-window flags in command lines are detectable via process-creation auditing",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "The actor modifies the registry to support persistence/configuration of its implants per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — registry-modification auditing (Sysmon EID 13) on autostart/config keys provides detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "stealth",
+      "procedure_description": "The actor proxies execution through rundll32.exe to run malicious code under a trusted system binary per the G0059 mapping.",
+      "observed_tooling": [
+        "rundll32.exe"
+      ],
+      "detection_feasibility": "medium — anomalous rundll32 command lines (odd DLLs/exports, network activity) are detectable via process/command-line analytics",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "NICECURL's 'kill' command removes artifacts and ends execution (it includes DeleteFile/CopyFile helpers), and operators delete tooling/artifacts to cover tracks per the G0059 mapping.",
+      "observed_tooling": [
+        "NICECURL 'kill' / DeleteFile"
+      ],
+      "detection_feasibility": "medium — file-deletion telemetry and gaps around known tool paths can flag cleanup, though deletion is inherently destructive of evidence",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1070.003",
+      "technique_name": "Indicator Removal: Clear Command History",
+      "tactic": "stealth",
+      "procedure_description": "The actor clears command history to hinder investigation per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — history-clearing commands/events are detectable via shell-audit and file-monitoring, though quiet by design",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "The actor disables or works around security tooling; TAMECAT branches its behavior on the presence of Windows Defender (using conhost+Wget when Defender is running) to evade defensive controls, and Phosphorus/Mint Sandstorm operations have tampered with defenses per the G0059 mapping.",
+      "observed_tooling": [
+        "Windows Defender presence-check branching"
+      ],
+      "detection_feasibility": "medium — security-tool tampering/stop events and Defender-configuration changes are auditable via EDR self-protection and defense-health telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1685.001",
+      "technique_name": "Impair Defenses: Disable or Modify Windows Event Log",
+      "tactic": "defense-impairment",
+      "procedure_description": "The actor disables or modifies Windows event logging to reduce host visibility during operations per the G0059 mapping (remapped ID per this dataset's convention).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — event-log service manipulation and logging gaps/continuity breaks are detectable via log-integrity monitoring",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1686.003",
+      "technique_name": "Impair Defenses: Windows Host Firewall",
+      "tactic": "defense-impairment",
+      "procedure_description": "The actor modifies the Windows host firewall (e.g. netsh advfirewall / Set-NetFirewallProfile / rule changes) to enable remote access and C2 traffic per the G0059 mapping.",
+      "observed_tooling": [
+        "netsh advfirewall / firewall rule changes"
+      ],
+      "detection_feasibility": "medium — firewall-rule and profile changes are auditable via Windows Firewall logging and registry monitoring",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "On compromised hosts the actor dumps credentials from LSASS memory to obtain additional accounts per the G0059 mapping.",
+      "observed_tooling": [
+        "LSASS dumping"
+      ],
+      "detection_feasibility": "medium — LSASS handle-access/process-access telemetry (Sysmon EID 10) and credential-guard controls provide well-established detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "The actor uses keylogging to capture credentials and other input per the G0059 mapping.",
+      "observed_tooling": [
+        "keylogger"
+      ],
+      "detection_feasibility": "low — user-mode keylogging via API hooks leaves limited telemetry; hunt via behavioral hook/injection detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1087.003",
+      "technique_name": "Account Discovery: Email Account",
+      "tactic": "discovery",
+      "procedure_description": "In compromised cloud/email environments the actor enumerates mailboxes/email accounts to identify further targets and data of interest per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — bulk mailbox/directory enumeration is visible in Exchange/Entra audit logs",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1482",
+      "technique_name": "Domain Trust Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor enumerates domain trust relationships to plan lateral movement per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — trust-enumeration commands (nltest, etc.) are detectable via command-line auditing",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor scans internal hosts/services (including SMB share hunting via Invoke-HuntSMBShares) to map the environment and locate data per the G0059 mapping and Mandiant cloud-operations reporting.",
+      "observed_tooling": [
+        "Invoke-HuntSMBShares"
+      ],
+      "detection_feasibility": "medium — internal scanning/share-enumeration bursts and Invoke-HuntSMBShares execution are detectable via network and PowerShell logging",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor enumerates remote systems on the network to identify lateral-movement targets per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — host-enumeration commands and scanning patterns are detectable via endpoint and network telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor enumerates active network connections on compromised hosts per the G0059 mapping.",
+      "observed_tooling": [
+        "netstat"
+      ],
+      "detection_feasibility": "medium — netstat-style discovery is detectable via command-line auditing, though low-signal alone",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor enumerates network configuration on compromised hosts per the G0059 mapping.",
+      "observed_tooling": [
+        "ipconfig / netsh"
+      ],
+      "detection_feasibility": "medium — standard discovery commands are detectable but low-signal on their own",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1016.001",
+      "technique_name": "System Network Configuration Discovery: Internet Connection Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor checks for internet connectivity from compromised hosts (e.g. to confirm C2 reachability) per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — connectivity checks blend with normal traffic; low-signal",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1016.002",
+      "technique_name": "System Network Configuration Discovery: Wi-Fi Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Consistent with Check Point's CharmPower reporting, the actor enumerates Wi-Fi network names/passwords (e.g. via netsh wlan / wlanAPI) on compromised hosts per the G0059 mapping.",
+      "observed_tooling": [
+        "netsh wlan show profiles",
+        "wlanAPI.dll"
+      ],
+      "detection_feasibility": "medium — 'netsh wlan show profile ... key=clear' is a distinctive command-line detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor identifies the current/owner user on compromised hosts per the G0059 mapping.",
+      "observed_tooling": [
+        "whoami"
+      ],
+      "detection_feasibility": "medium — whoami/user-context queries are detectable but low-signal individually",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor enumerates running processes (e.g. to check for Windows Defender/security tooling, as TAMECAT does to select its execution path) per the G0059 mapping.",
+      "observed_tooling": [
+        "process enumeration / Defender check"
+      ],
+      "detection_feasibility": "medium — process enumeration and defender-presence checks are partly observable via command-line and API telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "NICECURL gathers system information (the YARA rule references a GetSystemCaption function retrieving the OS caption) and the actor profiles host details per the G0059 mapping.",
+      "observed_tooling": [
+        "NICECURL GetSystemCaption"
+      ],
+      "detection_feasibility": "low — in-script system-info queries via benign APIs leave little discrete telemetry; hunt via behavioral analysis",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "During cloud/host operations the actor explores and enumerates files and directories to locate and stage data of interest (e.g. files pertaining to Iran's foreign affairs / the Persian Gulf) per the Mandiant report and G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — broad file/directory enumeration and staging activity are detectable via file-access auditing on sensitive data stores",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059",
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations"
+      ]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "APT42 logged into a victim's Citrix application and used Windows RDP for hands-on-keyboard access to explore, enumerate and stage data for exfiltration.",
+      "observed_tooling": [
+        "Windows RDP",
+        "Citrix"
+      ],
+      "detection_feasibility": "medium — RDP logon auditing (Event ID 4624 type 10 / 4778) from unusual sources and Citrix access analytics provide detection",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "procedure_description": "The actor transfers tools between systems within the victim environment to extend operations per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — internal file transfers of executables/scripts (SMB/admin shares) are detectable via file-share and EDR telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "The actor collects files of strategic interest from compromised local systems and cloud stores (OneDrive documents, files pertaining to Iran's foreign affairs / Persian Gulf region) per the Mandiant report and G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — bulk local/cloud file access and staging are detectable via data-access auditing on sensitive repositories",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1114",
+      "technique_name": "Email Collection",
+      "tactic": "collection",
+      "procedure_description": "The actor collects victim email — Outlook emails from the M365 environment were exfiltrated — a core objective of its identity-centric espionage per the Mandiant report and G0059 mapping.",
+      "observed_tooling": [
+        "Outlook / M365 mailbox access"
+      ],
+      "detection_feasibility": "medium — anomalous mass mailbox access and export are detectable via Exchange/Unified Audit logs",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1114.001",
+      "technique_name": "Email Collection: Local Email Collection",
+      "tactic": "collection",
+      "procedure_description": "The actor collects email data from local Outlook stores/caches on compromised hosts per the G0059 mapping.",
+      "observed_tooling": [
+        "Outlook .ost/.pst"
+      ],
+      "detection_feasibility": "medium — access to and copying of Outlook data files is detectable via file-access monitoring",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1114.002",
+      "technique_name": "Email Collection: Remote Email Collection",
+      "tactic": "collection",
+      "procedure_description": "The actor collects email remotely from Exchange/O365 (Outlook Web / EWS) using valid or delegated access, exfiltrating mailbox contents from cloud environments per the Mandiant report and G0059 mapping.",
+      "observed_tooling": [
+        "EWS / OWA remote mailbox access"
+      ],
+      "detection_feasibility": "medium — abnormal remote mailbox-access volumes and EWS/Graph access patterns are detectable via cloud mailbox audit logs",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "The actor captures screenshots from compromised hosts per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — screen-capture APIs leave little discrete telemetry; hunt via behavioral analysis of the implant",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "APT42 staged data for exfiltration in password-protected 7-Zip archives before moving it out of the M365/host environment.",
+      "observed_tooling": [
+        "7-Zip (password-protected archives)"
+      ],
+      "detection_feasibility": "medium — 7-Zip/archive-utility execution creating large password-protected archives in staging paths is detectable via process and file telemetry",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "NICECURL communicates over HTTPS (via curl with --ssl-no-revoke) and TAMECAT over HTTP (expecting Base64-encoded data), using standard web protocols for C2 to blend with normal web traffic.",
+      "observed_tooling": [
+        "NICECURL curl HTTPS C2",
+        "TAMECAT HTTP C2"
+      ],
+      "detection_feasibility": "medium — curl-based beaconing from script hosts and anomalous HTTP(S) to newly-seen domains are detectable via proxy/network telemetry and process-network correlation",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1071",
+      "technique_name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor uses standard application-layer protocols for C2 per the G0059 mapping, consistent with the HTTP/HTTPS channels used by NICECURL and TAMECAT.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — protocol-anomaly and beacon-timing analytics provide detection surface",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1102.002",
+      "technique_name": "Web Service: Bidirectional Communication",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor uses legitimate web services for bidirectional C2 and staging: NICECURL/TAMECAT C2 on glitch.me subdomains (prism-west-candy[.]glitch[.]me, accurate-sprout-porpoise[.]glitch[.]me) and payloads on s3[.]tebi[.]io, hiding C2 in traffic to trusted providers.",
+      "observed_tooling": [
+        "glitch.me C2",
+        "s3.tebi.io staging"
+      ],
+      "detection_feasibility": "low — C2 over trusted web services blends with legitimate traffic; a HUNT for anomalous host connections to glitch.me/tebi.io rather than a straightforward signature",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The backdoors download additional components: NICECURL's 'Module' command downloads and executes additional files (incl. a datamining module); TAMECAT downloads nconf.txt and a decrypt helper; LNK/curl chains pull payloads from drive-file-share[.]site and s3[.]tebi[.]io.",
+      "observed_tooling": [
+        "NICECURL 'Module'",
+        "curl/Wget downloads",
+        "drive-file-share[.]site / s3.tebi.io"
+      ],
+      "detection_feasibility": "medium — curl/Wget/PowerShell downloads from script hosts to newly-seen domains, followed by execution, are detectable via process-network correlation",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor uses non-standard ports for C2 communications per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — protocol-on-non-standard-port analytics (e.g. TLS/HTTP on unusual ports) provide detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor tunnels traffic to conceal C2/lateral movement per the G0059 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — tunneled traffic is wrapped to look legitimate; hunt via volume/timing anomalies rather than signatures",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1573",
+      "technique_name": "Encrypted Channel",
+      "tactic": "command-and-control",
+      "procedure_description": "C2 is encrypted: NICECURL over HTTPS/TLS; TAMECAT AES-encrypts POST content with key kNz0CXiP0wEQnhZXYbvraigXvRVYHk1B and a random 16-char IV sent in a 'Content-DPR' header, layering symmetric crypto over its web channel.",
+      "observed_tooling": [
+        "TLS (NICECURL)",
+        "AES (TAMECAT, Content-DPR IV header)"
+      ],
+      "detection_feasibility": "low — encryption defeats content inspection; the 'Content-DPR' IV header is a narrow hunt/network-signature opportunity, otherwise behavioral",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor proxies/anonymizes its access through ExpressVPN exit nodes, Cloudflare-fronted domains and ephemeral VPS servers to obscure the true source of cloud logins and C2.",
+      "observed_tooling": [
+        "ExpressVPN nodes",
+        "Cloudflare fronting",
+        "ephemeral VPS"
+      ],
+      "detection_feasibility": "low — proxying/anonymization masks source; a HUNT via sign-in ASN/VPN reputation and infrastructure pivots rather than a host detection",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "procedure_description": "APT42 exfiltrated OneDrive documents and Outlook email to an attacker-controlled OneDrive account masquerading as the victim organization (<victim_org>@outlook.com), using a legitimate cloud storage service as the exfiltration channel to blend with normal cloud traffic.",
+      "observed_tooling": [
+        "attacker OneDrive (<victim_org>@outlook.com)"
+      ],
+      "detection_feasibility": "medium — large uploads/downloads to a non-corporate OneDrive/outlook.com destination and anomalous cloud data-movement are detectable via CASB/cloud DLP and audit logs",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations",
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "procedure_description": "Beyond espionage, Phosphorus/Mint Sandstorm sub-operations of this actor have deployed encryption/ransomware (e.g. BitLocker-based) for disruptive/extortion impact per the G0059 mapping.",
+      "observed_tooling": [
+        "BitLocker / ransomware"
+      ],
+      "detection_feasibility": "medium — mass file-modification/encryption behavior and unexpected BitLocker/encryption activity are detectable via EDR ransomware behavior analytics",
+      "sources": [
+        "https://attack.mitre.org/groups/G0059"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "Inbound spear-phishing links to newly-registered / typo-squatted domains on .top/.online/.site/.live/.buzz with hyphen-separated words (e.g. panel-live-check[.]online, review[.]modification-check[.]online) or via the n9[.]cl shortener — credential-harvesting delivery",
+    "Cloud sign-in anomalies: impossible-travel or logins from ExpressVPN/VPS/Cloudflare ASNs, repeated denied MFA prompts followed by an approval (MFA fatigue), KMSI/persistent-session anomalies — valid-account cloud abuse + MFA bypass",
+    "Entra ID / M365: creation of an app password, new legacy-auth/app-password sign-ins, new mailbox delegate permissions (Add-MailboxPermission), or new inbox forwarding/hiding rules (New-InboxRule/Set-InboxRule) — identity persistence and email concealment (HIGH-FIDELITY)",
+    "LNK with double extension (e.g. onedrive-form.pdf.lnk) spawning cmd.exe/curl, or wscript/cscript running a .vbs that spawns 'cmd /C start /MIN curl' — NICECURL delivery/execution",
+    "PowerShell executing an AES-decrypt-then-invoke chain from a downloaded nconf.txt, or conhost launching PowerShell+Wget to s3[.]tebi[.]io when Defender is present — TAMECAT",
+    "Host or proxy connections to glitch.me subdomains (prism-west-candy[.]glitch[.]me, accurate-sprout-porpoise[.]glitch[.]me) or s3[.]tebi[.]io from script interpreters — NICECURL/TAMECAT C2/staging",
+    "HTTP POST with a 'Content-DPR' header carrying a random 16-char IV to a glitch.me C2 — TAMECAT encrypted channel",
+    "PowerShell sequence Set-ExecutionPolicy + Import-Module + Invoke-HuntSMBShares — APT42 cloud-operations SMB share hunting",
+    "Creation of large password-protected 7-Zip archives in staging directories followed by upload to a non-corporate OneDrive/outlook.com account named after the victim org — staging + web-service exfiltration",
+    "'netsh wlan show profile ... key=clear' Wi-Fi credential enumeration on a compromised host — CharmPower-style discovery",
+    "YARA match on NICECURL VBScript artifacts (StrReverse('llehS.tpircsW'), Base64Decode, RunCom/SendData, 'curl --ssl-no-revoke') — see yara_rules"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [
+      "prism-west-candy[.]glitch[.]me",
+      "accurate-sprout-porpoise[.]glitch[.]me",
+      "drive-file-share[.]site",
+      "s3[.]tebi[.]io",
+      "ksview[.]top",
+      "honest-halcyon-fresher[.]buzz",
+      "review[.]modification-check[.]online",
+      "admin-stable-right[.]top",
+      "nterview[.]site",
+      "shortlinkview[.]live",
+      "panel-view[.]live",
+      "reconsider[.]site",
+      "panel-live-check[.]online",
+      "continue-meeting[.]site",
+      "email-daemon[.]online",
+      "check-panel-status[.]live",
+      "dloffice[.]top",
+      "dloffice[.]buzz",
+      "n9[.]cl"
+    ],
+    "emails": [],
+    "hashes": [
+      "d5a05212f5931d50bb024567a2873642",
+      "347b273df245f5e1fcbef32f5b836f1d",
+      "081419a484bbf99f278ce636d445b9d8",
+      "dd2653a2543fa44eaeeff3ca82fe3513",
+      "c23663ebdfbc340457201dbec7469386",
+      "13aa118181ac6a202f0a64c0c7a61ce7",
+      "2f6bf8586ed0a87ef3d156124de32757",
+      "853687659483d215309941dae391a68f",
+      "9c5337e0b1aef2657948fd5e82bdb4c3",
+      "c3b9191f3a3c139ae886c0840709865e",
+      "d7bf138d1aa2b70d6204a2f3c3bc72a7"
+    ],
+    "cves": []
+  },
+  "yara_rules": [
+    "rule M_APT_Backdoor_NICECURL_1 {\n\tmeta:\n\t\tauthor = \"Mandiant\"\n\t\tmd5 = \"c23663ebdfbc340457201dbec7469386\"\n\t\tdate_created = \"2024-01-18\"\n\t    date_modified = \"2024-01-18\"\n\t    rev = \"1\"\n\tstrings:\n\t\t$ = \"a = \\\"llehS.tpircsW\\\"\" ascii wide\n\t\t$ = \"b = StrReverse(a)\" ascii wide\n\t\t$ = \"Set objShell = wscript.CreateObject(b)\"\n\t\t$ = \"WHFilePath = Temp & \\\"/\\\" & ProgName\" ascii wide\n\t\t$ = \"Do While not FileExists(WHFilePath)\" ascii wide\n\t\t$ = \"cmd /C start /MIN curl --ssl-no-revoke -s -d \\\"\\\"\\\"\" ascii wide\n\t\t$ = \"nicecmdPath = Temp & \\\"/\\\" & ProgName\" ascii wide\n\t\t$ = \"Function RunCom(Com, Url, nicecmdPath)\" ascii wide\n\t\t$ = \"ComDecode = Base64Decode(Com)\" ascii wide\n\t\t$ = \"InStr(ComDecode, \\\"kill\\\")\" ascii wide\n\t\t$ = \"InStr(ComDecode, \\\"SetNewConfig\\\")\" ascii wide\n\t\t$ = \"InStr(ComDecode, \\\"Module\\\")\" ascii wide\n\t\t$ = \"Sub DeleteFile(filespec)\" ascii wide\n\t\t$ = \"Sub CopyFile(Src, Dst)\" ascii wide\n\t\t$ = \"Function SendData(sUrl, sRequest, nicecmdPath)\" ascii wide\n\t\t$ = \"Function WriteToFile(FilePath, data)\" ascii wide\n\t\t$ = \"Function GetSystemCaption()\" ascii wide\n\t\t$ = \"Function GetPlainSess()\" ascii wide\n\tcondition:\n\t4 of them\n}"
+  ],
+  "confidence": "high",
+  "notes": "TTP set = 79-technique official MITRE ATT&CK G0059 'Magic Hound' mapping used as the authoritative base, of which this pack extracts the operationally significant subset and enriches each with Charming-Kitten/APT42-specific procedure detail from the Mandiant 'Uncharmed' report. WELL-SOURCED ADDITIONS BEYOND THE G0059 SUB-TECHNIQUE LIST (each verified present in this ATT&CK dataset via get_technique and cited to Mandiant APT42): T1078.004 (Valid Accounts: Cloud Accounts — M365 access), T1621 (MFA Request Generation — push bombing that succeeded), T1550.004 (Web Session Cookie / KMSI reuse), T1556.006 (Modify Auth Process: MFA — Microsoft app-password abuse; ATT&CK itself cites the Mandiant APT42 report for this technique), and T1564.008 (Email Hiding Rules — aligns with FireEye APT35 2018 mailbox-rule tradecraft and the actor's email signature). ATT&CK FRAMEWORK-VERSION CONVENTION (this dataset): the defense-evasion tactic is emitted as 'stealth' (T1036.004/.005/.010, T1027.010/.013, T1140, T1564.003/.008, T1112, T1218.011, T1070.003/.004); the 'Impair Defenses' family uses the remapped IDs T1685 (Disable or Modify Tools) and T1685.001 (Disable or Modify Windows Event Log) and T1686.003 (Windows Host Firewall), all under the 'defense-impairment' tactic per get_technique; T1556.006 also carries defense-impairment. These T1685.x IDs are exactly what the official G0059 mapping now lists, so no legacy T1562.x/T1070.001 IDs are emitted. LOW detection-feasibility techniques = HUNT candidates (route to threat-hunter): the entire off-victim identity/persona/infrastructure layer — T1585.001 (fake social-media personas), T1585.002/T1586.002 (email personas/compromised accounts), T1583.001/.006 + T1584.001 (lookalike domains + abused web services glitch.me/tebi.io/Dropbox), T1589/.001/.002 + T1590.005 + T1591.001 + T1592.002 (off-victim reconnaissance), T1566.003 (spearphishing via third-party service), T1036.005/.010 (masquerade), T1102.002 (C2 via trusted web service), T1090 (VPN/Cloudflare/VPS anonymization), T1572/T1573 (tunneling/encrypted channel), T1027.010/.013 (obfuscation/encryption), T1082/T1113 (in-script/behavioral discovery & screen capture), T1056.001 (keylogging), T1016.001 (connectivity check). HIGHER-FEASIBILITY DETECTIONS (route to detection-engineer): the identity/email/cloud-log surface is this actor's most detectable seam — T1078.004 (anomalous cloud sign-ins), T1621 (MFA fatigue), T1550.004 (session/KMSI anomalies), T1556.006 (app-password creation), T1564.008 + T1098.002 (inbox rules + mailbox delegation), T1204.001/.002 (LNK/macro user execution), T1059.001/.003/.005 (PowerShell/cmd/VBScript with script-block + command-line logging), T1105/T1071.001 (curl/Wget downloads + web C2), T1560.001 (7-Zip staging), T1567 (OneDrive exfiltration), T1016.002 (netsh wlan key=clear), T1021.001 (RDP/Citrix), T1003.001 (LSASS). ATTRIBUTION 'high': years of convergent public reporting (FireEye, ClearSky, Certfa, Secureworks, Proofpoint, Microsoft, Mandiant) tie a consistent IRGC-nexus identity-centric tradecraft, persona infrastructure, credential-harvesting kit and custom backdoors (NICECURL/TAMECAT) to G0059; IRGC vs IRGC-IO organizational placement is the only assessed-judgement element. IOCs: 11 MD5 hashes and a conservative representative set of 19 domains from the Mandiant 'Uncharmed' report IOC appendix (the report publishes dozens more credential-harvesting domains); hashes/domains expire fast — the durable value is the identity/email/cloud TTPs and detection_signals. YARA: Mandiant's M_APT_Backdoor_NICECURL_1 rule is included VERBATIM (extracted from the report, not authored). The report also contains a second rule (M_APT_Backdoor_NICECURL_datamine_module_1) that was truncated in the fetched page and is therefore NOT included rather than reproduced incompletely."
+}

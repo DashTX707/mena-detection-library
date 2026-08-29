@@ -1,0 +1,50 @@
+title: Charming Kitten Public-Facing Server Process Spawning Shell (Exploit / Web Shell Execution)
+id: d9335547-d4a1-4ca3-aa1c-d61c77f87fda
+status: experimental
+description: |
+    Detects exploitation of a public-facing application and web-shell command execution (T1190, T1505.003):
+    an internet-facing server/web-worker process (w3wp.exe, httpd/apache, nginx, tomcat/java, php-cgi,
+    sqlservr, Exchange UM/worker) spawning a command interpreter or script host (cmd, powershell, wscript,
+    cscript, mshta, net, whoami). On a hardened server an interactive shell descending from the web worker
+    is abnormal and indicates exploitation or web-shell activity. Requires process-creation logging with
+    parent/child image fields.
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.persistence
+    - attack.t1190
+    - attack.t1505.003
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\httpd.exe'
+            - '\nginx.exe'
+            - '\php-cgi.exe'
+            - '\tomcat.exe'
+            - '\java.exe'
+            - '\sqlservr.exe'
+            - '\UMWorkerProcess.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\net.exe'
+            - '\whoami.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Web applications that legitimately shell out (build agents, admin consoles) - baseline per app pool /
+      server role and allowlist known parent-child pairs
+    - Java-based apps spawning helper processes - scope java parent to internet-facing hosts
+level: high

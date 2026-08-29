@@ -1,0 +1,52 @@
+title: Charming Kitten LNK Double-Extension / Macro-Document User Execution Spawning Interpreter
+id: a88102c8-08a2-4d48-8590-6ce7b11b587e
+status: experimental
+description: |
+    Detects user execution of Charming Kitten / APT42 malicious files (T1204.002): an LNK dropper disguised
+    as a PDF (e.g. onedrive-form.pdf.lnk delivered with a Harvard T.H. Chan interview-feedback decoy) or a
+    macro-enabled Office document that, on open, spawns a command interpreter / script host (cmd, powershell,
+    wscript, cscript, mshta, curl). Keys on explorer.exe or an Office application as parent launching an
+    interpreter whose command line references a .lnk / double extension (.pdf.lnk, .doc.lnk) - the tell of
+    a shortcut masquerading as a document. Requires process-creation logging with command lines.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\explorer.exe'
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\curl.exe'
+    selection_lnk:
+        CommandLine|contains:
+            - '.pdf.lnk'
+            - '.doc.lnk'
+            - '.docx.lnk'
+            - '.pdf.exe'
+            - '.lnk'
+    condition: selection_parent and selection_child and selection_lnk
+falsepositives:
+    - Legitimate shortcuts launched from Explorer that reference interpreters - scope to .lnk masquerading
+      as documents (double extension) and to first-seen file names
+    - Office add-ins spawning script hosts - baseline per application
+level: high

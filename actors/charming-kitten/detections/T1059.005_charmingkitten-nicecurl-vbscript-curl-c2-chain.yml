@@ -1,0 +1,51 @@
+title: Charming Kitten NICECURL VBScript - Hidden curl C2 Fetch (start /MIN) from Script Host
+id: 129f2a21-ee48-46e0-b9b1-311d52e111dc
+status: experimental
+description: |
+    Detects execution of the NICECURL VBScript backdoor (e.g. kuzen.vbs) and its C2 fetch chain: wscript /
+    cscript running a .vbs that spawns 'cmd /C start /MIN curl --ssl-no-revoke ...' to retrieve and post
+    operator commands over HTTPS. Covers Visual Basic execution (T1059.005), the Windows command-shell
+    curl launch (T1059.003), the hidden/minimized window used to conceal the console (T1564.003 -
+    start /MIN), the curl download of additional modules (T1105 ingress tool transfer) and the web-protocol
+    C2 channel (T1071.001 / T1071). Keys on the script-host -> cmd -> curl process lineage with the
+    distinctive start /MIN + --ssl-no-revoke flags. Requires process-creation logging with command lines.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.command-and-control
+    - attack.t1059.005
+    - attack.t1059.003
+    - attack.t1564.003
+    - attack.t1105
+    - attack.t1071.001
+    - attack.t1071
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_scripthost_curl:
+        ParentImage|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\cmd.exe'
+        Image|endswith:
+            - '\curl.exe'
+            - '\cmd.exe'
+        CommandLine|contains:
+            - 'curl'
+    selection_flags:
+        CommandLine|contains:
+            - 'start /MIN'
+            - '--ssl-no-revoke'
+    condition: selection_scripthost_curl and selection_flags
+falsepositives:
+    - Legitimate scripts invoking curl minimized are uncommon from wscript/cscript parents - verify the
+      .vbs path and the C2 URL
+    - Developer/automation use of curl --ssl-no-revoke - baseline known automation hosts
+level: high

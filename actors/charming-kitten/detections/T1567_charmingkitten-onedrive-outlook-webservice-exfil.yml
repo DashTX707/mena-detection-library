@@ -1,0 +1,38 @@
+title: Charming Kitten Bulk Cloud Download / Exfiltration to Non-Corporate OneDrive-Outlook (M365)
+id: 579f7a5a-3e37-48d8-b5d6-ba7b9080da60
+status: experimental
+description: |
+    Detects APT42 exfiltration over a web service (T1567): OneDrive documents and Outlook email staged and
+    moved to an attacker-controlled OneDrive/mailbox masquerading as the victim organization
+    (victim_org@outlook.com). Keys on high-volume file-download / sync-download operations and on
+    anonymous/external sharing-link creation in the M365 Unified Audit Log that precede egress to a
+    personal outlook.com destination. Destination attribution is weak in native logs, so operate this as a
+    volume/anomaly analytic (per-principal download count) corroborated by DLP/CASB egress telemetry.
+    Requires M365 Unified Audit Log (SharePoint/OneDrive auditing).
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.exfiltration
+    - attack.t1567
+    - mena-detection-library.charming-kitten
+logsource:
+    product: m365
+    service: threat_management
+detection:
+    selection:
+        Operation:
+            - 'FileDownloaded'
+            - 'FileSyncDownloadedFull'
+            - 'AnonymousLinkCreated'
+            - 'AddedToSecureLink'
+            - 'SharingInvitationCreated'
+    condition: selection
+falsepositives:
+    - Legitimate bulk downloads / OneDrive sync on new devices - threshold on files-per-principal-per-hour
+      and correlate with a first-seen device
+    - Sanctioned external sharing - allowlist trusted partner domains and alert on personal
+      outlook.com/gmail.com recipients
+level: medium

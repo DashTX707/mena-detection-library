@@ -1,0 +1,52 @@
+title: Charming Kitten PowerShell - HuntSMBShares Enumeration and AES/Base64 Decode-then-Invoke (TAMECAT)
+id: 9809980d-6b08-4f97-82a3-4f7b81b3bc3f
+status: experimental
+description: |
+    Detects the PowerShell tradecraft of Charming Kitten / APT42 cloud operations and the TAMECAT toehold:
+    the SMB share-hunting sequence Set-ExecutionPolicy + Import-Module + Invoke-HuntSMBShares from the
+    open-source PowerHuntShares tool (T1588.002 tool acquisition, T1046 network service discovery), and
+    TAMECAT's decode-then-execute chain that AES-decrypts / Base64-decodes an embedded payload (from
+    nconf.txt) and runs it in memory (T1059.001 PowerShell, T1140 deobfuscation). Keys on script-block /
+    module-logged content. Runtime AES-decrypt-in-memory reduces static visibility, so pair with AMSI.
+    Requires PowerShell script-block logging (EID 4104) - off by default (visibility gap).
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.resource-development
+    - attack.discovery
+    - attack.t1059.001
+    - attack.t1140
+    - attack.t1588.002
+    - attack.t1046
+    - mena-detection-library.charming-kitten
+logsource:
+    product: windows
+    category: ps_script
+detection:
+    selection_huntshares:
+        ScriptBlockText|contains:
+            - 'Invoke-HuntSMBShares'
+            - 'PowerHuntShares'
+    selection_decode:
+        ScriptBlockText|contains:
+            - 'FromBase64String'
+            - '[System.Security.Cryptography.Aes]'
+            - 'CreateDecryptor'
+            - 'RijndaelManaged'
+    selection_decode_invoke:
+        ScriptBlockText|contains:
+            - 'IEX'
+            - 'Invoke-Expression'
+            - '.Invoke('
+            - 'Add-Type'
+    condition: selection_huntshares or (selection_decode and selection_decode_invoke)
+falsepositives:
+    - Authorized internal share-audit / red-team use of PowerHuntShares - allowlist the operator host/user
+    - Administrative scripts that legitimately Base64-decode and invoke - baseline signed/known scripts and
+      scope the decode+invoke pair to unsigned interactive sessions
+level: high

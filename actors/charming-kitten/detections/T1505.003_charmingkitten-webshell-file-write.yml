@@ -1,0 +1,43 @@
+title: Charming Kitten Web Shell File Write to Server Web-Content Directory
+id: 798123e3-32ba-4b27-86f0-68552fad02c8
+status: experimental
+description: |
+    Detects deployment of a web shell for persistence on a compromised internet-facing server
+    (T1505.003). Keys on file-create events writing server-side script files (.aspx/.asax/.ashx/.asmx/.php/
+    .jsp) into web-content / virtual directories (inetpub\wwwroot, wwwroot, htdocs, xampp) by a web-server
+    or unexpected process. Complements the T1190 process-lineage rule. Requires file-create telemetry
+    (Sysmon EID 11) with web-root path coverage.
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.charming-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_path:
+        TargetFilename|contains:
+            - '\inetpub\wwwroot\'
+            - '\wwwroot\'
+            - '\htdocs\'
+            - '\xampp\'
+            - '\www\'
+    selection_ext:
+        TargetFilename|endswith:
+            - '.aspx'
+            - '.asax'
+            - '.ashx'
+            - '.asmx'
+            - '.asp'
+            - '.php'
+            - '.jsp'
+    condition: selection_path and selection_ext
+falsepositives:
+    - Legitimate web-application deployments / CI-CD publishing new server-side scripts - baseline the
+      deploying process and change windows
+    - CMS updates writing PHP/JSP - allowlist known update mechanisms
+level: high

@@ -1,0 +1,47 @@
+title: Charming Kitten Cloud Mailbox Mass Access and Email-Account Enumeration (M365)
+id: 7a2642bd-4a50-4d9b-b743-379a5b0829d9
+status: experimental
+description: |
+    Detects APT42 cloud email collection and reconnaissance: abnormal remote mailbox access / bulk
+    MailItemsAccessed and mailbox export from Exchange Online (T1114, T1114.002), and enumeration of
+    mailboxes / recipients to identify further targets (T1087.003). Keys on non-owner MailItemsAccessed,
+    Search-Mailbox / New-MailboxExportRequest export operations, and directory/recipient enumeration
+    cmdlets in the audit log. Best thresholded per principal on access volume. Requires M365 Unified Audit
+    Log with mailbox auditing enabled.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.collection
+    - attack.discovery
+    - attack.t1114
+    - attack.t1114.002
+    - attack.t1087.003
+    - mena-detection-library.charming-kitten
+logsource:
+    product: m365
+    service: exchange
+detection:
+    selection_mail_access:
+        Operation:
+            - 'MailItemsAccessed'
+            - 'Search-Mailbox'
+            - 'New-MailboxExportRequest'
+            - 'Get-MessageTrace'
+    filter_owner:
+        LogonType: 'Owner'
+    selection_enum:
+        Operation:
+            - 'Get-Recipient'
+            - 'Get-Mailbox'
+            - 'Get-GlobalAddressList'
+            - 'Get-AddressList'
+    condition: (selection_mail_access and not filter_owner) or selection_enum
+falsepositives:
+    - eDiscovery, journaling, backup or archival service accounts performing bulk mailbox access -
+      allowlist and threshold on distinct-mailbox count per actor
+    - Administrators running recipient-enumeration cmdlets during routine operations - baseline admin
+      principals
+level: medium

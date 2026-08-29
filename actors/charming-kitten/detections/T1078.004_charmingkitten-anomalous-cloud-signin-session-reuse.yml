@@ -1,0 +1,48 @@
+title: Charming Kitten Valid-Account Cloud Sign-In Anomaly and KMSI Session Reuse
+id: 2d37bdc1-e505-4bb8-a0a9-6581d352fb67
+status: experimental
+description: |
+    Detects anomalous interactive/valid-account sign-ins consistent with APT42 cloud operations after
+    credential harvesting and MFA bypass (T1078.004 cloud, T1078.002 domain/hybrid, T1078.001 default
+    accounts) and reuse of captured session material / Keep-Me-Signed-In persistence (T1550.004). Keys on
+    successful sign-ins carrying risk state or originating from anonymized infrastructure (ExpressVPN /
+    Cloudflare-fronted / ephemeral VPS ASNs) and on token/KMSI-backed sessions that skip interactive MFA.
+    Best operated as a risk-scored (RBA) analytic correlated with impossible-travel and new-device
+    signals rather than a standalone page. Requires Entra ID sign-in logs (Identity Protection risk
+    enrichment recommended).
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.lateral-movement
+    - attack.t1078.004
+    - attack.t1078.002
+    - attack.t1078.001
+    - attack.t1550.004
+    - mena-detection-library.charming-kitten
+logsource:
+    product: azure
+    service: signinlogs
+detection:
+    selection_success:
+        ResultType: 0
+    selection_anomaly:
+        - RiskState:
+              - 'atRisk'
+              - 'confirmedCompromised'
+        - RiskLevelDuringSignIn:
+              - 'high'
+              - 'medium'
+    filter_compliant:
+        AuthenticationRequirement: 'multiFactorAuthentication'
+        IsInteractive: true
+    condition: selection_success and selection_anomaly and not filter_compliant
+falsepositives:
+    - Corporate VPN egress or traveling users flagged as risky - baseline expected ASNs/geos and named
+      locations; tune RiskState thresholds to your Identity Protection policy
+    - Legitimate persistent (KMSI) sessions - correlate with device compliance and new-device events
+      before escalating
+level: medium

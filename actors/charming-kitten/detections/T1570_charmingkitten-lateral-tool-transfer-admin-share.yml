@@ -1,0 +1,46 @@
+title: Charming Kitten Lateral Tool Transfer over Admin Shares
+id: 71a2321d-6bc1-4b4b-8207-ce4194b3af5b
+status: experimental
+description: |
+    Detects lateral transfer of tools/scripts between systems within the victim environment (T1570). Keys
+    on process command lines that copy executables or scripts to a remote admin share (\\host\C$, \\host\
+    ADMIN$) or that use copy/xcopy/robocopy/PowerShell Copy-Item with a UNC path pointing at an
+    interpreter/payload extension. Requires process-creation logging with command lines (pair with
+    file-share / SMB write auditing where available).
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.lateral-movement
+    - attack.t1570
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_copy:
+        - Image|endswith:
+              - '\xcopy.exe'
+              - '\robocopy.exe'
+          CommandLine|contains: '\\\\'
+        - CommandLine|contains:
+              - 'copy '
+              - 'Copy-Item'
+    selection_share:
+        CommandLine|contains:
+            - 'C$\'
+            - 'ADMIN$'
+    selection_ext:
+        CommandLine|contains:
+            - '.exe'
+            - '.dll'
+            - '.ps1'
+            - '.vbs'
+            - '.bat'
+    condition: selection_copy and selection_share and selection_ext
+falsepositives:
+    - Legitimate administrative software distribution over admin shares (SCCM, PsExec deployment) -
+      baseline known deployment hosts and accounts
+    - Backup/replication jobs writing to admin shares - allowlist known tooling
+level: medium

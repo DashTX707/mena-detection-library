@@ -1,0 +1,46 @@
+title: Charming Kitten Vulnerability Scanning Against Internet-Facing Applications
+id: 5f03989e-ef82-4b99-a504-684ec57d2a10
+status: experimental
+description: |
+    Detects active vulnerability scanning against internet-facing assets consistent with Charming Kitten
+    reconnaissance ahead of exploitation (T1595.002). Keys on web-server access logs showing scanner user
+    agents and probing of exploit/appliance paths (proxyshell/autodiscover, log4j JNDI probes, generic
+    vuln-scanner fingerprints) from a single source. Attribution to this actor is weak; operate as a
+    perimeter-hygiene / RBA signal. Requires web-server / WAF access logging.
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.reconnaissance
+    - attack.t1595.002
+    - mena-detection-library.charming-kitten
+logsource:
+    category: webserver
+detection:
+    selection_ua:
+        c-useragent|contains:
+            - 'nmap'
+            - 'nikto'
+            - 'sqlmap'
+            - 'masscan'
+            - 'nuclei'
+            - 'acunetix'
+            - 'nessus'
+            - 'zgrab'
+    selection_probe:
+        cs-uri-query|contains:
+            - 'jndi:ldap'
+            - 'jndi:rmi'
+            - '${jndi'
+    selection_probe_uri:
+        cs-uri-stem|contains:
+            - '/autodiscover/autodiscover.json'
+            - '/owa/auth/'
+            - '/aspnet_client/'
+    condition: selection_ua or selection_probe or selection_probe_uri
+falsepositives:
+    - Authorized vulnerability scanners and ASM/pentest engagements - allowlist scanner source IPs and
+      scheduled scan windows
+    - Security research crawlers - baseline internet background noise
+level: medium

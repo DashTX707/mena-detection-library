@@ -1,0 +1,39 @@
+title: Charming Kitten Rundll32 System Binary Proxy Execution (anomalous DLL/export or network)
+id: 72485a31-b63f-443a-a3fb-8b1a8bf82e64
+status: experimental
+description: |
+    Detects abuse of rundll32.exe to proxy execution of malicious code under a trusted system binary
+    (T1218.011). Keys on rundll32 command lines that load a DLL from a user-writable path (AppData, Temp,
+    Public, ProgramData), invoke a script/URL protocol handler (javascript:, url.dll,FileProtocolHandler),
+    or run with no ordinal/export in the expected form - patterns abnormal for legitimate rundll32 use.
+    Requires process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1218.011
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith: '\rundll32.exe'
+    selection_susp:
+        CommandLine|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - 'javascript:'
+            - 'url.dll,FileProtocolHandler'
+            - 'shell32.dll,ShellExec_RunDLL'
+            - '.dll,#'
+    condition: selection_img and selection_susp
+falsepositives:
+    - Legitimate applications invoking rundll32 with control-panel or shell helpers - baseline known
+      DLL/export combinations
+    - Software installers running from ProgramData - allowlist signed installers
+level: medium

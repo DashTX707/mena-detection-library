@@ -1,0 +1,65 @@
+title: Charming Kitten Impair Defenses - Defender/AV Tampering, Event-Log Disable, Firewall Modification
+id: c38c5d30-2277-44f0-8b51-a057a8cc054f
+status: experimental
+description: |
+    Detects host-defense impairment by Charming Kitten / Phosphorus-Mint Sandstorm operations across three
+    remapped Impair-Defenses techniques: disabling or modifying security tooling / Windows Defender
+    (T1685 - Set-MpPreference -Disable*, sc stop/config of AV or EDR services, Add-MpPreference exclusions);
+    disabling or clearing the Windows event log (T1685.001 - wevtutil cl/sl, Stop-Service EventLog,
+    auditpol /clear); and modifying the Windows host firewall to enable remote access / C2 (T1686.003 -
+    netsh advfirewall set/add rule, Set-NetFirewallProfile -Enabled False). Keys on the process command
+    lines for each. Requires process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G0059
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - attack.t1685.001
+    - attack.t1686.003
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_defender:
+        CommandLine|contains:
+            - 'Set-MpPreference -DisableRealtimeMonitoring'
+            - 'DisableRealtimeMonitoring $true'
+            - 'Add-MpPreference -ExclusionPath'
+            - 'Add-MpPreference -ExclusionProcess'
+            - 'DisableIOAVProtection'
+            - 'DisableBehaviorMonitoring'
+    selection_avstop:
+        Image|endswith: '\sc.exe'
+        CommandLine|contains:
+            - 'stop windefend'
+            - 'stop sense'
+            - 'config windefend'
+    selection_eventlog:
+        - Image|endswith: '\wevtutil.exe'
+          CommandLine|contains:
+              - ' cl '
+              - ' sl '
+              - '/e:false'
+        - CommandLine|contains:
+              - 'Stop-Service -Name EventLog'
+              - 'auditpol /clear'
+              - 'auditpol /set /category'
+    selection_firewall:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains|all:
+            - 'advfirewall'
+    selection_firewall_action:
+        CommandLine|contains:
+            - 'set allprofiles state off'
+            - 'firewall add rule'
+            - 'Set-NetFirewallProfile'
+    condition: selection_defender or selection_avstop or selection_eventlog or (selection_firewall and selection_firewall_action) or selection_firewall_action
+falsepositives:
+    - Administrators legitimately adjusting Defender exclusions, firewall rules or clearing logs during
+      maintenance - baseline expected admin hosts and change windows
+    - Security tooling deployment scripts - allowlist known management processes
+level: high

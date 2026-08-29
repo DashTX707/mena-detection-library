@@ -1,0 +1,72 @@
+title: Charming Kitten Host Discovery Command Burst (network config / trust / process / file enumeration)
+id: 6056b384-afff-4a68-919a-638f0404cce1
+status: experimental
+description: |
+    Detects the hands-on-keyboard discovery burst Charming Kitten / APT42 runs after gaining host access:
+    network-configuration enumeration (ipconfig, netsh - T1016), active-connection listing (netstat -
+    T1049), remote-system enumeration (net view, net group, ping sweeps - T1018), domain-trust discovery
+    (nltest /domain_trusts, dsquery - T1482), process enumeration and Defender-presence checks (tasklist,
+    Get-Process - T1057), owner/user discovery (whoami - T1033), broad file/directory enumeration (dir /s,
+    tree - T1083), and WMI-based discovery/execution (wmic - T1047). Individually low-signal; the value is
+    several of these from one host/user in a short window (correlate/threshold in the SIEM). Requires
+    process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G0059
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.discovery
+    - attack.execution
+    - attack.t1016
+    - attack.t1033
+    - attack.t1049
+    - attack.t1018
+    - attack.t1057
+    - attack.t1482
+    - attack.t1083
+    - attack.t1047
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_netcfg:
+        Image|endswith: '\ipconfig.exe'
+        CommandLine|contains: '/all'
+    selection_netstat:
+        Image|endswith: '\netstat.exe'
+    selection_trust:
+        - Image|endswith:
+              - '\nltest.exe'
+              - '\dsquery.exe'
+        - CommandLine|contains:
+              - 'domain_trusts'
+              - 'trustedDomain'
+    selection_remote:
+        Image|endswith: '\net.exe'
+        CommandLine|contains:
+            - ' view'
+            - ' group'
+            - ' localgroup'
+    selection_proc:
+        Image|endswith:
+            - '\tasklist.exe'
+            - '\whoami.exe'
+    selection_wmi:
+        Image|endswith: '\wmic.exe'
+        CommandLine|contains:
+            - 'process'
+            - 'os get'
+            - '/node:'
+    selection_file:
+        Image|endswith: '\cmd.exe'
+        CommandLine|contains|all:
+            - 'dir '
+            - '/s'
+    condition: 1 of selection_*
+falsepositives:
+    - Individual discovery commands are common in administration - this rule is intended for correlation /
+      thresholding (several distinct selections from one host-user in a short window)
+    - Login scripts and inventory tooling - baseline expected hosts/accounts
+level: medium

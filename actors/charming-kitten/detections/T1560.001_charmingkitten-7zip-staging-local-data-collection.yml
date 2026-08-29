@@ -1,0 +1,50 @@
+title: Charming Kitten 7-Zip Password-Protected Staging and Local Data / Outlook-Store Collection
+id: ee9f2347-af38-4960-aa8f-5233544f6064
+status: experimental
+description: |
+    Detects APT42 data staging and local collection: creation of password-protected / encrypted archives
+    with an archive utility prior to exfiltration (T1560.001 - 7z/7za/rar/WinRAR with -p<password> and -mhe
+    header encryption), collection of files from the local system (T1005), including access to and copying
+    of local Outlook data stores (T1114.001 - *.ost/*.pst), and broad file/directory staging (T1083). Keys
+    on the archive-utility command line and on copy/archive operations referencing Outlook stores. Requires
+    process-creation logging with command lines.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.collection
+    - attack.t1560.001
+    - attack.t1005
+    - attack.t1114.001
+    - attack.t1083
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_archive:
+        Image|endswith:
+            - '\7z.exe'
+            - '\7za.exe'
+            - '\rar.exe'
+            - '\WinRAR.exe'
+        CommandLine|contains:
+            - ' -p'
+            - ' a '
+    selection_archive_enc:
+        CommandLine|contains:
+            - ' -p'
+            - '-mhe'
+    selection_outlook:
+        CommandLine|contains:
+            - '.ost'
+            - '.pst'
+            - '\Microsoft\Outlook\'
+    condition: (selection_archive and selection_archive_enc) or selection_outlook
+falsepositives:
+    - Legitimate backup / archival jobs creating password-protected archives - baseline known backup tools
+      and staging directories
+    - Outlook data-file backup by sanctioned tooling - allowlist known processes
+level: medium

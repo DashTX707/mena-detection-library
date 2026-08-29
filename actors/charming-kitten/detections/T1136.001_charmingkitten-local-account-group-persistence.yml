@@ -1,0 +1,40 @@
+title: Charming Kitten Local Account Creation and Privileged/RDP Group Addition
+id: 25b0218b-a99c-4dab-a6e8-58e3ab8ec9b0
+status: experimental
+description: |
+    Detects account-based persistence and privilege retention by Charming Kitten: creation of a local
+    account (T1136.001, e.g. net user <name> <pass> /add) and addition of a controlled account to
+    privileged or remote-access groups (T1098.007, e.g. net localgroup administrators / "Remote Desktop
+    Users" /add). Keys on net.exe / net1.exe command lines. Pair with Security EID 4720 (account created)
+    and 4728/4732 (group membership added). Requires process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1136.001
+    - attack.t1098.007
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_net:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+    selection_create:
+        CommandLine|contains|all:
+            - 'user'
+            - '/add'
+    selection_group:
+        CommandLine|contains|all:
+            - 'group'
+            - '/add'
+    condition: selection_net and (selection_create or selection_group)
+falsepositives:
+    - Legitimate provisioning of local accounts and group membership by IT/deployment tooling - baseline
+      expected hosts, accounts and group names
+    - Add scoped exclusions for known service-account onboarding
+level: medium

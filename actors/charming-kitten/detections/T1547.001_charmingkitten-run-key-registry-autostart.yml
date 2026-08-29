@@ -1,0 +1,49 @@
+title: Charming Kitten Registry Run-Key / Autostart and Implant Config Registry Modification
+id: 9bf12e18-78ef-427f-b218-da90382eeb08
+status: experimental
+description: |
+    Detects autostart persistence and implant-configuration registry writes by Charming Kitten
+    (T1547.001 Run keys / Startup, T1112 Modify Registry). Keys on registry-set events writing to the
+    Run / RunOnce autostart keys (or Winlogon Shell/Userinit) with a value pointing at a command
+    interpreter, script host, or a binary/script in a user-writable path. Requires registry-modification
+    auditing (Sysmon EID 13).
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1547.001
+    - attack.t1112
+    - mena-detection-library.charming-kitten
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_runkey:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+            - '\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell'
+            - '\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit'
+    selection_value:
+        Details|contains:
+            - 'powershell'
+            - 'pwsh'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - 'cmd.exe'
+            - 'curl'
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection_runkey and selection_value
+falsepositives:
+    - Legitimate software registering autostart entries pointing at its own signed binaries - baseline
+      known publishers and paths
+    - Login/logon customization by management tooling - allowlist known values
+level: medium

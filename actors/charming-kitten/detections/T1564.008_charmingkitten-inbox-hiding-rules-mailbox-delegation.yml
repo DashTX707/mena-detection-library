@@ -1,0 +1,50 @@
+title: Charming Kitten Mailbox Inbox Hiding/Forwarding Rules and Delegate-Permission Grants (M365)
+id: b079ff3d-795a-4acb-a2a0-a7de28a01285
+status: experimental
+description: |
+    Detects the identity-persistence and email-concealment tradecraft central to Charming Kitten / APT42:
+    creation or modification of inbox rules that hide, delete or auto-forward mail to conceal access and
+    exfiltrate correspondence (T1564.008), and grants of additional mailbox delegate / send-as permissions
+    to retain persistent access to targeted mailboxes (T1098.002, e.g. Add-MailboxPermission). These are
+    high-fidelity BEC/espionage signals in the Exchange Online / Unified Audit Log. Keys on the New-/
+    Set-InboxRule operations carrying forward/delete/move parameters and on Add-MailboxPermission /
+    Add-RecipientPermission delegate grants. Requires M365 Unified Audit Log (Exchange mailbox auditing).
+references:
+    - https://attack.mitre.org/groups/G0059
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1564.008
+    - attack.t1098.002
+    - mena-detection-library.charming-kitten
+logsource:
+    product: m365
+    service: exchange
+detection:
+    selection_inbox_rule:
+        Operation:
+            - 'New-InboxRule'
+            - 'Set-InboxRule'
+            - 'Set-Mailbox'
+        Parameters|contains:
+            - 'ForwardTo'
+            - 'ForwardAsAttachmentTo'
+            - 'RedirectTo'
+            - 'DeleteMessage'
+            - 'MoveToFolder'
+            - 'MarkAsRead'
+            - 'ForwardingSmtpAddress'
+    selection_delegate:
+        Operation:
+            - 'Add-MailboxPermission'
+            - 'Add-RecipientPermission'
+    condition: selection_inbox_rule or selection_delegate
+falsepositives:
+    - Users creating benign organizing/forwarding rules - scope to external ForwardTo/Redirect targets and
+      to delete/hide-alert rules for higher fidelity
+    - Sanctioned delegate delegation (executive assistants, shared mailboxes) - allowlist known
+      grantor/grantee pairs
+level: high

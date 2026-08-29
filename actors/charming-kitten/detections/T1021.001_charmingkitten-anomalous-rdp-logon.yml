@@ -1,0 +1,31 @@
+title: Charming Kitten Interactive RDP Logon (hands-on-keyboard, Type 10)
+id: 0cacd92e-abb7-43e4-92c6-3e022caea8ff
+status: experimental
+description: |
+    Detects the interactive RDP access APT42 used for hands-on-keyboard operations after obtaining valid
+    credentials (T1021.001). Keys on Security EID 4624 with LogonType 10 (RemoteInteractive) - correlate
+    with unusual source IPs/subnets, off-hours access, or a source outside the RDP-jump-host set in the
+    SIEM. Best operated as a risk-scored analytic against a baseline of normal RDP sources. Requires
+    Windows Security authentication auditing.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.charming-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    condition: selection
+falsepositives:
+    - Routine administrative RDP from jump hosts / help desk - baseline expected source hosts and accounts
+      and alert on new/unusual sources (this rule is intended for RBA correlation, not standalone paging)
+    - Remote-work VDI access - allowlist known broker/gateway sources
+level: low

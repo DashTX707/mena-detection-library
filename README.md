@@ -59,6 +59,7 @@ scripts/                 helpers (validation, Navigator export)
 | [Agrius (G1030)](actors/agrius/) | Iran-nexus · destructive | ✅ published | 34 | 18 | 6 |
 | [WIRTE (G0090)](actors/wirte/) | Palestinian-nexus · +wiper | ✅ published | 39 | 13 | 9 |
 | [Scarred Manticore (Storm-0861)](actors/scarred-manticore/) | Iran-nexus · LIONTAIL | ✅ published | 28 | 10 | 7 |
+| [Charming Kitten (APT35, G0059)](actors/charming-kitten/) | Iran-nexus · IRGC | ✅ published | 84 | 26 | 8 |
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

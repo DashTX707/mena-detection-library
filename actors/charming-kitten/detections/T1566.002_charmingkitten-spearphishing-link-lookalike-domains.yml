@@ -1,0 +1,56 @@
+title: Charming Kitten Spearphishing Link to Typo-Squatted / Lookalike Credential-Harvest Domains
+id: d6750f07-4205-408a-982c-8f4d3f86cd6a
+status: experimental
+description: |
+    Detects web/proxy or DNS access to Charming Kitten (APT35/APT42) credential-harvesting and redirect
+    infrastructure: typo-squatted / lookalike domains on .top/.online/.site/.live/.buzz TLDs (frequently
+    several hyphen-separated words, e.g. panel-live-check[.]online, review[.]modification-check[.]online,
+    drive-file-share[.]site), the n9[.]cl URL shortener, and the specific harvesting domains from the
+    Mandiant "Uncharmed" report. Covers spearphishing-link delivery (T1598.003), the initial-access click
+    to a fake Gmail/M365/LinkedIn login page (T1566.002), user execution of the malicious link
+    (T1204.001) and drive-by redirect chains (T1189). Domains decay fast (L1 observables) - this rule is a
+    cheap commodity supplement; the durable coverage is the identity/cloud sign-in analytics.
+    Requires web-proxy or DNS query logging.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.reconnaissance
+    - attack.initial-access
+    - attack.execution
+    - attack.t1598.003
+    - attack.t1566.002
+    - attack.t1204.001
+    - attack.t1189
+    - mena-detection-library.charming-kitten
+logsource:
+    category: proxy
+detection:
+    selection_known_domains:
+        c-uri|contains:
+            - 'prism-west-candy.glitch.me'
+            - 'accurate-sprout-porpoise.glitch.me'
+            - 'drive-file-share.site'
+            - 'ksview.top'
+            - 'honest-halcyon-fresher.buzz'
+            - 'review.modification-check.online'
+            - 'admin-stable-right.top'
+            - 'shortlinkview.live'
+            - 'panel-view.live'
+            - 'panel-live-check.online'
+            - 'continue-meeting.site'
+            - 'email-daemon.online'
+            - 'check-panel-status.live'
+            - 'dloffice.top'
+            - 'dloffice.buzz'
+    selection_shortener:
+        c-uri|contains:
+            - 'n9.cl/'
+    condition: selection_known_domains or selection_shortener
+falsepositives:
+    - Legitimate use of the n9.cl shortener - corroborate with the destination page and user report
+    - Domain list is IOC-based and decays; refresh from current threat intel and pair with a
+      newly-registered-domain / lookalike-domain analytic for durable coverage
+level: high

@@ -1,0 +1,46 @@
+title: Charming Kitten Script-Host Network C2 on Non-Standard Port / Ingress Transfer
+id: dc8cef78-a8b0-40a8-9a3a-3402facb5550
+status: experimental
+description: |
+    Detects the network side of NICECURL/TAMECAT C2 and tool transfer: a script host or command-line
+    download utility (curl, wscript, cscript, powershell, cmd) making outbound connections over
+    application-layer protocols to a non-standard port (T1571, T1071) and pulling additional components
+    (T1105). Keys on network-connection events whose initiating process is a script/download utility and
+    whose destination port is outside the common web set (not 80/443/53). Requires network-connection
+    telemetry (Sysmon EID 3) with initiating-process attribution.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.command-and-control
+    - attack.t1571
+    - attack.t1071
+    - attack.t1105
+    - mena-detection-library.charming-kitten
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: true
+        Image|endswith:
+            - '\curl.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\mshta.exe'
+    filter_common_ports:
+        DestinationPort:
+            - 80
+            - 443
+            - 53
+    condition: selection and not filter_common_ports
+falsepositives:
+    - Developer/automation use of curl/PowerShell to non-standard service ports (APIs, package mirrors) -
+      baseline expected destinations and ports per host
+    - Internal management traffic - allowlist known internal endpoints
+level: medium

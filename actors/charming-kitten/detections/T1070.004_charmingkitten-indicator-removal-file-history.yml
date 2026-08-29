@@ -1,0 +1,46 @@
+title: Charming Kitten Indicator Removal - File Deletion and Command-History Clearing
+id: a49ec94e-96a5-4f1c-be9d-74001f0862c1
+status: experimental
+description: |
+    Detects anti-forensic cleanup by Charming Kitten (NICECURL's 'kill' command removes artifacts via
+    DeleteFile; operators delete tooling and clear history): file deletion of tools/artifacts (T1070.004 -
+    del /f, cipher /w wipe, Remove-Item -Force of scripts/archives in user-writable paths) and clearing of
+    shell command history (T1070.003 - Clear-History, deletion of ConsoleHost_history.txt, doskey /reinstall).
+    Keys on the process command lines. Deletion is inherently destructive of evidence, so alert promptly.
+    Requires process-creation logging with command lines.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/untangling-iran-apt42-operations
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - attack.t1070.003
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_wipe:
+        Image|endswith: '\cipher.exe'
+        CommandLine|contains: '/w'
+    selection_del:
+        CommandLine|contains:
+            - 'del /f'
+            - 'del /q'
+            - 'Remove-Item -Force'
+            - 'Remove-Item -Recurse'
+    selection_history:
+        CommandLine|contains:
+            - 'Clear-History'
+            - 'ConsoleHost_history.txt'
+            - 'Clear-EventLog'
+            - 'doskey /reinstall'
+            - '(Get-PSReadlineOption).HistorySavePath'
+    condition: selection_wipe or (selection_del and selection_history) or selection_history
+falsepositives:
+    - Routine cleanup scripts and uninstallers deleting temporary files - baseline known maintenance jobs
+    - Developers clearing PowerShell history - scope to deletion combined with tool/artifact paths for
+      higher fidelity
+level: medium

@@ -1,0 +1,42 @@
+title: Charming Kitten (Phosphorus) Data Encrypted for Impact - BitLocker / Mass Encryption
+id: d84dcca5-fa63-4b49-b803-1b1d5169c455
+status: experimental
+description: |
+    Detects disruptive/extortion encryption by Phosphorus / Mint Sandstorm sub-operations of this actor
+    (T1486): abuse of BitLocker (manage-bde -on, Enable-BitLocker) to encrypt drives for impact, and
+    shadow-copy destruction that typically accompanies encryption (vssadmin delete shadows, wmic
+    shadowcopy delete, bcdedit recoveryenabled No). Keys on the process command lines. Pair with EDR
+    mass-file-modification behavior analytics. Requires process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G0059
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1486
+    - mena-detection-library.charming-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_bitlocker:
+        CommandLine|contains:
+            - 'manage-bde -on'
+            - 'Enable-BitLocker'
+            - 'manage-bde -forcerecovery'
+    selection_shadow:
+        CommandLine|contains:
+            - 'vssadmin delete shadows'
+            - 'shadowcopy delete'
+            - 'wbadmin delete catalog'
+            - 'bcdedit'
+    selection_shadow_arg:
+        CommandLine|contains:
+            - '/all'
+            - 'recoveryenabled no'
+            - 'delete shadows'
+    condition: selection_bitlocker or (selection_shadow and selection_shadow_arg)
+falsepositives:
+    - Legitimate BitLocker enablement during provisioning - baseline expected enrollment hosts/tooling
+    - Backup software managing shadow copies - allowlist known backup processes
+level: high
