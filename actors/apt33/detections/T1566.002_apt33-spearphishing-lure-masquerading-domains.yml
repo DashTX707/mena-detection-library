@@ -1,0 +1,48 @@
+title: APT33 Spearphishing Recruitment-Lure Delivery to Masquerading / Dynamic-DNS Domains
+id: f92c5aea-9386-4b4b-8b66-1e974330b1c1
+status: experimental
+description: |
+    Detects web/proxy or DNS access to APT33 recruitment-lure delivery and C2 infrastructure: domains
+    masquerading as spoofed aviation/defense organizations hosted on dynamic-DNS providers (e.g.
+    alsalam[.]ddns[.]net, ngaaksa[.]ga, boeing[.]servehttp[.]com). Covers spearphishing-link delivery
+    (T1566.002), the attachment-drop callback / lure infrastructure reuse (T1566.001) and user execution
+    of the malicious link (T1204.001). These domains are L1 IOC observables that decay fast - this rule is
+    a cheap commodity supplement; durable coverage is the identity/cloud sign-in and host-execution
+    analytics. Requires web-proxy or DNS query logging.
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.t1566.002
+    - attack.t1566.001
+    - attack.t1204.001
+    - mena-detection-library.apt33
+logsource:
+    category: proxy
+detection:
+    selection_domains:
+        c-uri|contains:
+            - 'alsalam.ddns.net'
+            - 'ngaaksa.ga'
+            - 'boeing.servehttp.com'
+    selection_dyndns:
+        c-uri|contains:
+            - '.ddns.net'
+            - '.servehttp.com'
+    selection_lure_terms:
+        c-uri|contains:
+            - 'alsalam'
+            - 'ngaaksa'
+            - 'northrop'
+            - 'sang-'
+    condition: selection_domains or (selection_dyndns and selection_lure_terms)
+falsepositives:
+    - Legitimate use of dynamic-DNS providers (.ddns.net) by home/lab/IoT services - the paired
+      aviation/defense lure terms narrow this; refresh the domain list from current threat intel
+    - Domain/keyword list is IOC-based and decays - pair with a newly-registered / lookalike-domain
+      analytic for durable coverage
+level: medium

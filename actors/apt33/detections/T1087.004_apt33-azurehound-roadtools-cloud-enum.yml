@@ -1,0 +1,46 @@
+title: APT33 Peach Sandstorm Cloud Enumeration Burst - AzureHound / Roadtools
+id: 6eae8fde-d9da-4728-a7d9-169e359f39cc
+status: experimental
+description: |
+    Detects the AzureHound / Roadtools cloud reconnaissance burst run by APT33 / Peach Sandstorm after
+    gaining cloud access (T1087.004 cloud account discovery, T1526 cloud service discovery): a single
+    recently-authenticated identity issuing a high volume of Microsoft Graph / Azure AD Graph / Azure
+    Resource Manager read-and-enumerate calls over directory objects, roles and resources. Keys on the
+    AzureHound/Roadtools user-agent strings and on the characteristic directory/resource read operations.
+    Best operated as a per-principal volume/rate analytic over a short window. Requires Entra ID audit /
+    MSGraph activity logs (or Azure Activity for ARM enumeration).
+references:
+    - https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.discovery
+    - attack.t1087.004
+    - attack.t1526
+    - mena-detection-library.apt33
+logsource:
+    product: azure
+    service: auditlogs
+detection:
+    selection_ua:
+        UserAgent|contains:
+            - 'azurehound'
+            - 'roadlib'
+            - 'roadtools'
+            - 'python-requests'
+    selection_enum_ops:
+        OperationName:
+            - 'List users'
+            - 'List groups'
+            - 'List service principals'
+            - 'List role assignments'
+            - 'List devices'
+            - 'Get directory role members'
+    condition: selection_ua or selection_enum_ops
+falsepositives:
+    - Legitimate identity-governance / attack-surface tooling (some also use BloodHound/AzureHound-style
+      collectors) - allowlist authorized security-team hosts and service principals
+    - Python-based automation and reporting scripts enumerating the directory - baseline expected
+      automation identities and thresholds on distinct objects read per principal
+level: medium

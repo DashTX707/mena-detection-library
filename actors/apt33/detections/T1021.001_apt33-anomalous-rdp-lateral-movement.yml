@@ -1,0 +1,38 @@
+title: APT33 Peach Sandstorm Hands-on-Keyboard RDP Lateral Movement
+id: f0d01781-af3b-46d3-a976-a20b20853454
+status: experimental
+description: |
+    Detects interactive RDP lateral movement used by APT33 / Peach Sandstorm for hands-on-keyboard
+    operations (T1021.001). Keys on remote-interactive logons (Windows Security EID 4624 LogonType 10)
+    over the network - best operated as an anomaly analytic on unusual source-to-destination host pairs,
+    off-hours access, and first-seen RDP paths for the account. On its own EID 4624/type 10 is common in
+    admin environments; scope to newly-observed lateral paths and correlate with the actor's compromised
+    accounts. Requires Windows authentication (logon) event logging.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.apt33
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    filter_local:
+        IpAddress:
+            - '-'
+            - '127.0.0.1'
+            - '::1'
+    condition: selection and not filter_local
+falsepositives:
+    - Legitimate administrative RDP and jump-host access - baseline expected admin accounts and
+      source/destination pairs; operate as an anomaly (new-path / off-hours) analytic rather than on every
+      type-10 logon
+    - Help-desk remote support sessions - allowlist known support hosts
+level: medium

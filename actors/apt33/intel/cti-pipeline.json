@@ -1,0 +1,820 @@
+{
+  "report_title": "APT33 (Elfin / HOLMIUM / Peach Sandstorm) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Primary sources: (1) MITRE ATT&CK Group G0064 'APT33' official group-technique mapping (https://attack.mitre.org/groups/G0064), retrieved via ATT&CK tooling — the 31-technique base set; (2) FireEye/Mandiant, 'APT33: Insights into Iranian Cyber Espionage', Sept 2017 (https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage) — the foundational spear-phishing / recruitment-lure / TURNEDUP / destructive-malware-nexus reporting; (3) Microsoft Threat Intelligence, 'Peach Sandstorm password spray campaigns enable intelligence collection at high-value targets', 2023-09-14 (https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/) — the 2023 cloud/identity password-spray campaign, retrieved live this session. Every technique_id in the ttps array is drawn from the official G0064 mapping OR is a well-sourced addition explicitly verified to exist in this ATT&CK dataset via get_technique and cited to a named public report. Technique IDs and canonical names were verified against the CI validator's (newer/reorganized) ATT&CK dataset; the defense-evasion tactic is emitted as 'stealth' and the 'Impair Defenses' family uses the remapped T1685.x / T1686.x IDs under the 'defense-impairment' tactic per this dataset's convention.",
+  "publication_date": "2026-08-29",
+  "actor": {
+    "name": "APT33",
+    "mitre_id": "G0064",
+    "mitre_canonical_name": "APT33",
+    "aliases": [
+      "APT33",
+      "HOLMIUM",
+      "Elfin",
+      "Peach Sandstorm",
+      "Refined Kitten",
+      "Magnallium",
+      "Cobalt Trinity"
+    ],
+    "related_clusters": [
+      "Peach Sandstorm (Microsoft) — the 2023 password-spray / cloud-operations identity of APT33 targeting satellite, defense and pharmaceutical sectors",
+      "HOLMIUM (Microsoft legacy naming) — same Iran-nexus actor tracked in earlier Microsoft reporting",
+      "Elfin (Symantec) — Symantec's designation for the same aviation/energy-focused Iranian espionage cluster",
+      "Shamoon / StoneDrill destructive-attack actors — FireEye assessed persona and tooling overlaps linking APT33 members to actors deploying wiper malware against Saudi/Gulf energy targets (assessed, not a hard MITRE group-level mapping)"
+    ],
+    "attribution": "Suspected Iranian state-sponsored cyber-espionage group operating since at least 2013. MITRE assesses APT33 (G0064) targets organizations in the United States, Saudi Arabia and South Korea with a particular interest in aviation and energy. FireEye/Mandiant attribution rests on Farsi-language artifacts and build-time zones consistent with Iran's HALF working day, use of Iranian hacker tooling and personas (e.g. 'xman_1365_x', 'Nasr Institute' / 'Nasr' linkages), targeting aligned with Iranian strategic/nation-state interests, and infrastructure/persona overlaps with actors who deployed the Shamoon and StoneDrill destructive malware. Microsoft independently tracks the same actor as Peach Sandstorm/HOLMIUM and assesses it operates on behalf of Iranian interests, likely tied to the IRGC. Group and tooling attribution is high-confidence; the Shamoon/StoneDrill destructive-attack linkage is an assessed judgement (persona/infrastructure overlap) rather than a definitive MITRE group-level technique mapping.",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "Saudi Arabia",
+      "United Arab Emirates",
+      "Qatar",
+      "Kuwait",
+      "Bahrain",
+      "Iran (regional operational base)"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "South Korea",
+      "United Kingdom",
+      "Europe (broad)"
+    ],
+    "targeted_sectors": [
+      "Aviation (military and commercial)",
+      "Aerospace / defense industrial base",
+      "Energy",
+      "Oil / petrochemical",
+      "Satellite / space",
+      "Pharmaceutical",
+      "Government",
+      "Engineering / manufacturing"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Aviation/energy recruitment-lure spear-phishing (FireEye APT33)",
+        "date": "2016 – 2017",
+        "summary": "APT33 sent spear-phishing emails with recruitment/job-vacancy lures to employees in the aviation and energy sectors, spoofing Saudi Arabian and Western aviation/defense firms (e.g. themes referencing Boeing, Alsalam Aircraft Company, Northrop Grumman Aviation Arabia, and the Saudi Arabian National Guard). Emails contained links or .hta/HTML application content that dropped the custom TURNEDUP backdoor and commodity RATs. Domains masqueraded as the spoofed organizations (e.g. alsalam[.]ddns[.]net, ngaaksa[.]ga, boeing[.]servehttp[.]com). Objective: espionage aligned with Iran's aviation and petrochemical strategic interests.",
+        "source_url": "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      },
+      {
+        "name": "POWERTON / CVE-2017-11774 Outlook Home Page persistence (HOLMIUM)",
+        "date": "2018 – 2019",
+        "summary": "The actor exploited CVE-2017-11774 (Microsoft Outlook Home Page) to gain execution and deployed the custom PowerShell backdoor POWERTON alongside AutoIt droppers and publicly available RATs, using Registry Run keys and scheduled tasks for persistence and HTTP-based C2. This campaign continued APT33's espionage against energy and industrial-control-adjacent targets.",
+        "source_url": "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      },
+      {
+        "name": "Peach Sandstorm cloud password-spray campaign (Microsoft)",
+        "date": "February – July 2023",
+        "summary": "Peach Sandstorm (APT33) conducted large-scale password-spray attacks attempting to authenticate to thousands of cloud tenants, targeting satellite, defense and pharmaceutical sectors. Attacks originated almost exclusively 09:00–17:00 Iran Standard Time from TOR exit nodes using a 'go-http-client' user agent. On successful access the actor ran AzureHound and Roadtools to enumerate Microsoft Entra ID / Azure resources and dump cloud data, performed Golden SAML attacks against AD FS, used DLL search-order hijacking via legitimate VMware executables, deployed the AnyDesk RMM and Azure Arc for persistence, tunneled traffic with the custom EagleRelay tool, and exfiltrated data using accumulated credentials.",
+        "source_url": "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      },
+      {
+        "name": "Shamoon / StoneDrill destructive-attack nexus (assessed)",
+        "date": "2012 / 2016 – 2018",
+        "summary": "FireEye assessed persona and infrastructure overlaps linking APT33 members to actors who deployed the Shamoon (2012, 2016) and StoneDrill (2017) destructive wiper malware against Saudi Arabian and Gulf energy/petrochemical targets. These wipers overwrote files, corrupted the Master Boot Record and disk structures, and rendered thousands of workstations unbootable — a destructive/Impact capability distinct from APT33's espionage core. Included here as an assessed linkage (Impact-tactic techniques flagged accordingly).",
+        "source_url": "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      }
+    ]
+  },
+  "threat_actors": [
+    "APT33",
+    "Elfin",
+    "HOLMIUM",
+    "Peach Sandstorm",
+    "Refined Kitten",
+    "Magnallium"
+  ],
+  "targeted_regions": [
+    "Saudi Arabia",
+    "United Arab Emirates",
+    "Qatar",
+    "Kuwait",
+    "Bahrain",
+    "Iran",
+    "United States",
+    "South Korea",
+    "United Kingdom",
+    "Europe"
+  ],
+  "targeted_sectors": [
+    "Aviation",
+    "Aerospace / defense",
+    "Energy",
+    "Oil / petrochemical",
+    "Satellite",
+    "Pharmaceutical",
+    "Government",
+    "Engineering / manufacturing"
+  ],
+  "malware": [
+    "TURNEDUP (custom backdoor — info-gathering, file upload/download, reverse shell, self-deletion)",
+    "POWERTON (custom PowerShell backdoor — HTTP C2, persistence, credential theft)",
+    "DarkComet (commodity RAT)",
+    "NanoCore (commodity RAT)",
+    "QuasarRAT (open-source .NET RAT)",
+    "NetWire (commodity RAT)",
+    "PoshC2 (open-source PowerShell C2 framework)",
+    "AutoIt droppers / stagers",
+    "FalseFont (custom backdoor observed in later Peach Sandstorm defense-sector activity)",
+    "EagleRelay (custom traffic-tunneling tool — Peach Sandstorm)",
+    "Shamoon / StoneDrill (destructive disk-wiping malware — assessed APT33-nexus)"
+  ],
+  "tooling_observed": [
+    "Recruitment / job-vacancy spear-phishing lures spoofing aviation & defense firms (Boeing, Alsalam, Northrop Grumman Aviation Arabia, Saudi National Guard themes)",
+    ".hta / HTML application files and malicious links for dropper delivery",
+    "Domains masquerading as spoofed organizations (alsalam[.]ddns[.]net, ngaaksa[.]ga, boeing[.]servehttp[.]com) on dynamic-DNS providers",
+    "Password spraying from TOR exit nodes with 'go-http-client' user agent, throttled to 09:00-17:00 Iran Standard Time",
+    "AzureHound and Roadtools for Entra ID / Azure Resource Manager enumeration and cloud data dumping",
+    "AnyDesk commercial RMM and Azure Arc for persistence / cloud-based control",
+    "Golden SAML forgery against AD FS token-signing certificates",
+    "DLL search-order hijacking via legitimate signed VMware executables",
+    "Windows RDP for hands-on-keyboard lateral movement",
+    "schtasks and Registry Run keys for persistence; WMI event subscriptions",
+    "7-Zip / archive utilities for staging collected data",
+    "RawDisk-style kernel driver abuse for direct disk overwrite (Shamoon/StoneDrill, assessed)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "APT33 obtains and uses a mix of commodity and open-source tooling — DarkComet, NanoCore, QuasarRAT, NetWire, PoshC2, AutoIt, and later AzureHound/Roadtools/AnyDesk — alongside its custom TURNEDUP and POWERTON backdoors, reducing reliance on wholly custom malware.",
+      "observed_tooling": [
+        "DarkComet",
+        "QuasarRAT",
+        "PoshC2",
+        "AzureHound / Roadtools"
+      ],
+      "detection_feasibility": "low — tool acquisition is off-victim; a hunt/threat-intel awareness item. Detection surface is on-victim execution of the acquired tools (see execution/discovery TTPs), not the acquisition itself",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage",
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "APT33's signature initial-access vector: spear-phishing emails with recruitment/job-vacancy lures carrying malicious attachments (.hta / HTML application content and Office documents) that drop TURNEDUP and commodity RATs, tailored to aviation, aerospace and energy-sector employees.",
+      "observed_tooling": [
+        "recruitment-lure emails",
+        ".hta / HTML application attachments"
+      ],
+      "detection_feasibility": "medium — inbound attachment analysis, sandbox detonation of .hta/Office content, and user-reported-phish workflows make delivery detectable at the email perimeter",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "The actor also delivers links in spear-phishing emails leading to credential-harvesting pages or malware droppers hosted on domains masquerading as the spoofed aviation/defense organizations (e.g. alsalam[.]ddns[.]net, ngaaksa[.]ga).",
+      "observed_tooling": [
+        "malicious links",
+        "spoofed-organization domains"
+      ],
+      "detection_feasibility": "medium — inbound URL analysis, newly-registered / dynamic-DNS lookalike-domain detection, and secure-email-gateway link detonation make delivery observable at the perimeter",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "APT33 uses valid credentials — harvested via phishing or obtained through password spraying — to access on-premises and cloud environments as legitimate users, blending into normal authentication traffic.",
+      "observed_tooling": [
+        "harvested / sprayed credentials"
+      ],
+      "detection_feasibility": "medium — anomalous-logon analytics (unusual source, impossible travel, dormant-account use) provide detection even when the credential itself is legitimate",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1078.004",
+      "technique_name": "Valid Accounts: Cloud Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "As Peach Sandstorm, the actor authenticated to victim Microsoft Entra ID / Azure cloud tenants using credentials obtained through password spraying, then operated as a legitimate cloud user to enumerate and exfiltrate data.",
+      "observed_tooling": [
+        "sprayed Entra ID / Azure credentials",
+        "TOR-sourced logins"
+      ],
+      "detection_feasibility": "medium — highly feasible identity detection: sign-ins from TOR/anomalous ASNs with a 'go-http-client' user agent, impossible-travel and off-hours-for-victim access are strong Entra ID sign-in-log signals",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1110.003",
+      "technique_name": "Brute Force: Password Spraying",
+      "tactic": "credential-access",
+      "procedure_description": "A signature APT33/Peach Sandstorm technique: large-scale password spraying against cloud and on-prem identity systems, attempting a small set of common passwords against thousands of accounts across many tenants, throttled to Iran-business-hours and routed through TOR to evade lockout and detection thresholds.",
+      "observed_tooling": [
+        "password-spray tooling over TOR",
+        "'go-http-client' user agent"
+      ],
+      "detection_feasibility": "medium — highly feasible: distributed low-and-slow failed-auth patterns across many accounts, spikes of 4625/Entra sign-in failures from TOR ASNs, and a 'go-http-client' user agent are strong high-fidelity identity signals",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "procedure_description": "Beyond spraying, the actor conducts broader brute-force credential guessing against externally facing authentication services (email, SSO, remote access) as part of initial access, consistent with Iranian-nexus brute-force activity documented by Microsoft and joint government advisories.",
+      "observed_tooling": [
+        "brute-force credential guessing"
+      ],
+      "detection_feasibility": "medium — repeated failed authentications against externally facing services are detectable via authentication-failure analytics and lockout monitoring",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "procedure_description": "APT33 exploits client-application vulnerabilities to gain code execution — most notably CVE-2017-11774 (Microsoft Outlook Home Page) to launch its payloads on targeted hosts.",
+      "observed_tooling": [
+        "CVE-2017-11774 (Outlook Home Page)"
+      ],
+      "detection_feasibility": "medium — Outlook/Office spawning script or shell child processes, and the CVE-2017-11774 registry Home Page URL artifact, are detectable via process-lineage and registry monitoring",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Victims are induced to click links in recruitment-themed emails leading to malware-download URLs or credential-harvesting pages on spoofed-organization domains — a required user action in the actor's link-based campaigns.",
+      "observed_tooling": [
+        "malicious download / harvesting links"
+      ],
+      "detection_feasibility": "medium — web-proxy/DNS logs of clicks to dynamic-DNS/lookalike domains and browser-download telemetry provide detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Victims are lured into opening malicious attachments — .hta / HTML application files and macro-enabled documents in job-vacancy lures — that execute droppers deploying TURNEDUP and commodity RATs.",
+      "observed_tooling": [
+        ".hta files",
+        "macro documents",
+        "AutoIt droppers"
+      ],
+      "detection_feasibility": "medium — mshta.exe executing remote/local .hta content and Office/macro child processes spawning script interpreters are detectable via process-creation and EDR telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "PowerShell is central to APT33's post-exploitation: the custom POWERTON backdoor is PowerShell-based, the actor uses the PoshC2 PowerShell C2 framework, and Peach Sandstorm cloud operations leverage PowerShell-driven Entra ID / Azure enumeration tooling.",
+      "observed_tooling": [
+        "POWERTON",
+        "PoshC2"
+      ],
+      "detection_feasibility": "medium — PowerShell script-block/module logging, AMSI, and suspicious cmdlet sequences (encoded commands, download-and-invoke) are strong detections; obfuscation reduces static visibility",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "APT33 uses Visual Basic scripting (VBScript in .hta/HTML application droppers and VBA macros) as part of its delivery and execution chain per the G0064 mapping.",
+      "observed_tooling": [
+        ".hta / VBScript",
+        "VBA macros"
+      ],
+      "detection_feasibility": "medium — wscript/cscript/mshta executing script content that spawns command interpreters is detectable via process-creation telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1546.003",
+      "technique_name": "Event Triggered Execution: Windows Management Instrumentation Event Subscription",
+      "tactic": "persistence",
+      "procedure_description": "The actor establishes persistence via WMI event subscriptions that trigger execution of its implants on defined system events per the G0064 mapping.",
+      "observed_tooling": [
+        "WMI event filter/consumer/binding"
+      ],
+      "detection_feasibility": "medium — WMI-Activity operational logging and Sysmon EID 19/20/21 (WMI event filter/consumer/binding creation) provide reliable detection of this persistence",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "APT33 establishes persistence via Registry Run keys / Startup folder entries for its backdoors (e.g. POWERTON and dropped RATs) per the G0064 mapping.",
+      "observed_tooling": [
+        "Registry Run keys"
+      ],
+      "detection_feasibility": "medium — Run-key writes and Startup-folder drops are classic, well-covered autostart-monitoring detections (Sysmon EID 12/13)",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "The actor creates scheduled tasks for execution and persistence of its implants per the G0064 mapping.",
+      "observed_tooling": [
+        "schtasks"
+      ],
+      "detection_feasibility": "medium — scheduled-task creation (Event ID 4698, Sysmon) with suspicious actions/paths is a reliable detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactic": "persistence",
+      "procedure_description": "As Peach Sandstorm, the actor manipulated cloud accounts and tenant configuration to retain access — including registering compromised devices to Azure Arc for cloud-based control and abusing accumulated cloud credentials to preserve access after initial compromise.",
+      "observed_tooling": [
+        "Azure Arc device registration",
+        "cloud account/config changes"
+      ],
+      "detection_feasibility": "medium — Entra ID audit logs of new device/service registrations, role assignments and credential additions are auditable identity-persistence signals",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1068",
+      "technique_name": "Exploitation for Privilege Escalation",
+      "tactic": "privilege-escalation",
+      "procedure_description": "APT33 exploits vulnerabilities to escalate privileges on compromised hosts per the G0064 mapping, supporting deeper access and credential theft.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous privilege-elevation, exploit-driven process crashes/child spawns, and EDR exploit-guard telemetry provide detection, though 0-day can precede the first artifact",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "stealth",
+      "procedure_description": "As Peach Sandstorm, the actor performed DLL search-order hijacking using legitimate, signed VMware executables to load malicious DLLs, masking execution under a trusted process.",
+      "observed_tooling": [
+        "signed VMware executables",
+        "hijacked DLL search order"
+      ],
+      "detection_feasibility": "medium — a signed legitimate binary loading an unsigned/anomalous DLL from an unexpected path is detectable via image-load (Sysmon EID 7) and DLL-path anomaly analytics",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "APT33 encrypts/encodes payloads and configuration to impede static detection per the G0064 mapping, consistent with its use of encoded droppers and packed RATs.",
+      "observed_tooling": [
+        "encoded/encrypted payloads"
+      ],
+      "detection_feasibility": "low — encryption/encoding defeats static inspection; hunt via entropy analysis and AMSI-visible decrypted content rather than a single signature",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor encodes C2 data using standard encoding schemes (e.g. Base64) in its backdoor communications per the G0064 mapping.",
+      "observed_tooling": [
+        "Base64-encoded C2 data"
+      ],
+      "detection_feasibility": "low — standard encoding blends with legitimate traffic; hunt via decoded content inspection and anomalous encoded-payload volume in web logs",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "On compromised hosts the actor dumps credentials from LSASS memory to obtain additional accounts for lateral movement per the G0064 mapping.",
+      "observed_tooling": [
+        "LSASS memory dumping"
+      ],
+      "detection_feasibility": "medium — LSASS handle/process-access telemetry (Sysmon EID 10) and Credential Guard provide well-established detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1003.004",
+      "technique_name": "OS Credential Dumping: LSA Secrets",
+      "tactic": "credential-access",
+      "procedure_description": "The actor extracts LSA secrets from the registry/SECURITY hive to recover stored service and account credentials per the G0064 mapping.",
+      "observed_tooling": [
+        "LSA secrets extraction"
+      ],
+      "detection_feasibility": "medium — registry access to SECURITY\\Policy\\Secrets and reg save of protected hives are detectable via registry and process auditing",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1003.005",
+      "technique_name": "OS Credential Dumping: Cached Domain Credentials",
+      "tactic": "credential-access",
+      "procedure_description": "The actor harvests cached domain credentials (MSCACHE/DCC) from compromised hosts to authenticate as domain users per the G0064 mapping.",
+      "observed_tooling": [
+        "cached domain credential extraction"
+      ],
+      "detection_feasibility": "low — cached-credential extraction is quiet on-host; hunt via registry/hive access and offline-cracking-precursor tooling execution",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "procedure_description": "The actor searches for credentials stored in files on compromised systems per the G0064 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — file-content credential searching resembles normal file access; hunt via mass file-read/enumeration patterns and access to known credential-file locations",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1552.006",
+      "technique_name": "Unsecured Credentials: Group Policy Preferences",
+      "tactic": "credential-access",
+      "procedure_description": "The actor recovers passwords embedded in Group Policy Preferences (GPP) XML files on SYSVOL, decrypting them with the public AES key to obtain local/service account credentials per the G0064 mapping.",
+      "observed_tooling": [
+        "GPP XML / Get-GPPPassword"
+      ],
+      "detection_feasibility": "medium — anomalous SYSVOL enumeration for Groups.xml/*.xml and Get-GPPPassword-style access are detectable via file-share access auditing and script-block logging",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "tactic": "credential-access",
+      "procedure_description": "The actor extracts credentials from local password stores on compromised hosts per the G0064 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — access to credential-store files/APIs (Credential Manager, vaults) is detectable via file/API access telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "The actor harvests credentials saved in web browsers on compromised hosts per the G0064 mapping.",
+      "observed_tooling": [
+        "browser credential-store access"
+      ],
+      "detection_feasibility": "medium — non-browser processes reading browser Login Data / credential SQLite stores are detectable via file-access and EDR telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1040",
+      "technique_name": "Network Sniffing",
+      "tactic": "credential-access",
+      "procedure_description": "The actor uses network sniffing to capture credentials and other traffic on compromised networks per the G0064 mapping.",
+      "observed_tooling": [
+        "packet sniffer"
+      ],
+      "detection_feasibility": "low — passive sniffing generates little host telemetry; hunt via detection of promiscuous-mode enablement and sniffer-tool execution",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1606.002",
+      "technique_name": "Forge Web Credentials: SAML Tokens",
+      "tactic": "credential-access",
+      "procedure_description": "As Peach Sandstorm, the actor conducted Golden SAML attacks against AD FS servers — using a compromised token-signing certificate to forge SAML tokens and authenticate to federated cloud services as arbitrary users, bypassing MFA.",
+      "observed_tooling": [
+        "Golden SAML",
+        "AD FS token-signing certificate abuse"
+      ],
+      "detection_feasibility": "low — forged SAML tokens produce sign-ins that look legitimate; hunt via AD FS token-signing-certificate access, sign-ins with no corresponding AD FS auth event, and unusual SAML token lifetimes/claims (a specialist detection, not a simple rule)",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1087.004",
+      "technique_name": "Account Discovery: Cloud Account",
+      "tactic": "discovery",
+      "procedure_description": "As Peach Sandstorm, the actor ran AzureHound to enumerate accounts, roles and relationships in Microsoft Entra ID after gaining cloud access, mapping identities for follow-on targeting.",
+      "observed_tooling": [
+        "AzureHound"
+      ],
+      "detection_feasibility": "medium — bulk directory/role enumeration via Microsoft Graph / Azure AD Graph is visible in Entra ID audit and MSGraph activity logs; AzureHound produces a recognizable burst of read calls",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1526",
+      "technique_name": "Cloud Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "As Peach Sandstorm, the actor used Roadtools and AzureHound to enumerate cloud services and Azure Resource Manager resources accessible to the compromised identity, then dumped data of interest.",
+      "observed_tooling": [
+        "Roadtools",
+        "AzureHound"
+      ],
+      "detection_feasibility": "medium — high-volume Resource Manager / Graph enumeration from a single identity is detectable via Azure activity and MSGraph audit logs",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "The actor archives collected data using compression utilities prior to exfiltration per the G0064 mapping.",
+      "observed_tooling": [
+        "archive utility (e.g. 7-Zip/WinRAR)"
+      ],
+      "detection_feasibility": "medium — creation of large/password-protected archives in staging directories by archive utilities is detectable via process-creation and file-creation telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "As Peach Sandstorm, the actor used RDP for hands-on-keyboard lateral movement within compromised environments.",
+      "observed_tooling": [
+        "RDP"
+      ],
+      "detection_feasibility": "medium — anomalous internal RDP (Event ID 4624 type 10, unusual source-destination pairs, off-hours) is detectable via logon and network analytics",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "APT33's backdoors (TURNEDUP, POWERTON) communicate with C2 over HTTP/HTTPS web protocols per the G0064 mapping, blending with normal web traffic.",
+      "observed_tooling": [
+        "HTTP/HTTPS C2"
+      ],
+      "detection_feasibility": "medium — beaconing patterns, anomalous user agents and connections to newly-seen/dynamic-DNS domains are detectable via proxy/DNS and network analytics, though content is often TLS-encrypted",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064",
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor downloads additional tools and payloads to compromised hosts (stagers pulling RATs/backdoors, later cloud tooling) per the G0064 mapping.",
+      "observed_tooling": [
+        "stager downloads"
+      ],
+      "detection_feasibility": "medium — script hosts / LOLBins downloading executables from external hosts followed by execution are detectable via process-network correlation",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor uses non-standard ports for C2 communications per the G0064 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — protocol-on-non-standard-port analytics (e.g. TLS/HTTP on unusual ports) provide detection",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "The actor encrypts C2 traffic with symmetric cryptography per the G0064 mapping, layering encryption over its web channel.",
+      "observed_tooling": [
+        "symmetric-encrypted C2"
+      ],
+      "detection_feasibility": "low — encryption defeats content inspection; detection relies on behavioral beaconing and infrastructure indicators rather than payload signatures",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "procedure_description": "As Peach Sandstorm, the actor deployed the AnyDesk commercial remote monitoring and management (RMM) tool to maintain interactive remote access to compromised systems.",
+      "observed_tooling": [
+        "AnyDesk RMM"
+      ],
+      "detection_feasibility": "medium — installation/execution of AnyDesk (or other RMM) on hosts where it is not sanctioned, and its outbound connections, are detectable via software-inventory and network analytics (RMM allow-listing is a strong control)",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1090.003",
+      "technique_name": "Proxy: Multi-hop Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "As Peach Sandstorm, the actor routed its password-spray and cloud-access traffic through the TOR onion-routing network to obscure the true source, producing sign-ins from TOR exit nodes.",
+      "observed_tooling": [
+        "TOR network"
+      ],
+      "detection_feasibility": "medium — authentication and access from known TOR exit-node IPs (threat-intel-fed) is a strong, if noisy, signal; combined with the 'go-http-client' user agent it becomes high-fidelity",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "As Peach Sandstorm, the actor used the custom EagleRelay tool to tunnel traffic between actor-controlled systems and victim environments, concealing C2 and enabling access to otherwise unreachable internal systems.",
+      "observed_tooling": [
+        "EagleRelay"
+      ],
+      "detection_feasibility": "low — tunneled traffic is wrapped to look legitimate; hunt via volume/timing anomalies, unexpected long-lived outbound sessions and the presence of the EagleRelay binary rather than a network signature",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/"
+      ]
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "procedure_description": "The actor exfiltrates collected data over an alternative, unencrypted non-C2 protocol per the G0064 mapping.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — large or unusual outbound transfers over protocols like FTP/HTTP to non-corporate destinations are detectable via network/DLP analytics",
+      "sources": [
+        "https://attack.mitre.org/groups/G0064"
+      ]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "In the assessed Shamoon/StoneDrill destructive-attack nexus, the actor disabled or tampered with security tooling and abused a signed low-level disk driver (RawDisk-style) to gain the direct disk access needed to wipe systems, working around endpoint defenses (remapped ID per this dataset's convention).",
+      "observed_tooling": [
+        "signed disk driver abuse (Shamoon/StoneDrill, assessed)",
+        "AV/security-tool tampering"
+      ],
+      "detection_feasibility": "medium — security-tool stop/tamper events, and installation/loading of an unusual signed kernel disk driver, are detectable via EDR self-protection and driver-load (Sysmon EID 6) telemetry",
+      "sources": [
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1685.005",
+      "technique_name": "Impair Defenses: Clear Windows Event Logs",
+      "tactic": "defense-impairment",
+      "procedure_description": "In destructive operations the actor clears/destroys Windows event logs as part of anti-forensics before or during wiping, reducing host visibility (remapped ID per this dataset's convention; assessed Shamoon-nexus behavior).",
+      "observed_tooling": [
+        "wevtutil / log destruction"
+      ],
+      "detection_feasibility": "medium — event-log clear events (Event ID 1102), wevtutil execution, and logging-continuity gaps are detectable via log-integrity monitoring",
+      "sources": [
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage"
+      ]
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "procedure_description": "ASSESSED Shamoon/StoneDrill nexus: destructive malware linked to APT33 members overwrote files and data on targeted Saudi/Gulf energy-sector workstations with random data or image files, rendering them irrecoverable — availability-focused impact distinct from the group's espionage core.",
+      "observed_tooling": [
+        "Shamoon / StoneDrill wipers"
+      ],
+      "detection_feasibility": "medium — mass file-overwrite/deletion behavior across many hosts in a short window is detectable via EDR ransomware/wiper behavior analytics and file-modification volume anomalies",
+      "sources": [
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage",
+        "https://attack.mitre.org/techniques/T1485"
+      ]
+    },
+    {
+      "technique_id": "T1561",
+      "technique_name": "Disk Wipe",
+      "tactic": "impact",
+      "procedure_description": "ASSESSED Shamoon/StoneDrill nexus: the wiper malware performed raw disk wiping across networks, propagating with worm-like features using valid accounts and admin shares to maximize availability impact against energy/petrochemical targets.",
+      "observed_tooling": [
+        "Shamoon / StoneDrill raw disk wipe"
+      ],
+      "detection_feasibility": "medium — direct raw-disk write access from non-standard processes and simultaneous multi-host disk failures are detectable via kernel-driver-load and EDR behavior telemetry, though impact is immediate",
+      "sources": [
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage",
+        "https://attack.mitre.org/techniques/T1561"
+      ]
+    },
+    {
+      "technique_id": "T1561.001",
+      "technique_name": "Disk Wipe: Disk Content Wipe",
+      "tactic": "impact",
+      "procedure_description": "ASSESSED Shamoon/StoneDrill nexus: the malware overwrote arbitrary portions of disk content (via a signed RawDisk-style driver for direct disk access) rendering stored data irrecoverable through the storage interface.",
+      "observed_tooling": [
+        "RawDisk-style driver",
+        "disk content overwrite"
+      ],
+      "detection_feasibility": "low — by the time content-overwrite is observed the data is gone; hunt for the precursor driver load and abnormal direct-disk-write handle acquisition rather than the wipe itself",
+      "sources": [
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage",
+        "https://attack.mitre.org/techniques/T1561/001"
+      ]
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "procedure_description": "ASSESSED Shamoon/StoneDrill nexus: the wiper overwrote the Master Boot Record and partition-table structures, leaving thousands of workstations unable to boot — the hallmark Shamoon disk-structure destruction.",
+      "observed_tooling": [
+        "MBR / partition-table overwrite"
+      ],
+      "detection_feasibility": "low — MBR overwrite manifests as unbootable systems; detection is limited to precursor driver-load and raw-write monitoring, so this is primarily a hunt/prevention (MBR write-protection) item",
+      "sources": [
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage",
+        "https://attack.mitre.org/techniques/T1561/002"
+      ]
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "procedure_description": "ASSESSED Shamoon/StoneDrill nexus: destructive operations sought to prevent recovery of corrupted systems, augmenting the disk-wipe impact so that affected hosts could not be restored from built-in recovery features.",
+      "observed_tooling": [
+        "recovery-inhibition as part of wiper impact"
+      ],
+      "detection_feasibility": "medium — execution of vssadmin/wbadmin/bcdedit recovery-deletion commands and shadow-copy deletion are high-fidelity, well-covered detections when they occur pre-wipe",
+      "sources": [
+        "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage",
+        "https://attack.mitre.org/techniques/T1490"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "Cloud sign-in failures at scale: distributed low-and-slow password-spray failures across many accounts/tenants from TOR exit-node IPs with a 'go-http-client' user agent, clustered to 09:00-17:00 Iran Standard Time — Peach Sandstorm spraying (HIGH-FIDELITY)",
+    "Successful Entra ID / Azure sign-in from a TOR ASN or the 'go-http-client' user agent following spray failures — valid cloud-account compromise",
+    "AzureHound/Roadtools activity: a burst of Microsoft Graph / Azure Resource Manager read/enumeration calls (users, roles, resources) from a single recently-authenticated identity — cloud account & service discovery",
+    "AD FS token-signing-certificate access or SAML sign-ins with no matching AD FS authentication event / anomalous token lifetime & claims — Golden SAML forgery",
+    "Installation or execution of AnyDesk (or other RMM) and Azure Arc agent registration on hosts/tenants where not sanctioned — Peach Sandstorm persistence",
+    "A signed legitimate VMware executable loading an unsigned/anomalous DLL from an unexpected path — DLL search-order hijacking",
+    "mshta.exe executing .hta/HTML application content, or Outlook spawning script/shell children with a CVE-2017-11774 Home Page registry URL artifact — APT33 delivery/exploitation",
+    "PowerShell POWERTON/PoshC2 behavior: encoded command execution, download-and-invoke, and HTTP beaconing from powershell.exe — custom backdoor C2",
+    "Backdoor beaconing over HTTP/HTTPS or non-standard ports to dynamic-DNS / masquerading domains (alsalam[.]ddns[.]net, ngaaksa[.]ga, boeing[.]servehttp[.]com) — TURNEDUP/POWERTON C2",
+    "Creation of large/password-protected archives in staging directories followed by outbound transfer — collection + exfiltration",
+    "Loading of an unusual signed low-level disk driver (RawDisk-style) or direct raw-disk-write handle acquisition by a non-standard process, plus Event ID 1102 log clears and vssadmin/bcdedit recovery deletion — precursor to Shamoon/StoneDrill wiping (assessed)"
+  ],
+  "iocs": {
+    "ips": [
+      "192.52.166.76",
+      "108.62.118.240",
+      "102.129.215.40",
+      "76.8.60.64"
+    ],
+    "domains": [
+      "alsalam[.]ddns[.]net",
+      "ngaaksa[.]ga",
+      "boeing[.]servehttp[.]com"
+    ],
+    "emails": [],
+    "hashes": [],
+    "cves": [
+      "CVE-2017-11774"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "TTP set = the 31-technique official MITRE ATT&CK G0064 'APT33' mapping used as the authoritative base, enriched with APT33-specific procedure detail from the FireEye/Mandiant 'APT33: Insights into Iranian Cyber Espionage' (2017) report, plus 17 well-sourced additions (each verified present in this ATT&CK dataset via get_technique and cited). Total = 48 techniques. ADDITIONS BEYOND THE G0064 LIST: from Microsoft 'Peach Sandstorm' (2023) — T1110 (Brute Force), T1078.004 already-in-base reinforced, T1574.001 (DLL search-order hijacking via VMware), T1606.002 (Golden SAML), T1087.004 (AzureHound cloud-account discovery), T1526 (Roadtools cloud-service discovery), T1090.003 (TOR multi-hop proxy), T1572 (EagleRelay tunneling), T1021.001 (RDP), T1219 (AnyDesk RMM), T1098 (Azure Arc account/config manipulation); from the assessed Shamoon/StoneDrill destructive nexus — T1485 (Data Destruction), T1561 + T1561.001 + T1561.002 (Disk Wipe / content / structure), T1490 (Inhibit System Recovery), T1685 (Disable or Modify Tools — driver/AV tamper), T1685.005 (Clear Windows Event Logs). IMPACT-TACTIC (SHAMOON) TECHNIQUES = 5: T1485, T1561, T1561.001, T1561.002, T1490 — all clearly caveated as ASSESSED APT33-nexus linkage (persona/infrastructure overlap per FireEye), NOT a hard MITRE group-level mapping under G0064; the two defense-impairment remaps (T1685, T1685.005) support this destructive angle. ATT&CK FRAMEWORK-VERSION CONVENTION (this dataset): the defense-evasion tactic is emitted as 'stealth' (T1027.013, T1574.001); the 'Impair Defenses' family uses the remapped IDs T1685 (Disable or Modify Tools) and T1685.005 (Clear Windows Event Logs) under the 'defense-impairment' tactic per get_technique. LOW detection-feasibility techniques = HUNT candidates (route to threat-hunter): T1588.002 (tool acquisition, off-victim), T1027.013/T1132.001/T1573.001 (obfuscation/encoding/encrypted channel), T1606.002 (Golden SAML — forged tokens look legitimate), T1572 (EagleRelay tunneling), T1003.005 (cached-cred extraction), T1552.001 (creds-in-files), T1040 (network sniffing), T1561.001/T1561.002 (disk content/structure wipe — visible only after impact; hunt the precursor driver load). HIGHER-FEASIBILITY DETECTIONS (route to detection-engineer): the cloud/identity seam is this actor's most detectable surface — T1110.003/T1110 (password spray from TOR + go-http-client, HIGH-FIDELITY), T1078.004 (anomalous cloud sign-ins), T1087.004/T1526 (AzureHound/Roadtools enumeration bursts), T1219 (AnyDesk RMM), T1098 (Azure Arc registration), T1574.001 (VMware DLL side-load), T1204.002/T1203 (.hta / CVE-2017-11774 execution), T1059.001/.005 (PowerShell/VBScript), T1053.005/T1547.001/T1546.003 (scheduled task / run key / WMI persistence), T1490/T1685.005 (recovery-inhibition & log-clear commands). IOCs: 4 IPs taken directly from the Microsoft Peach Sandstorm report (retrieved live this session); 3 representative masquerading/dynamic-DNS C2 domains from the FireEye APT33 report; CVE-2017-11774 (Outlook Home Page) exploited to deliver POWERTON. Hashes are LEFT EMPTY deliberately rather than reproduce TURNEDUP/POWERTON MD5s from memory (no-hallucination rule); consult the FireEye and Microsoft IOC appendices for full hash lists. YARA_RULES left empty — no rule could be extracted verbatim from the sources in this session, and rules are never authored from scratch. ATTRIBUTION 'high': convergent public reporting (FireEye/Mandiant Elfin, Symantec Elfin, Microsoft HOLMIUM/Peach Sandstorm) ties a consistent Iran-nexus aviation/energy-focused espionage identity, tooling (TURNEDUP/POWERTON) and 2023 cloud password-spray tradecraft to G0064; the Shamoon/StoneDrill destructive linkage is the only assessed-judgement element. FETCH NOTE: the requested cloud.google.com Mandiant URL returned 404/JS-shell this session; the report is cited via its canonical mandiant.com URL and the equivalent content is well-established public reporting. The Microsoft Peach Sandstorm report was fetched successfully and its IOCs/TTPs are used directly."
+}

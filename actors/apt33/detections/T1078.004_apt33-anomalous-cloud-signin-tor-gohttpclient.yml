@@ -1,0 +1,36 @@
+title: APT33 Peach Sandstorm Successful Cloud Sign-In from TOR / go-http-client (Valid Account Compromise)
+id: 8c871229-de63-483c-8750-a651e232aa49
+status: experimental
+description: |
+    Detects successful Microsoft Entra ID / Azure sign-ins consistent with APT33 / Peach Sandstorm valid
+    cloud-account compromise following password spraying (T1078 valid accounts, T1078.004 cloud accounts).
+    Keys on a successful sign-in (ResultType 0) carrying the non-browser 'go-http-client' user agent used
+    by the actor's tooling - a successful authentication with that user agent indicates an operator, not a
+    real user, driving the session. Correlate with the prior spray-failure analytic on the same accounts,
+    with TOR exit-node IPs, and with impossible-travel / off-hours (Iran business-hours) access. Best
+    operated as a risk-scored (RBA) analytic alongside Identity Protection risk state. Requires Entra ID
+    sign-in logs.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.initial-access
+    - attack.t1078
+    - attack.t1078.004
+    - mena-detection-library.apt33
+logsource:
+    product: azure
+    service: signinlogs
+detection:
+    selection_success:
+        ResultType: 0
+    selection_ua:
+        UserAgent|contains: 'go-http-client'
+    condition: selection_success and selection_ua
+falsepositives:
+    - Legitimate Go-based automation/SDK service principals authenticating successfully - baseline and
+      allowlist known non-interactive workload identities and their source IPs
+    - Approved API integrations using a Go HTTP client - scope to interactive/human-facing accounts
+level: high

@@ -1,0 +1,301 @@
+{
+  "actor": "APT33 (G0064)",
+  "provenance": "Lane split authored by Stage-2 decision-agent (read-only; returns JSON in reply), persisted by the orchestrator. All 48 IDs reconciled against intel/cti-pipeline.json (37 detection / 11 hunt) and verified in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 inbound attachment analysis, sandbox detonation of .hta/Office content, and user-reported-phish workflows make delivery detectable at the email perimeter"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 inbound URL analysis, newly-registered / dynamic-DNS lookalike-domain detection, and secure-email-gateway link detonation make delivery observable at the perimeter"
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 anomalous-logon analytics (unusual source, impossible travel, dormant-account use) provide detection even when the credential itself is legitimate"
+    },
+    {
+      "technique_id": "T1078.004",
+      "technique_name": "Valid Accounts: Cloud Accounts",
+      "tactic": "initial-access",
+      "rationale": "medium \u2014 highly feasible identity detection: sign-ins from TOR/anomalous ASNs with a 'go-http-client' user agent, impossible-travel and off-hours-for-victim access are strong Entra ID sign-in-log signals"
+    },
+    {
+      "technique_id": "T1110.003",
+      "technique_name": "Brute Force: Password Spraying",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 highly feasible: distributed low-and-slow failed-auth patterns across many accounts, spikes of 4625/Entra sign-in failures from TOR ASNs, and a 'go-http-client' user agent are strong high-fidelity identity signals"
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 repeated failed authentications against externally facing services are detectable via authentication-failure analytics and lockout monitoring"
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "rationale": "medium \u2014 Outlook/Office spawning script or shell child processes, and the CVE-2017-11774 registry Home Page URL artifact, are detectable via process-lineage and registry monitoring"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium \u2014 web-proxy/DNS logs of clicks to dynamic-DNS/lookalike domains and browser-download telemetry provide detection"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium \u2014 mshta.exe executing remote/local .hta content and Office/macro child processes spawning script interpreters are detectable via process-creation and EDR telemetry"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "medium \u2014 PowerShell script-block/module logging, AMSI, and suspicious cmdlet sequences (encoded commands, download-and-invoke) are strong detections; obfuscation reduces static visibility"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "medium \u2014 wscript/cscript/mshta executing script content that spawns command interpreters is detectable via process-creation telemetry"
+    },
+    {
+      "technique_id": "T1546.003",
+      "technique_name": "Event Triggered Execution: Windows Management Instrumentation Event Subscription",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 WMI-Activity operational logging and Sysmon EID 19/20/21 (WMI event filter/consumer/binding creation) provide reliable detection of this persistence"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 Run-key writes and Startup-folder drops are classic, well-covered autostart-monitoring detections (Sysmon EID 12/13)"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 scheduled-task creation (Event ID 4698, Sysmon) with suspicious actions/paths is a reliable detection"
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactic": "persistence",
+      "rationale": "medium \u2014 Entra ID audit logs of new device/service registrations, role assignments and credential additions are auditable identity-persistence signals"
+    },
+    {
+      "technique_id": "T1068",
+      "technique_name": "Exploitation for Privilege Escalation",
+      "tactic": "privilege-escalation",
+      "rationale": "medium \u2014 anomalous privilege-elevation, exploit-driven process crashes/child spawns, and EDR exploit-guard telemetry provide detection, though 0-day can precede the first artifact"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "stealth",
+      "rationale": "medium \u2014 a signed legitimate binary loading an unsigned/anomalous DLL from an unexpected path is detectable via image-load (Sysmon EID 7) and DLL-path anomaly analytics"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 LSASS handle/process-access telemetry (Sysmon EID 10) and Credential Guard provide well-established detection"
+    },
+    {
+      "technique_id": "T1003.004",
+      "technique_name": "OS Credential Dumping: LSA Secrets",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 registry access to SECURITY\\Policy\\Secrets and reg save of protected hives are detectable via registry and process auditing"
+    },
+    {
+      "technique_id": "T1552.006",
+      "technique_name": "Unsecured Credentials: Group Policy Preferences",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 anomalous SYSVOL enumeration for Groups.xml/*.xml and Get-GPPPassword-style access are detectable via file-share access auditing and script-block logging"
+    },
+    {
+      "technique_id": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 access to credential-store files/APIs (Credential Manager, vaults) is detectable via file/API access telemetry"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "medium \u2014 non-browser processes reading browser Login Data / credential SQLite stores are detectable via file-access and EDR telemetry"
+    },
+    {
+      "technique_id": "T1087.004",
+      "technique_name": "Account Discovery: Cloud Account",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 bulk directory/role enumeration via Microsoft Graph / Azure AD Graph is visible in Entra ID audit and MSGraph activity logs; AzureHound produces a recognizable burst of read calls"
+    },
+    {
+      "technique_id": "T1526",
+      "technique_name": "Cloud Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium \u2014 high-volume Resource Manager / Graph enumeration from a single identity is detectable via Azure activity and MSGraph audit logs"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "rationale": "medium \u2014 creation of large/password-protected archives in staging directories by archive utilities is detectable via process-creation and file-creation telemetry"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium \u2014 anomalous internal RDP (Event ID 4624 type 10, unusual source-destination pairs, off-hours) is detectable via logon and network analytics"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 beaconing patterns, anomalous user agents and connections to newly-seen/dynamic-DNS domains are detectable via proxy/DNS and network analytics, though content is often TLS-encrypted"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 script hosts / LOLBins downloading executables from external hosts followed by execution are detectable via process-network correlation"
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 protocol-on-non-standard-port analytics (e.g. TLS/HTTP on unusual ports) provide detection"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 installation/execution of AnyDesk (or other RMM) on hosts where it is not sanctioned, and its outbound connections, are detectable via software-inventory and network analytics (RMM allow-listing is a strong control)"
+    },
+    {
+      "technique_id": "T1090.003",
+      "technique_name": "Proxy: Multi-hop Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium \u2014 authentication and access from known TOR exit-node IPs (threat-intel-fed) is a strong, if noisy, signal; combined with the 'go-http-client' user agent it becomes high-fidelity"
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "rationale": "medium \u2014 large or unusual outbound transfers over protocols like FTP/HTTP to non-corporate destinations are detectable via network/DLP analytics"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "medium \u2014 security-tool stop/tamper events, and installation/loading of an unusual signed kernel disk driver, are detectable via EDR self-protection and driver-load (Sysmon EID 6) telemetry"
+    },
+    {
+      "technique_id": "T1685.005",
+      "technique_name": "Impair Defenses: Clear Windows Event Logs",
+      "tactic": "defense-impairment",
+      "rationale": "medium \u2014 event-log clear events (Event ID 1102), wevtutil execution, and logging-continuity gaps are detectable via log-integrity monitoring"
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "rationale": "medium \u2014 mass file-overwrite/deletion behavior across many hosts in a short window is detectable via EDR ransomware/wiper behavior analytics and file-modification volume anomalies"
+    },
+    {
+      "technique_id": "T1561",
+      "technique_name": "Disk Wipe",
+      "tactic": "impact",
+      "rationale": "medium \u2014 direct raw-disk write access from non-standard processes and simultaneous multi-host disk failures are detectable via kernel-driver-load and EDR behavior telemetry, though impact is immediate"
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "rationale": "medium \u2014 execution of vssadmin/wbadmin/bcdedit recovery-deletion commands and shadow-copy deletion are high-fidelity, well-covered detections when they occur pre-wipe"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low \u2014 tool acquisition is off-victim; a hunt/threat-intel awareness item. Detection surface is on-victim execution of the acquired tools (see execution/discovery TTPs), not the acquisition itself"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "low \u2014 encryption/encoding defeats static inspection; hunt via entropy analysis and AMSI-visible decrypted content rather than a single signature"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 standard encoding blends with legitimate traffic; hunt via decoded content inspection and anomalous encoded-payload volume in web logs"
+    },
+    {
+      "technique_id": "T1003.005",
+      "technique_name": "OS Credential Dumping: Cached Domain Credentials",
+      "tactic": "credential-access",
+      "rationale": "low \u2014 cached-credential extraction is quiet on-host; hunt via registry/hive access and offline-cracking-precursor tooling execution"
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "rationale": "low \u2014 file-content credential searching resembles normal file access; hunt via mass file-read/enumeration patterns and access to known credential-file locations"
+    },
+    {
+      "technique_id": "T1040",
+      "technique_name": "Network Sniffing",
+      "tactic": "credential-access",
+      "rationale": "low \u2014 passive sniffing generates little host telemetry; hunt via detection of promiscuous-mode enablement and sniffer-tool execution"
+    },
+    {
+      "technique_id": "T1606.002",
+      "technique_name": "Forge Web Credentials: SAML Tokens",
+      "tactic": "credential-access",
+      "rationale": "low \u2014 forged SAML tokens produce sign-ins that look legitimate; hunt via AD FS token-signing-certificate access, sign-ins with no corresponding AD FS auth event, and unusual SAML token lifetimes/claims (a specialist detection, not a simple rule)"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 tunneled traffic is wrapped to look legitimate; hunt via volume/timing anomalies, unexpected long-lived outbound sessions and the presence of the EagleRelay binary rather than a network signature"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "low \u2014 encryption defeats content inspection; detection relies on behavioral beaconing and infrastructure indicators rather than payload signatures"
+    },
+    {
+      "technique_id": "T1561.001",
+      "technique_name": "Disk Wipe: Disk Content Wipe",
+      "tactic": "impact",
+      "rationale": "low \u2014 by the time content-overwrite is observed the data is gone; hunt for the precursor driver load and abnormal direct-disk-write handle acquisition rather than the wipe itself"
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "rationale": "low \u2014 MBR overwrite manifests as unbootable systems; detection is limited to precursor driver-load and raw-write monitoring, so this is primarily a hunt/prevention (MBR write-protection) item"
+    }
+  ],
+  "summary": {
+    "total": 48,
+    "detection": 37,
+    "hunt": 11
+  }
+}

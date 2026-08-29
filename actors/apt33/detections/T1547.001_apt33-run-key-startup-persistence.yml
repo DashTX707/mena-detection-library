@@ -1,0 +1,47 @@
+title: APT33 Registry Run Key / Startup Folder Autostart Persistence
+id: fc6a69a2-644a-44cd-b0f4-4a6453d5a763
+status: experimental
+description: |
+    Detects Registry Run-key / Startup-folder autostart persistence used by APT33 for its POWERTON backdoor
+    and dropped commodity RATs (T1547.001). Keys on writes to the Run / RunOnce keys (HKLM and HKCU) whose
+    value points at a command interpreter, script host, or a binary in a user-writable path - the tell of
+    an implant persistence entry rather than a legitimate signed-software autostart. Requires registry-set
+    auditing (Sysmon EID 13).
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.apt33
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+            - '\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run'
+    selection_value:
+        Details|contains:
+            - 'powershell'
+            - 'pwsh'
+            - 'cmd.exe'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - 'regsvr32'
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection_key and selection_value
+falsepositives:
+    - Software installers writing legitimate autostart entries that invoke helper scripts - baseline known
+      value names and signed publishers
+    - Admin automation persisted via Run keys - scope to values that launch from user-writable paths
+level: medium

@@ -1,0 +1,47 @@
+title: APT33 Exfiltration Over Unencrypted Non-C2 Protocol (FTP / Cleartext)
+id: a76af820-cae8-4b02-b47e-1961501a621a
+status: experimental
+description: |
+    Detects exfiltration of collected data by APT33 over an alternative, unencrypted non-C2 protocol such
+    as FTP or cleartext HTTP to a non-corporate destination (T1048.003). Keys on outbound
+    network-connection events initiated by command-line transfer utilities (ftp, curl, powershell, cmd,
+    bitsadmin) to classic cleartext-transfer ports (FTP 21/20, TFTP 69) outside the environment. Best
+    thresholded on outbound byte volume per host/destination and paired with the archive-staging analytic.
+    Requires network-connection telemetry (Sysmon EID 3) with initiating-process attribution.
+references:
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.exfiltration
+    - attack.t1048.003
+    - mena-detection-library.apt33
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: true
+        Image|endswith:
+            - '\ftp.exe'
+            - '\tftp.exe'
+            - '\curl.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\bitsadmin.exe'
+        DestinationPort:
+            - 20
+            - 21
+            - 69
+    filter_internal:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: selection and not filter_internal
+falsepositives:
+    - Legitimate FTP-based file transfers to business partners - baseline expected external FTP
+      destinations and transferring hosts
+    - Automated backup/sync jobs using FTP - allowlist known automation and endpoints
+level: medium

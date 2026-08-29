@@ -1,0 +1,33 @@
+title: APT33 Peach Sandstorm Unsanctioned Remote Access Tool (AnyDesk RMM)
+id: 109a3024-8006-41f1-bc93-a1bad910b114
+status: experimental
+description: |
+    Detects installation or execution of the AnyDesk commercial RMM (and comparable remote-access tools)
+    deployed by APT33 / Peach Sandstorm for interactive persistence (T1219). Keys on the AnyDesk executable
+    / original filename and its unattended-access / silent-install command line (--install,
+    --set-password, --start-service). Strongest as an allow-list control: alert on any RMM not sanctioned
+    on the host. Requires process-creation logging with command lines.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.command-and-control
+    - attack.t1219
+    - mena-detection-library.apt33
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_image:
+        - Image|endswith: '\anydesk.exe'
+        - OriginalFileName: 'AnyDesk.exe'
+        - Product|contains: 'AnyDesk'
+    condition: selection_image
+falsepositives:
+    - Organizations that sanction AnyDesk for IT support - allowlist on approved hosts and alert only on
+      unsanctioned installs/hosts; sharpen with unattended-access install flags (--install,
+      --set-password, --start-service) where present
+    - Managed-service-provider remote support - baseline approved MSP tooling
+level: medium

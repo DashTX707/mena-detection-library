@@ -1,0 +1,45 @@
+title: APT33 Data Staging - Password-Protected Archive Creation by Archive Utility
+id: 5b583985-a226-4adf-9ff2-00b9d4356997
+status: experimental
+description: |
+    Detects staging of collected data prior to exfiltration by APT33 (T1560.001): a command-line archive
+    utility (7-Zip, WinRAR, WinZip) creating a compressed - often password-protected or split - archive in
+    a staging directory. Keys on the archive tool's add-with-password / compression command line
+    (7z/rar a -p, -hp, -v switches) or archive creation targeting user-writable staging paths. Requires
+    process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.collection
+    - attack.t1560.001
+    - mena-detection-library.apt33
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith:
+              - '\7z.exe'
+              - '\7za.exe'
+              - '\rar.exe'
+              - '\winrar.exe'
+              - '\winzip.exe'
+              - '\winzip64.exe'
+        - OriginalFileName:
+              - '7z.exe'
+              - 'Rar.exe'
+    selection_action:
+        CommandLine|contains:
+            - ' a '
+            - ' -p'
+            - ' -hp'
+            - ' -v'
+            - '-mhe'
+    condition: selection_tool and selection_action
+falsepositives:
+    - Legitimate backup, packaging or software-build jobs creating archives - baseline expected automation
+      hosts and output paths
+    - Admin/helpdesk compressing logs or data for transfer - allowlist known operators
+level: medium

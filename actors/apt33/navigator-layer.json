@@ -1,0 +1,318 @@
+{
+  "name": "APT33 (G0064) - MENA Detection Library",
+  "versions": {
+    "attack": "14",
+    "navigator": "4.9.1",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "APT33 coverage: red=Sigma detection, orange=hunt hypothesis.",
+  "techniques": [
+    {
+      "techniqueID": "T1588.002",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1566.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1566.002",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1078",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1078.004",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1110.003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1110",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1203",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1204.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1204.002",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1059.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1059.005",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1546.003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1547.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1053.005",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1098",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1068",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1574.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1027.013",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1132.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1003.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1003.004",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1003.005",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1552.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1552.006",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1555",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1555.003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1040",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1606.002",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1087.004",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1526",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1560.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1021.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1071.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1105",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1571",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1573.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1219",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1090.003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1572",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1048.003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1685",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1685.005",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1485",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1561",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1561.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1561.002",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1490",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    }
+  ],
+  "legendItems": [
+    {
+      "label": "Detection (Sigma)",
+      "color": "#e2504a"
+    },
+    {
+      "label": "Hunt hypothesis",
+      "color": "#f6b26b"
+    }
+  ],
+  "gradient": {
+    "colors": [
+      "#ffffff",
+      "#e2504a"
+    ],
+    "minValue": 0,
+    "maxValue": 2
+  }
+}

@@ -1,0 +1,53 @@
+title: APT33 Visual Basic Script Host Execution Spawning Command Interpreter
+id: 4416bfb7-cd03-4285-9cdd-305981f60139
+status: experimental
+description: |
+    Detects APT33's Visual Basic delivery/execution chain (T1059.005): wscript.exe or cscript.exe executing
+    a .vbs / .vbe / .wsf script (from .hta droppers and macro-dropped stagers) that spawns a command shell
+    or PowerShell to continue the AutoIt/RAT deployment chain. Keys on the wscript/cscript parent-to-shell
+    process lineage, or a script host launching a script from a user-writable path. Requires
+    process-creation logging with command lines.
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.apt33
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    selection_scriptpath:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+        CommandLine|contains:
+            - '.vbs'
+            - '.vbe'
+            - '.wsf'
+            - '.js'
+    selection_userwritable:
+        CommandLine|contains:
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection_parent or (selection_scriptpath and selection_userwritable)
+falsepositives:
+    - Legitimate logon/deployment scripts run via wscript/cscript - baseline known script paths and hosts
+    - Enterprise software using signed VBScript automation - allowlist expected publishers
+level: medium

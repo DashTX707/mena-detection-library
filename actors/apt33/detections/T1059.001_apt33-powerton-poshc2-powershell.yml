@@ -1,0 +1,53 @@
+title: APT33 POWERTON / PoshC2 PowerShell - Encoded Command and Download-and-Invoke
+id: deca010b-8229-4b50-be2f-79440004c31a
+status: experimental
+description: |
+    Detects APT33's PowerShell post-exploitation tradecraft: the PowerShell-based POWERTON backdoor and the
+    PoshC2 framework (T1059.001) using encoded-command execution, in-memory download-and-invoke, and remote
+    payload retrieval (T1105 ingress tool transfer). Keys on script-block-logged content combining a
+    download/decompress primitive with an invoke primitive, or -EncodedCommand / hidden-window invocation.
+    Obfuscation reduces static visibility, so pair with AMSI. Requires PowerShell script-block logging
+    (EID 4104) - off by default (visibility gap).
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.command-and-control
+    - attack.t1059.001
+    - attack.t1105
+    - mena-detection-library.apt33
+logsource:
+    product: windows
+    category: ps_script
+detection:
+    selection_download:
+        ScriptBlockText|contains:
+            - 'DownloadString'
+            - 'DownloadData'
+            - 'DownloadFile'
+            - 'Invoke-WebRequest'
+            - 'Net.WebClient'
+            - 'Start-BitsTransfer'
+    selection_invoke:
+        ScriptBlockText|contains:
+            - 'IEX'
+            - 'Invoke-Expression'
+            - '.Invoke('
+            - 'Add-Type'
+            - 'FromBase64String'
+    selection_encoded:
+        ScriptBlockText|contains:
+            - '-enc '
+            - '-EncodedCommand'
+            - '-e JAB'
+            - 'WindowStyle Hidden'
+            - '-nop -w hidden'
+    condition: (selection_download and selection_invoke) or selection_encoded
+falsepositives:
+    - Legitimate admin/deployment scripts that download and invoke modules - baseline signed/known scripts
+      and scope the download+invoke pair to unsigned interactive sessions
+    - Software that legitimately uses encoded commands - allowlist known management tooling
+level: high

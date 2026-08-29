@@ -1,0 +1,49 @@
+title: APT33 Impair Defenses - Security Tool / AV Tampering (Shamoon Nexus, assessed)
+id: 69cbb9fd-c560-422f-9ff0-03632d0cecbb
+status: experimental
+description: |
+    Detects disabling or tampering with security tooling in the assessed APT33 / Shamoon-StoneDrill
+    destructive nexus (T1685 - remapped Impair Defenses: Disable or Modify Tools): Set-MpPreference disable
+    switches and Defender exclusion additions, and sc.exe stop/config or net stop of AV/EDR services to
+    clear the path for direct-disk wiping. Keys on the process command lines for each. Requires
+    process-creation logging with command lines.
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - mena-detection-library.apt33
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_defender:
+        CommandLine|contains:
+            - 'Set-MpPreference -DisableRealtimeMonitoring'
+            - 'DisableRealtimeMonitoring $true'
+            - 'Add-MpPreference -ExclusionPath'
+            - 'Add-MpPreference -ExclusionProcess'
+            - 'DisableIOAVProtection'
+            - 'DisableBehaviorMonitoring'
+            - 'MpCmdRun.exe -RemoveDefinitions'
+    selection_avstop:
+        Image|endswith:
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - 'stop windefend'
+            - 'stop sense'
+            - 'stop MsMpSvc'
+            - 'config windefend'
+            - 'stop McAfee'
+            - 'stop SentinelAgent'
+    condition: selection_defender or selection_avstop
+falsepositives:
+    - Administrators legitimately adjusting Defender exclusions or stopping AV during maintenance -
+      baseline expected admin hosts and change windows
+    - Security-tooling deployment/upgrade scripts stopping services - allowlist known management processes
+level: high

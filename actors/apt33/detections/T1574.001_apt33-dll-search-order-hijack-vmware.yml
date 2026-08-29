@@ -1,0 +1,41 @@
+title: APT33 Peach Sandstorm DLL Search-Order Hijack via Signed VMware Executable
+id: dfe7654e-802b-42c4-82b8-ae6062af0131
+status: experimental
+description: |
+    Detects DLL search-order hijacking used by APT33 / Peach Sandstorm to run malicious code under a
+    trusted, signed VMware executable (T1574.001). Keys on a legitimate VMware binary loading a DLL from an
+    unexpected / user-writable path (AppData, ProgramData, Temp, Public) rather than its normal install
+    directory or System32, and on load of an unsigned module by the VMware process. The abused module-load
+    path is an implementation-core observable robust to payload renaming. Requires image/module-load
+    telemetry (Sysmon EID 7) - often off by default (visibility gap).
+references:
+    - https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.stealth
+    - attack.t1574.001
+    - mena-detection-library.apt33
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_vmware:
+        Image|contains: 'vmware'
+        Image|endswith: '.exe'
+    selection_path:
+        ImageLoaded|contains:
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Windows\Temp\'
+    selection_unsigned:
+        Signed: 'false'
+    condition: selection_vmware and (selection_path or selection_unsigned)
+falsepositives:
+    - VMware components legitimately loading modules from a non-standard install path - baseline the real
+      install directory and expected signed module set for VMware products in your estate
+    - Third-party plugins to VMware tools - allowlist known signed publishers
+level: high

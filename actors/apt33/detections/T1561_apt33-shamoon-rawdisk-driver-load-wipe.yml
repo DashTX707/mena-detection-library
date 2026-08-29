@@ -1,0 +1,48 @@
+title: APT33 Shamoon / StoneDrill RawDisk-Style Signed Driver Load for Disk Wipe (assessed)
+id: a8931221-cd8e-45ec-88a3-4a8d54e7acc8
+status: experimental
+description: |
+    Detects the precursor to APT33 / Shamoon-StoneDrill destructive wiping (assessed nexus): loading of a
+    signed low-level disk-access kernel driver (RawDisk-style, e.g. the ElRawDisk / EldoS driver abused by
+    Shamoon) that provides the direct raw-disk write access used to overwrite files and disk structures
+    (T1561 disk wipe, T1485 data destruction). Keys on driver-load events (Sysmon EID 6) for the known
+    RawDisk driver names / EldoS signer and for driver images loaded from user-writable paths. By the time
+    the overwrite completes data is gone, so the driver load is the actionable signal. Requires driver-load
+    telemetry (Sysmon EID 6).
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.impact
+    - attack.t1561
+    - attack.t1485
+    - mena-detection-library.apt33
+logsource:
+    category: driver_load
+    product: windows
+detection:
+    selection_rawdisk:
+        ImageLoaded|contains:
+            - 'elrawdisk'
+            - 'rawdisk'
+            - '\drdisk.sys'
+            - 'eldos'
+    selection_signer:
+        Signature|contains:
+            - 'EldoS'
+    selection_path:
+        ImageLoaded|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Windows\Temp\'
+        ImageLoaded|endswith: '.sys'
+    condition: selection_rawdisk or selection_signer or selection_path
+falsepositives:
+    - Legitimate low-level disk / backup / imaging drivers signed by EldoS or similar vendors - allowlist
+      the specific known-good driver hashes/paths deployed in your environment
+    - Third-party tools that ship kernel disk drivers - baseline expected signed drivers and install paths
+level: high

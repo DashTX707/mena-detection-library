@@ -1,0 +1,51 @@
+title: APT33 Malicious File Execution - mshta .hta Dropper and Office Spawning Script/Shell Children
+id: d22187d3-427d-4457-aa11-916c4714c181
+status: experimental
+description: |
+    Detects APT33 delivery-chain execution from recruitment-lure attachments: mshta.exe executing local or
+    remote .hta / HTML application content (T1204.002 user execution of a malicious file) and Office
+    applications (Word, Excel, Outlook, PowerPoint) spawning a script interpreter or command shell, the
+    hallmark of macro / client-exploit execution (T1203 exploitation for client execution). Keys on the
+    Office/mshta parent-to-interpreter process lineage. Requires process-creation logging with command
+    lines.
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - attack.t1203
+    - mena-detection-library.apt33
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mshta:
+        Image|endswith: '\mshta.exe'
+        CommandLine|contains:
+            - '.hta'
+            - 'http'
+            - 'vbscript'
+            - 'javascript'
+    selection_office_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+        Image|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\rundll32.exe'
+    condition: selection_mshta or selection_office_parent
+falsepositives:
+    - Enterprise applications that legitimately deploy .hta-based configuration UIs - allowlist known
+      signed .hta paths and publishers
+    - Office add-ins/templates that spawn scripted automation - baseline expected macros and add-in hosts
+level: high

@@ -1,0 +1,39 @@
+title: APT33 Peach Sandstorm Cloud Account Manipulation - Azure Arc / Device Registration and Credential Add
+id: dcab428a-0f8f-4f30-bedb-3c61bf5af2c6
+status: experimental
+description: |
+    Detects cloud identity-persistence manipulation by APT33 / Peach Sandstorm (T1098): registering
+    compromised devices/servers to Azure Arc for cloud-based control, adding credentials or certificates to
+    service principals / applications, and role or device-registration changes that preserve access after
+    initial compromise. Keys on Entra ID / Azure audit operations for device and Arc onboarding, service
+    principal credential additions and directory role assignments. Best correlated with the actor's
+    anomalous sign-in and cloud-enumeration analytics. Requires Entra ID audit logs / Azure Activity log.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1098
+    - mena-detection-library.apt33
+logsource:
+    product: azure
+    service: auditlogs
+detection:
+    selection:
+        OperationName:
+            - 'Add service principal credentials'
+            - 'Update application - Certificates and secrets management'
+            - 'Add application credentials'
+            - 'Register device'
+            - 'Add member to role'
+            - 'Microsoft.HybridCompute/machines/write'
+            - 'Add owner to service principal'
+            - 'Consent to application'
+    condition: selection
+falsepositives:
+    - Legitimate administrator onboarding of devices/servers to Azure Arc and normal app credential
+      rotation - baseline expected admin principals and change windows
+    - Automated CI/CD adding service principal secrets - allowlist known automation identities
+level: medium

@@ -1,0 +1,44 @@
+title: APT33 WMI Event Subscription Persistence
+id: 5a8bf33e-a06a-4ae5-becf-55a5ac52e047
+status: experimental
+description: |
+    Detects WMI event-subscription persistence used by APT33 to trigger execution of its implants on
+    defined system events (T1546.003). Keys on the creation of a permanent WMI event consumer
+    (CommandLineEventConsumer / ActiveScriptEventConsumer) whose action launches a script host or command
+    interpreter, and on filter-to-consumer bindings - the durable, implementation-core signal of this
+    persistence. Requires Sysmon WMI eventing (EID 19 WmiEventFilter / 20 WmiEventConsumer / 21
+    WmiEventConsumerToFilter) or WMI-Activity operational logging.
+references:
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.persistence
+    - attack.t1546.003
+    - mena-detection-library.apt33
+logsource:
+    category: wmi_event
+    product: windows
+detection:
+    selection_consumer:
+        Destination|contains:
+            - 'CommandLineEventConsumer'
+            - 'ActiveScriptEventConsumer'
+    selection_payload:
+        Destination|contains:
+            - 'powershell'
+            - 'cmd.exe'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - '.vbs'
+            - '.ps1'
+            - 'CommandLineTemplate'
+            - 'ScriptText'
+    condition: selection_consumer or selection_payload
+falsepositives:
+    - Legitimate management/monitoring products (SCCM, antivirus, inventory agents) that register WMI
+      consumers - allowlist known consumer names and the deploying software
+    - Administrative WMI automation - baseline expected filters/consumers per host
+level: medium

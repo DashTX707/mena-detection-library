@@ -1,0 +1,51 @@
+title: APT33 Destructive Precursors - Windows Event-Log Clearing and Recovery Inhibition (Shamoon Nexus, assessed)
+id: f4493d70-daab-4cd3-b0e4-8a2c3166fe6e
+status: experimental
+description: |
+    Detects the anti-forensic and recovery-inhibition commands that precede APT33 / Shamoon-StoneDrill
+    disk wiping (assessed nexus): clearing/destroying Windows event logs (T1685.005 - wevtutil cl,
+    Clear-EventLog, Stop-Service EventLog, wevtutil sl .../e:false) and inhibiting system recovery
+    (T1490 - vssadmin/wmic shadowcopy delete, wbadmin delete catalog, bcdedit recovery/bootstatuspolicy
+    changes). These are high-fidelity, well-covered destructive-precursor commands. Keys on the process
+    command lines. Pair with Security EID 1102 (audit log cleared). Requires process-creation logging with
+    command lines.
+references:
+    - https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage
+    - https://attack.mitre.org/groups/G0064
+author: mena-detection-library
+date: 2026-08-29
+tags:
+    - attack.defense-impairment
+    - attack.impact
+    - attack.t1685.005
+    - attack.t1490
+    - mena-detection-library.apt33
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_clearlogs:
+        - Image|endswith: '\wevtutil.exe'
+          CommandLine|contains:
+              - ' cl '
+              - ' clear-log '
+              - '/e:false'
+        - CommandLine|contains:
+              - 'Clear-EventLog'
+              - 'Stop-Service -Name EventLog'
+              - 'auditpol /clear'
+    selection_recovery:
+        CommandLine|contains:
+            - 'vssadmin delete shadows'
+            - 'vssadmin resize shadowstorage'
+            - 'shadowcopy delete'
+            - 'wbadmin delete catalog'
+            - 'wbadmin delete systemstatebackup'
+            - 'bcdedit /set {default} recoveryenabled no'
+            - 'bcdedit /set {default} bootstatuspolicy ignoreallfailures'
+    condition: selection_clearlogs or selection_recovery
+falsepositives:
+    - Administrators clearing logs or managing shadow storage during maintenance - baseline expected admin
+      hosts and change windows; the co-occurrence with wiping/tamper activity is the escalation trigger
+    - Backup software pruning shadow copies / catalogs - allowlist known backup tooling
+level: high
