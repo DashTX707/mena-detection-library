@@ -25,18 +25,18 @@ _See the [MENA Threat Actor Tracker](https://github.com/DashTX707/MENA-Threat-Ac
 - [`navigator-layer.json`](navigator-layer.json) — ATT&CK Navigator heatmap (lane-colored)
 - [`detections/`](detections/) — **17 Sigma rules** covering 19 detection-lane techniques, all validated clean (0 issues)
 - [`hunts/`](hunts/) — **7 consolidated hunt hypotheses** covering the 17 hunt-lane techniques (cloud-service-C2 flagship)
-- [`iocs/`](iocs/) — publicly-sourced indicators (currently empty; Gaza Cybergang IOCs live in vendor reports — Securelist SneakyPastes, Proofpoint IronWind — not yet ingested)
+- [`iocs/`](iocs/) — **99 publicly-sourced indicators** (53 MD5, 24 SHA256, 5 C2 IPs, 17 actor domains) from Securelist SneakyPastes + Proofpoint IronWind (network indicators defanged)
 - [`intel/`](intel/) — pipeline provenance (`cti-pipeline.json`, `routing.json`)
 
 ## Coverage snapshot
 
 - TTPs mapped: **36** across 9 tactics
 - Lane split: **19 detection / 17 hunt** (see `intel/routing.json`)
-- Detections: **17 Sigma files** · Hunts: **7** · IOCs: **0** (backfill pending)
+- Detections: **17 Sigma files** · Hunts: **7** · IOCs: **99** (Securelist + Proofpoint appendices)
 
 ## Provenance
 
 Produced via the mena-detection-library pipeline:
 `cti-expert` (TTPs enriched from MITRE G0021 + public reporting) → `decision-agent` → `detection-engineer` + `threat-hunter`.
 
-> **Notes:** the tracker seed held only 16 techniques; cti-expert enriched to 36 from MITRE G0021 and Proofpoint/Cybereason/Securelist reporting (per-technique sources in `cti-pipeline.json`). `routing.json` is authored by the read-only decision-agent and persisted by the orchestrator. IOCs are not yet backfilled — the signature cloud-service C2 tradecraft means few atomic network IOCs; sample hashes from the vendor reports can be added on request.
+> **Notes:** the tracker seed held only 16 techniques; cti-expert enriched to 36 from MITRE G0021 and Proofpoint/Cybereason/Securelist reporting (per-technique sources in `cti-pipeline.json`). `routing.json` is authored by the read-only decision-agent and persisted by the orchestrator. IOCs were backfilled from the Securelist SneakyPastes and Proofpoint IronWind appendices (fetched via a browser user-agent), curated to drop publisher/CDN and legitimate-service domains and keep actor-controlled infrastructure.
