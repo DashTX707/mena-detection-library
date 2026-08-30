@@ -1,0 +1,43 @@
+title: Sea Turtle Modified Socat Tunnel/Relay and Retrieval
+id: 15716f64-8dba-4981-ba20-a631ca700170
+status: experimental
+description: |
+    Detects use of Socat as a relay/tunnel and retrieval of the modified Socat binary from actor
+    infrastructure, the proxying tradecraft Sea Turtle (Teal Kurma / Marbled Dust) uses to obscure C2 and
+    move data (T1090 Proxy; T1041 Exfiltration Over C2 Channel). The actor pulled a modified socat from
+    http://193.34.167.245/c00n/socat and runs it with listener/relay/EXEC arguments to tunnel connections.
+    Anchors on socat command lines carrying bidirectional relay/exec addresses, and on curl/wget fetches of
+    the documented socat download URL.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/groups/G1041/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1041
+    - attack.t1090
+    - mena-detection-library.sea-turtle
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection_socat_relay:
+        Image|endswith: '/socat'
+        CommandLine|contains:
+            - 'TCP-LISTEN'
+            - 'TCP4-LISTEN'
+            - 'OPENSSL-LISTEN'
+            - 'EXEC:'
+            - 'TCP:'
+            - 'TCP4:'
+    selection_socat_fetch:
+        CommandLine|contains:
+            - '193.34.167.245/c00n/socat'
+            - '/c00n/socat'
+    condition: selection_socat_relay or selection_socat_fetch
+falsepositives:
+    - System administrators legitimately using socat for port-forwarding, service testing or relays -
+      validate the invoking account, parent process and the relay endpoints
+level: medium

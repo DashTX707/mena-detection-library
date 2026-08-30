@@ -1,0 +1,38 @@
+title: Sea Turtle nohup Wrapping SnappyTCP or Socat to Survive Session Close
+id: 904d0e05-2b28-419b-9555-d8f7d57a9804
+status: experimental
+description: |
+    Detects use of nohup to detach a network binary from session hang-up signals so it keeps running after
+    the initiating SSH/web session closes (T1564.011 Hide Artifacts: Ignore Process Interrupts). Sea Turtle
+    (Teal Kurma / Marbled Dust) launches the SnappyTCP reverse shell and modified Socat under nohup to keep
+    C2 alive. Anchors on nohup command lines that reference SnappyTCP, socat, openssl relays or an executable
+    launched from a temp/web directory.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/software/S1163/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1564.011
+    - mena-detection-library.sea-turtle
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection_nohup:
+        CommandLine|contains: 'nohup'
+    selection_payload:
+        CommandLine|contains:
+            - 'snappytcp'
+            - 'socat'
+            - 'openssl s_client'
+            - 'openssl s_server'
+            - './sy'
+            - '/tmp/'
+            - 'TCP-LISTEN'
+    condition: all of selection_*
+falsepositives:
+    - Administrators legitimately using nohup to background long-running maintenance or transfer jobs
+    - Backup/sync scripts backgrounded with nohup - validate the wrapped binary and its arguments
+level: medium

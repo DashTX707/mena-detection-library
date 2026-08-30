@@ -1,0 +1,37 @@
+title: Registry Run Key Persistence Pointing at User-Writable Implant Path (Imperial Kitten)
+id: b3650416-a968-4b54-af7f-94ba19d9a203
+status: experimental
+description: |
+    Detects creation or modification of a Registry Run/RunOnce value whose data points at a binary
+    or script in a user-writable staging location (AppData, ProgramData, Public, Temp). Imperial
+    Kitten (CURIUM / Yellow Liderc) establishes logon persistence via Run keys that auto-execute
+    their implants (T1547.001). Keys on Sysmon registry value-set telemetry for autostart locations.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+            - '\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run\'
+    selection_path:
+        Details|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+            - '\Windows\Temp\'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate software registering autostart entries from AppData (some updaters, chat clients) -
+      validate the referenced binary signature and reputation
+level: high

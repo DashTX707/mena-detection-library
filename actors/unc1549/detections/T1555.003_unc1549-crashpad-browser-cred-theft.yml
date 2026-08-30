@@ -1,0 +1,33 @@
+title: UNC1549 CRASHPAD Browser Credential Theft Artifacts
+id: fe94c4fa-45fa-4b9e-8723-ba87131ab45e
+status: experimental
+description: |
+    Detects UNC1549 / TA455 browser-credential theft via the CRASHPAD utility (T1555.003). CRASHPAD
+    decrypts browser-stored secrets with the CryptUnprotectData API while impersonating the privilege
+    level of explorer.exe, and writes its output to crash.log and config.txt in the VMware VGAuth
+    directory. Keys on file-creation of the CRASHPAD artifact names (crash.log / config.txt) inside the
+    VMware VGAuth software directory - an abnormal write target that provides host-level corroboration
+    of the credential-extraction behaviour. Pair with EDR API/behavioural telemetry for CryptUnprotectData
+    plus explorer.exe token impersonation where available.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1555.003
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection:
+        TargetFilename|contains: '\VMware\VMware Tools\VMware VGAuth\'
+        TargetFilename|endswith:
+            - '\crash.log'
+            - '\config.txt'
+    condition: selection
+falsepositives:
+    - Legitimate VMware processes do not write crash.log or config.txt into the VGAuth directory -
+      any hit warrants investigation of the writing process and the file content
+level: high

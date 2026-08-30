@@ -1,0 +1,37 @@
+title: Bahamut Non-Standard Port 2053 TLS C2 Beacon
+id: 8a2c4e6d-5f1b-4c3a-9d7e-3b6f1a8c2e4d
+status: experimental
+description: |
+    Detects outbound network connections to TCP port 2053, the non-standard C2 port used by
+    the Bahamut (Windshift-clustered, G0112) SafeChat/CoverIm spyware to beacon to its C2
+    (laborer-posted[.]nl) instead of the usual 443 (T1571 Non-Standard Port). Anchors on the
+    outbound-to-2053 behavior and raises fidelity by correlating with the known C2 hostname or
+    Cloudflare-fronted destination IPs. Port 2053 is a Cloudflare alternate HTTPS port, so the
+    port alone is an anomaly to be triaged; the combination with the actor destination is
+    high-confidence.
+references:
+    - https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1571
+    - mena-detection-library.bahamut
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_port:
+        Initiated: 'true'
+        DestinationPort: 2053
+    selection_dest:
+        - DestinationHostname|endswith: 'laborer-posted.nl'
+        - DestinationIp:
+              - '104.21.10.79'
+              - '172.67.185.54'
+    condition: selection_port and selection_dest
+falsepositives:
+    - Legitimate applications reaching Cloudflare-hosted services over the 2053 alternate
+      HTTPS port - the actor-destination correlation makes benign matches unlikely, but verify
+      the destination and process before escalating
+level: high

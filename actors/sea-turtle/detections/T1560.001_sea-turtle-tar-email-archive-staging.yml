@@ -1,0 +1,44 @@
+title: Sea Turtle tar Archiving of Local Mail and Data for Staging
+id: 8bdc2e38-dffd-4e73-8e77-a4744d7339c2
+status: experimental
+description: |
+    Detects use of tar to archive local mailbox / e-mail data on a compromised host, the collection-and-
+    packaging step Sea Turtle (Teal Kurma / Marbled Dust) performs before exfiltration (T1560.001 Archive
+    via Utility; T1114.001 Local Email Collection; T1005 Data from Local System). The actor's primary
+    espionage objective is e-mail archives, which are tar'd and later staged in web roots. Anchors on tar
+    command lines targeting mail spool / maildir / mailbox paths or writing an archive of local data,
+    especially when run by a web/service account.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/groups/G1041/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1005
+    - attack.t1114.001
+    - attack.t1560.001
+    - mena-detection-library.sea-turtle
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection_tar:
+        Image|endswith:
+            - '/tar'
+            - '/gzip'
+            - '/gtar'
+    selection_maildata:
+        CommandLine|contains:
+            - '/var/mail'
+            - '/var/spool/mail'
+            - '/var/vmail'
+            - 'Maildir'
+            - '.eml'
+            - '/home/vmail'
+            - 'inbox'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate mail-server or backup jobs archiving mail stores (validate the invoking account, parent
+      process, destination path and whether it runs on a normal backup schedule)
+level: medium

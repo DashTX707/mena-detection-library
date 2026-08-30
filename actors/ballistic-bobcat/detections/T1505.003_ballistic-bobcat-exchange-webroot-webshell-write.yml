@@ -1,0 +1,43 @@
+title: Ballistic Bobcat Web Shell Write to Exchange/IIS Web Root
+id: 57e35fb6-4ac6-4a50-9b51-5d56d1cfd36c
+status: experimental
+description: |
+    Detects Ballistic Bobcat (Sponsor campaign) staging web shells or drop files under the Exchange/IIS
+    web root following CVE-2021-26855 exploitation. The actor writes script/executable content to
+    inetpub\wwwroot\aspnet_client and the MSExchange Delivery DSN path, typically authored by the IIS
+    worker process w3wp.exe. Keys on the IIS worker writing web-servable script extensions into web-root
+    paths, a high-fidelity, actor-relevant persistence signal.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1505/003/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_writer:
+        Image|endswith:
+            - '\w3wp.exe'
+            - '\UMWorkerProcess.exe'
+    selection_path:
+        TargetFilename|contains:
+            - '\inetpub\wwwroot\aspnet_client\'
+            - '\MSExchange Delivery DSN\'
+            - '\FrontEnd\HttpProxy\'
+    selection_ext:
+        TargetFilename|endswith:
+            - '.aspx'
+            - '.asp'
+            - '.ashx'
+            - '.asmx'
+            - '.aspm'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate Exchange cumulative updates and OWA customizations can write to these paths - validate
+      the file content, timing against a patch window and the authoring account
+level: high

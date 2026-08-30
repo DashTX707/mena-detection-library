@@ -1,0 +1,42 @@
+title: Bahamut Registry Run Key / Startup Persistence
+id: 9d4f2e6b-1a7c-4b3e-8f52-6c9d0e3a1b4f
+status: experimental
+description: |
+    Detects creation or modification of a Registry Run/RunOnce key value that points to a
+    payload in a user-writable or suspicious location, consistent with Bahamut
+    (Windshift-clustered, G0112) Windows persistence via Registry Run keys / Startup folder
+    (T1547.001). After a document-lure drop, the Windows implant registers itself to
+    auto-run at logon. Keys on registry-set telemetry (Sysmon EID 13) for the standard
+    Run-key paths where the written value references AppData/Temp/ProgramData/Public paths
+    typical of dropped malware, rather than on a specific sample name.
+references:
+    - https://attack.mitre.org/groups/G0112/
+    - https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.bahamut
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+            - '\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\Startup'
+            - '\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run\'
+    selection_value:
+        Details|contains:
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Downloads\'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate applications and installers registering autostart entries into user AppData -
+      baseline known-good Run values and the writing process before dismissing
+level: medium

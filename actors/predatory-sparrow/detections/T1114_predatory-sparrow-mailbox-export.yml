@@ -1,0 +1,41 @@
+title: Predatory Sparrow Bulk Email Collection and Mailbox Export
+id: 3c7e1a95-6b40-4d28-8f13-2a9d5c7e4b60
+status: experimental
+description: |
+    Detects bulk email-collection activity consistent with the Predatory Sparrow steel-plant hack-and-leak
+    operation, which exfiltrated tens of thousands of internal emails prior to leaking them. Keys on
+    server-side mailbox-export tradecraft: Exchange New-MailboxExportRequest / ExMerge, or process command
+    lines copying/archiving Outlook data stores (*.pst, *.ost) in bulk. Where Exchange admin auditing exists,
+    a mass or unusual mailbox export is a high-value signal.
+references:
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+    - https://en.wikipedia.org/wiki/Predatory_Sparrow
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1114
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_export:
+        CommandLine|contains:
+            - 'New-MailboxExportRequest'
+            - 'Search-Mailbox'
+            - 'ExMerge'
+            - 'New-ComplianceSearchAction'
+    selection_pst:
+        CommandLine|contains|all:
+            - '.pst'
+        CommandLine|contains:
+            - 'copy'
+            - 'xcopy'
+            - 'robocopy'
+            - 'Copy-Item'
+    condition: selection_export or selection_pst
+falsepositives:
+    - Legitimate e-discovery, mailbox migration and backup operations perform PST exports - scope to
+      unexpected operators, bulk scope, or export just before a destructive/leak event
+level: medium

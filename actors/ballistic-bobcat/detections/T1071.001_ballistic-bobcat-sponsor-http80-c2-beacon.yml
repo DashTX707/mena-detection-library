@@ -1,0 +1,42 @@
+title: Ballistic Bobcat Sponsor HTTP/80 C2 Beacon to Known Infrastructure
+id: 8aec504d-596c-47b3-aec9-adca9e27cea0
+status: experimental
+description: |
+    Detects the Ballistic Bobcat Sponsor backdoor beaconing to its command-and-control infrastructure
+    over HTTP on port 80. Sponsor polls the C2 at a configurable interval and exchanges Base64-encoded,
+    RC4-encrypted (symmetric, obfuscated) messages, returning host reconnaissance and command output
+    over the same channel. Keys on outbound port-80 connections to the ESET-reported Sponsor / PowerLess
+    C2 and tool-delivery IP addresses. Covers Web Protocols (T1071.001), Symmetric Cryptography
+    (T1573.001), Standard Encoding (T1132.001), Data Obfuscation (T1001) and Exfiltration Over C2
+    Channel (T1041). The IPs are high-fidelity but decay; pair with beacon-interval analytics.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://github.com/eset/malware-ioc
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.001
+    - attack.t1573.001
+    - attack.t1132.001
+    - attack.t1001
+    - attack.t1041
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort: 80
+        DestinationIp:
+            - '37.120.222.168'
+            - '5.255.97.172'
+            - '198.144.189.74'
+            - '162.55.137.20'
+    condition: selection
+falsepositives:
+    - The C2 IP addresses may be reassigned to benign services over time - confirm the connecting process
+      is an unsigned service binary and correlate with the Sponsor host artifacts before acting
+level: high

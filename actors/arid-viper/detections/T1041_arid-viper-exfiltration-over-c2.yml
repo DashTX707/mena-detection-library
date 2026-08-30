@@ -1,0 +1,45 @@
+title: Arid Viper Exfiltration Over C2 to Persona Domains
+id: 5d9a3c17-4e82-4b60-9a15-7c3f8e2d1b96
+status: experimental
+description: |
+    Detects Arid Viper (APT-C-23) exfiltration of collected data over its HTTP(S) C2 channel
+    (T1041 Exfiltration Over C2 Channel). Micropsia / PyMicropsia upload RAR archives, screenshots,
+    keystroke logs and stolen browser credentials back to attacker infrastructure over the same web C2 it
+    beacons on. Keys on outbound HTTP POST uploads to the known persona C2 domains; pair with a large
+    request-body threshold in your SIEM to prioritise bulk transfers of staged archives.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://blog.talosintelligence.com/arid-viper-mobile-spyware/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - mena-detection-library.arid-viper
+logsource:
+    category: proxy
+detection:
+    selection_upload:
+        cs-method:
+            - 'POST'
+            - 'PUT'
+    selection_domains:
+        cs-host|contains:
+            - 'luis-dubuque.in'
+            - 'conner-margie.com'
+            - 'orin-weimann.com'
+            - 'jack-keys.site'
+            - 'elizabeth-steiner.tech'
+            - 'baldwin-gonzalez.live'
+            - 'grace-fraser.site'
+            - 'pam-beesly.site'
+            - 'krasil-anthony.icu'
+            - 'robert-keegan.life'
+            - 'jaime-martinez.info'
+            - 'chad-jessie.info'
+    condition: selection_upload and selection_domains
+falsepositives:
+    - Low; outbound POST/PUT to actor persona domains is a strong exfiltration signal - validate transfer
+      size and the originating host/process
+level: high

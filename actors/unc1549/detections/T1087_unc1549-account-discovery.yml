@@ -1,0 +1,35 @@
+title: UNC1549 Account and Group Enumeration via net.exe
+id: a4783f5a-35b7-4287-adca-0bc451518a39
+status: experimental
+description: |
+    Detects UNC1549 / TA455 account discovery (T1087) using native commands (net user, net group,
+    net localgroup) to enumerate accounts and groups for privilege-escalation and lateral-movement
+    planning. Keys on net.exe / net1.exe process creation performing user or group enumeration. This
+    activity overlaps with legitimate administration; value comes from correlating it as a recon burst
+    within a short window and against the process lineage (e.g. spawned by a backdoor or from a user-
+    writable path).
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1087
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - ' user'
+            - ' group'
+            - ' localgroup'
+    condition: selection
+falsepositives:
+    - Routine administrative and login-script enumeration - correlate with process lineage, executing
+      account and surrounding discovery/credential activity rather than alerting on a single command
+level: low

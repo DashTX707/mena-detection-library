@@ -1,0 +1,259 @@
+{
+  "actor": "Bahamut (Windshift-adjacent)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — malicious attachments arriving at the mail gateway and their execution on Windows endpoints are observable via attachment sandboxing and process-lineage (office-app spawning script/child processes), though specific samples are not publicly enumerated"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — on Windows, execution of a malicious document payload is observable via process-lineage/EDR; on Android the sideloaded-APK install and accessibility-grant prompts are observable only with mobile EDR/MDM"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "medium — VBA-macro execution (office app spawning wscript/cscript/powershell, VBA project instantiation) is observable via macro-security logging and EDR process-lineage"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "medium — Windows Run-key writes are observable via registry-modification telemetry (Sysmon EID 13 / autoruns baselining); the Android BOOT_COMPLETED equivalent needs mobile EDR"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — enumeration of installed AV/EDR products (service/registry/process queries) is observable in command-line and API telemetry on Windows, but is common and needs correlation"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — process enumeration on Windows is observable via command-line/API telemetry but is common and low-fidelity in isolation"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — outbound HTTPS to the specific C2 domains/IPs is detectable at the network egress (DNS/proxy/firewall) if those indicators are deployed, though the payload is TLS-encrypted"
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — the encrypted channel itself blends with normal TLS, but the specific C2 certificate/SNI and destination can be flagged via TLS-metadata and certificate-transparency-informed detections"
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "rationale": "medium — TLS/HTTPS to an unusual port (2053) is a detectable anomaly at the network egress via firewall/NetFlow analytics"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — activation callbacks and any secondary payload retrieval are observable as anomalous outbound connections at network egress, but content is encrypted"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — exfil rides the C2 channel; detectable via outbound-volume anomalies to the known C2 destinations at network egress, but encrypted"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "rationale": "low — target research occurs off-victim and is not endpoint-observable; intel/hunt candidate via monitoring of executive/at-risk-individual exposure"
+    },
+    {
+      "technique_id": "T1591",
+      "technique_name": "Gather Victim Org Information",
+      "tactic": "reconnaissance",
+      "rationale": "low — off-victim reconnaissance; intel/hunt candidate via brand and look-alike-portal monitoring"
+    },
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "rationale": "low — credential-harvesting pages are hosted on off-victim, single-use infrastructure; hunt/intel candidate via phishing-domain and brand monitoring, and inbound-referrer analysis on the impersonated portals"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration is off-victim; intel/hunt candidate via newly-registered/look-alike-domain monitoring (e.g. brand permutation feeds)"
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "rationale": "low — third-party web-service abuse is off-victim; intel/hunt candidate via infrastructure clustering and CDN-fronting analysis"
+    },
+    {
+      "technique_id": "T1585",
+      "technique_name": "Establish Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — persona creation is off-victim; intel/brand-monitoring candidate"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim social-media accounts; intel/brand-monitoring candidate"
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim account provisioning; hunt candidate via sender-reputation and look-alike-sender analytics at the mail gateway"
+    },
+    {
+      "technique_id": "T1586.001",
+      "technique_name": "Compromise Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — abuse of compromised third-party accounts is off-victim; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; the deployed malware is where detection lands"
+    },
+    {
+      "technique_id": "T1588.005",
+      "technique_name": "Obtain Capabilities: Exploits",
+      "tactic": "resource-development",
+      "rationale": "low — exploit acquisition/development is off-victim; intel candidate (exploitation itself surfaces at the victim)"
+    },
+    {
+      "technique_id": "T1588.006",
+      "technique_name": "Obtain Capabilities: Vulnerabilities",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim; intel candidate"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — staging occurs on off-victim infrastructure/app stores; intel/hunt candidate via distribution-domain monitoring"
+    },
+    {
+      "technique_id": "T1608.003",
+      "technique_name": "Stage Capabilities: Install Digital Certificate",
+      "tactic": "resource-development",
+      "rationale": "low — certificate provisioning is off-victim; intel/hunt candidate via certificate-transparency monitoring of look-alike C2 domains"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "low — links point to single-use off-victim infrastructure; hunt candidate via mail-gateway URL detonation and newly-registered-domain reputation"
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "rationale": "low — delivery over a third-party messaging app is not visible in enterprise telemetry; intel/awareness candidate"
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "rationale": "low — delivery sites are off-victim/single-use; hunt candidate via web-proxy telemetry to newly-registered look-alike domains"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "low — user click on off-victim link; hunt candidate via URL-click telemetry where mail/browser isolation is deployed"
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "rationale": "low — on-device app enumeration is not visible without mobile EDR; hunt/intel candidate"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — device-info collection on-endpoint (mobile) is not visible without mobile EDR; hunt/intel candidate"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "low — on-device; hunt/intel candidate"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "rationale": "low — accessibility-based keylogging is on-device and invisible to enterprise telemetry; hunt candidate via mobile EDR / MDM accessibility-grant monitoring"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low — on-device screen capture; hunt candidate via mobile EDR"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "low — on-device audio/call recording; hunt candidate via mobile EDR and permission auditing"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — on-device data collection is invisible to enterprise telemetry; hunt candidate via mobile EDR / permission monitoring"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "low — automated on-device collection; hunt candidate"
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "rationale": "low — on-device pre-exfil encryption; hunt/intel candidate"
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "rationale": "low — masquerading manifests off-victim and on-device; intel/brand-monitoring and mobile-app-vetting candidate"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "low — name/package look-alikes are detectable via app-store/MDM app-reputation vetting rather than enterprise endpoint logs; hunt/intel candidate"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — obfuscation is a sample-analysis property, not a live log signal; intel candidate"
+    }
+  ],
+  "summary": {
+    "total": 41,
+    "detection": 11,
+    "hunt": 30
+  }
+}

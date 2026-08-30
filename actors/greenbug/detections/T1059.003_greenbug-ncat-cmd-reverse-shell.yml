@@ -1,0 +1,36 @@
+title: Greenbug Ncat Reverse Shell Binding cmd.exe
+id: 1a6f8c92-3d7e-4b25-9c81-6a4d2e7f8b13
+status: experimental
+description: |
+    Detects Greenbug's Netcat/Ncat reverse shell (T1059.003) where ncat.exe is invoked with the -e
+    cmd.exe argument to bind an interactive command shell to a listening/remote port (observed as
+    ncat.exe <IP> 8989 -e cmd.exe). Keys on the -e cmd.exe execute-redirect argument on a netcat-class
+    binary, which is not a feature of legitimate builds and is a hallmark of interactive command shells.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        - Image|endswith:
+              - '\ncat.exe'
+              - '\nc.exe'
+              - '\netcat.exe'
+        - Description|contains: 'Ncat'
+    selection_exec:
+        CommandLine|contains:
+            - '-e cmd'
+            - '-e c:\windows\system32\cmd'
+            - '-e cmd.exe'
+    condition: selection_img and selection_exec
+falsepositives:
+    - Rare legitimate administrative or testing use of ncat with command redirection - the -e cmd.exe
+      pattern is almost always malicious and should be treated as a reverse shell
+level: high

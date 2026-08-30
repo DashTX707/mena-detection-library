@@ -1,0 +1,39 @@
+title: UNC3890 Ingress Tool Transfer from Actor Staging Infrastructure
+id: 7a8b9c0d-1e2f-4304-a5b6-c7d8e9f0a1b2
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) ingress tool transfer (T1105) of follow-on payloads from
+    actor-controlled staging infrastructure. The actor used PowerShell downloaders and hosted
+    malware/tools on 128.199.6.246 (malware/tools + watering hole) and 161.35.123.176 (SUGARUSH C2 and
+    malicious-domain hosting). Keys on outbound network connections from downloader-capable LOLBins
+    (powershell, certutil, bitsadmin, curl) to the watchlisted actor staging IPs.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.unc3890
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_dl:
+        Initiated: 'true'
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\certutil.exe'
+            - '\bitsadmin.exe'
+            - '\curl.exe'
+    selection_stagingip:
+        DestinationIp:
+            - '128.199.6.246'
+            - '161.35.123.176'
+    condition: selection_dl or selection_stagingip
+falsepositives:
+    - Legitimate scripted downloads exist, but connections to the named actor staging IPs are
+      high-confidence - validate the destination and downloaded artifact before dismissing
+level: high

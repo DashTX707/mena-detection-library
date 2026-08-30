@@ -1,0 +1,41 @@
+title: Predatory Sparrow Group Policy Modification and SYSVOL Script Staging
+id: 9e73c085-4d21-4a6f-8b39-5c1e7a2d9f68
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress distribution mechanism: the actor abused Active Directory
+    Group Policy to push the destructive batch/scheduled-task toolchain to many domain-joined hosts at once,
+    staging env.cab and the RAR payloads on the SYSVOL scripts share. Keys on directory-service change
+    auditing for Group Policy container / gPCFileSysPath objects (Event IDs 5136/5137) and on writes of
+    script/CAB/RAR artifacts under the SYSVOL scripts path.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1484.001
+    - mena-detection-library.predatory-sparrow
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_dschange:
+        EventID:
+            - 5136
+            - 5137
+        ObjectClass:
+            - 'groupPolicyContainer'
+            - 'scriptPath'
+    selection_sysvol_write:
+        EventID: 5145
+        ShareName|contains: 'SYSVOL'
+        RelativeTargetName|contains:
+            - '\scripts\'
+            - '.cab'
+            - '.rar'
+            - '.bat'
+    condition: 1 of selection_*
+falsepositives:
+    - Legitimate Group Policy administration and logon-script deployment also touch SYSVOL and GPO objects -
+      correlate the changing account, the pushed script content and downstream execution across many hosts
+level: high

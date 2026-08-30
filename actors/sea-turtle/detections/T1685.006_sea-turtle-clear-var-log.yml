@@ -1,0 +1,49 @@
+title: Sea Turtle Clearing or Truncating Linux System Logs
+id: 211a197c-2c47-4e46-8845-6e875f47ffb5
+status: experimental
+description: |
+    Detects anti-forensic clearing, truncation or overwriting of Linux system logs under /var/log, a
+    post-session cleanup step Sea Turtle (Teal Kurma / Marbled Dust) performs after SSH activity (T1685.006
+    Clear Linux or Mac System Logs). Anchors on process command lines that redirect null/empty into a
+    /var/log file, or invoke truncate/shred/rm against /var/log entries such as auth.log, secure, syslog,
+    messages, wtmp/btmp/lastlog.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/groups/G1041/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685.006
+    - mena-detection-library.sea-turtle
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection_truncate_redirect:
+        CommandLine|contains:
+            - '> /var/log/'
+            - '>/var/log/'
+            - 'truncate -s 0 /var/log'
+            - 'truncate -s0 /var/log'
+    selection_tool:
+        Image|endswith:
+            - '/shred'
+            - '/truncate'
+            - '/rm'
+    selection_logtarget:
+        CommandLine|contains:
+            - '/var/log/auth.log'
+            - '/var/log/secure'
+            - '/var/log/syslog'
+            - '/var/log/messages'
+            - '/var/log/wtmp'
+            - '/var/log/btmp'
+            - '/var/log/lastlog'
+            - '/var/log/nginx/'
+            - '/var/log/apache2/'
+    condition: selection_truncate_redirect or (selection_tool and selection_logtarget)
+falsepositives:
+    - Log-rotation and administrative cleanup jobs (logrotate typically renames/compresses rather than
+      truncating in place - validate the invoking user, parent process and interactivity)
+level: high

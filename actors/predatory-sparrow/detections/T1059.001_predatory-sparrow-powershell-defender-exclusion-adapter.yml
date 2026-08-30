@@ -1,0 +1,41 @@
+title: Predatory Sparrow PowerShell Defender Exclusion and Network Adapter Disable
+id: b1c7e930-4a2d-4f68-9c15-7e0b3d8a2f56
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress pre-detonation defense-impairment stage where cache.bat
+    uses PowerShell to create Windows Defender exclusions (Add-MpPreference / Set-MpPreference
+    -ExclusionPath / -ExclusionExtension) and to disable network adapters (Disable-NetAdapter) so the host
+    is isolated from remediation immediately before the wiper runs. Covers PowerShell execution
+    (T1059.001) and disabling security tooling (T1685). Best sourced from script-block logging (4104) or
+    process command line.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.defense-impairment
+    - attack.t1059.001
+    - attack.t1685
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_defender:
+        CommandLine|contains:
+            - 'Add-MpPreference'
+            - 'Set-MpPreference'
+        CommandLine|contains|all:
+            - 'Exclusion'
+    selection_adapter:
+        CommandLine|contains: 'Disable-NetAdapter'
+    condition: selection_ps and (selection_defender or selection_adapter)
+falsepositives:
+    - Endpoint management or antivirus onboarding scripts that legitimately set Defender exclusions -
+      scope to unexpected hosts/accounts and correlate with adapter disablement or subsequent wiper activity
+level: high

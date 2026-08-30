@@ -1,0 +1,39 @@
+title: POLONIUM Keylogger, Screenshot and Webcam Collection Modules
+id: eb7cb4c5-bfc6-4da4-8ecb-ce6f7a9cadbb
+status: experimental
+description: |
+    Detects execution of POLONIUM's espionage collection modules (T1056.001 Keylogging, T1113 Screen
+    Capture, T1125 Video Capture). The group deploys a custom keylogger (Hebrew/Arabic layouts,
+    Windows-1255 console encoding), a screenshot module (WinSc.exe) and an AForge.NET-based webcam
+    module (Device.exe). Keys on execution of the named screenshot/webcam modules from user-writable
+    paths, or the load of the AForge.NET DirectShow video library that the webcam module depends on.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1056.001
+    - attack.t1113
+    - attack.t1125
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_modules:
+        Image|endswith:
+            - '\WinSc.exe'
+            - '\Device.exe'
+    selection_path:
+        Image|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Public\'
+    condition: all of selection_*
+falsepositives:
+    - Generic filenames may collide with unrelated utilities - confirm the binary path, signer, and
+      whether it loads AForge.Video.DirectShow (webcam) or writes periodic image/keystroke log files
+level: medium

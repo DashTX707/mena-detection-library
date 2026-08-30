@@ -1,0 +1,36 @@
+title: UNC1549 Lateral Movement via WinRM / PowerShell Remoting
+id: 5d3a1fd4-34c8-4f9b-b705-b326af57b969
+status: experimental
+description: |
+    Detects UNC1549 / TA455 lateral movement via Windows Remote Management / PowerShell Remoting
+    (T1021.006). Remote command execution over WinRM spawns child processes under the WinRM host
+    wsmprovhost.exe. Keys on process creation where the parent is wsmprovhost.exe and the child is a
+    command shell, script interpreter or discovery/credential tool - indicating an operator running
+    commands on the host over PowerShell Remoting rather than a benign remote-management task.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.006
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        ParentImage|endswith: '\wsmprovhost.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\reg.exe'
+            - '\whoami.exe'
+    condition: selection
+falsepositives:
+    - Legitimate remote administration and configuration-management tooling that uses PowerShell Remoting -
+      baseline the admin source hosts and the commands normally run over WinRM
+level: medium

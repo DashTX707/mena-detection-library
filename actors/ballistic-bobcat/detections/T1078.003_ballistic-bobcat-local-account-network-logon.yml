@@ -1,0 +1,36 @@
+title: Ballistic Bobcat Local Account NTLM Network Logon Reuse
+id: 29428730-6e53-4320-a764-d4319ee3ba56
+status: experimental
+description: |
+    Detects reuse of valid local accounts by Ballistic Bobcat following credential theft, observed as
+    NTLM network logons (Event ID 4624, LogonType 3) authenticated by a local (non-domain) account
+    rather than a domain account. After dumping LSASS/browser credentials the actor reuses local
+    accounts to run tooling and blend with administration. This is a lower-fidelity behavioral analytic
+    intended for correlation/risk scoring alongside the Sponsor host signals, not standalone alerting.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1078/003/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.privilege-escalation
+    - attack.t1078.003
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 3
+        AuthenticationPackageName: 'NTLM'
+    filter_machine:
+        TargetUserName|endswith: '$'
+    filter_anon:
+        TargetUserName: 'ANONYMOUS LOGON'
+    condition: selection and not 1 of filter_*
+falsepositives:
+    - Local-account NTLM network logons occur in workgroup environments, with legacy apps and during
+      legitimate administration - this analytic is noisy on its own and should feed risk-based alerting
+      correlated with other Ballistic Bobcat signals
+level: low

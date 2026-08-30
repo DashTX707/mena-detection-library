@@ -1,0 +1,41 @@
+title: Ballistic Bobcat Uninstall.bat Sponsor Artifact Cleanup and File Deletion
+id: 7cc86b70-ec1c-4f91-9769-47ac928791ed
+status: experimental
+description: |
+    Detects Ballistic Bobcat indicator removal via the Sponsor backdoor's 's' operator command, which
+    runs Uninstall.bat to delete the backdoor and its artifacts. Detected as cmd.exe executing
+    Uninstall.bat, or as a del command targeting the Sponsor config files (config.txt, node.txt,
+    error.txt) - typically issued by a batch script or the service binary. Keys on the deletion behavior
+    of the specific artifact set rather than a hash.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1070/004/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_uninstall:
+        CommandLine|contains: 'Uninstall.bat'
+    selection_del_config:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+        CommandLine|contains:
+            - 'del '
+            - 'Remove-Item'
+            - 'erase '
+        CommandLine|contains:
+            - 'config.txt'
+            - 'node.txt'
+            - 'error.txt'
+    condition: 1 of selection_*
+falsepositives:
+    - Generic cleanup scripts may delete files named config.txt/error.txt - validate the parent process
+      and whether a SystemNetwork/Update service or Sponsor artifacts existed on the host
+level: medium

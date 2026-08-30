@@ -1,0 +1,63 @@
+title: UNC1549 Kerberoasting RC4 Service-Ticket Request
+id: 096aa21a-87ac-43b7-8af0-3d25a5714ba3
+status: experimental
+description: |
+    Detects UNC1549 / TA455 Kerberoasting (T1558.003) via obfuscated Invoke-Kerberoast, which requests
+    service tickets for many service principal names for offline cracking. The base rule keys on Kerberos
+    service-ticket requests (Event ID 4769) using the weak RC4 encryption type (0x17) that Kerberoasting
+    tools force to obtain crackable tickets, excluding machine accounts and krbtgt. The correlation fires
+    when one requesting account triggers many such RC4 ticket requests in a short window - the SPN-
+    enumeration burst rather than a single legitimate request.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1558.003
+    - mena-detection-library.unc1549
+name: unc1549_kerberoast_rc4_tgs
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4769
+        TicketEncryptionType: '0x17'
+        TicketOptions: '0x40810000'
+    filter_machine:
+        ServiceName|endswith: '$'
+    filter_krbtgt:
+        ServiceName: 'krbtgt'
+    condition: selection and not 1 of filter_*
+falsepositives:
+    - Legacy applications or scanners that request many RC4 service tickets - baseline normal SPN request
+      volume per account and allowlist known service enumerators
+level: high
+---
+title: UNC1549 Kerberoasting SPN Request Burst Correlation
+id: 2008f190-dd22-448a-b44d-fa678698e493
+status: experimental
+description: |
+    Fires when a single account requests many weak-encryption Kerberos service tickets in a short window,
+    consistent with UNC1549 / TA455 Kerberoasting SPN enumeration for offline cracking.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1558.003
+    - mena-detection-library.unc1549
+correlation:
+    type: event_count
+    rules:
+        - unc1549_kerberoast_rc4_tgs
+    group-by:
+        - TargetUserName
+    timespan: 10m
+    condition:
+        gte: 10
+falsepositives:
+    - Legacy applications or scanners that request many RC4 service tickets
+level: high

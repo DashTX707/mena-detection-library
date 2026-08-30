@@ -1,0 +1,30 @@
+title: Predatory Sparrow Windows Event Log Clearing via wevtutil
+id: 5b1d9e42-3c76-4a08-9e14-7f2a6c8b1d53
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress anti-forensic stage: bcd.bat uses wevtutil to clear the
+    Security, System and Application event logs to destroy evidence of the intrusion as part of the
+    destructive sequence. Keys on wevtutil clear-log ('cl' / 'clear-log') command lines and on the Security
+    log cleared event (Event ID 1102). High-fidelity when clustered with shadow deletion and wiper activity.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685.005
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_wevtutil:
+        Image|endswith: '\wevtutil.exe'
+        CommandLine|contains:
+            - ' cl '
+            - 'clear-log'
+    condition: selection_wevtutil
+falsepositives:
+    - Administrators occasionally clear a single log for troubleshooting - clearing Security/System/Application
+      in sequence, or clearing alongside vssadmin/bcdedit activity, indicates evidence destruction
+level: high

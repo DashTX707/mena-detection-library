@@ -1,0 +1,35 @@
+title: Greenbug Tunneled RDP Logon From Loopback and Valid-Account Reuse
+id: 6a9c2e48-1b5d-4f83-9c27-8e3a1d6b4f52
+status: experimental
+description: |
+    Detects Greenbug interactive RDP/Terminal-Services access tunneled through its Plink/Bitvise SSH
+    tunnels (T1021.001) using harvested valid accounts (T1078). Because the RDP session enters through a
+    local SSH port-forward, the RemoteInteractive (Type 10) logon appears sourced from loopback/localhost
+    rather than a real remote host - a strong indicator that the connection was relayed through a local
+    tunnel to mask its true origin. Keys on 4624 Type-10 logons with a loopback source network address.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.persistence
+    - attack.t1021.001
+    - attack.t1078
+    - mena-detection-library.greenbug
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+        IpAddress:
+            - '127.0.0.1'
+            - '::1'
+            - 'localhost'
+    condition: selection
+falsepositives:
+    - Some local RDP-loopback testing, session brokers or nested-session tooling can produce Type-10
+      loopback logons - correlate with Plink/Bitvise process activity and the account used
+level: medium

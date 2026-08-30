@@ -1,0 +1,35 @@
+title: UNC1549 Domain Trust Discovery via AD Explorer and nltest
+id: 7ffe1bc0-cc00-40f4-8ccf-3748e1dedad8
+status: experimental
+description: |
+    Detects UNC1549 / TA455 domain trust discovery (T1482). The actor runs Sysinternals Active Directory
+    Explorer to enumerate the domain, trusts and objects, and native trust-enumeration commands such as
+    nltest /domain_trusts. Keys on process creation of ADExplorer/ADExplorer64 or nltest with trust-
+    enumeration arguments. AD Explorer is a legitimate admin tool, so validate the operator and whether a
+    full-directory snapshot was taken; nltest trust enumeration from a non-admin context is more suspicious.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1482
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_adexplorer:
+        Image|endswith:
+            - '\ADExplorer.exe'
+            - '\ADExplorer64.exe'
+    selection_nltest:
+        Image|endswith: '\nltest.exe'
+        CommandLine|contains:
+            - 'domain_trusts'
+            - 'trusted_domains'
+    condition: 1 of selection_*
+falsepositives:
+    - Administrators legitimately using AD Explorer for directory review or nltest for trust
+      troubleshooting - correlate with the operator, host role and surrounding recon activity
+level: medium

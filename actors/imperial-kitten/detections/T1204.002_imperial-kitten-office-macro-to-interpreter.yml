@@ -1,0 +1,47 @@
+title: Office Application Spawning Script Interpreter (Imperial Kitten Macro Lure)
+id: c90de93a-f244-4b5d-ad4f-40fe1394d97c
+status: experimental
+description: |
+    Detects a Microsoft Office application (EXCEL.EXE, WINWORD.EXE, POWERPNT.EXE) spawning a
+    scripting interpreter (python, cmd, powershell, wscript, cscript, mshta). Imperial Kitten
+    (CURIUM / Yellow Liderc) delivers macro-enabled Excel workbooks whose embedded VBA drops and
+    launches a Python reverse shell (T1204.002 User Execution, T1059.005 Visual Basic, T1059.006
+    Python, T1059.003 Windows Command Shell). Keys on the Office-to-interpreter process lineage,
+    which is high fidelity because Office rarely spawns interpreters in normal use.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+    - https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - attack.t1059.005
+    - attack.t1059.006
+    - attack.t1059.003
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\EXCEL.EXE'
+            - '\WINWORD.EXE'
+            - '\POWERPNT.EXE'
+            - '\MSACCESS.EXE'
+    selection_child:
+        Image|endswith:
+            - '\python.exe'
+            - '\pythonw.exe'
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+    condition: all of selection_*
+falsepositives:
+    - Enterprise Office add-ins or document-automation macros that legitimately invoke a scripting
+      interpreter - baseline the specific workbook, publisher and command line before dismissing
+level: high

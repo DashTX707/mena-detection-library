@@ -1,0 +1,50 @@
+title: Sea Turtle Web Server User Spawning Unix Shell or Network Tooling
+id: 806c471f-18d7-4241-81af-1d641af46be2
+status: experimental
+description: |
+    Detects a web-server / PHP interpreter process spawning a Unix shell or network binary on a
+    Linux/Unix host, the high-fidelity post-exploitation pattern for Sea Turtle (Teal Kurma / Marbled
+    Dust). After exploiting a public-facing application (T1203 Exploitation for Client Execution) or
+    dropping the SnappyTCP webshell, the webserver user (apache/www-data/nginx/php-fpm) executes shell
+    commands (T1059.004 Unix Shell) to run SnappyTCP, Socat, nohup and staging utilities. A webserver
+    process is not expected to fork an interactive shell or a tunnelling tool.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/software/S1163/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.004
+    - attack.t1203
+    - mena-detection-library.sea-turtle
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '/apache2'
+            - '/httpd'
+            - '/nginx'
+            - '/php-fpm'
+            - '/php'
+            - '/php7.4'
+            - '/php8.1'
+            - '/php8.2'
+            - '/w3wp'
+    selection_child:
+        Image|endswith:
+            - '/bash'
+            - '/sh'
+            - '/dash'
+            - '/zsh'
+            - '/socat'
+            - '/nc'
+            - '/ncat'
+            - '/nohup'
+    condition: all of selection_*
+falsepositives:
+    - Web applications that legitimately shell out (some CMS backup, image-processing or cron helpers)
+    - Monitoring or deployment agents launched under the webserver account
+level: high

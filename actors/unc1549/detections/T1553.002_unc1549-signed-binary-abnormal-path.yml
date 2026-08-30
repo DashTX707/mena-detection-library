@@ -1,0 +1,39 @@
+title: UNC1549 Code-Signed Backdoor Executing From Abnormal Path
+id: bd3aee3f-042b-4be0-bb01-91f3e3593997
+status: experimental
+description: |
+    Detects UNC1549 / TA455 subversion of trust controls via code signing (T1553.002). The tunnelers and
+    backdoors TWOSTROKE, GHOSTLINE and POLLBLEND are signed with legitimate code-signing certificates
+    (reported to CAs for revocation) so they pass signature-trust checks. Detection lands on the downstream
+    signed-binary execution: a validly-signed executable running from a user-writable / non-standard path
+    (AppData, Temp, Public, ProgramData, or the VMware VGAuth directory) rather than a trusted install
+    location. Pair with a watchlist of the reported certificate thumbprints where available.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1553.002
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        Signed: 'true'
+        Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\VMware VGAuth\'
+    filter_common:
+        Image|contains:
+            - '\ProgramData\Microsoft\'
+            - '\ProgramData\Package Cache\'
+    condition: selection and not filter_common
+falsepositives:
+    - Legitimate signed portable tools and updaters that run from temp/programdata - baseline the normal
+      signed executables in these paths and allowlist by publisher/thumbprint
+level: medium

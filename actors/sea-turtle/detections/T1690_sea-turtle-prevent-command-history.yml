@@ -1,0 +1,46 @@
+title: Sea Turtle Disabling Bash and MySQL Command History
+id: c0645ac2-3da8-491b-bf85-c5156f257221
+status: experimental
+description: |
+    Detects tampering with shell/database command history to keep interactive commands from being recorded,
+    an anti-forensic step Sea Turtle (Teal Kurma / Marbled Dust) performs during SSH sessions (T1690 Prevent
+    Command History Logging). Anchors on unset/zeroing of HISTFILE / HISTFILESIZE and deletion of the Bash
+    and MySQL history files (~/.bash_history, ~/.mysql_history).
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/groups/G1041/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1690
+    - mena-detection-library.sea-turtle
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection_histvars:
+        CommandLine|contains:
+            - 'unset HISTFILE'
+            - 'HISTFILE='
+            - 'HISTFILESIZE=0'
+            - 'HISTSIZE=0'
+            - 'export HISTFILE=/dev/null'
+            - 'set +o history'
+    selection_histdelete:
+        CommandLine|contains:
+            - '.bash_history'
+            - '.mysql_history'
+            - '.zsh_history'
+    selection_delete_verb:
+        CommandLine|contains:
+            - 'rm '
+            - 'shred'
+            - 'truncate'
+            - '> ~/'
+            - 'ln -sf /dev/null'
+    condition: selection_histvars or (selection_histdelete and selection_delete_verb)
+falsepositives:
+    - Administrators or hardening scripts that intentionally disable history in specific service accounts
+    - Dotfile management tooling that rewrites shell history files
+level: high

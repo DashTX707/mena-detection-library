@@ -1,0 +1,37 @@
+title: UNC3890 NorthStar C2 Beacon and Protocol Tunneling
+id: d3c2b1a0-9f8e-4d7c-8b6a-594837261504
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) use of the open-source NorthStar C2 framework
+    (T1219 Remote Access Tools) and its tunneled command-and-control relay tradecraft (T1572 Protocol
+    Tunneling). The actor operated a NorthStar C2 stager beaconing to server 143.110.155.195 and
+    relayed backdoor traffic through actor infrastructure. Keys on outbound connections from endpoints
+    to the watchlisted NorthStar C2 and other actor C2 relay IPs; correlate long-lived/tunneled
+    sessions for higher confidence.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1219
+    - attack.t1572
+    - mena-detection-library.unc3890
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_c2:
+        Initiated: 'true'
+        DestinationIp:
+            - '143.110.155.195'
+            - '104.237.155.129'
+            - '146.185.219.88'
+            - '159.223.164.185'
+            - '185.170.215.170'
+    condition: selection_c2
+falsepositives:
+    - The destination IPs are actor command-and-control infrastructure - outbound connections to them
+      from an endpoint should be treated as a high-confidence compromise indicator
+level: high

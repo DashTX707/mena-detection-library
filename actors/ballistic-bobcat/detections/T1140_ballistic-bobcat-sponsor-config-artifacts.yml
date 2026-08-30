@@ -1,0 +1,40 @@
+title: Ballistic Bobcat Sponsor On-Disk Config Artifacts (config/node/error txt)
+id: f90cbb6e-4b92-4dae-9562-255330e9daaa
+status: experimental
+description: |
+    Detects creation of the Ballistic Bobcat Sponsor backdoor's obfuscated on-disk configuration files
+    - config.txt, node.txt and error.txt - co-located with the service binary in staging paths such as
+    %WINDIR%\Tasks, %WINDIR%\INF\MSExchange Delivery DSN, the user Temp\file directory or the Exchange
+    web root. Sponsor reads these high-entropy files and decodes/decrypts (Base64 + RC4) its C2
+    parameters at runtime, so the artifact cluster is the observable proxy for the in-memory decode.
+    Covers Deobfuscate/Decode (T1140) and Obfuscated Files (T1027) via the config-file signal.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1140/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1140
+    - attack.t1027
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_file:
+        TargetFilename|endswith:
+            - '\config.txt'
+            - '\node.txt'
+            - '\error.txt'
+    selection_path:
+        TargetFilename|contains:
+            - '\Windows\Tasks\'
+            - '\Windows\INF\'
+            - '\AppData\Local\Temp\file\'
+            - '\inetpub\wwwroot\aspnet_client\'
+    condition: all of selection_*
+falsepositives:
+    - config.txt / error.txt are generic filenames; the staging-path constraint narrows this heavily,
+      but confirm the co-located binary and file entropy before escalating
+level: high

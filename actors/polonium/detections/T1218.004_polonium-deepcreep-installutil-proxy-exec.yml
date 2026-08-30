@@ -1,0 +1,42 @@
+title: POLONIUM DeepCreep InstallUtil Proxy Execution
+id: be4f8192-8c93-4a71-9b98-9b3c4d6f7a88
+status: experimental
+description: |
+    Detects the signed Microsoft .NET utility InstallUtil.exe being used to proxy-execute a
+    non-standard assembly (T1218.004 InstallUtil). POLONIUM launches the DeepCreep C# backdoor via
+    InstallUtil to evade application control. Keys on InstallUtil.exe invoked with install/uninstall
+    or logfile/console flags and/or an assembly path in a user-writable directory - a rare, high-
+    fidelity command-line pattern on most endpoints.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1218.004
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_img:
+        Image|endswith: '\InstallUtil.exe'
+    selection_flags:
+        CommandLine|contains:
+            - '/logfile='
+            - '/LogToConsole'
+            - '/U '
+            - '/u '
+            - 'uninstall'
+    selection_path:
+        CommandLine|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Public\'
+    condition: selection_img and (selection_flags or selection_path)
+falsepositives:
+    - Legitimate .NET service installation during software deployment - confirm the target assembly's
+      path, signer and reputation
+level: high

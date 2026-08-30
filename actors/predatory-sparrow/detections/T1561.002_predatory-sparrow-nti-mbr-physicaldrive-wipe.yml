@@ -1,0 +1,33 @@
+title: Predatory Sparrow nti.exe MBR / Disk-Structure Wipe via Raw PhysicalDrive Writes
+id: 13a530cf-a395-4a97-8afa-4754b3794a06
+status: experimental
+description: |
+    Detects the Predatory Sparrow disk-structure wiper component (nti.exe) that overwrites the Master Boot
+    Record - reportedly the same sectors targeted by NotPetya - to render machines unbootable independently
+    of the filesystem wipe (T1561.002 Disk Structure Wipe). Keys on the actor binary name and, more durably,
+    on process access to the raw physical-drive device object \\.\PhysicalDrive0 which legitimate applications
+    seldom open for write. Correlate with the surrounding Meteor wipe / bcdedit boot sabotage sequence.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1561.002
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_binary:
+        Image|endswith: '\nti.exe'
+    selection_rawdisk:
+        CommandLine|contains:
+            - '\\.\PhysicalDrive'
+            - '\Device\Harddisk'
+    condition: selection_binary or selection_rawdisk
+falsepositives:
+    - Legitimate disk-imaging, backup and partition tools (dd, dism, diskpart wrappers) open raw PhysicalDrive
+      handles - scope by unsigned/unknown Image, non-standard path and clustering with wiper/bcdedit activity
+level: high

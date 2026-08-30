@@ -1,0 +1,32 @@
+title: UNC3890 SUGARUSH cmd.exe Reverse Shell Spawned by Service Host
+id: 5e6f7a8b-9c0d-4e1f-a2b3-c4d5e6f70819
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARUSH backdoor executing Windows command-shell
+    commands received over its reverse TCP shell (T1059.003 Windows Command Shell). SUGARUSH runs as a
+    Windows service and spawns cmd.exe to execute operator commands. Keys on cmd.exe (or a child
+    reconnaissance chain) created by an anomalous service-lineage parent such as services.exe or an
+    untrusted binary running under a service context. Highest confidence when correlated with the
+    'Service1' service install and the outbound port-4585 connection.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.unc3890
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\services.exe'
+    selection_child:
+        Image|endswith: '\cmd.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Some legitimate services shell out to cmd.exe for maintenance actions - baseline the child
+      command line and the service binary path before escalating
+level: high

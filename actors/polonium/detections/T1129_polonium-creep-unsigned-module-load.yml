@@ -1,0 +1,36 @@
+title: POLONIUM Creep Backdoor Unsigned Shared-Module Load
+id: 8b1c5e6f-5f60-4d4e-8e65-6e0f1a3c4d55
+status: experimental
+description: |
+    Detects loading of the unsigned, actor-specific DLLs POLONIUM fragments its functionality across
+    (T1129 Shared Modules). The group splits capability into runtime-loaded modules such as PRLib.dll,
+    MainZero.dll, Cert.dll, Sess.dll, yetty.dll and WinUpdate.dll so no single component reveals the
+    full chain. Requires image-load telemetry (Sysmon EID 7). Keys on the module names being loaded
+    while unsigned; combine with a user-writable load path for higher fidelity.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1129
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: image_load
+detection:
+    selection:
+        ImageLoaded|endswith:
+            - '\PRLib.dll'
+            - '\MainZero.dll'
+            - '\Cert.dll'
+            - '\Sess.dll'
+            - '\yetty.dll'
+            - '\WinUpdate.dll'
+    filter_signed:
+        Signed: 'true'
+    condition: selection and not filter_signed
+falsepositives:
+    - Generic module names (Cert.dll, Sess.dll) may collide with unrelated software - confirm the
+      loading process, the signer status and the on-disk path
+level: medium

@@ -1,0 +1,40 @@
+title: POLONIUM External Fortinet SSL-VPN Tunnel Establishment with Valid Accounts
+id: 5e8f2b3c-2c3d-4a1b-9b32-3b7c8d0f1a22
+status: experimental
+description: |
+    Detects establishment of a Fortinet SSL-VPN tunnel from a non-internal source address
+    (T1133 External Remote Services, T1078 Valid Accounts). POLONIUM entered victim networks over
+    Fortinet SSL-VPN using credentials obtained via CVE-2018-13379 exploitation or from Fortinet VPN
+    credentials leaked online in September 2021. Keys on successful external VPN tunnel-up events;
+    pair with impossible-travel / new-ASN / off-hours logic and leaked-credential monitoring for
+    higher fidelity. Anchors on the remote-access behavior rather than a specific source IP.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+    - https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/
+    - https://attack.mitre.org/groups/G1005/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1133
+    - attack.t1078
+    - mena-detection-library.polonium
+logsource:
+    product: fortios
+    service: sslvpn
+detection:
+    selection:
+        action:
+            - 'tunnel-up'
+            - 'ssl-login'
+        logdesc|contains: 'SSL'
+    filter_internal:
+        remip|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: selection and not filter_internal
+falsepositives:
+    - Legitimate remote employees and third-party support connecting over the corporate SSL-VPN -
+      baseline expected source geolocations/ASNs and combine with anomaly scoring before alerting
+level: medium

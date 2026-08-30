@@ -1,0 +1,36 @@
+title: Tool Binary Written to Remote Admin Share (Imperial Kitten Lateral Tool Transfer)
+id: 42541c9d-4e74-4daa-9998-23ce25f05405
+status: experimental
+description: |
+    Detects creation of executable/tool files on a remote administrative share (ADMIN$, C$) or
+    known actor tool names being written to disk, consistent with Imperial Kitten (CURIUM / Yellow
+    Liderc) staging PAExec, NetScan, ProcDump and implants onto additional hosts during lateral
+    movement (T1570 Lateral Tool Transfer). Keys on Sysmon file-create telemetry for admin-share
+    paths and actor tooling filenames.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1570
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_share:
+        TargetFilename|contains:
+            - '\ADMIN$\'
+            - '\C$\'
+    selection_toolnames:
+        TargetFilename|endswith:
+            - '\paexec.exe'
+            - '\netscan.exe'
+            - '\procdump.exe'
+            - '\WindowsServiceLive.exe'
+    condition: selection_share or selection_toolnames
+falsepositives:
+    - Legitimate software deployment or administration copying binaries via admin shares - allowlist
+      management servers and deployment accounts
+level: medium

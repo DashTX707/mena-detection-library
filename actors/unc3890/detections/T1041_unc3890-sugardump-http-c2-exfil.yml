@@ -1,0 +1,36 @@
+title: UNC3890 SUGARDUMP HTTP C2 Exfiltration
+id: c9d8e7f6-a5b4-4c32-9110-2f3e4d5c6b7a
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARDUMP HTTP variant exfiltrating AES-encrypted,
+    Base64-encoded browser credentials over its HTTP command-and-control channel (T1041 Exfiltration
+    Over C2 Channel, T1071.001 Web Protocols). SUGARDUMP stages data in
+    %TEMP%\DebugLogWindowsDefender.txt and POSTs it over HTTP (port 80) to actor server
+    144.202.123.248. Keys on outbound web-protocol connections to the watchlisted actor C2 IP; pair
+    with the DebugLogWindowsDefender.txt staging-file write for high confidence.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.command-and-control
+    - attack.t1041
+    - attack.t1071.001
+    - mena-detection-library.unc3890
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_c2:
+        Initiated: 'true'
+        DestinationIp:
+            - '144.202.123.248'
+            - '128.199.6.246'
+        DestinationPort: 80
+    condition: selection_c2
+falsepositives:
+    - The destination IPs are actor command-and-control infrastructure - any outbound HTTP to them
+      from an endpoint should be treated as a confirmed compromise indicator and investigated
+level: high

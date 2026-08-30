@@ -1,0 +1,33 @@
+title: UNC1549 SCCM Remote Control Abuse for VNC-Like Access
+id: 0e0ab469-5f6c-482d-9814-2d310bf78a54
+status: experimental
+description: |
+    Detects UNC1549 / TA455 abuse of Microsoft Configuration Manager (SCCM) Remote Control (T1072
+    Software Deployment Tools) via the SCCMVNC technique for VNC-like remote access that can bypass user
+    consent/notification. Keys on the SCCM remote-control host process CmRcService.exe spawning an
+    interactive shell or unusual child process, or launching outside its normal service context -
+    indicating operator-driven remote control rather than sanctioned support sessions. Requires SCCM
+    remote-control components and process telemetry on managed endpoints.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1072
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        ParentImage|endswith: '\CmRcService.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    condition: selection
+falsepositives:
+    - Sanctioned SCCM remote-control support sessions - correlate with the help-desk operator, a matching
+      ticket and whether the target user consented to the session
+level: medium

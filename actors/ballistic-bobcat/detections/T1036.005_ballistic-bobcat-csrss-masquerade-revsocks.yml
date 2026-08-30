@@ -1,0 +1,32 @@
+title: Ballistic Bobcat CSRSS.EXE Masquerade (RevSocks) Outside System32
+id: c38b6d33-30ca-4c55-b2c5-64f7dedf704a
+status: experimental
+description: |
+    Detects the Ballistic Bobcat masquerade of the RevSocks reverse-proxy tool dropped as CSRSS.EXE to
+    impersonate the legitimate Windows Client/Server Runtime Subsystem. The genuine csrss.exe only ever
+    runs from %WINDIR%\System32 (or SysWOW64) as a session-critical process; any csrss.exe executing
+    from another path is a high-fidelity masquerade. Keys on the image name matched against an image
+    path outside the legitimate system directories.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1036/005/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_name:
+        Image|endswith: '\csrss.exe'
+    filter_legit_path:
+        Image|startswith:
+            - 'C:\Windows\System32\'
+            - 'C:\Windows\SysWOW64\'
+    condition: selection_name and not filter_legit_path
+falsepositives:
+    - Extremely rare - legitimate csrss.exe never runs outside System32/SysWOW64; investigate any hit
+level: high

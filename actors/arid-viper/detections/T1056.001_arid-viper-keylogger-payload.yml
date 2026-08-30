@@ -1,0 +1,30 @@
+title: Arid Viper PyMicropsia Keylogger Payload Execution
+id: 2e8b4a17-6c93-4d05-a1f2-7b3c9e0d5a46
+status: experimental
+description: |
+    Detects the dedicated PyMicropsia keylogging payload used by Arid Viper (APT-C-23)
+    (T1056.001 Input Capture: Keylogging). PyMicropsia ships a standalone keylogger component
+    (MetroIntelGenericUIFram.exe) that captures keystrokes via GetAsyncKeyState and writes timestamped
+    logs into the HPFusionManagerDell working directory. Keys on execution of the actor-specific keylogger
+    binary name from a user-writable path; the companion keystroke-log files in the staging directory are
+    covered by the local-data-staging rule.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1056.001
+    - mena-detection-library.arid-viper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_binary:
+        Image|endswith: '\MetroIntelGenericUIFram.exe'
+    condition: selection_binary
+falsepositives:
+    - None expected for the specific binary name; the actor-chosen filename is highly unusual on a clean
+      endpoint - treat any hit as high priority
+level: high

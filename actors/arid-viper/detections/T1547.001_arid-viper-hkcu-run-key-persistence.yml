@@ -1,0 +1,40 @@
+title: Arid Viper HKCU Run Key Persistence
+id: 7b2d5f9a-4c81-4e63-a0d7-2f9b6c3e8a15
+status: experimental
+description: |
+    Detects Micropsia / PyMicropsia registry Run-key persistence (T1547.001 Registry Run Keys / Startup
+    Folder). Arid Viper (APT-C-23) establishes reboot survival by writing a value under the HKCU
+    CurrentVersion Run / RunOnce keys pointing at an implant executable that lives in a user-writable
+    location (AppData, Temp, ProgramData or the user profile root). Keys on registry-set telemetry where
+    a Run-key value references an executable from a suspicious path.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.arid-viper
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+    selection_value:
+        Details|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+        Details|endswith:
+            - '.exe'
+            - '.exe"'
+    condition: selection_key and selection_value
+falsepositives:
+    - Some legitimate software registers Run-key autostart from AppData (updaters, chat clients) -
+      validate the referenced binary signature and reputation before dismissing
+level: high

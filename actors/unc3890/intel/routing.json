@@ -1,0 +1,205 @@
+{
+  "actor": "UNC3890",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — inbound emails with links to newly-registered typosquat/brand-spoof domains are detectable at the mail gateway/proxy via URL reputation and lookalike-domain analytics, but the social lure content itself is hunt-leaning."
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "high — execution of a fake installer/macro document spawning CrashReporter.exe or a rundll32-launched PE from user-download/temp paths, immediately after opening a lure document, is a strong process-lineage detection via EDR (process creation, parent-child, Office-spawns-child)."
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — PowerShell script-block/module logging captures downloader cradles, TCP reverse-shell socket code, and Unicorn-style downgrade/injection patterns; suspicious PowerShell launched from Office/installer lineage adds context."
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "high — cmd.exe spawned by an anomalous parent (a Windows service host / SUGARUSH process) with an outbound TCP socket is a strong EDR process-creation + network-correlation detection."
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "stealth",
+      "rationale": "high — rundll32.exe launched by a child of an Office/Excel process, or loading a non-standard DLL/PE from a user path, is a high-fidelity EDR detection (rundll32 abuse + Office-spawns-child)."
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high — new service creation (Event ID 7045 / service-install) named 'Service1' pointing at an unusual binary is directly observable and actor-specific; pair with the outbound port-4585 connection for high confidence."
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "rationale": "high — service-launched execution of an untrusted binary is observable via service-install and process-creation telemetry (parent = services.exe), especially correlated with the 'Service1' name and reverse-shell network activity."
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation (Event ID 4698 / Task Scheduler operational) with the misspelled 'CrashRepoeter...TaskMachineUA' name and a CrashReporter.exe action in TabRoaming is an actor-specific, high-fidelity detection."
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — legitimate-looking names in unusual paths (CrashReporter.exe in TabRoaming, DebugLogWindowsDefender.txt in %TEMP%) are detectable via name/path/hash baselining and signature-vs-name mismatch, but require tuned rules."
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "high — a non-browser process opening browser 'Login Data'/profile SQLite files and User Data directories across multiple browsers is a strong EDR file-access/credential-theft detection."
+    },
+    {
+      "technique_id": "T1539",
+      "technique_name": "Steal Web Session Cookie",
+      "tactic": "credential-access",
+      "rationale": "high — a non-browser process reading browser cookie stores across Chrome/Edge/Opera/Firefox profiles is detectable via EDR file-access telemetry, alongside the same process's credential-store access."
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — outbound download requests to actor staging IPs/domains followed by new-executable file writes are detectable via proxy/DNS + process/file telemetry, but generic downloader traffic needs the IOC context to stand out."
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "rationale": "high — outbound TCP to the fixed non-standard port 4585 (especially to the known SUGARUSH C2) originating from a service-host/backdoor process is a crisp network + host-correlated detection."
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP C2 to the specific actor IPs is detectable via proxy/netflow when those indicators are watchlisted, but generic HTTP beaconing blends with normal web traffic without the IOCs or beacon-cadence analytics."
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "rationale": "medium — the NorthStar C2 stager and its C2 beacon are detectable via known-payload hashes and outbound connections to the C2 IP, but the framework itself is generic and requires the actor IOCs/behavioral signatures."
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "medium — Base64-encoded blobs in outbound SMTP/HTTP bodies are detectable via DLP/content inspection and the 'CrashLog.txt'/'VLC Player' artifacts, but encoding alone is common and needs pairing with the exfil-channel context."
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — the encryption is implemented in-malware over plain HTTP, so the encrypted payload is detectable as high-entropy content to the actor C2 IP, but the crypto itself provides no standalone network signature without the IOC/host context."
+    },
+    {
+      "technique_id": "T1048",
+      "technique_name": "Exfiltration Over Alternative Protocol",
+      "tactic": "exfiltration",
+      "rationale": "high — an endpoint process making direct outbound SMTP (port 587) connections to smtp.yandex.com / smtp.mail.yahoo.com and sending a 'CrashLog.txt' attachment (subject 'VLC Player') to the john.macperson mailboxes is a strong host+network detection, since direct client-to-webmail SMTP from a workstation is anomalous."
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "high — creation of %TEMP%\\DebugLogWindowsDefender.txt by the stealer followed by an HTTP POST of encrypted data to 144.202.123.248 is detectable via correlated file-write + process + netflow telemetry against the watchlisted C2 IP."
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy/encoded staging files (DebugLogWindowsDefender.txt, CrashLog.txt) in %TEMP%/user paths are detectable via file-entropy and name-pattern analytics, but require dedicated scanning to surface."
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "medium — tunneled C2 is detectable via anomalous long-lived outbound sessions and known-tunnel process/port signatures, but generic tunneling blends with normal encrypted traffic without corroborating indicators."
+    },
+    {
+      "technique_id": "T1102.002",
+      "technique_name": "Web Service: Bidirectional Communication",
+      "tactic": "command-and-control",
+      "rationale": "medium — use of legitimate webmail as a relay blends with normal traffic; detectable when direct workstation-to-webmail SMTP is baselined as anomalous and correlated with the stealer process, but not from the destination domain alone (which is legitimate)."
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware development is an off-victim adversary activity; intel/attribution candidate. Downstream execution of the developed malware is where host detection lands."
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition is off-endpoint; intel/hunt candidate. The downstream use of each tool (Metasploit stagers, NorthStar C2 beacons) is the detectable surface."
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain registration is off-victim; intel/hunt candidate via typosquat/brand monitoring and newly-registered-domain tracking."
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled webmail accounts are off-victim; intel candidate. On-victim, outbound SMTP to these specific mailboxes is the detectable behavior (see SUGARDUMP exfil TTP)."
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "rationale": "low — staging of a watering hole and fake-login infrastructure occurs off-victim / on third-party sites; intel/hunt candidate via web content-integrity monitoring of your own login pages and phishing-infrastructure tracking."
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "rationale": "low — the watering-hole compromise is on a third-party legitimate site and the initial visitor beacon blends with normal web traffic; hunt candidate via egress to the watering-hole C2 and web-content-integrity monitoring of partner/owned login pages."
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "low — user clicks on links are largely a human/social action; hunt candidate correlating proxy/DNS resolution of actor typosquat domains with the user that browsed them."
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "rationale": "low — credential capture happens on actor-controlled fake portals, off-victim; hunt/intel candidate via detection of employees resolving/browsing the fake-login typosquat domains and post-compromise anomalous logins to the spoofed services."
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — OS/version enumeration is common and largely benign; meaningful only within the malware's process-lineage context, so a hunt rather than a standalone detection."
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "rationale": "low — abuse of a trusted third-party site is outside the victim's own telemetry; hunt/intel candidate via monitoring partner/supplier web assets and egress to the watering-hole C2."
+    }
+  ],
+  "summary": {
+    "total": 32,
+    "detection": 22,
+    "hunt": 10
+  }
+}

@@ -1,0 +1,48 @@
+title: Remote Logon From Known Imperial Kitten Infrastructure (External Remote Services)
+id: 58955d0b-9c23-46ee-b9ed-c999226ebd24
+status: experimental
+description: |
+    Detects a successful remote/network authentication (Windows Security 4624 Logon Type 3 or 10)
+    whose source IP belongs to the Imperial Kitten (CURIUM / Yellow Liderc) VPS infrastructure set.
+    The actor authenticates to victim VPN/remote-access services using stolen credentials to obtain
+    initial access (T1133 External Remote Services). Anchors on remote-logon behavior filtered to the
+    actor IP set; extend the source-IP list as new infrastructure is attributed.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1133
+    - mena-detection-library.imperial-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_logon:
+        EventID: 4624
+        LogonType:
+            - 3
+            - 10
+    selection_actorip:
+        IpAddress:
+            - '146.185.219.220'
+            - '193.182.144.12'
+            - '194.62.42.98'
+            - '95.164.61.253'
+            - '95.164.61.254'
+            - '45.32.181.118'
+            - '185.212.149.35'
+            - '51.81.165.110'
+            - '82.166.160.20'
+            - '45.93.82.109'
+            - '185.253.72.206'
+            - '185.241.4.7'
+            - '146.185.219.97'
+            - '194.62.42.243'
+            - '45.155.37.105'
+    condition: all of selection_*
+falsepositives:
+    - IP reuse after actor infrastructure is reallocated to a benign hoster - confirm the source IP
+      is still actor-attributed and correlate with the authenticating account's normal geography
+level: high

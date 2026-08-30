@@ -1,0 +1,38 @@
+title: ProcDump / MiniDump LSASS Memory Dump (Imperial Kitten Credential Access)
+id: a72ea568-85fa-4153-88e7-64b0931be60a
+status: experimental
+description: |
+    Detects credential dumping of LSASS memory via ProcDump command lines targeting lsass, or the
+    comsvcs.dll MiniDump technique via rundll32. Imperial Kitten (CURIUM / Yellow Liderc) uses
+    ProcDump to dump LSASS and harvest credentials for reuse and lateral movement (T1003.001). Keys
+    on the process command line invoking the dump against lsass; pair with Sysmon EID 10 lsass
+    process-access for higher fidelity.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_procdump:
+        Image|endswith: '\procdump.exe'
+        CommandLine|contains: 'lsass'
+    selection_procdump_ren:
+        CommandLine|contains|all:
+            - ' -ma '
+            - 'lsass'
+    selection_comsvcs:
+        Image|endswith: '\rundll32.exe'
+        CommandLine|contains|all:
+            - 'comsvcs'
+            - 'MiniDump'
+    condition: selection_procdump or selection_procdump_ren or selection_comsvcs
+falsepositives:
+    - Administrators or crash-diagnostic tooling legitimately dumping LSASS - rare and should be
+      allowlisted by host/account
+level: high

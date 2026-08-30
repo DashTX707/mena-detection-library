@@ -1,0 +1,37 @@
+title: Predatory Sparrow Valid Account Abuse - Anomalous Logon to OT Management/Support Servers
+id: 480598b6-53e8-43dd-98be-f351897f39a4
+status: experimental
+description: |
+    Detects abuse of valid/privileged accounts by Predatory Sparrow (T1078 Valid Accounts). For the fuel-station
+    operation the actor obtained access to a central management / technical-support server for the fuel-pump
+    software and operated with valid privileged access to reach downstream stations; the railway operation
+    deployed malware using existing domain privileges. Because this behavior blends with legitimate administrator
+    activity it is low-severity / risk-based: keys on interactive or remote-interactive logons (Event ID 4624
+    types 10/7) to sensitive OT-management/support hosts, intended to contribute risk when combined with
+    off-hours timing, a new source host, or the subsequent destructive toolchain rather than to alert alone.
+references:
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1078
+    - mena-detection-library.predatory-sparrow
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_logon:
+        EventID: 4624
+        LogonType:
+            - 10
+            - 7
+    filter_machine:
+        TargetUserName|endswith: '$'
+    condition: selection_logon and not filter_machine
+falsepositives:
+    - Legitimate administrators and support staff log on to management/jump servers constantly - this is a
+      risk-based signal, not a standalone alert; enrich with asset criticality (OT-management/support hosts),
+      off-hours timing, unusual source workstation, and correlation with destructive follow-on activity.
+level: low

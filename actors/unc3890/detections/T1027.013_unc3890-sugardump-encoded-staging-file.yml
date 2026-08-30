@@ -1,0 +1,40 @@
+title: UNC3890 SUGARDUMP Encrypted/Encoded Credential Staging File
+id: 0f1e2d3c-4b5a-4697-8879-6a5b4c3d2e1f
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARDUMP writing collected credentials to disk in
+    obfuscated form prior to exfiltration (T1027.013 Encrypted/Encoded File, T1132.001 Standard
+    Encoding, T1573.001 Symmetric Cryptography). The HTTP variant stores AES-CBC-encrypted then
+    Base64-encoded data in %TEMP%\DebugLogWindowsDefender.txt (AES key = SHA256 of a hardcoded
+    password containing the Farsi string 'KHODA'); the SMTP variant stages Base64-encoded credentials
+    as 'CrashLog.txt'. Keys on creation of these actor-specific staging files in user/temp paths.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.command-and-control
+    - attack.t1027.013
+    - attack.t1132.001
+    - attack.t1573.001
+    - mena-detection-library.unc3890
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_stagefile:
+        TargetFilename|endswith:
+            - '\DebugLogWindowsDefender.txt'
+            - '\CrashLog.txt'
+    selection_path:
+        TargetFilename|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\TabRoaming\'
+    condition: selection_stagefile and selection_path
+falsepositives:
+    - The staging filenames are actor-specific and do not match genuine Defender or crash-log files -
+      matches in user/temp paths warrant investigation of the writing process
+level: medium

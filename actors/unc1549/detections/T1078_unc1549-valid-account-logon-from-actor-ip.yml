@@ -1,0 +1,38 @@
+title: UNC1549 Valid-Account Logon From Actor Infrastructure IP
+id: 20542813-6b21-44f5-b0b6-81dd9f24107f
+status: experimental
+description: |
+    Detects UNC1549 / TA455 use of valid compromised credentials (T1078) by keying on a successful logon
+    sourced from actor-controlled infrastructure. The actor authenticates with harvested / phished / reset
+    credentials from its tunnel and C2 IPs. Keys on a successful Windows logon (Event ID 4624) whose source
+    network address matches the actor IOC IP list; on identity platforms the same list should be applied to
+    Azure AD / VPN sign-in logs. High-fidelity because a valid logon from known actor infrastructure is
+    unambiguous, subject to keeping the IP list current.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.persistence
+    - attack.t1078
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        IpAddress:
+            - '104.194.215.88'
+            - '13.60.50.172'
+            - '167.172.137.208'
+            - '34.18.42.26'
+            - '4.188.75.206'
+            - '4.240.113.27'
+            - '40.119.176.233'
+    condition: selection
+falsepositives:
+    - IP reuse on cloud/VPS providers can reassign these addresses over time - confirm the IOC list is
+      current and correlate the account, time and target with other actor activity
+level: high

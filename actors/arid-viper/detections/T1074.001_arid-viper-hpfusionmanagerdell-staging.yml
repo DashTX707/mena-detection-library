@@ -1,0 +1,29 @@
+title: Arid Viper HPFusionManagerDell Local Data Staging Directory
+id: 6c2a8e14-9f37-4b52-a8d0-3e7b1c9a4f26
+status: experimental
+description: |
+    Detects Arid Viper (APT-C-23) local data staging (T1074.001 Local Data Staging). Micropsia /
+    PyMicropsia accumulate collected keystroke logs, screenshots and stolen documents in a fixed working
+    directory named HPFusionManagerDell before archiving and exfiltration. The directory name masquerades
+    as a Dell/HP utility folder and is an actor-specific artifact. Keys on any file creation whose path
+    contains the HPFusionManagerDell staging directory.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1074.001
+    - mena-detection-library.arid-viper
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_stagingdir:
+        TargetFilename|contains: '\HPFusionManagerDell'
+    condition: selection_stagingdir
+falsepositives:
+    - None expected; the HPFusionManagerDell directory name is a specific Arid Viper artifact and not a
+      genuine Dell or HP path - treat any hit as high priority
+level: high

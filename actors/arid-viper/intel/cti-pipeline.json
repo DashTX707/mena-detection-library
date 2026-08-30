@@ -1,0 +1,532 @@
+{
+  "report_title": "Arid Viper / APT-C-23 (Desert Falcon, Mantis, Two-tailed Scorpion, Grey Karkadann, TAG-63) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "SentinelLabs 'Arid Viper | APT's Nest of SpyC23 Malware Continues to Target Android Devices' (2023-11, https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/); Cisco Talos 'Arid Viper disguising mobile spyware as updates for non-malicious Android applications' (2024, https://blog.talosintelligence.com/arid-viper-mobile-spyware/); Symantec/Broadcom 'Mantis: New Tooling Used in Attacks Against Palestinian Targets' (2023-01, https://www.security.com/threat-intelligence/mantis-palestinian-attacks); Palo Alto Unit 42 'PyMICROPSIA: New Information-Stealing Trojan from AridViper' (2020-12, https://unit42.paloaltonetworks.com/pymicropsia/); Deep Instinct 'Arid Gopher: The Newest Micropsia Malware Variant' (2022-03, https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant); MITRE ATT&CK Group APT-C-23 G1028 (https://attack.mitre.org/groups/G1028/), Software Micropsia S0339, SpyC23 S1195",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Arid Viper",
+    "mitre_id": "",
+    "mitre_canonical_name": "APT-C-23",
+    "aliases": [
+      "APT-C-23",
+      "Desert Falcon",
+      "Mantis",
+      "Two-tailed Scorpion",
+      "Grey Karkadann",
+      "TAG-63",
+      "Big Bang APT",
+      "G1028 (public MITRE ATT&CK group id)"
+    ],
+    "related_clusters": [
+      "Micropsia (Delphi) / PyMicropsia (Python) / Arid Gopher (Go) / BarbWire (C++) / Rusty Viper (Rust) Windows implant families",
+      "SpyC23 / VAMP / FrozenCell / GnatSpy Android spyware lineage (S1195 SpyC23)",
+      "Assessed Palestinian/Hamas-aligned nexus (per Meta/Facebook April 2021 takedown report)"
+    ],
+    "attribution": "Palestinian-nexus, espionage- and politically-motivated APT active since at least 2014, tracked by MITRE as APT-C-23 (G1028). Multiple vendors (Meta/Facebook, SentinelLabs, Cisco Talos) assess Arid Viper as aligned with Palestinian/Hamas interests, though a definitive state/organizational sponsor is not publicly confirmed with high certainty. The group runs parallel Windows (Micropsia lineage) and Android (SpyC23/VAMP/FrozenCell) espionage operations. Attribution to the Arid Viper cluster itself is well-corroborated across independent vendors via shared code, C2 naming conventions (persona-style hyphenated domains) and victimology; the specific sponsoring entity is assessed with lower confidence.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Palestinian Territories",
+      "Israel",
+      "Egypt",
+      "Saudi Arabia",
+      "Wider Arabic-speaking Middle East"
+    ],
+    "targeted_regions_global": [
+      "Middle East diaspora / Arabic-speaking targets"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Military and security personnel",
+      "Political activists and dissidents",
+      "Education / academia",
+      "Journalists and media",
+      "Law enforcement"
+    ],
+    "key_campaigns": [
+      {
+        "name": "SpyC23 Android spyware — fake Telegram / Skipped Messenger (App-Upgrade)",
+        "date": "2022 to 2023",
+        "summary": "Arid Viper delivered newer SpyC23 Android spyware versions to Arabic-speaking targets via weaponized apps posing as Telegram and a romance-themed messaging app called Skipped (internally APP-UPGRADE). Apps used lengthy in-app permission walkthroughs to coax victims into granting excessive permissions, then recorded calls/audio, captured screen content via accessibility services, and exfiltrated contacts, SMS and files. C2 over attacker-registered persona domains and Google Firebase.",
+        "source_url": "https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"
+      },
+      {
+        "name": "Fake app-update Android spyware with YouTube lures",
+        "date": "2023 to 2024",
+        "summary": "Arid Viper disguised mobile spyware as updates for legitimate Android apps (WhatsApp, Messenger, Instagram, Google Play, Signal), distributing APK links via Arabic-language (Levantine-dialect) YouTube tutorial videos. Malware disabled security notifications on Samsung/Huawei/Google/Oppo/Xiaomi devices, used Google Firebase as primary C2 with attacker domains as secondary C2, and exfiltrated audio, SMS, call logs, contacts, Facebook credentials, device fingerprints and documents.",
+        "source_url": "https://blog.talosintelligence.com/arid-viper-mobile-spyware/"
+      },
+      {
+        "name": "Mantis Windows espionage against Palestinian targets (Micropsia / Arid Gopher)",
+        "date": "September 2022 to February 2023",
+        "summary": "Symantec observed Mantis (Arid Viper) using updated Micropsia and Arid Gopher backdoors against organizations in the Palestinian territories, deploying three distinct toolset variants across three groups of computers to compartmentalize the operation, followed by extensive credential theft and data exfiltration.",
+        "source_url": "https://www.security.com/threat-intelligence/mantis-palestinian-attacks"
+      },
+      {
+        "name": "PyMicropsia information-stealing trojan",
+        "date": "2020",
+        "summary": "Unit 42 documented PyMICROPSIA, a Python-based (PyInstaller-packaged) evolution of Micropsia with modular payloads for keylogging, screenshotting, browser-credential theft, USB monitoring and RAR-based file exfiltration over HTTP C2, including dormant checks for Linux/macOS indicating cross-platform ambitions.",
+        "source_url": "https://unit42.paloaltonetworks.com/pymicropsia/"
+      }
+    ]
+  },
+  "threat_actors": ["Arid Viper", "APT-C-23", "Desert Falcon", "Mantis", "Two-tailed Scorpion", "Grey Karkadann", "TAG-63", "Big Bang APT"],
+  "targeted_regions": ["Palestinian Territories", "Israel", "Egypt", "Saudi Arabia", "Middle East"],
+  "targeted_sectors": ["Government", "Military/security personnel", "Activists/dissidents", "Education", "Journalists/media", "Law enforcement"],
+  "malware": [
+    "Micropsia (Delphi Windows RAT, S0339)",
+    "PyMicropsia (Python Windows info-stealer)",
+    "Arid Gopher (Go Windows backdoor / Micropsia variant)",
+    "BarbWire (C++ backdoor)",
+    "Rusty Viper (Rust backdoor)",
+    "SpyC23 (Android spyware, S1195)",
+    "VAMP (Android spyware)",
+    "FrozenCell (Android spyware)",
+    "GnatSpy (Android spyware)"
+  ],
+  "tooling_observed": [
+    "rar.exe (RAR archiver for staged exfiltration)",
+    "WMI (security-product and USB enumeration)",
+    "Google Firebase Cloud Messaging (Android C2 channel)",
+    "ALFA TEaM webshell (attacker C2 infrastructure management)",
+    "Laravel framework (Arid Gopher C2 backend)",
+    "libcallrecfix.so / lib-uoil.so / libdalia.so (Android native libraries)",
+    "mss / kbinani (screenshot libraries in PyMicropsia / Arid Gopher)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Arid Viper creates and operates fake social-media personas (often attractive-persona / romance profiles) to build rapport with targets before delivering weaponized apps or links; the tradecraft underpins its romance and social-engineering lures.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — actor-controlled social-media personas are off-victim and not endpoint-observable; intel/brand-monitoring and takedown candidate",
+      "sources": ["https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register persona-style hyphenated domains (e.g. luis-dubuque[.]in, conner-margie[.]com, grace-fraser[.]site) that they solely operate and control as C2 servers for both Android and Windows implants; the naming convention (first-last name across varied TLDs) is a recognizable actor signature.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — domain registration occurs off-victim; hunt/intel candidate via WHOIS/registration-pattern pivoting and C2 domain blocklisting",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/", "https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "Actors stand up Google Firebase projects (e.g. skippedtestinapp.firebaseio.com, jolia-16e7b.appspot.com) to use Firebase Cloud Messaging as a resilient, low-signal C2 channel for Android spyware, blending with legitimate Google traffic.",
+      "observed_tooling": ["Google Firebase Cloud Messaging (Android C2 channel)"],
+      "detection_feasibility": "low — acquisition/standing-up of cloud web-service C2 is off-victim; the downstream Firebase traffic is where limited detection lands",
+      "sources": ["https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/", "https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Arid Viper maintains a large in-house malware development program, iterating custom implant families across languages — Micropsia (Delphi), PyMicropsia (Python), Arid Gopher (Go), BarbWire (C++), Rusty Viper (Rust) on Windows, and SpyC23/VAMP/FrozenCell/GnatSpy on Android.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — capability development is off-victim; intel/tracking candidate via code-lineage and family clustering",
+      "sources": ["https://www.security.com/threat-intelligence/mantis-palestinian-attacks", "https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors host weaponized APKs and fake-update payloads on their own domains for download (e.g. hxxps://orin-weimann[.]com/abc/Update%20Services.apk, hxxps://jack-keys[.]site/download/okOqphD, hxxps://orin-weimann[.]com/abc/signal.apk), managing the infrastructure with ALFA TEaM webshells.",
+      "observed_tooling": ["ALFA TEaM webshell (attacker C2 infrastructure management)"],
+      "detection_feasibility": "low — staging on actor-owned infrastructure is off-victim; hunt candidate via URL/domain blocklisting and web telemetry for the specific download paths",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "procedure_description": "Actors socially engineer targets over messaging and social-media services using fake personas and romance lures, steering victims to install trojanized chat/dating apps (Telegram clones, Skipped Messenger) that carry SpyC23.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-platform social-engineering over third-party services is not enterprise-log-observable; awareness/policy and mobile-threat-defense candidate",
+      "sources": ["https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Actors distribute links masquerading as legitimate app updates (WhatsApp, Messenger, Instagram, Google Play, Signal) — including via Arabic-language YouTube tutorial videos with Levantine-dialect narration — that lead to malicious APK downloads.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — link delivery occurs on social/video platforms off-victim; the endpoint signal is the subsequent APK install, not the link",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Victims are induced to click attacker-hosted download links (persona domains) believing they are legitimate app updates or messaging apps, initiating retrieval of the malicious payload.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — user click on an external link is largely off the defended endpoint; web-proxy/DNS telemetry to the specific persona domains is the only weak signal",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "On Windows, Micropsia/Arid Gopher executables are delivered masquerading as Word/PDF documents (Office icons, extremely long filenames hiding the .exe, benign decoy documents shown on launch); the victim double-clicks the file, executing the implant.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — first-execution of an unsigned executable masquerading as a document from a user-writable path is detectable via process-creation telemetry, image-path and icon/extension-mismatch heuristics",
+      "sources": ["https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant", "https://www.security.com/threat-intelligence/mantis-palestinian-attacks"]
+    },
+    {
+      "technique_id": "T1036.007",
+      "technique_name": "Masquerading: Double File Extension",
+      "tactic": "stealth",
+      "procedure_description": "Arid Gopher uses extremely long filenames to push and hide the real .exe extension out of the visible filename, making the payload appear to be a document.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — filenames with excessive length or embedded double extensions before .exe are detectable via file-name pattern analytics on process creation and file writes",
+      "sources": ["https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1036.008",
+      "technique_name": "Masquerading: Masquerade File Type",
+      "tactic": "stealth",
+      "procedure_description": "Windows implants are given Microsoft Word/PDF icons and display benign decoy Word/PDF documents on execution so the running executable presents as a harmless document.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — executables carrying document icons and dropping/opening a decoy doc are detectable via resource/icon inspection and process-lineage (an .exe spawning a document viewer at first run)",
+      "sources": ["https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "procedure_description": "Arid Gopher creates a LNK shortcut in the Windows Startup folder (V1 named after the executable, V2 named NetworkBoosterUtilities.lnk) for execution at every logon; PyMicropsia deploys a .lnk into the Start Menu Programs\\Startup folder via a dedicated payload SynLocSynMomentum.exe.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — creation of .lnk files in the Startup folder is directly observable via file-creation telemetry (Sysmon EID 11) on a well-known persistence path; NetworkBoosterUtilities.lnk is an actor-specific artifact",
+      "sources": ["https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant", "https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "Earlier Micropsia/PyMicropsia variants establish persistence through Registry Run keys under HKCU and startup-folder execution to survive reboot.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — writes to HKCU...\\Run and startup-folder entries are directly observable via registry-modification and file-creation auditing (Sysmon EID 13/11)",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "tactic": "execution",
+      "procedure_description": "PyMicropsia is written in Python and packaged with PyInstaller; it executes modular Python payloads (keylogger, screenshotter, credential stealer) and runs subprocesses with base64-encoded parameters.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — PyInstaller-bundled executables and Python-runtime child processes are detectable via process telemetry, but resemble legitimate packaged Python apps without additional context",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "Micropsia executes remote operator commands on the host via the Windows command shell as part of its RAT command set.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — cmd.exe spawned by an unusual parent implant process is detectable via process-lineage analytics, but command-shell use is common and needs context",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "Micropsia/PyMicropsia keylog via the GetAsyncKeyState API; PyMicropsia ships a dedicated keylogger payload (MetroIntelGenericUIFram.exe) writing timestamped logs to an HPFusionManagerDell directory. Android SpyC23 captures input/screen content via accessibility services.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — keylogging is stealthy at runtime, but the keystroke-log output directory/files and the dedicated keylogger binary are detectable via file-creation and process telemetry",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "PyMicropsia captures screenshots with the Python 'mss' library; Arid Gopher uses the kbinani screenshot library and saves PNGs; Android SpyC23 monitors screen content through accessibility services. Screenshots are taken periodically and on C2 command.",
+      "observed_tooling": ["mss / kbinani (screenshot libraries in PyMicropsia / Arid Gopher)"],
+      "detection_feasibility": "medium — screen-capture APIs are hard to catch directly, but the resulting timestamped PNG artifacts and periodic capture behavior are detectable via file-write telemetry in the implant's working directory",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "Arid Viper's arsenal records microphone audio; Android SpyC23 records calls via a CallRecService (using the libcallrecfix.so native library) and ambient audio through a checkRaw service.",
+      "observed_tooling": ["libcallrecfix.so / lib-uoil.so / libdalia.so (Android native libraries)"],
+      "detection_feasibility": "low — microphone/call recording on mobile is opaque to enterprise logging; mobile-threat-defense and permission-audit candidate",
+      "sources": ["https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "PyMicropsia steals saved Chrome credentials via a dedicated 'Rapunzel' C2 command, enumerating browser profile paths on both Windows and POSIX systems; Android spyware harvests Facebook credentials.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — access to Chrome's Login Data SQLite store by a non-browser process is detectable via file-access and process telemetry, though it requires targeted instrumentation",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Implants harvest documents of interest by extension (.doc, .docx, .xls, .xlsx, .pdf, .ppt, .pptx, .csv, .txt, .rtf, .odt, .mdb, .accdb) from the local system for exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — bulk enumeration/reads of many office documents by an unusual process are detectable via file-access analytics and staging correlation, but blend with normal user activity",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "Micropsia/PyMicropsia automatically and periodically collect screenshots, keystrokes and office documents without per-item operator interaction, driven by the implant's scheduled routines.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — regular, periodic collection bursts (screenshots/logs on a timer) are detectable via file-creation cadence analytics in the implant working directory",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1025",
+      "technique_name": "Data from Removable Media",
+      "tactic": "collection",
+      "procedure_description": "PyMicropsia detects inserted USB/flash drives, lists their contents and exfiltrates files from removable media.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — programmatic enumeration of removable-drive contents shortly after device insertion is detectable via WMI-query and file-access telemetry correlated with USB device-connect events",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "procedure_description": "PyMicropsia issues WMI queries to enumerate USB drives and detect newly inserted removable media for targeting.",
+      "observed_tooling": ["WMI (security-product and USB enumeration)"],
+      "detection_feasibility": "medium — WMI queries against Win32_USB/DiskDrive classes from a non-management process are detectable via WMI-activity and command-line telemetry",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "Implants use WMI to query installed antivirus products (Arid Gopher) and to enumerate USB devices (PyMicropsia).",
+      "observed_tooling": ["WMI (security-product and USB enumeration)"],
+      "detection_feasibility": "medium — WMI queries for AntiVirusProduct/SecurityCenter2 and disk devices from an untrusted process are detectable via WMI operational logging and process telemetry",
+      "sources": ["https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant", "https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Arid Gopher queries installed antivirus products via WMI and adapts behavior — V2 deploys an 'Arid Helper' component if 360 Total Security is detected.",
+      "observed_tooling": ["WMI (security-product and USB enumeration)"],
+      "detection_feasibility": "medium — enumeration of security products via WMI/registry by an unknown process is detectable via WMI and command-line telemetry and is a meaningful early-stage signal",
+      "sources": ["https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Arid Gopher collects the OS version via RtlGetVersion(); Micropsia profiles the host as part of initial check-in.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — single OS/version queries are ubiquitous and low-signal; hunt-only in tight process-lineage context",
+      "sources": ["https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Implants build a unique victim identifier by combining the computer name, username and a random string for C2 registration/tracking.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — retrieval of computer/user name is ubiquitous; low-signal hunt-only",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Implants enumerate files and directories to locate target documents by extension across the local system and removable media.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — file enumeration is high-volume and largely legitimate; hunt-only within a recon-burst window",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "Micropsia/PyMicropsia compress collected Office documents into password-protected RAR archives using rar.exe prior to exfiltration.",
+      "observed_tooling": ["rar.exe (RAR archiver for staged exfiltration)"],
+      "detection_feasibility": "high — execution of rar.exe with password-protection flags creating archives of document collections in a staging directory is a high-fidelity, detectable pre-exfiltration signal via process command-line and file-write telemetry",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Collected keystrokes, screenshots and documents are written to fixed working directories (e.g. HPFusionManagerDell) before being archived and exfiltrated.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — accumulation of collection artifacts in a hidden/fixed staging directory is detectable via file-creation clustering; the HPFusionManagerDell directory name is an actor-specific artifact",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "PyMicropsia communicates over HTTP POST with semicolon-delimited parameters to URI paths such as /zoailloaze/sfuxmiibif/[endpoint]; Micropsia and Arid Gopher (Laravel backend) use HTTP(S) web C2 to attacker persona domains.",
+      "observed_tooling": ["Laravel framework (Arid Gopher C2 backend)"],
+      "detection_feasibility": "medium — beaconing HTTP POSTs to the specific persona C2 domains with the distinctive URI structure are detectable via proxy/DNS and network telemetry when the domains/paths are known",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1102",
+      "technique_name": "Web Service",
+      "tactic": "command-and-control",
+      "procedure_description": "Android SpyC23 uses Google Firebase Cloud Messaging as its primary C2 channel (e.g. skippedtestinapp.firebaseio.com), with attacker-registered domains as secondary C2, and can receive updated C2 domains from the current C2 to switch infrastructure.",
+      "observed_tooling": ["Google Firebase Cloud Messaging (Android C2 channel)"],
+      "detection_feasibility": "low — Firebase C2 rides legitimate Google infrastructure and blends with normal mobile traffic; mobile-threat-defense candidate, weakly detectable in enterprise logs",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/", "https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Implants download and execute additional payloads/modules from C2 on command (PyMicropsia URL-based download-and-execute; Arid Gopher 'd' download/execute and 'ra' process-execute commands).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — implant processes writing and launching new executables fetched from C2 are detectable via file-write + process-creation lineage, especially tied to the known C2 domains",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "Implants encode C2 parameters and payload strings with Base64 (Android native libraries add string substitution — spaces/underscores replaced with hyphens; PyMicropsia passes base64-encoded subprocess parameters).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — base64-encoded C2 parameters in HTTP requests are detectable via network/proxy content analytics when combined with the known URI patterns",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Collected data (RAR archives, screenshots, keystroke logs, browser credentials, audio, SMS, contacts) is exfiltrated back over the same HTTP(S)/Firebase C2 channel to attacker infrastructure.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — outbound uploads to the known persona C2 domains, sized/paced unusually, are detectable via network egress and DLP telemetry once C2 is identified",
+      "sources": ["https://unit42.paloaltonetworks.com/pymicropsia/", "https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "Android SpyC23 disables security notifications on Samsung, Huawei, Google, Oppo and Xiaomi devices to suppress warnings about its activity and permissions.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — vendor-specific notification suppression on mobile is not enterprise-log-observable; mobile-threat-defense and permission-audit candidate",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "stealth",
+      "procedure_description": "SpyC23 employs anti-virtualization/anti-emulation checks — apps malfunction on emulated devices to frustrate dynamic analysis.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — on-device evasion logic is not enterprise-observable; relevant to malware-analysis tradecraft rather than production detection",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "APKs and native libraries (libuoil.so, libdalia.so, lib-uoil.so) are heavily obfuscated with Base64-plus-substitution string encoding; Windows implants are packed/obfuscated (PyInstaller) to hinder static analysis.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — obfuscation is an intrinsic sample property observed in analysis rather than a runtime host signal; YARA/static-analysis candidate",
+      "sources": ["https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/", "https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "At runtime the implants decode Base64/substitution-encoded C2 server details embedded in native libraries (e.g. lib-uoil.so) and decode encoded strings/parameters before use.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — in-process decoding leaves little discrete host signal; analysis-time indicator rather than a production detection",
+      "sources": ["https://www.sentinelone.com/labs/arid-viper-apts-nest-of-spyc23-malware-continues-to-target-android-devices/"]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "Actors administer their C2 infrastructure using ALFA TEaM webshells deployed on attacker-controlled servers.",
+      "observed_tooling": ["ALFA TEaM webshell (attacker C2 infrastructure management)"],
+      "detection_feasibility": "low — webshells on the actor's own infrastructure are off-victim; intel/hunt candidate via infrastructure fingerprinting",
+      "sources": ["https://blog.talosintelligence.com/arid-viper-mobile-spyware/"]
+    }
+  ],
+  "detection_signals": [
+    "Creation of LNK shortcuts in the Windows Startup folder — notably NetworkBoosterUtilities.lnk (Arid Gopher V2) or a shortcut named after a document-masquerading executable, and PyMicropsia's SynLocSynMomentum.exe dropping a Start Menu Startup .lnk (Sysmon EID 11)",
+    "HKCU Run-key persistence writes by Micropsia/PyMicropsia (Sysmon EID 13)",
+    "rar.exe launched with password-protection flags to archive collections of Office documents (.doc/.xls/.pdf/.ppt) in a staging directory immediately before outbound transfer",
+    "Collection artifacts accumulating in fixed staging directories — e.g. HPFusionManagerDell (keystroke logs) and implant-specific PNG screenshot folders",
+    "Unsigned executable with a Word/PDF icon and an abnormally long filename (hidden .exe) executing from a user-writable path and opening a decoy document at first run",
+    "WMI queries enumerating installed antivirus (AntiVirusProduct / 360 Total Security) or USB/disk devices from a non-management process; conditional 'Arid Helper' deployment when 360 Total Security is present",
+    "Non-browser process reading Chrome 'Login Data' (PyMicropsia 'Rapunzel' command); browser-credential and Facebook-credential theft",
+    "HTTP POST beacons with semicolon-delimited parameters to URIs like /zoailloaze/sfuxmiibif/* and check-ins to persona-style hyphenated C2 domains (first-last-name across .in/.com/.site/.info/.icu/.club/.live/.tech TLDs)",
+    "Android/MTD: apps requesting extensive permissions via lengthy in-app walkthroughs; call recording (CallRecService/libcallrecfix.so), accessibility-service screen monitoring, and suppression of OEM security notifications (Samsung/Huawei/Google/Oppo/Xiaomi)",
+    "Outbound Android C2 to Google Firebase project endpoints (e.g. skippedtestinapp.firebaseio.com, *.appspot.com actor projects) used as FCM C2, plus secondary attacker persona domains",
+    "Downloads of APKs from actor persona domains via update lures (e.g. orin-weimann[.]com/abc/Update Services.apk, signal.apk; jack-keys[.]site/download/*)",
+    "DNS/proxy hits on any of the listed persona C2 domains; presence of any listed Micropsia/PyMicropsia/Arid Gopher/SpyC23 sample hashes"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [
+      "luis-dubuque.in",
+      "danny-cartwright.firm.in",
+      "conner-margie.com",
+      "haroldramsey.icu",
+      "junius-cassin.com",
+      "orin-weimann.com",
+      "jack-keys.site",
+      "elizabeth-steiner.tech",
+      "baldwin-gonzalez.live",
+      "jaime-martinez.info",
+      "judystevenson.info",
+      "robert-keegan.life",
+      "benyallen.club",
+      "chad-jessie.info",
+      "escanor.live",
+      "krasil-anthony.icu",
+      "nicoledotson.icu",
+      "samwinchester.club",
+      "tatsumifoughtogre.club",
+      "grace-fraser.site",
+      "pam-beesly.site",
+      "mozelllittel.com",
+      "skippedtestinapp.firebaseio.com",
+      "lightroom-61eb2.firebaseio.com",
+      "jolia-16e7b.appspot.com",
+      "yellwo-473d0.appspot.com",
+      "rashonal.appspot.com"
+    ],
+    "emails": [],
+    "hashes": [
+      "d5e59be8ad9418bebca786b3a0a681f7e97ea6374f379b0c4352fee1219b3c29",
+      "8667482470edd4f7d484857fea5b560abe62553f299f25bb652f4c6baf697964",
+      "d69cf49f703409bc01ff188902d88858a6237a2b4b0124d553a9fc490e8df68a",
+      "1b6113f2faf070d078a643d77f09d4ca65410cf944a89530549fc1bebdb88c8c",
+      "57fb9daf70417c3cbe390ac44979437c33802a049f7ab2d0e9b69f53763028c5",
+      "f91e88dadc38e48215c81200920f0ac517da068ef00a75b1b67e3a0cd27a6552",
+      "a8ca778c5852ae05344ac60b01ad7f43bb21bd8aa709ea1bb03d23bde3146885",
+      "fb9306f6a0cacce21afd67d0887d7254172f61c7390fc06612c2ca9b55d28f80",
+      "682b58cad9e815196b7d7ccf04ab7383a9bbf1f74e65679e6c708f2219b8692b",
+      "11487246a864ee0edf2c05c5f1489558632fb05536d6a599558853640df8cd78",
+      "ddaeffb12a944a5f4d47b28affe97c1bc3a613dab32e5b5b426ef249cfc29273",
+      "46dae9b27f100703acf5b9fda2d1b063cca2af0d4abeeccc6cd45d12be919531",
+      "381b1efca980dd744cb8d36ad44783a35d01a321593a4f39a0cdae9c7eeac52f",
+      "9c32fdf5af8b86049abd92561b3d281cb9aebf57d2dfef8cc2da59df82dca753",
+      "f01c07f88071c8f71514db19f68c966f17ac8af0d3288913141714037352c99c",
+      "99544057a5215e756b67aa47815e27dc157eb850792e5eacda6796922bb9a50b",
+      "42492efa48785ca118d4b05f28570e7b6be4677a962cb7825a859ad5e3045710",
+      "5588f6fab387133c21b06f6248259c64260435898edd61866fad50312c2d3b25",
+      "3d7d75d66428c55dc81563c3bde5477977fadb3325d0224ef9313da133940077",
+      "fa257cca88522e76a7dc4a10311f739d17587f25fe447ae2b4c84027f2246705",
+      "57674d0ed1e03807ad9d53a9087388b1b9bf6e9e5d120dbe834730affebe2675",
+      "47d53f4ab24632bf4ca34e9a10e11b4b6c48a242cbcfcb1579d67523463e59d2",
+      "83e0db0fa3feaf911a18c1e2076cc40ba17a185e61623a9759991deeca551d8b"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Primary sources are independent, technical vendor reports with real IOC appendices: SentinelLabs SpyC23 Android (2023), Cisco Talos fake-update Android spyware (2024), Symantec Mantis Windows (2023), Unit 42 PyMICROPSIA (2020), and Deep Instinct Arid Gopher (2022), enriched with MITRE ATT&CK APT-C-23 G1028 / Micropsia S0339 / SpyC23 S1195. actor.mitre_id intentionally left empty per tasking; the public MITRE group id G1028 is cited only in source/aliases/notes. attribution_confidence is 'medium': the Arid Viper CLUSTER is well-corroborated across vendors via shared code, persona-domain C2 naming and victimology, but the specific sponsoring entity (Palestinian/Hamas alignment per Meta's 2021 takedown) is publicly assessed with less certainty — overall pack 'confidence' is 'high' for the TTP/IOC extraction itself. ATT&CK normalization for THIS environment's bundled dataset: Defense-Evasion techniques use the tactic slug 'stealth'; Impair-Defenses (SpyC23 disabling OEM security notifications) mapped to T1685 (Disable or Modify Tools) under tactic 'defense-impairment' per env convention. SUBSTITUTION: intended T1656 (Impersonation) for the fake-persona/romance-lure tradecraft is ABSENT from the bundled dump, so persona/social-engineering behavior is captured under T1585.001 (Social Media Accounts, resource-development) and T1566.003 (Spearphishing via Service, initial-access) instead. Every technique_id was validated as a present key in attack_dump.json (697 techniques) before inclusion — zero invalid IDs. Many procedures are Android-mobile behaviors mapped to the nearest ATT&CK Enterprise technique where a clear equivalent exists (screen capture T1113, audio capture T1123, web-service C2 T1102, standard encoding T1132.001); purely mobile-only behaviors without an enterprise equivalent (e.g. accessibility-service abuse, uninstall-monitoring receivers) are described in procedure text but not force-mapped. IOC hygiene: iocs.domains lists only actor-registered persona C2 domains plus the specific attacker-created Firebase/Appspot project C2 endpoints named as IOCs in the SentinelLabs/Talos appendices; bare Google OAuth client identifiers (…apps.googleusercontent.com) were dropped as they are not host/network domains, and no legitimate CDN/publisher domains were included. Hashes are a curated set of well-formed SHA256 values taken verbatim from the Talos (Android), Unit 42 (PyMicropsia + Micropsia) and Deep Instinct (Arid Gopher) appendices; SentinelLabs' SHA1 library-component list contained several malformed/truncated entries and was excluded to avoid propagating bad indicators. No CVEs — Arid Viper's initial access is social-engineering-driven (trojanized/fake apps, romance lures), not public-CVE exploitation. STRONGEST DETECTION SURFACE (detect-candidate, high/medium feasibility): T1547.009 Startup .lnk (NetworkBoosterUtilities.lnk), T1547.001 HKCU Run keys, T1560.001 rar.exe password-protected staging, T1074.001 HPFusionManagerDell staging dir, T1518.001/T1047/T1120 WMI AV+USB enumeration, T1555.003 Chrome credential theft, T1204.002/T1036.007/T1036.008 document-masquerading executables, T1071.001 persona-domain HTTP POST beacons. HUNT-leaning (low feasibility, off-victim/social/mobile): T1585.001 personas, T1583.001/.006 infrastructure, T1587.001 malware dev, T1608.001 staging, T1566.002/.003 delivery, T1102 Firebase C2, T1123 mobile audio, T1685 mobile notification suppression, T1497.001/T1027/T1140 sample-intrinsic obfuscation/evasion, T1505.003 ALFA TEaM webshell on actor infra."
+}

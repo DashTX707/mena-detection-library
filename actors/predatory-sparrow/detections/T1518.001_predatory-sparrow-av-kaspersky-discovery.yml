@@ -1,0 +1,38 @@
+title: Predatory Sparrow Security Software Discovery Kaspersky Check
+id: 2c8f4b61-9a07-4d3e-8f52-6b1c9e7a3d24
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress security-posture check where cache.bat queries for the
+    presence of Kaspersky antivirus (and other AV) and branches/aborts accordingly before detonation. Keys
+    on command-line enumeration of installed AV products via reg query, wmic, sc query or tasklist that
+    reference Kaspersky, particularly when launched from a batch/script parent in the destructive chain.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tools:
+        Image|endswith:
+            - '\reg.exe'
+            - '\wmic.exe'
+            - '\sc.exe'
+            - '\tasklist.exe'
+            - '\findstr.exe'
+            - '\where.exe'
+    selection_av:
+        CommandLine|contains:
+            - 'kaspersky'
+            - 'avp.exe'
+            - 'AntiVirusProduct'
+    condition: all of selection_*
+falsepositives:
+    - IT inventory and antivirus health-check scripts legitimately enumerate installed security products -
+      value comes from the batch parent and co-occurrence with the destructive toolchain
+level: medium

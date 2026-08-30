@@ -1,0 +1,41 @@
+title: UNC3890 SUGARUSH Windows Service 'Service1' Installation
+id: 7b3d1e2a-4c5f-4a1b-9e2d-1f3a4b5c6d7e
+status: experimental
+description: |
+    Detects installation of a Windows service named 'Service1' as used by the UNC3890 (Operation
+    Sugarush) SUGARUSH first-stage backdoor for persistence and execution (T1543.003 Windows Service,
+    T1569.002 Service Execution). SUGARUSH creates the service 'Service1' - establishing 'Logs' /
+    'ServiceLog' folders - to launch its reverse-shell payload from an untrusted binary path. Keys on
+    Service Control Manager service-install logging (Event ID 7045) with the actor-specific service
+    name and an ImagePath in a user-writable/temp location. Pair with the outbound port-4585
+    reverse-shell connection for high confidence.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.execution
+    - attack.t1543.003
+    - attack.t1569.002
+    - mena-detection-library.unc3890
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_event:
+        EventID: 7045
+    selection_name:
+        ServiceName: 'Service1'
+    selection_path:
+        ImagePath|contains:
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\Temp\'
+            - '\ProgramData\'
+    condition: selection_event and (selection_name or selection_path)
+falsepositives:
+    - Rare in-house software may install generically named services from staging paths - validate the
+      ImagePath binary signature and the installing account before dismissing
+level: high

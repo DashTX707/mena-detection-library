@@ -1,0 +1,41 @@
+title: Bahamut C2 and Distribution Domain Resolution / Connection
+id: 6f3d9a1c-2e7b-4d8a-8c14-5b9e2f4a6c1d
+status: experimental
+description: |
+    Detects DNS resolution of or outbound HTTPS connection to Bahamut (Windshift-clustered,
+    G0112) command-and-control and distribution domains observed in the SecureVPN and
+    SafeChat/CoverIm campaigns. The spyware beacons over HTTPS web protocols using a Ktor
+    (Kotlin) HTTP client to actor infrastructure and exfiltrates collected data over the same
+    encrypted channel (T1071.001 Web Protocols, T1573.002 Asymmetric Cryptography encrypted
+    channel, T1105 Ingress Tool Transfer / activation callback, T1041 Exfiltration Over C2
+    Channel). Anchors on the actor-specific hostnames as high-fidelity network selectors.
+    Note: the underlying C2 IPs are Cloudflare-fronted and shared - corroborate on the domain,
+    not the IP. Rule fires on Windows/endpoint DNS telemetry; deploy equivalent matches on
+    proxy/DNS-firewall for full network egress coverage.
+references:
+    - https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/
+    - https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.001
+    - attack.t1573.002
+    - attack.t1105
+    - attack.t1041
+    - mena-detection-library.bahamut
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection:
+        QueryName|endswith:
+            - 'ft8hua063okwfdcu21pw.de'
+            - 'laborer-posted.nl'
+            - 'thesecurevpn.com'
+    condition: selection
+falsepositives:
+    - Security-research, sandbox or threat-intel validation traffic deliberately resolving
+      these indicators - confirm the querying host is not an analyst/sandbox before escalating
+level: high

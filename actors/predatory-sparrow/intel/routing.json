@@ -1,0 +1,217 @@
+{
+  "actor": "Predatory Sparrow (Gonjeshke Darande)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "rationale": "medium — anomalous logons to central OT-management/support servers (new source, off-hours, privileged) are detectable via identity/authentication analytics where such logging exists"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high — wscript/cscript executing a .vbs that spawns batch/archive-extraction and destructive utilities is a high-fidelity process-lineage detection"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "high — cmd.exe executing this specific named batch chain, mutex file __lock6423900.dat, and rapid sequential invocation of vssadmin/bcdedit/wevtutil are strong host detections"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — PowerShell script-block logging captures Add-MpPreference exclusions and Disable-NetAdapter, which are anomalous immediately preceding wiper execution"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "rationale": "medium — wmic invocations for shadowcopy deletion and domain removal are detectable via command-line telemetry but require correlation with the surrounding destructive sequence"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "execution",
+      "rationale": "high — creation of a scheduled task named 'mstask' timed for 23:55 (Event ID 4698) and deletion of 'AnalyzeAll' are actor-specific, high-fidelity signals"
+    },
+    {
+      "technique_id": "T1484.001",
+      "technique_name": "Domain Policy Modification: Group Policy Modification",
+      "tactic": "lateral-movement",
+      "rationale": "high — new/modified GPOs that stage scripts from SYSVOL or push scheduled tasks/startup scripts are detectable via directory-service change auditing and GPO monitoring (Event IDs 5136/5137, SYSVOL writes)"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — scripted queries for installed AV products are detectable via command-line/registry-query telemetry but resemble benign inventory checks in isolation"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "high — creation of Defender exclusion paths (Add-MpPreference) is a strong, uncommon signal captured by EDR tamper telemetry and PowerShell logging"
+    },
+    {
+      "technique_id": "T1685.005",
+      "technique_name": "Clear Windows Event Logs",
+      "tactic": "defense-impairment",
+      "rationale": "high — wevtutil clear-log invocations and Event ID 1102 (Security log cleared) are high-fidelity, especially clustered with wiper activity"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-impairment",
+      "rationale": "medium — deletion of just-executed binaries is detectable via file-delete + preceding-execution correlation, but the surrounding wipe destroys much of the evidence"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — extraction of password-protected RARs by a script and high-entropy config files are detectable via file-write/entropy and command-line telemetry"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "rationale": "medium — registry writes to lock-screen/boot/screensaver keys by a non-standard process are detectable via registry-modification telemetry when clustered with the wipe"
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "rationale": "medium — 'ms*'-style names in unusual paths executing destructive utilities are detectable via name/path/hash baselining and signature-vs-name mismatch"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — reads of a .cab from SYSVOL followed by local RAR extraction are detectable via file-access and process telemetry, but resemble software distribution"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — bulk local file collection is detectable via file-access/staging patterns but is common; value comes from process-lineage context"
+    },
+    {
+      "technique_id": "T1114",
+      "technique_name": "Email Collection",
+      "tactic": "collection",
+      "rationale": "medium — bulk mailbox/email export is detectable via mail-server access and export auditing where available"
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "rationale": "high — mass file overwrite/deletion by a single process is high-signal on host/EDR telemetry (rapid file-modification bursts, mass MFT changes)"
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "rationale": "high — raw writes to \\\\.\\PhysicalDrive0 / sector 0 (MBR) by a user-mode process are rare and high-fidelity on host telemetry"
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "rationale": "high — vssadmin/wmic shadow deletion and bcdedit boot-record tampering are classic, high-fidelity pre-impact detections"
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "rationale": "medium — unauthorized content changes on internal signage/HMI systems are observable where those systems are logged/monitored, but such OT signage often lacks telemetry"
+    },
+    {
+      "technique_id": "T1565.003",
+      "technique_name": "Data Manipulation: Runtime Data Manipulation",
+      "tactic": "impact",
+      "rationale": "high — anomalous HMI/PLC commands and out-of-envelope process setpoints are high-signal on OT/ICS historian, engineering-workstation and safety-system telemetry, though such OT visibility is frequently absent in practice"
+    },
+    {
+      "technique_id": "T1489",
+      "technique_name": "Service Stop",
+      "tactic": "impact",
+      "rationale": "medium — service/adapter disablement is detectable on affected hosts, but the fuel-pump control layer is OT-side and often under-instrumented"
+    },
+    {
+      "technique_id": "T1499",
+      "technique_name": "Endpoint Denial of Service",
+      "tactic": "impact",
+      "rationale": "medium — a non-standard process replacing the lock screen/wallpaper and forcing logoff is detectable on host telemetry when clustered with the wipe sequence"
+    },
+    {
+      "technique_id": "T1531",
+      "technique_name": "Account Access Removal",
+      "tactic": "impact",
+      "rationale": "high — mass password changes, forced domain unjoin, and bulk session logoff across hosts are anomalous, high-signal events on identity/host telemetry"
+    },
+    {
+      "technique_id": "T1529",
+      "technique_name": "System Shutdown/Reboot",
+      "tactic": "impact",
+      "rationale": "medium — forced reboot/shutdown following boot-record tampering is detectable but is the final step after higher-signal precursors"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1592",
+      "technique_name": "Gather Victim Host Information",
+      "tactic": "reconnaissance",
+      "rationale": "low — pre-intrusion knowledge is inferred from later artifacts and is not itself endpoint-observable; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development occurs off-victim; intel candidate for tooling attribution"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled social channels are off-victim; brand/OSINT-monitoring candidate"
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "rationale": "low — trust-relationship abuse via a third-party management platform is largely invisible to the downstream victim; hunt/intel candidate at the provider tier"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "low — process enumeration by the wiper is transient and immediately followed by destruction; limited standalone signal"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — OS-version checks are ubiquitous and benign in isolation"
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "rationale": "low — publication occurs off-victim via web/messaging services; intel/leak-monitoring candidate"
+    },
+    {
+      "technique_id": "T1657",
+      "technique_name": "Financial Theft",
+      "tactic": "impact",
+      "rationale": "low — the on-chain burn and destructive banking actions are largely observed off-victim (chain analysis, victim disclosure); intel candidate"
+    }
+  ],
+  "summary": {
+    "total": 34,
+    "detection": 26,
+    "hunt": 8
+  }
+}

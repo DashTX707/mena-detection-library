@@ -1,0 +1,38 @@
+title: Predatory Sparrow Meteor Batch Orchestration Chain and Lock File
+id: 8d41b7e2-6c3f-49a8-b5e0-2f9a7c1d6e34
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress batch orchestration stage: cmd.exe executing the
+    actor's named batch scripts (setup.bat, envxp.bat, update.bat, cache.bat, bcd.bat, msrun.bat) that
+    sequentially invoke native destructive utilities, and the creation of the mutex/lock file
+    C:\Windows\Temp\__lock6423900.dat that update.bat writes before the destructive activity. Keys on
+    the actor-specific script names and lock-file artifact rather than generic cmd usage.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        Image|endswith: '\cmd.exe'
+    selection_scripts:
+        CommandLine|contains:
+            - 'setup.bat'
+            - 'envxp.bat'
+            - 'update.bat'
+            - 'cache.bat'
+            - 'bcd.bat'
+            - 'msrun.bat'
+    selection_lock:
+        CommandLine|contains: '__lock6423900.dat'
+    condition: (selection_cmd and selection_scripts) or selection_lock
+falsepositives:
+    - Environments that happen to use identically named generic batch files (setup.bat / update.bat) -
+      confirm the batch content and the destructive utilities (vssadmin/bcdedit/wevtutil) it chains into
+level: high

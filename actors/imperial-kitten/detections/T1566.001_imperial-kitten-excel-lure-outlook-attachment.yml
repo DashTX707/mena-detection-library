@@ -1,0 +1,43 @@
+title: Office Document Opened From Outlook Attachment Temp Directory (Imperial Kitten Lure)
+id: e235ae18-00bb-4d76-8ec2-685913c45341
+status: experimental
+description: |
+    Detects a Microsoft Office application opening a document directly from the Outlook secure
+    temporary attachment cache (Content.Outlook / INetCache Outlook). Imperial Kitten (CURIUM /
+    Yellow Liderc) delivers macro-enabled Excel and CV/recruitment-themed lures as spearphishing
+    attachments (T1566.001). Opening a document straight from the attachment cache indicates the
+    user launched it from an email; correlate with subsequent interpreter spawns for the full chain.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+    - https://thehackernews.com/2023/11/iran-linked-imperial-kitten-cyber-group.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_office:
+        Image|endswith:
+            - '\EXCEL.EXE'
+            - '\WINWORD.EXE'
+            - '\POWERPNT.EXE'
+    selection_path:
+        CommandLine|contains:
+            - '\Content.Outlook\'
+            - '\INetCache\Content.Outlook\'
+            - '\Temporary Internet Files\Content.Outlook\'
+    selection_macroext:
+        CommandLine|contains:
+            - '.xlsm'
+            - '.xls'
+            - '.docm'
+            - '.doc'
+    condition: selection_office and selection_path and selection_macroext
+falsepositives:
+    - Users legitimately opening business documents received by email - fidelity comes from
+      macro-enabled extensions and correlation with child interpreter processes
+level: medium

@@ -1,0 +1,40 @@
+title: UNC1549 VDI Breakout Shell From Brokered Citrix/VMware/AVD Session
+id: b359820a-71d7-4b5f-b302-3ff55ebe35ea
+status: experimental
+description: |
+    Detects UNC1549 / TA455 abuse of trusted third-party relationships (T1199) by breaking out of a
+    brokered Citrix / VMware Horizon / Azure Virtual Desktop published-application session into an
+    unrestricted shell on the target network. Keys on process creation where the parent is a VDI session
+    agent / published-app host (Citrix wfshell.exe / picaSessionAgent.exe, VMware Horizon session agent,
+    AVD/RDP shell host) and the child is a command interpreter, script host or file manager - the pattern
+    of escaping a locked-down published app. Baseline the applications legitimately published to vendor
+    sessions.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1199
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        ParentImage|endswith:
+            - '\wfshell.exe'
+            - '\picaSessionAgent.exe'
+            - '\vmware-remotemks.exe'
+            - '\vdagent.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\explorer.exe'
+            - '\mmc.exe'
+    condition: selection
+falsepositives:
+    - Environments that legitimately publish a shell or management console to VDI users - baseline the
+      approved published applications and exclude them by parent/child pair
+level: high

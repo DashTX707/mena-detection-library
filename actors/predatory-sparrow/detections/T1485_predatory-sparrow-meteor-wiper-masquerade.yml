@@ -1,0 +1,40 @@
+title: Predatory Sparrow Meteor Wiper Execution and ms-Named Masquerading
+id: 9b4e2c07-3d16-4a58-8f92-6c1a7e5d3b40
+status: experimental
+description: |
+    Detects execution of the Predatory Sparrow / MeteorExpress Meteor filesystem wiper and its masquerading
+    naming. The destructive components are named to blend into Windows (env.exe / msapp.exe for the wiper,
+    mssetup.exe screenlocker, mstask task, mscap.bmp/.jpg wallpaper) and run from Temp/user paths driving
+    the encrypted config msconf.conf to wipe the paths in its 'paths_to_wipe' list. Covers Data Destruction
+    (T1485) and Masquerading (T1036) by keying on the actor binary names running from non-system directories.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.stealth
+    - attack.t1485
+    - attack.t1036
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_names:
+        Image|endswith:
+            - '\env.exe'
+            - '\msapp.exe'
+    selection_path:
+        Image|contains:
+            - '\Temp\'
+            - '\Users\'
+            - '\ProgramData\'
+            - '\Windows\Temp\'
+    selection_config:
+        CommandLine|contains: 'msconf.conf'
+    condition: selection_names and (selection_path or selection_config)
+falsepositives:
+    - env.exe and msapp.exe are not standard Windows system binaries - execution from a Temp/user path or
+      with the msconf.conf config is high fidelity; validate the signer and hash against the pack IOCs
+level: high

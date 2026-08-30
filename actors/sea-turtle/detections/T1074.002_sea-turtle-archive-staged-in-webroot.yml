@@ -1,0 +1,42 @@
+title: Sea Turtle Archive File Staged Inside Internet-Facing Web Root
+id: 0efc5efe-f06c-4ef1-8c24-eda4e4b81c82
+status: experimental
+description: |
+    Detects an archive file (.tar/.tar.gz/.tgz/.zip) being written into an internet-facing web directory,
+    the remote-data-staging pattern Sea Turtle (Teal Kurma / Marbled Dust) uses to make collected e-mail
+    archives retrievable directly over the internet (T1074.002 Data Staged: Remote Data Staging). An archive
+    appearing under a document root is anomalous against web-root content baselines and precedes external
+    HTTP(S) download. Anchors on file creation of an archive extension inside a web-served path.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/groups/G1041/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1074.002
+    - mena-detection-library.sea-turtle
+logsource:
+    category: file_event
+    product: linux
+detection:
+    selection_webpath:
+        TargetFilename|contains:
+            - '/var/www/'
+            - '/srv/www/'
+            - '/usr/share/nginx/html/'
+            - '/public_html/'
+            - '/var/lib/tomcat/webapps/'
+    selection_archive:
+        TargetFilename|endswith:
+            - '.tar'
+            - '.tar.gz'
+            - '.tgz'
+            - '.tar.bz2'
+            - '.zip'
+            - '.gz'
+    condition: all of selection_*
+falsepositives:
+    - Web applications that legitimately publish downloadable archives (release/download portals, backups
+      intentionally exposed) - baseline expected archive locations and filenames
+level: high

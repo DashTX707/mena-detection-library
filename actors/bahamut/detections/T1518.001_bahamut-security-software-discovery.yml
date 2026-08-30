@@ -1,0 +1,52 @@
+title: Bahamut Security Software Discovery via Command Line
+id: 2c8a5f1d-6e3b-4c9a-b17d-4f2e8a0c6d3b
+status: experimental
+description: |
+    Detects command-line enumeration of installed antivirus/EDR products, consistent with
+    Bahamut (Windshift-clustered, G0112) checking for security software on a host before
+    proceeding (T1518.001 Security Software Discovery). Keys on process-creation command
+    lines that query services, processes or WMI for common AV/EDR product names using
+    tasklist / sc / net / wmic / Get-Service. This behavior is common in isolation and is
+    intended for correlation with Bahamut document-lure execution and persistence signals.
+references:
+    - https://attack.mitre.org/groups/G0112/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - mena-detection-library.bahamut
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        Image|endswith:
+            - '\tasklist.exe'
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\wmic.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_av:
+        CommandLine|contains:
+            - 'defender'
+            - 'msmpeng'
+            - 'sense'
+            - 'carbonblack'
+            - 'cb.exe'
+            - 'crowdstrike'
+            - 'csfalcon'
+            - 'sentinel'
+            - 'sophos'
+            - 'symantec'
+            - 'mcafee'
+            - 'kaspersky'
+            - 'cylance'
+            - 'wireshark'
+    condition: all of selection_*
+falsepositives:
+    - IT asset-inventory and endpoint-management scripts enumerating installed security
+      products - baseline scheduled inventory jobs and admin hosts before dismissing
+level: medium

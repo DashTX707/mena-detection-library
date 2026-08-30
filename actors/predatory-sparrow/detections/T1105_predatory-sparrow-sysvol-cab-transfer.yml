@@ -1,0 +1,38 @@
+title: Predatory Sparrow Ingress Tool Transfer from SYSVOL CAB
+id: 8f2b6d40-1c95-4e73-9a08-5d3e7c2a4b61
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress staging step where setup.bat copies components from a
+    network CAB file (env.cab on the railways SYSVOL scripts share, e.g. \\railways.ir\sysvol\...\scripts\env.cab)
+    and expands them locally before update.bat unpacks the RAR payloads. Keys on expand/extrac32 or copy
+    commands referencing env.cab or a SYSVOL scripts path, transferring the toolchain onto each host from an
+    internal staging point.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_expand:
+        Image|endswith:
+            - '\expand.exe'
+            - '\extrac32.exe'
+            - '\cmd.exe'
+            - '\xcopy.exe'
+            - '\robocopy.exe'
+    selection_source:
+        CommandLine|contains:
+            - 'env.cab'
+            - '\sysvol\'
+            - 'scripts\env'
+    condition: all of selection_*
+falsepositives:
+    - Software distribution and logon scripts legitimately copy CAB/MSI content from SYSVOL - the env.cab
+      name and subsequent local RAR extraction of destructive payloads are the distinguishing signals
+level: medium

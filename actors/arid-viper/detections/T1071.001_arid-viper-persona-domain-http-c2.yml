@@ -1,0 +1,45 @@
+title: Arid Viper PyMicropsia Persona-Domain HTTP POST C2
+id: 9a4c7e21-6d38-4b95-a0f7-3c8e1b5d2a69
+status: experimental
+description: |
+    Detects PyMicropsia / Micropsia web C2 (T1071.001 Web Protocols, T1132.001 Standard Encoding).
+    PyMicropsia beacons over HTTP POST with semicolon-delimited, base64-encoded parameters to distinctive
+    URI paths such as /zoailloaze/sfuxmiibif/<endpoint>, and Arid Viper (APT-C-23) uses persona-style
+    hyphenated first-last-name C2 domains across varied TLDs. Keys on the actor's distinctive URI
+    structure as the behavioral anchor, with the known persona C2 domains as a high-fidelity booster.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1132.001
+    - mena-detection-library.arid-viper
+logsource:
+    category: proxy
+detection:
+    selection_uri:
+        cs-method: 'POST'
+        c-uri|contains:
+            - '/zoailloaze/'
+            - '/sfuxmiibif/'
+    selection_domains:
+        cs-host|contains:
+            - 'luis-dubuque.in'
+            - 'conner-margie.com'
+            - 'orin-weimann.com'
+            - 'jack-keys.site'
+            - 'elizabeth-steiner.tech'
+            - 'baldwin-gonzalez.live'
+            - 'grace-fraser.site'
+            - 'pam-beesly.site'
+            - 'krasil-anthony.icu'
+            - 'robert-keegan.life'
+    condition: selection_uri or selection_domains
+falsepositives:
+    - The persona-domain list is actor-specific and low-FP; validate any hit against proxy user-agent and
+      the requesting process before dismissing
+level: high

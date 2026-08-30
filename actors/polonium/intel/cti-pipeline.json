@@ -1,0 +1,569 @@
+{
+  "report_title": "POLONIUM (Plaid Rain) Actor Intelligence Pack — Stage-1 CTI Extraction: Lebanon-based, MOIS-coordinated espionage against Israel using the Creepy backdoor family and cloud-service C2",
+  "source": "Microsoft Security Blog 'Exposing POLONIUM activity and infrastructure targeting Israeli organizations' (2022-06-02, https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/); ESET Research 'POLONIUM targets Israel with Creepy malware' (2022-10-11, https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/) and ESET malware-ioc repository (https://github.com/eset/malware-ioc/tree/master/polonium); MITRE ATT&CK Group POLONIUM G1005 (https://attack.mitre.org/groups/G1005/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "POLONIUM",
+    "mitre_id": "",
+    "mitre_canonical_name": "POLONIUM",
+    "aliases": [
+      "POLONIUM",
+      "Plaid Rain",
+      "MITRE ATT&CK G1005"
+    ],
+    "related_clusters": [
+      "MOIS (Iran Ministry of Intelligence and Security) — moderate-confidence coordination",
+      "MERCURY / MuddyWater (Static Kitten) — shared victims and overlapping tooling (OneDrive C2, AirVPN)",
+      "Iran-affiliated actors sharing a possible 'hand-off' model of previously compromised environments"
+    ],
+    "attribution": "Lebanon-based cyberespionage group. Microsoft assesses with MODERATE confidence that POLONIUM coordinates its operations with multiple actors affiliated with Iran's Ministry of Intelligence and Security (MOIS), based on victim overlap, common techniques and shared tooling (notably OneDrive-based C2 and the AirVPN service used by MOIS-affiliated groups such as MERCURY/MuddyWater). ESET independently corroborates the Lebanon-based, MOIS-linked assessment. The group is espionage-focused (confidential data theft); no sabotage, ransomware or wiper activity has been observed. Attribution to Iran is coordination/association-based rather than direct-control; the confidence is moderate, not high.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Israel",
+      "Lebanon (one intergovernmental organization with a presence in Lebanon)"
+    ],
+    "targeted_regions_global": [],
+    "targeted_sectors": [
+      "Critical manufacturing",
+      "Information technology",
+      "Defense industrial base / defense industry",
+      "Engineering",
+      "Law / legal",
+      "Communications / media",
+      "Insurance",
+      "Social services",
+      "Transportation",
+      "Government",
+      "Financial services",
+      "Healthcare",
+      "Food and agriculture"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Israeli-organization espionage campaign (Microsoft disclosure)",
+        "date": "February 2022 to May 2022 (activity observed over ~3 months)",
+        "summary": "POLONIUM compromised more than 20 Israeli organizations and one intergovernmental organization with operations in Lebanon. Roughly 80% of the victims ran Fortinet appliances, and Microsoft assesses the group likely gained initial access by exploiting the Fortinet FortiOS SSL-VPN path-traversal vulnerability CVE-2018-13379. The group deployed custom PowerShell (CreepyDrive/CreepySnail) and .NET (CreepyBox) implants that abuse legitimate OneDrive and Dropbox cloud accounts for command-and-control, creating 20+ malicious OneDrive applications and using OAuth refresh tokens embedded in the implants. Tasking is delivered via files such as data.txt and results returned in response.json; usernames/IPs are Base64-encoded in web requests. Plink SSH tunnels and the AirVPN service were used for network access.",
+        "source_url": "https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"
+      },
+      {
+        "name": "Creepy backdoor family campaign (ESET disclosure)",
+        "date": "September 2021 to September 2022",
+        "summary": "ESET documented POLONIUM targeting 12+ Israeli organizations across engineering, IT, law, communications, marketing, media, insurance and social services. The group developed at least seven custom backdoors — CreepyDrive and CreepySnail (PowerShell), and DeepCreep, MegaCreep, FlipCreep, TechnoCreep and PapaCreep (C#/C++) — abusing OneDrive, Dropbox and Mega cloud storage plus FTP and raw TCP sockets for C2. Supporting modules include a custom keylogger (Hebrew/Arabic keyboards, Windows-1255 console encoding), screenshot and webcam capture, reverse shells, file exfiltration and an SSH (Plink) tunneling module. Some victims' Fortinet VPN credentials had been leaked online in September 2021, a likely access enabler. Infrastructure was IP-only (dedicated VPS via HostGW), with no domain names observed.",
+        "source_url": "https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"
+      }
+    ]
+  },
+  "threat_actors": ["POLONIUM", "Plaid Rain"],
+  "targeted_regions": ["Israel", "Lebanon"],
+  "targeted_sectors": [
+    "Critical manufacturing",
+    "Information technology",
+    "Defense industry",
+    "Engineering",
+    "Legal",
+    "Communications / media",
+    "Insurance",
+    "Social services",
+    "Transportation",
+    "Government",
+    "Financial services",
+    "Healthcare",
+    "Food and agriculture"
+  ],
+  "malware": [
+    "CreepyDrive (PowerShell backdoor; OneDrive/Dropbox HTTP API C2)",
+    "CreepyBox (.NET variant of CreepyDrive)",
+    "CreepySnail (PowerShell backdoor; HTTP to custom C2)",
+    "DeepCreep (C# backdoor; Dropbox OAuth C2; InstallUtil proxy execution)",
+    "MegaCreep (C# backdoor; Mega storage, AES-encrypted commands)",
+    "FlipCreep (C# backdoor; FTP C2)",
+    "TechnoCreep (C# backdoor; raw TCP socket C2)",
+    "PapaCreep (C++ backdoor; TCP with fake HTTP headers)",
+    "CreepyRing / CreepyWink (.NET trojans, per Microsoft)",
+    "Custom keylogger module (Hebrew/Arabic; Windows-1255 encoding)",
+    "Screenshot capture module (WinSc.exe)",
+    "Webcam capture module (AForge.NET-based, Device.exe)",
+    "Reverse shell modules (OnDrive.exe and others)",
+    "File exfiltration modules (Rehost.exe and others)"
+  ],
+  "tooling_observed": [
+    "Plink (PuTTY link) — SSH tunneling",
+    "AirVPN — VPN service also used by MOIS-affiliated groups",
+    "OneDrive (abused via 20+ malicious OAuth apps, refresh tokens) — cloud C2",
+    "Dropbox (OAuth 2.0) — cloud C2 / exfiltration",
+    "Mega (MegaApiClient library) — cloud C2 / exfiltration",
+    "AsStrongAsFuck .NET obfuscator",
+    "ROT13 / Base64 / AES string and payload obfuscation",
+    "HostGW-hosted dedicated VPS infrastructure"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector: exploitation of internet-facing Fortinet FortiOS SSL-VPN appliances via the path-traversal vulnerability CVE-2018-13379. Approximately 80% of Microsoft-observed victims ran Fortinet devices; the flaw allows retrieval of system files (including VPN credential/session data) from an unauthenticated endpoint.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — exploitation of CVE-2018-13379 is detectable at the appliance/WAF via requests to the vulnerable /remote/fgt_lang?lang= sslvpn path-traversal endpoint, FortiOS access logs, and version/patch-state monitoring of exposed Fortinet devices",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "procedure_description": "The group leverages Fortinet SSL-VPN external remote access to enter victim networks, using credentials obtained via CVE-2018-13379 exploitation or from Fortinet VPN credentials leaked online in September 2021.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous VPN authentication (new geolocation/ASN, impossible travel, off-hours logon, reused leaked credentials) is detectable via VPN/identity authentication analytics, but blends with legitimate remote access",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/", "https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "POLONIUM used valid VPN account credentials for access; some victims' Fortinet VPN credentials had been leaked online in September 2021 and were reused by the actor to authenticate.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — reuse of valid/leaked credentials is detectable via authentication-anomaly analytics and leaked-credential monitoring, but individual valid logons are inherently hard to distinguish from legitimate use",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/", "https://attack.mitre.org/groups/G1005/"]
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "procedure_description": "Microsoft observed supply-chain-style access through compromised IT service providers, using a trusted third-party relationship to reach downstream Israeli victim organizations.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — access arriving through a trusted service-provider connection is largely off the victim's own endpoint telemetry; hunt candidate via review of third-party/managed-service access, unusual provider-originated sessions, and inter-organization trust monitoring",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://attack.mitre.org/groups/G1005/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "POLONIUM developed at least seven bespoke backdoors — CreepyDrive/CreepyBox and CreepySnail (PowerShell/.NET), and DeepCreep, MegaCreep, FlipCreep, TechnoCreep and PapaCreep (C#/C++) — plus a modular set of custom keylogger, screenshot, webcam, reverse-shell and exfiltration components.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — in-house malware development happens off-victim; the resulting implants are where detection lands. Intel/hunt candidate for tracking new Creepy-family variants",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1588.001",
+      "technique_name": "Obtain Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "The group incorporated publicly available keylogger code and libraries (e.g., AForge.NET for webcam capture, MegaApiClient for Mega) into its custom modules rather than writing all functionality from scratch.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — acquisition of public code/libraries is off-victim; downstream execution of the resulting modules is the detection surface. Intel/hunt candidate",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "POLONIUM operationalized publicly available tooling including Plink (PuTTY SSH tunneling) and the AirVPN service; AirVPN usage overlaps with MOIS-affiliated groups.",
+      "observed_tooling": ["Plink (PuTTY link) — SSH tunneling", "AirVPN — VPN service also used by MOIS-affiliated groups"],
+      "detection_feasibility": "low — tool acquisition itself is off-endpoint; downstream Plink/AirVPN use is where detection lands. Intel/hunt candidate",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://attack.mitre.org/groups/G1005/"]
+    },
+    {
+      "technique_id": "T1583.003",
+      "technique_name": "Acquire Infrastructure: Virtual Private Server",
+      "tactic": "resource-development",
+      "procedure_description": "The group acquired dedicated virtual private servers (via hosting provider HostGW) for command-and-control and tunneling. Infrastructure was IP-only with no domain names, reducing DNS-based detection.",
+      "observed_tooling": ["HostGW-hosted dedicated VPS infrastructure"],
+      "detection_feasibility": "low — adversary VPS acquisition is off-victim; intel/hunt candidate via infrastructure tracking (HostGW ranges, IP-only C2 clusters)",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "POLONIUM stood up 20+ malicious OneDrive applications and abused Dropbox and Mega cloud accounts as C2 infrastructure, embedding OAuth refresh tokens in implants so that C2 traffic blends with legitimate cloud-service usage.",
+      "observed_tooling": ["OneDrive (abused via 20+ malicious OAuth apps, refresh tokens) — cloud C2", "Dropbox (OAuth 2.0) — cloud C2 / exfiltration", "Mega (MegaApiClient library) — cloud C2 / exfiltration"],
+      "detection_feasibility": "low — creation of attacker-controlled cloud apps/accounts is off-victim; the on-host cloud C2 and tenant-side OAuth-app grants are the detection surface. Intel/hunt candidate (enterprises can hunt anomalous OAuth application consents)",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "CreepyDrive and CreepySnail are PowerShell implants that execute attacker commands on compromised hosts; CreepyDrive reads tasking from cloud storage and runs it via PowerShell.",
+      "observed_tooling": ["CreepyDrive (PowerShell backdoor; OneDrive/Dropbox HTTP API C2)", "CreepySnail (PowerShell backdoor; HTTP to custom C2)"],
+      "detection_feasibility": "high — PowerShell script-block/module logging captures the implants' web requests to cloud APIs and command execution; suspicious PowerShell making OneDrive/Dropbox Graph API calls is a strong signal",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "The C#/C++ backdoors (DeepCreep, MegaCreep, TechnoCreep, PapaCreep) execute received commands through the Windows command shell (cmd.exe) and return output over their C2 channels.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — cmd.exe spawned as a child of an unusual .NET/C++ implant process, with command output redirected, is detectable via process-lineage telemetry, but cmd.exe use is common and needs parent-process context",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1129",
+      "technique_name": "Shared Modules",
+      "tactic": "execution",
+      "procedure_description": "POLONIUM fragments functionality across separate DLLs (e.g., PRLib.dll, MainZero.dll, Cert.dll, Sess.dll, yetty.dll) loaded at runtime, so no single component reveals the full attack chain.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — loading of unsigned/unusual named DLLs from user-writable paths by an implant process is detectable via image-load (Sysmon EID 7) telemetry, but requires baselining of legitimate module loads",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "POLONIUM establishes persistence for its backdoors via Windows scheduled tasks that relaunch the implants.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); tasks pointing at implant binaries in user-writable or masqueraded paths are a solid detection when baselined",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "procedure_description": "The group places LNK shortcut files in the Startup folder so that backdoor components execute automatically at user logon.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — creation of .lnk files in Startup folders pointing at implant binaries is detectable via file-creation monitoring of Startup paths (Event ID 4663 / Sysmon EID 11)",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1218.004",
+      "technique_name": "System Binary Proxy Execution: InstallUtil",
+      "tactic": "stealth",
+      "procedure_description": "DeepCreep is executed via the signed Microsoft .NET InstallUtil.exe utility to proxy execution of the malicious assembly and evade application controls.",
+      "observed_tooling": ["DeepCreep (C# backdoor; Dropbox OAuth C2; InstallUtil proxy execution)"],
+      "detection_feasibility": "high — InstallUtil.exe invoking a non-standard assembly (especially from a user-writable path, with uninstall/install verbs) is a rare, high-fidelity command-line detection",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The backdoors decode/deobfuscate strings and payloads at runtime using ROT13, Base64 and AES to hide C2 commands, tokens and configuration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — in-memory decoding leaves little discrete signal; hunt candidate via behavioral/memory analysis rather than a crisp log event",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "POLONIUM modules delete files (including their own artifacts and collected/staged data) after use to reduce forensic footprint.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — deletion of recently created implant/staging files is detectable via file-deletion auditing (Sysmon EID 23/26) correlated with prior write events, but file deletion is common and needs context",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Implant and module executables are named to impersonate legitimate software — e.g., Mega.exe, DropBox.exe, OnDrive.exe, WinUpdate.dll, WinSc.exe, Device.exe, Regestries.exe and 'Microsoft Malware Protection.exe' — to blend into normal system/software directories.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — binaries with legitimate-looking names but wrong signer/path/hash (e.g., 'Microsoft Malware Protection.exe' unsigned, DropBox.exe not from Dropbox) are detectable via signature-vs-name and path baselining",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "The .NET backdoors are protected with the AsStrongAsFuck obfuscator and encode/encrypt embedded strings and payloads to evade static detection.",
+      "observed_tooling": ["AsStrongAsFuck .NET obfuscator"],
+      "detection_feasibility": "medium — heavily obfuscated .NET assemblies (obfuscator artifacts, high-entropy resources) are detectable via static/entropy analytics and obfuscator-specific YARA, but require dedicated scanning",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Backdoors enumerate files and directories on compromised hosts to locate documents and data of interest for collection.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — file/directory enumeration by an implant is common and noisy; meaningful only within a tight process-lineage/recon-burst window. Hunt candidate",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The implants enumerate running processes on the host as part of environment reconnaissance.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — process enumeration is ubiquitous and low-signal; hunt candidate via correlation with other implant behavior",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Backdoors collect host/system information (OS, machine identifiers) which, alongside the username, is Base64-encoded into C2 beacons for victim tracking.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — host information gathering is common; the distinguishing signal is the encoded exfil in the beacon rather than the discovery itself. Hunt candidate",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/", "https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The implants gather the host's network configuration and IP address; the IP is Base64-encoded and included in outbound web requests to the C2.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — reading local network configuration is common admin/implant behavior; hunt candidate correlated with encoded C2 beacons",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The implants collect the logged-in username, which is Base64-encoded into the C2 request URIs to identify the victim.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — querying the current user is trivial and ubiquitous; hunt candidate only in combination with the encoded-beacon pattern",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "POLONIUM deploys a custom keylogger module that supports Hebrew and Arabic keyboard layouts (console output encoded as Windows-1255 for Hebrew), capturing victim keystrokes to a log for later exfiltration.",
+      "observed_tooling": ["Custom keylogger module (Hebrew/Arabic; Windows-1255 encoding)"],
+      "detection_feasibility": "medium — keylogger modules register low-level keyboard hooks / GetAsyncKeyState polling and write a growing keystroke-log file; detectable via API-hook heuristics, EDR behavioral signatures and log-file creation, but requires endpoint depth",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "A dedicated screenshot module (e.g., WinSc.exe) periodically captures the victim's screen for espionage collection.",
+      "observed_tooling": ["Screenshot capture module (WinSc.exe)"],
+      "detection_feasibility": "medium — screenshot utilities generate periodic image files and call screen-capture APIs; detectable via file-creation patterns and EDR behavioral detection, though not as crisp as a discrete log event",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "procedure_description": "POLONIUM uses an AForge.NET-based webcam-capture module (e.g., Device.exe) to record video/still images from the victim's camera.",
+      "observed_tooling": ["Webcam capture module (AForge.NET-based, Device.exe)"],
+      "detection_feasibility": "medium — access to camera/DirectShow devices by an unusual process and the AForge.NET dependency are detectable via device-access and image-load telemetry, but require targeted endpoint visibility",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "procedure_description": "The group captures clipboard contents from compromised hosts as part of its data-collection tooling.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — clipboard access is a common API with heavy legitimate use; poor discrete signal, hunt candidate via behavioral correlation",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "POLONIUM is espionage-focused on stealing confidential documents; modules collect files of interest from the local system for archiving and exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — local file collection is common; suspicious mainly via staging/archiving patterns and process-lineage context. Hunt candidate",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1560.002",
+      "technique_name": "Archive Collected Data: Archive via Library",
+      "tactic": "collection",
+      "procedure_description": "Before exfiltration, collected data is compressed into ZIP archives via a code library within the .NET modules.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — in-process ZIP creation via a library leaves little discrete telemetry (no external archiver process); hunt candidate via file-write of archive files preceding egress",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "CreepySnail and CreepyDrive communicate over HTTP(S) to C2 (custom servers and cloud APIs); machine username and IP are Base64-encoded into the request URIs. PapaCreep uses TCP with fake HTTP headers to mimic web traffic.",
+      "observed_tooling": ["CreepySnail (PowerShell backdoor; HTTP to custom C2)", "CreepyDrive (PowerShell backdoor; OneDrive/Dropbox HTTP API C2)"],
+      "detection_feasibility": "medium — HTTP beacons carrying Base64-encoded username/IP to IP-only C2 on non-standard ports are detectable via proxy/NetFlow analytics and URI-pattern signatures, but HTTP C2 blends with normal web traffic without the specific indicators",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1071.002",
+      "technique_name": "Application Layer Protocol: File Transfer Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "FlipCreep uses an FTP server for command-and-control (observed on ports such as 2121/21), and several exfiltration modules push data over FTP.",
+      "observed_tooling": ["FlipCreep (C# backdoor; FTP C2)"],
+      "detection_feasibility": "medium — outbound FTP from workstations to IP-only external servers on non-standard ports (2121) is unusual and detectable via NetFlow/proxy and FTP-protocol logging",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1102.002",
+      "technique_name": "Web Service: Bidirectional Communication",
+      "tactic": "command-and-control",
+      "procedure_description": "Signature tradecraft: CreepyDrive/CreepyBox, DeepCreep and MegaCreep use legitimate cloud services (OneDrive, Dropbox, Mega) for bidirectional C2 — tasking is placed in files such as data.txt/cd.txt in the cloud directory and results are written back (response.json). OAuth refresh tokens are embedded in the implants so traffic goes only to legitimate cloud endpoints.",
+      "observed_tooling": ["CreepyDrive (PowerShell backdoor; OneDrive/Dropbox HTTP API C2)", "DeepCreep (C# backdoor; Dropbox OAuth C2; InstallUtil proxy execution)", "MegaCreep (C# backdoor; Mega storage, AES-encrypted commands)", "OneDrive (abused via 20+ malicious OAuth apps, refresh tokens) — cloud C2", "Dropbox (OAuth 2.0) — cloud C2 / exfiltration", "Mega (MegaApiClient library) — cloud C2 / exfiltration"],
+      "detection_feasibility": "medium — cloud C2 blends with legitimate OneDrive/Dropbox/Mega traffic, but is detectable via a non-browser/PowerShell process making Graph/Dropbox/Mega API calls, anomalous OAuth-app consents in the tenant, and read/write of tasking files (data.txt/cd.txt/response.json); needs cloud + endpoint correlation",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "Implants Base64-encode the machine username and IP address embedded in outbound web requests, and encode C2 command/response data.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — Base64-encoded username/IP tokens in HTTP request URIs are a distinctive pattern detectable via proxy/URI content inspection, but require signature tuning to avoid legitimate Base64 traffic",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "MegaCreep encrypts its command-and-response channel with AES symmetric encryption, storing encrypted commands in Mega cloud storage.",
+      "observed_tooling": ["MegaCreep (C# backdoor; Mega storage, AES-encrypted commands)"],
+      "detection_feasibility": "low — AES-encrypted C2 payloads are opaque on the wire; detection relies on the host process and the Mega-service destination rather than content. Hunt candidate",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "TechnoCreep communicates with its C2 over raw TCP sockets (e.g., port 1302) rather than an application-layer protocol.",
+      "observed_tooling": ["TechnoCreep (C# backdoor; raw TCP socket C2)"],
+      "detection_feasibility": "medium — raw TCP sessions from workstations to IP-only C2 on unusual ports (1302) are detectable via NetFlow/connection analytics as non-standard, unrecognized-protocol egress",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "C2 and exfiltration channels use non-standard ports including 8080, 63047, 5055, 1302, 2121 and 1433, complicating port-based filtering.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — outbound connections on uncommon high ports (63047, 5055, 1302) to external IP-only hosts are detectable via NetFlow/firewall analytics as anomalous egress",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "POLONIUM uses Plink (PuTTY SSH) to build SSH tunnels (including redundant tunnels) for network access and C2 relaying to their VPS infrastructure.",
+      "observed_tooling": ["Plink (PuTTY link) — SSH tunneling"],
+      "detection_feasibility": "high — Plink execution with tunneling/port-forward command-line arguments and outbound SSH from non-admin workstations to external IP-only servers are detectable via process command-line and network telemetry",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/", "https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "The group routes activity through the AirVPN service (shared with MOIS-affiliated groups) and VPS relays to proxy and obscure the true source of their connections.",
+      "observed_tooling": ["AirVPN — VPN service also used by MOIS-affiliated groups"],
+      "detection_feasibility": "low — VPN/proxy egress blends with legitimate traffic and is largely visible only as connections to known VPN endpoints; hunt/intel candidate via VPN-exit IP reputation",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Backdoors download additional modules and tools (keylogger, screenshot, webcam, reverse shell, tunneling) to the victim from cloud storage or C2 to extend capability.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — implant processes writing new executable/DLL modules to disk shortly after cloud/C2 fetches are detectable via process+file-write correlation, but blend with legitimate downloads without the process context",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Several backdoors exfiltrate collected data back over their existing C2 channels (raw TCP, FTP, HTTP) to the actor's VPS servers.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — outbound data volume anomalies over the same non-standard-port C2 sessions are detectable via NetFlow/egress analytics, but distinguishing exfil bytes from beacon traffic requires volumetric baselining",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/"]
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
+      "tactic": "exfiltration",
+      "procedure_description": "CreepyDrive/CreepyBox, DeepCreep and MegaCreep exfiltrate stolen files to attacker-controlled OneDrive, Dropbox and Mega accounts, so exfiltration flows only to legitimate cloud-service domains.",
+      "observed_tooling": ["OneDrive (abused via 20+ malicious OAuth apps, refresh tokens) — cloud C2", "Dropbox (OAuth 2.0) — cloud C2 / exfiltration", "Mega (MegaApiClient library) — cloud C2 / exfiltration"],
+      "detection_feasibility": "medium — uploads to OneDrive/Dropbox/Mega by a non-browser/implant process, and large data movement to newly consented OAuth apps, are detectable via cloud audit logs, CASB/DLP and endpoint process correlation, but legitimate cloud sync creates noise",
+      "sources": ["https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/", "https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/"]
+    }
+  ],
+  "detection_signals": [
+    "Exploitation of Fortinet FortiOS SSL-VPN CVE-2018-13379: requests to the path-traversal endpoint /remote/fgt_lang?lang= (sslvpn) on internet-facing Fortinet devices; FortiOS access logs and version/patch-state monitoring",
+    "VPN logons using credentials leaked online in September 2021 / anomalous Fortinet VPN authentications (new ASN, impossible travel, off-hours)",
+    "PowerShell (CreepyDrive/CreepySnail) or non-browser .NET process making OneDrive Graph (graph.microsoft.com), Dropbox or Mega API calls; read/write of cloud tasking files data.txt, cd.txt and response.json",
+    "Anomalous Azure AD/Entra OAuth application consents — 20+ malicious OneDrive apps with refresh tokens embedded in implants",
+    "HTTP request URIs containing Base64-encoded username and IP-address tokens to IP-only C2 servers on non-standard ports (8080, 63047, 5055)",
+    "InstallUtil.exe proxy-executing a non-standard .NET assembly (DeepCreep) from a user-writable path",
+    "Masqueraded binaries: Mega.exe, DropBox.exe, OnDrive.exe, WinUpdate.dll, WinSc.exe, Device.exe, Regestries.exe, 'Microsoft Malware Protection.exe' unsigned or from wrong paths",
+    "LNK shortcut files created in the Startup folder pointing at implant binaries; scheduled tasks relaunching Creepy-family implants",
+    "Custom keylogger with Hebrew/Arabic support (Windows-1255 console encoding); periodic screenshot files (WinSc.exe); AForge.NET webcam capture (Device.exe)",
+    "Plink.exe executed with SSH tunnel/port-forward arguments; outbound SSH from workstations to VPS IPs (212.73.150.174, 94.156.189.103, 51.83.246.73, 185.244.129.109, 172.96.188.51)",
+    "Raw TCP C2 on port 1302 (TechnoCreep); FTP C2 on 2121/21 (FlipCreep); outbound to HostGW-hosted IP-only C2 in the 45.80.148.0/22 and 185.244.129.0/24 ranges",
+    "Egress to AirVPN exit nodes shared with MOIS-affiliated groups (MERCURY/MuddyWater)"
+  ],
+  "iocs": {
+    "ips": [
+      "37.120.233.89",
+      "45.80.148.119",
+      "45.80.148.167",
+      "45.80.148.186",
+      "45.80.149.22",
+      "45.80.149.57",
+      "45.80.149.68",
+      "45.80.149.71",
+      "45.80.149.108",
+      "45.80.149.154",
+      "45.137.148.7",
+      "135.125.147.170",
+      "146.70.86.6",
+      "172.96.188.51",
+      "185.203.119.99",
+      "185.244.129.79",
+      "185.244.129.109",
+      "185.244.129.216",
+      "195.166.100.23",
+      "212.73.150.174",
+      "51.83.246.73",
+      "94.156.189.103"
+    ],
+    "domains": [],
+    "emails": [],
+    "hashes": [
+      "cc820ed9a23084104807941b76a2679243ba357c",
+      "298c100aa98e79e54ca8454f8400e9543791fa15",
+      "4a54c5dc45ce0047291dc98ad87f42cfe9fa046e",
+      "550adbb75c7e1cd178cb8c39f0911c494b24c687",
+      "7722386c075db083878496875c156c67238758e6",
+      "806aeca473af9afef5a0ab29f30a9a272d9cec51",
+      "b810ed016e708f1c828dce82051c4b265794d583",
+      "f074085be2a913c54100686fe7ef274a53323bda",
+      "3f4e3c5301752d39daf97384cca47564da1c3314",
+      "83a4f138d57fce4256727e517a8d19e67554c15f",
+      "1929900b68ac8a65d515002d313336781801e3ef",
+      "5c33a153f221f80c916b7e505f6e2144cd5b88a2",
+      "457c34aeaf4e2e5086221b20fec17df29a6b49d3",
+      "db3f13d29a64205780b9a675019405bb338ca375",
+      "03a35a0167684e6ccca641296969972e49b88d60",
+      "0832fec447b9b8a90ef4797c7b098b06e198d167",
+      "23f1e9788688184712dc2b0eaad4c51584edabd0",
+      "5eef1ac7df2293d9432362fc586a7a7157b69157",
+      "aa442a83b7cd173734552b6611c50d050efe8277",
+      "4e7dbff20995e97190536b284d7e5cc65922fd55",
+      "21ef3d7adca478145c5d28fcf9c786c5f0aea0e6",
+      "45e56d259a7194c7c3adfefd8ada077dc2b800b8",
+      "994ead7666a67e33c57a51ef98076d41aabb7fb7",
+      "23ce10c11dcd93bcbf2a4e50d4cd02dc862b9cc4",
+      "45b3af39c5ef08f7407b94d564a432503b00275a",
+      "79de0af2f10f8d39a93eed911d4048d87e3c8a1c",
+      "2b9444b0e1747eb4f482d29c9de27d07cce55a76",
+      "459aece315af3d00342e5dde5fb79e7a908e8460",
+      "97ed514f7510852c558a1b32c99f56ebc460dd8b",
+      "f26f43ad2e2980b96497242a3f30ca003e5cf54c",
+      "5036863519737b54c5d68891ee2e3ca795044803",
+      "a0a2768d500714f62b64b57185e71140d3c993d1",
+      "04378736da5c2da06bd5b15a41aaccac233df44b",
+      "94e75ba7c4476afdacf4b39e403379c5ecd1bed6",
+      "b87cc5269a5df5cf093f8d28df78952f662162b6",
+      "3024f8b0439d7c271967d22373604215a4ce0ac4",
+      "43e3c3752a15d0bde7135e1b52f1de397b5314b5",
+      "7a9deb71f791eb8d781250b0c8c3d546d91fbde1",
+      "809048a40274350bd0c453e49d8c1f7d32397164",
+      "24117276a118df5095d139aaaac8342f150de94a"
+    ],
+    "cves": [
+      "CVE-2018-13379"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Primary sources are two independent, primary-vendor technical reports with real IOC appendices: Microsoft (2022-06-02) and ESET (2022-10-11); enriched with MITRE ATT&CK POLONIUM G1005. Report confidence is HIGH (two corroborating primary/technical sources with concrete hashes, IPs and mapped TTPs). ATTRIBUTION confidence is separately set to MEDIUM: Microsoft assesses MODERATE-confidence coordination with Iran's MOIS based on victim/tooling overlap (not direct control); ESET corroborates a Lebanon-based, MOIS-linked assessment — this is association/convergence-based attribution, hence medium. actor.mitre_id intentionally left empty per spec; the public MITRE group id G1005 is cited only in source/aliases. ATT&CK normalization: all Defense Evasion techniques use this environment's tactic slug 'stealth' (T1218.004, T1140, T1070.004, T1036.005, T1027.013); Encrypted/Encoded File uses T1027.013 per env convention (AsStrongAsFuck .NET obfuscator). Every one of the 42 technique_ids was validated as a present key in the bundled attack_dump.json (697 techniques) before writing — zero invalid/missing IDs; no substitutions were required (T1583.003, T1547.009, T1218.004, T1560.002, T1102.002, T1071.002, T1095, T1571, T1129, T1125 etc. all confirmed present). STRONGEST DETECTION SURFACE (detection-candidate, high feasibility): T1190 CVE-2018-13379 Fortinet exploit, T1059.001 PowerShell cloud-API implants, T1218.004 InstallUtil proxy exec of DeepCreep, T1053.005/T1547.009 scheduled-task & Startup-LNK persistence, T1572 Plink SSH tunneling. MEDIUM (cloud-C2 correlation-dependent): T1102.002/T1567.002 OneDrive/Dropbox/Mega C2 and exfil, T1132.001 Base64 username/IP in URIs, T1056.001/T1113/T1125 collection modules, T1071.002/T1095/T1571 non-standard-port/FTP/raw-TCP C2. HUNT-leaning (low, off-victim/opaque): T1199 trusted-relationship access, T1583.003/T1583.006/T1587.001/T1588.x infrastructure & capability development, T1573.001 AES-encrypted Mega channel, T1090 AirVPN proxy, discovery techniques (T1083/T1057/T1082/T1016/T1033), and library-based ZIP archiving (T1560.002). IOCs: IPs and full SHA-1 hashes are taken verbatim from the ESET malware-ioc repository and Microsoft/ESET appendices (defang removed for raw values). A representative 40-hash cross-section spanning all seven Creepy backdoors and the keylogger/screenshot/webcam/reverse-shell/tunneling/exfil modules is included; the complete ~90-hash set is available in ESET's malware-ioc/polonium repo. domains[] is intentionally empty because POLONIUM used IP-only C2 with no attacker domains; legitimate cloud domains (graph.microsoft.com, login.microsoftonline.com, dropbox/mega) are abused-but-legitimate and are deliberately NOT listed as IOCs. Only CVE-2018-13379 (Fortinet FortiOS SSL-VPN path traversal) is confirmed as the initial-access exploit. No YARA rules were published in the report bodies (ESET provides detection names such as Trojan:PowerShell/CreepyDrive, Trojan:MSIL/CreepyBox, Backdoor:PowerShell/CreepySnail rather than YARA); yara_rules left empty per the verbatim-only rule."
+}

@@ -71,8 +71,18 @@ scripts/                 helpers (validation, Navigator export)
 | [Cotton Sandstorm (G1009)](actors/cotton-sandstorm/) | Iran-nexus (IRGC) · influence | ✅ published | 30 | 9 | 7 |
 | [Homeland Justice (Storm-0842)](actors/homeland-justice/) | Iran-nexus · Albania wiper | ✅ published | 34 | 14 | 5 |
 | [Pioneer Kitten (Fox Kitten)](actors/pioneer-kitten/) | Iran-nexus · access broker | ✅ published | 50 | 26 | 5 |
+| [POLONIUM (Plaid Rain)](actors/polonium/) | Lebanon-nexus · MOIS-linked | ✅ published | 42 | 17 | 6 |
+| [Arid Viper (APT-C-23)](actors/arid-viper/) | Palestinian-nexus · spyware | ✅ published | 40 | 15 | 6 |
+| [Predatory Sparrow (Gonjeshke Darande)](actors/predatory-sparrow/) | Israel-linked · OT wiper | ✅ published | 34 | 23 | 6 |
+| [Imperial Kitten (CURIUM)](actors/imperial-kitten/) | Iran-nexus · IRGC | ✅ published | 35 | 19 | 5 |
+| [UNC1549 (TA455)](actors/unc1549/) | Iran-nexus · aerospace/defense | ✅ published | 40 | 28 | 5 |
+| [UNC3890](actors/unc3890/) | Iran-nexus · shipping/energy | ✅ published | 32 | 15 | 5 |
+| [Ballistic Bobcat (APT35-adjacent)](actors/ballistic-bobcat/) | Iran-nexus · Sponsor backdoor | ✅ published | 31 | 15 | 3 |
+| [Greenbug (ISMDOOR)](actors/greenbug/) | Iran-nexus · Shamoon precursor | ✅ published | 35 | 17 | 2 |
+| [Sea Turtle (Marbled Dust)](actors/sea-turtle/) | Türkiye-nexus · DNS hijack | ✅ published | 33 | 15 | 5 |
+| [Bahamut (Windshift-adjacent)](actors/bahamut/) | Mercenary · hack-for-hire | ✅ published | 41 | 6 | 7 |
 
-**18 actors · 827 ATT&CK techniques · 338 Sigma detections · 129 hunt packages · 530 sourced IOCs.**
+**28 actors · 1190 ATT&CK techniques · 508 Sigma detections · 179 hunt packages · 974 sourced IOCs.**
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

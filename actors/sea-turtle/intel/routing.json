@@ -1,0 +1,211 @@
+{
+  "actor": "Sea Turtle (Teal Kurma / Marbled Dust)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "high — exploitation of these specific CVEs on internet-facing appliances/servers is the strongest detection surface: WAF/appliance/web-server logs, exploit signatures, anomalous requests to vulnerable endpoints, post-exploit process/file activity and version/patch-state monitoring all apply"
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "rationale": "medium — anomalous SSH/remote-service logons (VPN-provider source IPs, new geolocation, off-hours) are detectable via authentication logs and identity analytics, but blend with legitimate remote administration"
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "rationale": "medium — authentication with valid stolen credentials is detectable via anomalous-logon analytics (new source, impossible travel, first-seen device) but overlaps with legitimate use"
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "rationale": "medium — exploitation-driven execution is detectable via crash/anomaly telemetry and unexpected child processes spawned by server/appliance software, but requires instrumentation on the exploited host"
+    },
+    {
+      "technique_id": "T1059.004",
+      "technique_name": "Command and Scripting Interpreter: Unix Shell",
+      "tactic": "execution",
+      "rationale": "high — shell command execution on Unix webservers is observable via auditd/EDR process telemetry; webserver processes (e.g. apache/php) spawning bash/socat/nohup children are high-fidelity indicators"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — the SnappyTCP webshell is a crisp endpoint detection: new/unexpected executables or scripts in web roots, the 'sy.php' request URI and 'X-Auth-43245-S-20' header, and webserver-user processes making outbound connections are all actor-specific, high-fidelity signals"
+    },
+    {
+      "technique_id": "T1564.011",
+      "technique_name": "Hide Artifacts: Ignore Process Interrupts",
+      "tactic": "stealth",
+      "rationale": "medium — nohup invocations wrapping network binaries (e.g. nohup ./snappytcp / nohup socat) are detectable via process-execution command-line telemetry on the host, but nohup is also used legitimately"
+    },
+    {
+      "technique_id": "T1027.004",
+      "technique_name": "Obfuscated Files or Information: Compile After Delivery",
+      "tactic": "stealth",
+      "rationale": "medium — on-host compilation (gcc/cc invocations, especially by web/service users linking against OpenSSL) is detectable via process-execution telemetry but requires baselining on servers where compilers are legitimately present"
+    },
+    {
+      "technique_id": "T1685.006",
+      "technique_name": "Clear Linux or Mac System Logs",
+      "tactic": "defense-impairment",
+      "rationale": "high — truncation/overwriting of /var/log files is detectable via file-integrity monitoring, auditd watches on log paths, and log-volume/continuity gaps forwarded off-host before tampering"
+    },
+    {
+      "technique_id": "T1690",
+      "technique_name": "Prevent Command History Logging",
+      "tactic": "defense-impairment",
+      "rationale": "high — unset HISTFILE / HISTFILESIZE=0 / removal of ~/.bash_history and ~/.mysql_history are detectable via process command-line and file-deletion auditing when host logging is forwarded off-box"
+    },
+    {
+      "technique_id": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "tactic": "persistence",
+      "rationale": "medium — reuse of local hosting/webserver accounts is detectable via authentication analytics (new source IP from VPN providers, off-hours logons) but overlaps with legitimate administration"
+    },
+    {
+      "technique_id": "T1213.006",
+      "technique_name": "Data from Information Repositories: Databases",
+      "tactic": "collection",
+      "rationale": "medium — presence of Adminer (or similar db-admin PHP tools) in web roots and anomalous database queries from the webserver are detectable via file-integrity monitoring and DB query auditing, but require web/DB-tier visibility"
+    },
+    {
+      "technique_id": "T1114.001",
+      "technique_name": "Email Collection: Local Email Collection",
+      "tactic": "collection",
+      "rationale": "medium — access to and copying of local mailbox/archive files by non-mail-service processes is detectable via file-access auditing on the mail host, but needs mailbox-path instrumentation"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "rationale": "medium — tar/gzip execution producing large archives of mailbox/data directories, especially by web/service accounts, is detectable via process command-line and file-write telemetry"
+    },
+    {
+      "technique_id": "T1074.002",
+      "technique_name": "Data Staged: Remote Data Staging",
+      "tactic": "collection",
+      "rationale": "high — appearance of large archive files (e.g. .tar/.tar.gz) inside internet-facing web roots is a strong, specific detection via file-integrity monitoring and web-root content baselining"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — local data collection is common; suspicious mainly via staging patterns (into web roots) and process-lineage context"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — outbound HTTP GETs to '/sy.php' and the distinctive 'X-Auth-43245-S-20' header from a webserver host are actor-specific network detections via proxy/IDS and host netflow"
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — TLS-wrapped C2 blends with normal HTTPS; detectable via JA3/JA4 TLS-fingerprint anomalies, connections to the documented C2 domains/IPs, and a webserver process opening outbound 443 to non-CDN hosts"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — socat execution and the resulting relay connections are detectable via process command-line and network telemetry on the host, though socat is also a legitimate admin tool"
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "rationale": "medium — large outbound web downloads of archive files from web roots to non-victim client IPs are detectable via webserver access logs and egress monitoring, but require web-tier log correlation"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — data egress riding the C2 channel is detectable via volumetric/beaconing anomalies from a webserver host to the documented C2 endpoints, but is masked when TLS-wrapped"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1590.002",
+      "technique_name": "Gather Victim Network Information: DNS",
+      "tactic": "reconnaissance",
+      "rationale": "low — reconnaissance of public DNS records occurs off-victim against public infrastructure and is not endpoint-observable; hunt/intel candidate via external attack-surface and DNS-footprint monitoring"
+    },
+    {
+      "technique_id": "T1591",
+      "technique_name": "Gather Victim Org Information",
+      "tactic": "reconnaissance",
+      "rationale": "low — organizational targeting research is off-victim; intel candidate only"
+    },
+    {
+      "technique_id": "T1583.002",
+      "technique_name": "Acquire Infrastructure: DNS Server",
+      "tactic": "resource-development",
+      "rationale": "low — adversary-operated nameservers are off-victim infrastructure; hunt/intel candidate via passive-DNS and infrastructure tracking of the named nameserver domains/IP"
+    },
+    {
+      "technique_id": "T1583.003",
+      "technique_name": "Acquire Infrastructure: Virtual Private Server",
+      "tactic": "resource-development",
+      "rationale": "low — VPS acquisition is off-victim; intel candidate via tracking the documented MitM IP set in passive DNS / netflow at the perimeter"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration is off-victim; intel/hunt candidate via WHOIS/registration and certificate-transparency monitoring"
+    },
+    {
+      "technique_id": "T1588.004",
+      "technique_name": "Obtain Capabilities: Digital Certificates",
+      "tactic": "resource-development",
+      "rationale": "low — certificate acquisition happens at third-party CAs; hunt candidate via Certificate Transparency log monitoring for unexpected certs issued for owned domains"
+    },
+    {
+      "technique_id": "T1608.003",
+      "technique_name": "Stage Capabilities: Install Digital Certificate",
+      "tactic": "resource-development",
+      "rationale": "low — certificate installation on off-victim MitM infrastructure is not visible to the victim; hunt via CT-log correlation and TLS-fingerprint anomalies"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition is off-endpoint; downstream on-host use of each tool is where detection lands — intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1584.002",
+      "technique_name": "Compromise Infrastructure: DNS Server",
+      "tactic": "resource-development",
+      "rationale": "low — the record tampering happens at the registrar/registry/provider (off the victim's own systems); hunt-leaning via registry-lock monitoring, DNS-record change alerting, passive-DNS anomaly detection, DNSSEC validation failures and Certificate-Transparency monitoring rather than host telemetry"
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "rationale": "low — the compromise occurs at a trusted third party outside the victim's boundary; hunt/intel candidate via third-party-risk monitoring and provider-side change alerting"
+    },
+    {
+      "technique_id": "T1557",
+      "technique_name": "Adversary-in-the-Middle",
+      "tactic": "credential-access",
+      "rationale": "low — the interception happens on off-victim MitM infrastructure between the client and the real service; hunt-leaning via certificate-transparency monitoring, TLS certificate/issuer changes for owned services, unexpected resolution IPs and DNSSEC-validation failures rather than endpoint telemetry"
+    },
+    {
+      "technique_id": "T1556",
+      "technique_name": "Modify Authentication Process",
+      "tactic": "credential-access",
+      "rationale": "low — the spoofed authentication flow lives on off-victim infrastructure; hunt candidate via user reports, TLS/issuer anomalies and impossible-travel authentication signals downstream"
+    }
+  ],
+  "summary": {
+    "total": 33,
+    "detection": 21,
+    "hunt": 12
+  }
+}

@@ -1,0 +1,455 @@
+{
+  "report_title": "Sea Turtle (Teal Kurma / Marbled Dust / SILICON / Cosmic Wolf / UNC1326) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Cisco Talos 'DNS Hijacking Abuses Trust in Core Internet Service' and 'Sea Turtle keeps its head above water' (2019, https://blog.talosintelligence.com/seaturtle/); Hunt & Hackett 'Turkish espionage campaigns in the Netherlands' (2024-01-05, https://www.huntandhackett.com/blog/turkish-espionage-campaigns) and threat-actor profile (https://www.huntandhackett.com/threats/actors/seaturtle); MITRE ATT&CK Group Sea Turtle G1041 (https://attack.mitre.org/groups/G1041/) and Software SnappyTCP S1163 (https://attack.mitre.org/software/S1163/); PwC 'The Tortoise and The Malwahare' (2023); Microsoft Marbled Dust reporting",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Sea Turtle",
+    "mitre_id": "",
+    "mitre_canonical_name": "Sea Turtle",
+    "aliases": [
+      "Teal Kurma",
+      "Marbled Dust",
+      "SILICON",
+      "Cosmic Wolf",
+      "UNC1326",
+      "MITRE ATT&CK G1041"
+    ],
+    "related_clusters": [
+      "DNSpionage (overlapping/adjacent DNS-hijacking activity, Iran-nexus — distinct actor, distinguished by Talos)",
+      "SnappyTCP (custom Linux/Unix reverse-shell webshell, MITRE S1163)"
+    ],
+    "attribution": "Turkey-nexus, assessed to be a state-aligned espionage actor operating in support of Turkish state interests. Attribution to a Türkiye-linked actor is supported by convergence across multiple independent vendors (Cisco Talos, Hunt & Hackett, PwC, Microsoft) on victimology (Kurdish/PKK-affiliated groups, Cypriot and Greek government/telecom, Middle East and North Africa government and telecom), operational tempo aligned to Turkish geopolitical interest, and consistent DNS-hijacking tradecraft. No public sanction or indictment names a specific Turkish state entity; attribution is analytic, not adjudicated. Assessed at medium-high confidence — strong tradecraft/victimology convergence but limited primary-source confirmation of state direction.",
+    "attribution_confidence": "medium-high",
+    "targeted_regions_mena": [
+      "Turkey (as operating nexus)",
+      "Egypt",
+      "Iraq (incl. Kurdistan Regional Government)",
+      "Syria (Kurdish groups)",
+      "United Arab Emirates",
+      "Jordan",
+      "Lebanon",
+      "Armenia",
+      "Middle East and North Africa (government, telecom, DNS registries)"
+    ],
+    "targeted_regions_global": [
+      "Netherlands",
+      "Cyprus",
+      "Greece",
+      "Europe (telecom / ISP / IT service providers)",
+      "United States (registrars/registries)"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Telecommunications",
+      "Internet Service Providers (ISPs)",
+      "IT service providers / managed service providers",
+      "DNS registrars and registries",
+      "Media and NGOs",
+      "Kurdish political/ethnic groups (incl. PKK-affiliated organizations)",
+      "Energy / oil & gas",
+      "Think tanks"
+    ],
+    "key_campaigns": [
+      {
+        "name": "DNS hijacking of core internet services (Talos)",
+        "date": "2017 to 2019",
+        "summary": "Signature campaign: rather than compromising ultimate victims directly, Sea Turtle compromised third-party DNS registrars, registries and DNS providers, then altered NS and A records for targeted organizations to redirect victim traffic to actor-controlled man-in-the-middle (MitM) nodes hosted on VPS infrastructure. The MitM nodes presented CA-signed X.509 certificates (Let's Encrypt, Comodo/Sectigo) or self-signed certs to defeat browser warnings and intercepted credentials for VPNs, webmail and other login portals. Actors set very low DNS TTLs (as low as 1 second) to minimize caching and quickly revert records. Initial access to the intermediary providers used exploitation of known CVEs on internet-facing systems.",
+        "source_url": "https://blog.talosintelligence.com/seaturtle/"
+      },
+      {
+        "name": "Turkish espionage campaigns in the Netherlands (Hunt & Hackett)",
+        "date": "2021 to 2023",
+        "summary": "Espionage operations against Dutch and European telecom, media, ISP and IT firms, and against Kurdish (PKK-affiliated) websites. Initial access in a 2023 case used a compromised-but-legitimate cPanel account. Actors deployed the custom SnappyTCP Linux/Unix reverse-shell webshell for persistence and C2 (two variants: OpenSSL/TLS-encrypted and cleartext), used a modified Socat for tunnelling, installed the Adminer database tool in public web directories, harvested and tar-archived email archives into internet-accessible web directories for retrieval, and performed anti-forensics (unsetting Bash and MySQL history, overwriting Linux system logs).",
+        "source_url": "https://www.huntandhackett.com/blog/turkish-espionage-campaigns"
+      }
+    ]
+  },
+  "threat_actors": ["Sea Turtle", "Teal Kurma", "Marbled Dust", "SILICON", "Cosmic Wolf", "UNC1326"],
+  "targeted_regions": ["Turkey", "Netherlands", "Cyprus", "Greece", "Egypt", "Iraq", "Syria", "United Arab Emirates", "Armenia", "Europe", "Middle East and North Africa"],
+  "targeted_sectors": ["Government", "Telecommunications", "ISPs", "IT service providers", "DNS registrars/registries", "Media and NGOs", "Kurdish groups", "Energy"],
+  "malware": [
+    "SnappyTCP (custom Linux/Unix reverse-shell webshell, MITRE S1163)"
+  ],
+  "tooling_observed": [
+    "SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)",
+    "Socat (modified, used as tunnelling / C2 relay)",
+    "Adminer (web database management tool, staged in public web dirs)",
+    "NoHup (keep SnappyTCP running after session close)",
+    "tar (archive email data)",
+    "Let's Encrypt / Comodo / Sectigo / self-signed X.509 certificates",
+    "malicious/actor-controlled nameservers (intersecdns.com, lcjcomputing.com)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1590.002",
+      "technique_name": "Gather Victim Network Information: DNS",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors map the DNS architecture of targets and their upstream registrars/registries/DNS providers to identify which third-party DNS operator to compromise in order to hijack resolution for the ultimate victim.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — reconnaissance of public DNS records occurs off-victim against public infrastructure and is not endpoint-observable; hunt/intel candidate via external attack-surface and DNS-footprint monitoring",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1591",
+      "technique_name": "Gather Victim Org Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors select deliberate victims aligned to Turkish state interest (Kurdish/PKK-affiliated organizations, Cypriot/Greek and MENA government and telecom), indicating targeted organizational research rather than opportunistic scanning.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — organizational targeting research is off-victim; intel candidate only",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1583.002",
+      "technique_name": "Acquire Infrastructure: DNS Server",
+      "tactic": "resource-development",
+      "procedure_description": "Actors stood up actor-controlled nameservers (ns1/ns2.intersecdns.com and ns1/ns2.lcjcomputing.com, resolving to 95.179.150.101) to serve falsified DNS responses to victim queries after hijacking records.",
+      "observed_tooling": ["malicious/actor-controlled nameservers (intersecdns.com, lcjcomputing.com)"],
+      "detection_feasibility": "low — adversary-operated nameservers are off-victim infrastructure; hunt/intel candidate via passive-DNS and infrastructure tracking of the named nameserver domains/IP",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1583.003",
+      "technique_name": "Acquire Infrastructure: Virtual Private Server",
+      "tactic": "resource-development",
+      "procedure_description": "Actors rented a large set of VPS instances (26 documented MitM IPs across multiple hosting providers and regions) to host man-in-the-middle nodes that impersonate legitimate victim services.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — VPS acquisition is off-victim; intel candidate via tracking the documented MitM IP set in passive DNS / netflow at the perimeter",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register domains used for nameserver and C2 infrastructure (e.g. intersecdns.com, lcjcomputing.com, boord.info, systemctl.network) to blend with legitimate DNS/service naming.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — domain registration is off-victim; intel/hunt candidate via WHOIS/registration and certificate-transparency monitoring",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/", "https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1588.004",
+      "technique_name": "Obtain Capabilities: Digital Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "Actors obtained CA-signed X.509 certificates (Let's Encrypt, Comodo/Sectigo) — and used self-signed certs — for victim domains so the MitM node presents a trusted certificate and avoids browser TLS warnings during credential interception.",
+      "observed_tooling": ["Let's Encrypt / Comodo / Sectigo / self-signed X.509 certificates"],
+      "detection_feasibility": "low — certificate acquisition happens at third-party CAs; hunt candidate via Certificate Transparency log monitoring for unexpected certs issued for owned domains",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1608.003",
+      "technique_name": "Stage Capabilities: Install Digital Certificate",
+      "tactic": "resource-development",
+      "procedure_description": "Actors install the obtained/forged certificates on the MitM VPS nodes so that intercepted TLS sessions to spoofed login portals appear valid to victims.",
+      "observed_tooling": ["Let's Encrypt / Comodo / Sectigo / self-signed X.509 certificates"],
+      "detection_feasibility": "low — certificate installation on off-victim MitM infrastructure is not visible to the victim; hunt via CT-log correlation and TLS-fingerprint anomalies",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "Actors obtain and operationalize public tooling — a modified Socat for tunnelling, the Adminer web DB tool, and SnappyTCP (based on a since-removed public GitHub project).",
+      "observed_tooling": ["Socat (modified, used as tunnelling / C2 relay)", "Adminer (web database management tool, staged in public web dirs)", "SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)"],
+      "detection_feasibility": "low — tool acquisition is off-endpoint; downstream on-host use of each tool is where detection lands — intel/hunt candidate",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1584.002",
+      "technique_name": "Compromise Infrastructure: DNS Server",
+      "tactic": "resource-development",
+      "procedure_description": "Signature tradecraft: rather than attacking the ultimate victim directly, actors compromise third-party DNS registrars, ccTLD registries and DNS providers, then alter the victim's NS and A records at the compromised operator to redirect resolution to actor-controlled MitM nodes. TTL is frequently lowered to as little as 1 second to limit caching and allow rapid record reversion.",
+      "observed_tooling": ["malicious/actor-controlled nameservers (intersecdns.com, lcjcomputing.com)"],
+      "detection_feasibility": "low — the record tampering happens at the registrar/registry/provider (off the victim's own systems); hunt-leaning via registry-lock monitoring, DNS-record change alerting, passive-DNS anomaly detection, DNSSEC validation failures and Certificate-Transparency monitoring rather than host telemetry",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector against intermediary providers and victims: exploitation of known CVEs on internet-facing systems — Cisco ASA directory traversal (CVE-2018-0296), Cisco IOS/switch and ISR RCEs (CVE-2017-3881, CVE-2017-6736), Apache Tomcat RCE (CVE-2017-12617), Drupalgeddon2 (CVE-2018-7600), phpMyAdmin PHP injection (CVE-2009-1151) and Shellshock (CVE-2014-6271). Consistent with reporting on Citrix/NetScaler and webmail/VPN RCE exploitation.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — exploitation of these specific CVEs on internet-facing appliances/servers is the strongest detection surface: WAF/appliance/web-server logs, exploit signatures, anomalous requests to vulnerable endpoints, post-exploit process/file activity and version/patch-state monitoring all apply",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "procedure_description": "Actors abuse internet-facing remote services for access, including SSH logons originating from commercial VPN providers and reuse of hosting/cPanel access to reach victim webservers.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous SSH/remote-service logons (VPN-provider source IPs, new geolocation, off-hours) are detectable via authentication logs and identity analytics, but blend with legitimate remote administration",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "procedure_description": "By compromising DNS providers, registrars, registries and IT/telecom service providers, actors abuse the trust those intermediaries hold to reach downstream ultimate victims (supply-chain / trusted-relationship access).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the compromise occurs at a trusted third party outside the victim's boundary; hunt/intel candidate via third-party-risk monitoring and provider-side change alerting",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "Actors use valid credentials — including a compromised-but-legitimate cPanel hosting account (2023 case) and credentials harvested via DNS-hijack MitM interception — to authenticate to victim systems.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — authentication with valid stolen credentials is detectable via anomalous-logon analytics (new source, impossible travel, first-seen device) but overlaps with legitimate use",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1557",
+      "technique_name": "Adversary-in-the-Middle",
+      "tactic": "credential-access",
+      "procedure_description": "Signature credential-access behavior: after DNS records are hijacked, victim traffic is transparently proxied through actor-controlled MitM nodes presenting valid TLS certificates. The nodes impersonate VPN concentrators, webmail and other login portals to capture submitted usernames and passwords before relaying traffic onward.",
+      "observed_tooling": ["Let's Encrypt / Comodo / Sectigo / self-signed X.509 certificates"],
+      "detection_feasibility": "low — the interception happens on off-victim MitM infrastructure between the client and the real service; hunt-leaning via certificate-transparency monitoring, TLS certificate/issuer changes for owned services, unexpected resolution IPs and DNSSEC-validation failures rather than endpoint telemetry",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1556",
+      "technique_name": "Modify Authentication Process",
+      "tactic": "credential-access",
+      "procedure_description": "Actors interpose spoofed login portals (served from MitM nodes) into the authentication flow of legitimate victim services, harvesting credentials as users authenticate to what appears to be the genuine portal.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the spoofed authentication flow lives on off-victim infrastructure; hunt candidate via user reports, TLS/issuer anomalies and impossible-travel authentication signals downstream",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "procedure_description": "Actors leverage exploitation of vulnerable server/appliance software (the CVEs above) to achieve code execution on internet-facing intermediary and victim systems.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — exploitation-driven execution is detectable via crash/anomaly telemetry and unexpected child processes spawned by server/appliance software, but requires instrumentation on the exploited host",
+      "sources": ["https://blog.talosintelligence.com/seaturtle/"]
+    },
+    {
+      "technique_id": "T1059.004",
+      "technique_name": "Command and Scripting Interpreter: Unix Shell",
+      "tactic": "execution",
+      "procedure_description": "Actors execute commands via the Unix/Bash shell on compromised Linux/Unix webservers to deploy SnappyTCP, run Socat, stage tools and copy/collect data.",
+      "observed_tooling": ["SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)", "Socat (modified, used as tunnelling / C2 relay)"],
+      "detection_feasibility": "high — shell command execution on Unix webservers is observable via auditd/EDR process telemetry; webserver processes (e.g. apache/php) spawning bash/socat/nohup children are high-fidelity indicators",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "Actors deploy the custom SnappyTCP reverse-shell webshell (MITRE S1163) into web-accessible directories on Linux/Unix victim servers for persistence and basic C2. Two variants exist: one uses OpenSSL to create a TLS-secured channel, the other sends requests in cleartext. On start it reads a config file with a C2 domain and port and issues an HTTP GET for the URI 'sy.php'; it acts on the response only if the server returns header 'X-Auth-43245-S-20' and the body is of sufficient size and does not begin with '@'.",
+      "observed_tooling": ["SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)"],
+      "detection_feasibility": "high — the SnappyTCP webshell is a crisp endpoint detection: new/unexpected executables or scripts in web roots, the 'sy.php' request URI and 'X-Auth-43245-S-20' header, and webserver-user processes making outbound connections are all actor-specific, high-fidelity signals",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns", "https://attack.mitre.org/software/S1163/"]
+    },
+    {
+      "technique_id": "T1564.011",
+      "technique_name": "Hide Artifacts: Ignore Process Interrupts",
+      "tactic": "stealth",
+      "procedure_description": "Actors launch SnappyTCP with NoHup so the reverse shell keeps running after the initiating SSH/web session closes, detaching it from session hang-up signals.",
+      "observed_tooling": ["NoHup (keep SnappyTCP running after session close)", "SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)"],
+      "detection_feasibility": "medium — nohup invocations wrapping network binaries (e.g. nohup ./snappytcp / nohup socat) are detectable via process-execution command-line telemetry on the host, but nohup is also used legitimately",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1027.004",
+      "technique_name": "Obfuscated Files or Information: Compile After Delivery",
+      "tactic": "stealth",
+      "procedure_description": "SnappyTCP is delivered/handled as source and compiled on the victim host (the OpenSSL-linked and cleartext variants are built locally), reducing static-detection surface for the delivered payload.",
+      "observed_tooling": ["SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)"],
+      "detection_feasibility": "medium — on-host compilation (gcc/cc invocations, especially by web/service users linking against OpenSSL) is detectable via process-execution telemetry but requires baselining on servers where compilers are legitimately present",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns", "https://attack.mitre.org/software/S1163/"]
+    },
+    {
+      "technique_id": "T1685.006",
+      "technique_name": "Clear Linux or Mac System Logs",
+      "tactic": "defense-impairment",
+      "procedure_description": "Following SSH sessions, actors overwrite/clear Linux system logs under /var/log as an anti-forensic measure to remove evidence of their activity.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — truncation/overwriting of /var/log files is detectable via file-integrity monitoring, auditd watches on log paths, and log-volume/continuity gaps forwarded off-host before tampering",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1690",
+      "technique_name": "Prevent Command History Logging",
+      "tactic": "defense-impairment",
+      "procedure_description": "Actors unset/clear the Bash command-history file and the MySQL history file to prevent their commands from being recorded during interactive sessions.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — unset HISTFILE / HISTFILESIZE=0 / removal of ~/.bash_history and ~/.mysql_history are detectable via process command-line and file-deletion auditing when host logging is forwarded off-box",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "tactic": "persistence",
+      "procedure_description": "Actors reuse compromised local accounts (e.g. the hijacked cPanel hosting account) to maintain access to victim webservers across sessions.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — reuse of local hosting/webserver accounts is detectable via authentication analytics (new source IP from VPN providers, off-hours logons) but overlaps with legitimate administration",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1213.006",
+      "technique_name": "Data from Information Repositories: Databases",
+      "tactic": "collection",
+      "procedure_description": "Actors install the Adminer web-based database management tool in public web directories to browse and extract data from victim MySQL/other databases.",
+      "observed_tooling": ["Adminer (web database management tool, staged in public web dirs)"],
+      "detection_feasibility": "medium — presence of Adminer (or similar db-admin PHP tools) in web roots and anomalous database queries from the webserver are detectable via file-integrity monitoring and DB query auditing, but require web/DB-tier visibility",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1114.001",
+      "technique_name": "Email Collection: Local Email Collection",
+      "tactic": "collection",
+      "procedure_description": "Actors collect victim e-mail archives from the compromised mail/web host — a primary espionage objective — copying the mailbox archive for staging and retrieval.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — access to and copying of local mailbox/archive files by non-mail-service processes is detectable via file-access auditing on the mail host, but needs mailbox-path instrumentation",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "Actors use tar to compress collected e-mail archives prior to exfiltration.",
+      "observed_tooling": ["tar (archive email data)"],
+      "detection_feasibility": "medium — tar/gzip execution producing large archives of mailbox/data directories, especially by web/service accounts, is detectable via process command-line and file-write telemetry",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1074.002",
+      "technique_name": "Data Staged: Remote Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Actors copy the tar'd e-mail archive into the public web directory of the compromised website so it is directly reachable from the internet for later retrieval.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — appearance of large archive files (e.g. .tar/.tar.gz) inside internet-facing web roots is a strong, specific detection via file-integrity monitoring and web-root content baselining",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Actors collect files and data of interest from the local compromised system in support of espionage objectives.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — local data collection is common; suspicious mainly via staging patterns (into web roots) and process-lineage context",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "SnappyTCP communicates over HTTP: on startup it issues an HTTP GET for URI 'sy.php' to its configured C2 and keys off the response header 'X-Auth-43245-S-20'; channels are established to C2 domains over port 443.",
+      "observed_tooling": ["SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)"],
+      "detection_feasibility": "high — outbound HTTP GETs to '/sy.php' and the distinctive 'X-Auth-43245-S-20' header from a webserver host are actor-specific network detections via proxy/IDS and host netflow",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns", "https://attack.mitre.org/software/S1163/"]
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "One SnappyTCP variant uses OpenSSL to wrap its C2 channel in TLS, encrypting the reverse-shell traffic (over port 443) to blend with normal HTTPS and defeat inspection.",
+      "observed_tooling": ["SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)"],
+      "detection_feasibility": "medium — TLS-wrapped C2 blends with normal HTTPS; detectable via JA3/JA4 TLS-fingerprint anomalies, connections to the documented C2 domains/IPs, and a webserver process opening outbound 443 to non-CDN hosts",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns", "https://attack.mitre.org/software/S1163/"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors use a modified Socat (retrieved from actor infrastructure at 193.34.167.245/c00n/socat) to relay/tunnel connections and proxy C2, obscuring the true source of traffic.",
+      "observed_tooling": ["Socat (modified, used as tunnelling / C2 relay)"],
+      "detection_feasibility": "medium — socat execution and the resulting relay connections are detectable via process command-line and network telemetry on the host, though socat is also a legitimate admin tool",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "procedure_description": "Actors exfiltrate the staged e-mail archive by downloading it directly over HTTP/HTTPS from the internet-accessible public web directory of the compromised host (web-accessible file retrieval).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — large outbound web downloads of archive files from web roots to non-victim client IPs are detectable via webserver access logs and egress monitoring, but require web-tier log correlation",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Actors can also move collected data out over the SnappyTCP/Socat C2 channel established to their infrastructure.",
+      "observed_tooling": ["SnappyTCP reverse-shell webshell (TLS/OpenSSL and cleartext variants)", "Socat (modified, used as tunnelling / C2 relay)"],
+      "detection_feasibility": "medium — data egress riding the C2 channel is detectable via volumetric/beaconing anomalies from a webserver host to the documented C2 endpoints, but is masked when TLS-wrapped",
+      "sources": ["https://www.huntandhackett.com/blog/turkish-espionage-campaigns"]
+    }
+  ],
+  "detection_signals": [
+    "Unexpected changes to your organization's authoritative NS and A records at the registrar/registry/DNS provider, especially abrupt TTL reductions toward 1 second — monitor via registry-lock alerts, DNS-record change monitoring and passive DNS",
+    "New / unexpected TLS certificates issued for your owned domains (Let's Encrypt, Comodo/Sectigo) surfacing in Certificate Transparency logs, or issuer/serial changes on portals — indicates possible MitM staging",
+    "Client resolution of your services to unexpected IPs (compare against the documented MitM VPS IP set) and DNSSEC-validation failures",
+    "SnappyTCP webshell on Linux/Unix web hosts: new/unexpected executables or scripts in web roots; webserver user (apache/www-data/php) spawning bash, socat or nohup child processes",
+    "Outbound HTTP GET to request URI '/sy.php' and the distinctive response header 'X-Auth-43245-S-20'; webserver host opening outbound connections on port 443 to non-CDN hosts / documented C2 domains",
+    "On-host compilation of a network binary linking OpenSSL by a web/service account (gcc/cc invocations building the SnappyTCP TLS variant)",
+    "nohup wrapping a network binary (nohup ./snappytcp, nohup socat) to survive session close",
+    "Retrieval of a modified socat from http://193.34.167.245/c00n/socat and subsequent socat relay/tunnel connections",
+    "Adminer (or similar db-admin PHP) appearing in public web directories and anomalous DB queries from the webserver",
+    "Large tar/tar.gz archives of mailbox/e-mail data appearing inside internet-facing web roots, followed by external HTTP(S) downloads of those files",
+    "Anti-forensics on Linux hosts: overwriting/truncation of /var/log files, unset HISTFILE / removal of ~/.bash_history and MySQL history immediately after SSH sessions",
+    "Exploitation attempts and post-exploit activity against internet-facing Cisco ASA/IOS/ISR, Apache Tomcat, Drupal, phpMyAdmin and Bash (CVE-2018-0296, CVE-2017-3881, CVE-2017-6736, CVE-2017-12617, CVE-2018-7600, CVE-2009-1151, CVE-2014-6271) — appliance/web-server logs and version/patch-state monitoring",
+    "SSH logons to hosting/cPanel and webservers originating from commercial VPN provider IP ranges (e.g. M247, Arelion, Snel.com) or the documented actor IPs",
+    "Traffic to/from documented C2 and MitM infrastructure: 82.102.19.88, 62.115.255.163, 193.34.167.245, 93.115.22.212, 95.179.176.250, 95.179.150.101, and the 26 Talos MitM VPS IPs; domains forward.boord.info, lo0.systemctl.network, and the intersecdns.com / lcjcomputing.com nameservers"
+  ],
+  "iocs": {
+    "ips": [
+      "95.179.150.101",
+      "199.247.3.191",
+      "37.139.11.155",
+      "185.15.247.140",
+      "206.221.184.133",
+      "188.166.119.57",
+      "185.42.137.89",
+      "82.196.8.43",
+      "159.89.101.204",
+      "146.185.145.202",
+      "178.62.218.244",
+      "139.162.144.139",
+      "142.54.179.69",
+      "193.37.213.61",
+      "108.61.123.149",
+      "212.32.235.160",
+      "198.211.120.186",
+      "146.185.143.158",
+      "146.185.133.141",
+      "185.203.116.116",
+      "95.179.150.92",
+      "174.138.0.113",
+      "128.199.50.175",
+      "139.59.134.216",
+      "45.77.137.65",
+      "142.54.164.189",
+      "199.247.17.221",
+      "82.102.19.88",
+      "62.115.255.163",
+      "193.34.167.245",
+      "93.115.22.212",
+      "95.179.176.250"
+    ],
+    "domains": [
+      "ns1.intersecdns.com",
+      "ns2.intersecdns.com",
+      "ns1.lcjcomputing.com",
+      "ns2.lcjcomputing.com",
+      "forward.boord.info",
+      "lo0.systemctl.network"
+    ],
+    "emails": [],
+    "hashes": [],
+    "cves": [
+      "CVE-2009-1151",
+      "CVE-2014-6271",
+      "CVE-2017-3881",
+      "CVE-2017-6736",
+      "CVE-2017-12617",
+      "CVE-2018-0296",
+      "CVE-2018-7600"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Primary sources: Cisco Talos Sea Turtle reporting (2019) for the DNS-hijacking campaign, exploited CVEs, MitM/nameserver infrastructure and the 26 MitM VPS IPs; Hunt & Hackett 'Turkish espionage campaigns in the Netherlands' (2024-01-05) for SnappyTCP, Socat, Adminer, anti-forensics, email-archive collection/staging and the Netherlands C2/VPN IOCs; enriched with MITRE ATT&CK Group Sea Turtle G1041 and Software SnappyTCP S1163, and PwC/Microsoft (Marbled Dust) corroboration. Overall confidence is high for the technical TTPs/IOCs (multiple independent primary vendor reports with IOC appendices); attribution to a Türkiye-nexus state-aligned actor is medium-high (strong victimology/tradecraft convergence, no public indictment naming a state entity) and is reflected in actor.attribution_confidence. actor.mitre_id intentionally left empty per tasking; the public MITRE group id G1041 is cited only in source/aliases/notes, never as the actor id. ATT&CK normalization for THIS environment's bundled (reorganized) dataset: Defense-Evasion techniques use tactic slug 'stealth'; anti-forensic log/history clearing uses the 'defense-impairment' family — Clear Linux/Mac System Logs = T1685.006 and Prevent Command History Logging = T1690 (both validated present in attack_dump.json). Every technique_id in this pack was validated as a key in attack_dump.json (697 techniques) before inclusion — zero invalid IDs. DETECTION-CANDIDATE (medium/high feasibility, on-host/appliance): T1190 CVE exploitation, T1505.003 SnappyTCP webshell, T1059.004 Unix-shell child processes, T1071.001 sy.php + X-Auth-43245-S-20 C2, T1074.002 archives in web roots, T1685.006/T1690 anti-forensics, T1560.001 tar, T1213.006 Adminer, T1114.001 email collection, T1090 socat, T1078/T1133 anomalous SSH/cPanel logons. HUNT-LEANING (low feasibility, off-victim/infrastructure/DNS): T1584.002 DNS-server compromise & record tampering (observed at registrar/resolver, not on the victim), T1557/T1556 MitM credential interception on off-victim nodes, T1588.004/T1608.003 certificate acquisition/staging (Certificate-Transparency hunt), T1583.001/.002/.003 adversary infrastructure, T1590.002/T1591 reconnaissance, T1199 trusted-relationship compromise — these route to threat-hunting via DNS-change monitoring, passive DNS, DNSSEC and CT-log analysis rather than detection engineering. IOC handling: all indicators are taken verbatim from the Talos and Hunt & Hackett appendices/blog bodies; defang brackets removed for raw machine-readable values per spec; legitimate/hosting-provider ASNs (M247, Arelion, Snel.com) named only as context in detection_signals, not as IOCs. NO file hashes are included: the only sample hash surfaced (a SnappyTCP-related modified-Socat SHA-1) was returned truncated to 39 hex characters and could not be validated to a full 40-char SHA-1, so it was intentionally omitted rather than risk a malformed indicator — ingest the Hunt & Hackett report's original IOC table directly if the sample hash is required downstream."
+}

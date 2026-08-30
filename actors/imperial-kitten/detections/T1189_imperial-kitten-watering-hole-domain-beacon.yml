@@ -1,0 +1,40 @@
+title: Watering-Hole Beacon to CDN/Analytics-Masquerading Domains (Imperial Kitten Drive-by)
+id: 5fbb2420-7566-4ec4-883a-d7934a20887a
+status: experimental
+description: |
+    Detects browser or endpoint DNS/HTTP resolution of Imperial Kitten (CURIUM / Yellow Liderc)
+    watering-hole domains that masquerade as CDN/analytics services. The actor compromises legitimate
+    (Israeli) websites and injects JavaScript that beacons visitor fingerprinting data to these
+    domains before staging follow-on payloads (T1189 Drive-by Compromise). Keys on DNS queries to the
+    known CDN/analytics-lookalike domain set from the CrowdStrike appendix.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1189
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection_domains:
+        QueryName:
+            - 'cdn.jguery.org'
+            - 'cdn-analytics.co'
+            - 'jquery-cdn.online'
+            - 'jquery-stack.online'
+            - 'cdnpakage.com'
+            - 'fastanalizer.live'
+            - 'fastanalytics.live'
+            - 'hotjar.info'
+            - 'jquery-code-download.online'
+            - 'analytics-service.cloud'
+            - 'analytics-service.online'
+            - 'prostatistics.live'
+    condition: selection_domains
+falsepositives:
+    - These are actor-registered lookalike domains with no legitimate business use; any resolution is
+      suspicious. Confirm the domain has not been sinkholed or reused before escalating
+level: high

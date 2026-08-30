@@ -1,0 +1,39 @@
+title: Discord API/Webhook C2 From Non-Browser Process (Imperial Kitten Discord RAT)
+id: bfe6e21c-2cb2-4244-b5c8-d5014e066f74
+status: experimental
+description: |
+    Detects connections to Discord API / CDN / webhook endpoints (discord.com/api, discordapp.com,
+    cdn.discordapp.com) originating from a process that is not a browser or the Discord client.
+    Imperial Kitten (CURIUM / Yellow Liderc) operated a Discord-based RAT that abuses Discord as a
+    C2/relay channel (T1102 Web Service). Keys on the destination host plus an exclusion of common
+    legitimate clients so implant traffic stands out.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1102
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_discord:
+        Initiated: 'true'
+        DestinationHostname|contains:
+            - 'discord.com'
+            - 'discordapp.com'
+            - 'discord.gg'
+    filter_legit:
+        Image|endswith:
+            - '\Discord.exe'
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\brave.exe'
+    condition: selection_discord and not filter_legit
+falsepositives:
+    - Custom internal tools or games with Discord integration - allowlist the specific process where
+      Discord use is sanctioned
+level: medium

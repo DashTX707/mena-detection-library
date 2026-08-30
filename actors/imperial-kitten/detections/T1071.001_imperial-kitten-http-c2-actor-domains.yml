@@ -1,0 +1,36 @@
+title: HTTP(S) C2 and Payload Retrieval to Actor Infrastructure (Imperial Kitten)
+id: 700914dc-a225-4968-aa7d-0c4a4fb8a8f5
+status: experimental
+description: |
+    Detects endpoint DNS/HTTP resolution of Imperial Kitten (CURIUM / Yellow Liderc) second-stage
+    command-and-control and download domains used by implants for tasking and to pull additional
+    payloads/tooling (T1071.001 Web Protocols, T1105 Ingress Tool Transfer). Keys on the actor's
+    hardcoded C2/staging domains (blackcrocodile.online, updatenewnet.com, link.mymana.ir,
+    cdnpakage.com and the CDN-masquerading set). Resolution from non-browser processes or immediately
+    followed by file writes is highest fidelity.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1105
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection_domains:
+        QueryName:
+            - 'blackcrocodile.online'
+            - 'updatenewnet.com'
+            - 'link.mymana.ir'
+            - 'update-platform-check.online'
+            - 'cdnpakage.com'
+            - 'jquery-code-download.online'
+    condition: selection_domains
+falsepositives:
+    - Actor-controlled domains with no legitimate business use; any resolution is suspicious.
+      Validate the domain is still actor-attributed and not sinkholed before escalating
+level: high

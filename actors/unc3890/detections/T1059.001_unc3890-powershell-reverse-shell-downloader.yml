@@ -1,0 +1,42 @@
+title: UNC3890 PowerShell TCP Reverse Shell and Downloader Cradle
+id: 6c5b4a39-2817-4605-a4f3-e2d1c0b9a8f7
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) PowerShell tradecraft (T1059.001 PowerShell): PowerShell
+    downloader cradles, a PowerShell TCP reverse shell, and Unicorn-generated downgrade/shellcode
+    injection payloads. Keys on PowerShell script-block logging for raw TCP socket construction
+    (System.Net.Sockets.TCPClient with a network stream), download cradles
+    (Net.WebClient/DownloadString/Invoke-Expression), and version-downgrade or in-memory shellcode
+    patterns characteristic of Unicorn.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.unc3890
+logsource:
+    category: ps_script
+    product: windows
+detection:
+    selection_revshell:
+        ScriptBlockText|contains|all:
+            - 'System.Net.Sockets.TCPClient'
+            - 'GetStream'
+    selection_downloader:
+        ScriptBlockText|contains:
+            - 'Net.WebClient'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'IEX (New-Object'
+    selection_unicorn:
+        ScriptBlockText|contains|all:
+            - '-version 2'
+            - 'FromBase64String'
+    condition: selection_revshell or selection_downloader or selection_unicorn
+falsepositives:
+    - Administrative scripts occasionally use WebClient downloads - correlate the initiating user,
+      parent process and destination host before escalating
+level: high

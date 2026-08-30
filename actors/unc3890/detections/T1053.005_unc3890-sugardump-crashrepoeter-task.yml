@@ -1,0 +1,37 @@
+title: UNC3890 SUGARDUMP Misspelled 'CrashRepoeter' Scheduled Task Persistence
+id: 1a2b3c4d-5e6f-4708-9192-a3b4c5d6e7f8
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARDUMP SMTP variant persisting via a logon-triggered
+    scheduled task (T1053.005 Scheduled Task). SUGARDUMP copies itself to
+    %AppData%\Microsoft\Internet Explorer\TabRoaming\CrashReporter.exe and registers a task named
+    'MicrosoftInternetExplorerCrashRepoeterTaskMachineUA' (Windows 7) or
+    'MicrosoftEdgeCrashRepoeterTaskMachineUA' (other versions). The distinctive misspelling
+    'CrashRepoeter' (vs. the legitimate 'CrashReporter') is a high-fidelity actor artifact. Keys on
+    Task Scheduler operational logging (Event ID 4698 task creation) and the misspelled task name.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.unc3890
+logsource:
+    product: windows
+    service: taskscheduler
+detection:
+    selection_event:
+        EventID:
+            - 4698
+            - 4702
+    selection_name:
+        TaskName|contains:
+            - 'CrashRepoeter'
+            - 'CrashRepoeterTaskMachineUA'
+    condition: all of selection_*
+falsepositives:
+    - The misspelling 'Repoeter' makes benign collisions extremely unlikely - any match warrants
+      investigation of the task action binary and TabRoaming path
+level: high

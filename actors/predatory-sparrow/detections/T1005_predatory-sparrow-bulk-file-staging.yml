@@ -1,0 +1,48 @@
+title: Predatory Sparrow Bulk Local Document Collection and Archive Staging
+id: 6d2a9f14-7c58-4b30-9e61-4a1c7e3d5b82
+status: experimental
+description: |
+    Detects bulk local-system data collection consistent with the Predatory Sparrow steel-plant operation,
+    which gathered sensitive and 'top secret' documents from compromised hosts before the destructive/leak
+    phase. Keys on archive utilities (rar/7z/zip) or robocopy staging large numbers of document files into a
+    single output archive/staging directory - the collect-and-stage pattern that precedes exfiltration. Best
+    used with process-lineage context.
+references:
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1005
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_archiver:
+        Image|endswith:
+            - '\rar.exe'
+            - '\winrar.exe'
+            - '\7z.exe'
+            - '\7za.exe'
+            - '\robocopy.exe'
+    selection_docs:
+        CommandLine|contains:
+            - '.doc'
+            - '.docx'
+            - '.pdf'
+            - '.xls'
+            - '.xlsx'
+            - '*.doc'
+            - '-r '
+    selection_add:
+        CommandLine|contains:
+            - ' a '
+            - ' -m*'
+            - '/mir'
+            - '/e '
+    condition: selection_archiver and (selection_docs or selection_add)
+falsepositives:
+    - Backup, migration and legitimate archiving jobs bulk-stage documents - value is in the process lineage
+      (script/wiper toolchain parent) and proximity to a destructive or leak event
+level: low

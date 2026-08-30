@@ -1,0 +1,41 @@
+title: UNC3890 SUGARDUMP Rundll32 Proxy Execution from Office Macro
+id: 8d7c6b5a-4939-4281-b716-05f4e3d2c1b0
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARDUMP HTTP variant being proxy-executed via
+    rundll32.exe after a malicious Excel/.xls macro (fake NexisLexis job offer) drops its PE payload
+    (T1218.011 Rundll32). Keys on rundll32.exe spawned as a child of an Office application, or
+    rundll32.exe loading a DLL/PE from a user-writable download/temp path. Office-spawns-rundll32 is a
+    strong process-lineage signal since Office products do not normally launch rundll32.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1218.011
+    - mena-detection-library.unc3890
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_rundll:
+        Image|endswith: '\rundll32.exe'
+    selection_office_parent:
+        ParentImage|endswith:
+            - '\excel.exe'
+            - '\winword.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+    selection_userpath:
+        CommandLine|contains:
+            - '\AppData\'
+            - '\Downloads\'
+            - '\Temp\'
+            - '\Users\Public\'
+    condition: selection_rundll and (selection_office_parent or selection_userpath)
+falsepositives:
+    - Some add-ins or document automation legitimately invoke rundll32 - validate the DLL/export and
+      the download origin of the loaded module before escalating
+level: high

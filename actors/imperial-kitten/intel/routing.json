@@ -1,0 +1,223 @@
+{
+  "actor": "Imperial Kitten (CURIUM)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "rationale": "medium — beaconing from user browsers to CDN/analytics-masquerading domains and unexpected outbound JS callbacks are detectable via web-proxy/DNS telemetry against the known watering-hole domains, but the initial profiling blends with normal web traffic"
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "medium — exploitation and SQLi attempts against public-facing apps are observable via WAF/web-server logs and IDS signatures, but attribution to this actor requires corroborating infrastructure"
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "rationale": "medium — VPN logons with stolen credentials are detectable via authentication analytics (impossible travel, new device/ASN, off-hours) but blend with legitimate remote access"
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — inbound macro-enabled Office attachments are detectable via mail-gateway sandboxing and attachment-type policy, but delivery itself is probabilistic to catch"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "high — Office applications (EXCEL.EXE/WINWORD.EXE) spawning script interpreters or writing executable content is a high-fidelity child-process detection via EDR process-lineage"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high — VBA macro execution spawning child processes / writing files is detectable via AMSI, macro-execution telemetry and Office-to-interpreter process lineage"
+    },
+    {
+      "technique_id": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "tactic": "execution",
+      "rationale": "medium — Python interpreter execution originating from an Office-spawned process and connecting outbound is detectable via process and network telemetry, though Python is common in some environments"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — cmd.exe usage is ubiquitous; value comes from suspicious command-line content and process lineage from implants/Office parents"
+    },
+    {
+      "technique_id": "T1574.014",
+      "technique_name": "Hijack Execution Flow: AppDomainManager",
+      "tactic": "stealth",
+      "rationale": "medium — AppDomainManager hijacking is detectable via unexpected .config files / APPDOMAIN_MANAGER environment variables and anomalous managed-DLL loads into .NET hosts, but requires .NET-aware instrumentation"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation/modification of Run-key values pointing at implant paths is directly observable via registry-modification telemetry (Sysmon EID 13) and autostart auditing"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and tasks executing binaries from unusual paths are strong detection candidates"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high — service installation (Event ID 7045) of an unsigned/unusual binary and service names like WindowsServiceLive are directly observable via service-creation auditing"
+    },
+    {
+      "technique_id": "T1055.001",
+      "technique_name": "Process Injection: Dynamic-link Library Injection",
+      "tactic": "stealth",
+      "rationale": "medium — cross-process/managed-DLL injection is detectable via EDR image-load and injection telemetry, but AppDomainManager loading is subtler than classic CreateRemoteThread injection"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — procdump/comsvcs.dll accessing lsass.exe and writing a dump file is a high-fidelity detection via process-access (Sysmon EID 10) and command-line telemetry"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — internal scanning bursts and known scanner binaries (netscan.exe, nmap) are detectable via connection-fanout/east-west analytics and process signatures"
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "rationale": "medium — copying of tool binaries over SMB admin shares and their execution on new hosts is detectable via file-write plus remote-execution telemetry"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "rationale": "high — PAExec/PsExec service creation (PAEXEC-* service names, Event ID 7045) and Type-3 admin-share logons (4624/5140) are high-fidelity lateral-movement detections"
+    },
+    {
+      "technique_id": "T1071.003",
+      "technique_name": "Application Layer Protocol: Mail Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — non-mail-client processes making IMAP/SSL (port 993) connections to consumer webmail (imap.yandex.com) or update-platform-check.online is an anomalous and detectable pattern via network+process correlation, though it hides inside legitimate mail traffic"
+    },
+    {
+      "technique_id": "T1102",
+      "technique_name": "Web Service",
+      "tactic": "command-and-control",
+      "rationale": "medium — beaconing to Discord API/webhook endpoints from non-user processes is detectable via proxy/DNS and process correlation, but blends with legitimate Discord usage"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "rationale": "high — unsanctioned MeshAgent installation and outbound connections to MeshCentral endpoints are detectable via known-binary/process signatures and RMM-allowlist policy"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP(S) callbacks to the known actor domains/IPs are detectable via proxy/DNS blocklisting and JA3/beacon analytics, but HTTPS C2 blends with normal web traffic absent IOC context"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound IMAP/email uploads from non-mail processes and data volumes to webmail/Discord are detectable via network+process correlation, but exfil hidden in email traffic is challenging to isolate"
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "rationale": "medium — CDN/analytics-lookalike domains and innocuously named service binaries in unusual paths are detectable via name/path baselining and domain-similarity analytics"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy/encoded payloads and obfuscated script content are detectable via entropy analytics and AMSI script-block logging, but require dedicated scanning"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — post-foothold downloads from actor domains/IPs and files written after implant callbacks are detectable via network + file-creation telemetry when correlated to known IOCs"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1584.004",
+      "technique_name": "Compromise Infrastructure: Server",
+      "tactic": "resource-development",
+      "rationale": "low — compromise of third-party/victim-adjacent web servers is off the defender's own endpoints; intel/hunt candidate via web-integrity monitoring and threat-intel on compromised-site infrastructure"
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "rationale": "low — actor-side staging of drive-by targets occurs on infrastructure the defender does not control; hunt/intel candidate via watering-hole domain intelligence"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain registration is off-victim; intel/hunt candidate via passive DNS, registration-pattern and typosquat monitoring"
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — creation of actor webmail accounts is off-victim; intel candidate, though the mailbox addresses themselves are usable network IOCs"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware development is off-victim; intel candidate. Downstream execution of the implants is where host detection lands"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled personas live on third-party social platforms; intel/brand-monitoring candidate"
+    },
+    {
+      "technique_id": "T1552",
+      "technique_name": "Unsecured Credentials",
+      "tactic": "credential-access",
+      "rationale": "low — harvesting credentials from files/config leaves little discrete signal; hunt candidate via file-access telemetry and honeytokens"
+    },
+    {
+      "technique_id": "T1595",
+      "technique_name": "Active Scanning",
+      "tactic": "reconnaissance",
+      "rationale": "low — external scanning of the target's perimeter is largely off-victim from an endpoint perspective; medium at the network edge but weakly attributable"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — host-info enumeration is common and low-signal; hunt candidate via recon-burst process-lineage correlation"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — local data collection is common; suspicious mainly via staging patterns and process-lineage context; hunt candidate"
+    }
+  ],
+  "summary": {
+    "total": 35,
+    "detection": 25,
+    "hunt": 10
+  }
+}

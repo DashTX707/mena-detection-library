@@ -1,0 +1,418 @@
+{
+  "report_title": "UNC3890 (Suspected Iran-nexus; 'Operation Sugarush') Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Mandiant / Google Cloud Threat Intelligence 'Suspected Iranian Actor Targeting Israeli Shipping, Healthcare, Government and Energy Sectors' (2022-08-15, https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping); The Hacker News coverage (https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html); SecurityWeek (https://www.securityweek.com/iranian-group-targeting-israeli-shipping-and-other-key-sectors/). UNC3890 is a Mandiant uncategorized cluster with no public MITRE ATT&CK group id.",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "UNC3890",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "UNC3890",
+      "Operation Sugarush (campaign name)"
+    ],
+    "related_clusters": [
+      "Iran-nexus espionage clusters targeting Israel (association suspected, not confirmed by Mandiant)"
+    ],
+    "attribution": "Suspected Iran-nexus. Mandiant assesses with MEDIUM confidence that UNC3890 is linked to Iran, based on: use of a Farsi-language artifact in SUGARDUMP (the .NET project name 'yaal' — Farsi for a horse's mane — and an AES password string containing 'KHODA', Farsi for 'God'); consistent targeting of Israeli shipping, government, energy, healthcare, aviation and defense entities aligning with Iranian strategic interest; and possible weak overlaps with prior Iranian activity. Mandiant did not tie UNC3890 to a specific named Iranian group. Attribution is a cluster assessment, not a confirmed government attribution.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Israel"
+    ],
+    "targeted_regions_global": [
+      "Israel"
+    ],
+    "targeted_sectors": [
+      "Shipping / maritime",
+      "Government",
+      "Energy",
+      "Healthcare",
+      "Aviation",
+      "Defense"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Operation Sugarush (UNC3890 Israeli-shipping espionage cluster)",
+        "date": "Late 2020 through mid-2022 (SUGARDUMP versions from early 2021; ongoing at time of publication August 2022)",
+        "summary": "Espionage-motivated intrusion set against Israeli shipping/maritime, government, energy, healthcare, aviation and defense targets. Initial access via (1) an elaborate email social-engineering effort using fake job offers (e.g., a fraudulent NexisLexis/Nexus offer, a fake robotics/AI 'robotic dolls' commercial video lure) and (2) a watering-hole: malicious content embedded in the legitimate login page of an Israeli shipping company that reported back visitor data to an actor C2 and could serve fake login pages. Actors spoofed Office 365, LinkedIn (typosquat lirikedin[.]com / xn--lirkedin-vkb[.]com), Facebook (rnfacebook[.]com), Pfizer and other brands via fake login/credential-capture pages. Custom malware SUGARUSH (small first-stage backdoor: creates a Windows service, opens a reverse TCP shell to a hardcoded C2 on port 4585 and runs CMD commands) and SUGARDUMP (browser-credential stealer targeting Chromium browsers and Firefox, exfiltrating via SMTP to webmail (Gmail/Yahoo/Yandex) and later via HTTP to actor C2). Public offensive tooling also used: Metasploit, Unicorn (PowerShell downgrade/shellcode), and NorthStar C2.",
+        "source_url": "https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"
+      }
+    ]
+  },
+  "threat_actors": ["UNC3890"],
+  "targeted_regions": ["Israel"],
+  "targeted_sectors": ["Shipping / maritime", "Government", "Energy", "Healthcare", "Aviation", "Defense"],
+  "malware": [
+    "SUGARUSH (custom first-stage backdoor / reverse-shell)",
+    "SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"
+  ],
+  "tooling_observed": [
+    "Metasploit (payloads/framework)",
+    "Unicorn (PowerShell downgrade + shellcode injection)",
+    "NorthStar C2 (open-source C2 framework)",
+    "PowerShell downloaders / PowerShell TCP reverse shell",
+    "Watering-hole / fake login credential-capture pages spoofing Office 365, LinkedIn, Facebook, Pfizer"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "UNC3890 developed proprietary/custom malware, including the SUGARUSH first-stage backdoor and multiple versions of the SUGARDUMP browser-credential stealer (early local-file version 2021, SMTP-exfil version late 2021/early 2022, HTTP-exfil version April 2022). Farsi-language development artifacts (.NET project name 'yaal', AES password containing 'KHODA') were embedded in SUGARDUMP.",
+      "observed_tooling": ["SUGARUSH (custom first-stage backdoor / reverse-shell)", "SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "low — malware development is an off-victim adversary activity; intel/attribution candidate. Downstream execution of the developed malware is where host detection lands.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "UNC3890 obtained and operationalized publicly available offensive tooling: the Metasploit framework, Unicorn (PowerShell downgrade/shellcode injection generator), and the open-source NorthStar C2 framework.",
+      "observed_tooling": ["Metasploit (payloads/framework)", "Unicorn (PowerShell downgrade + shellcode injection)", "NorthStar C2 (open-source C2 framework)"],
+      "detection_feasibility": "low — tool acquisition is off-endpoint; intel/hunt candidate. The downstream use of each tool (Metasploit stagers, NorthStar C2 beacons) is the detectable surface.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "UNC3890 registered typosquatting and brand-spoofing domains used for watering-hole/fake-login and lure infrastructure — e.g., lirikedin[.]com (punycode xn--lirkedin-vkb[.]com, fake LinkedIn), rnfacebook[.]com (fake Facebook), office365update[.]live (fake Office 365), pfizerpoll[.]com, celebritylife[.]news, fileupload[.]shop, naturaldolls[.]store and xxx-doll[.]com (robotic-dolls lure), and aspiremovecentraldays[.]net.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — adversary domain registration is off-victim; intel/hunt candidate via typosquat/brand monitoring and newly-registered-domain tracking.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "UNC3890 established free webmail accounts (Yandex, Yahoo, Gmail, ProtonMail) under the persona 'john.macperson' / 'john.macperson2021' used as SUGARDUMP SMTP exfiltration senders and recipients.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — actor-controlled webmail accounts are off-victim; intel candidate. On-victim, outbound SMTP to these specific mailboxes is the detectable behavior (see SUGARDUMP exfil TTP).",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "procedure_description": "UNC3890 compromised/embedded malicious content in the legitimate login page of an Israeli shipping company to stage a watering hole, and stood up fake login pages spoofing Office 365, LinkedIn, Facebook and Pfizer on actor-controlled hosting (e.g., 128.199.6.246, 185.170.215.170) to capture visitor data and credentials.",
+      "observed_tooling": ["Watering-hole / fake login credential-capture pages spoofing Office 365, LinkedIn, Facebook, Pfizer"],
+      "detection_feasibility": "low — staging of a watering hole and fake-login infrastructure occurs off-victim / on third-party sites; intel/hunt candidate via web content-integrity monitoring of your own login pages and phishing-infrastructure tracking.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "UNC3890 used a strategic web compromise / watering hole: malicious content hosted on the legitimate login page of an Israeli shipping company reported visitor data back to an actor C2 (128.199.6.246) and could redirect victims to fake login pages, targeting visitors from Israeli shipping/maritime and related sectors.",
+      "observed_tooling": ["Watering-hole / fake login credential-capture pages spoofing Office 365, LinkedIn, Facebook, Pfizer"],
+      "detection_feasibility": "low — the watering-hole compromise is on a third-party legitimate site and the initial visitor beacon blends with normal web traffic; hunt candidate via egress to the watering-hole C2 and web-content-integrity monitoring of partner/owned login pages.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "UNC3890 delivered elaborate email social-engineering lures containing links to actor-controlled content — fake job offers (e.g., a fraudulent NexisLexis/Nexus offer), fake AI/robotics 'robotic dolls' commercials, and links to a fake Israeli dating-service login and other spoofed login pages — to deliver malware and harvest credentials.",
+      "observed_tooling": ["Watering-hole / fake login credential-capture pages spoofing Office 365, LinkedIn, Facebook, Pfizer"],
+      "detection_feasibility": "medium — inbound emails with links to newly-registered typosquat/brand-spoof domains are detectable at the mail gateway/proxy via URL reputation and lookalike-domain analytics, but the social lure content itself is hunt-leaning.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "UNC3890 relied on victims clicking links in social-engineering emails (fake job offers, fake commercials, fake dating-service/login pages) to reach credential-capture pages and malware-hosting infrastructure.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — user clicks on links are largely a human/social action; hunt candidate correlating proxy/DNS resolution of actor typosquat domains with the user that browsed them.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "UNC3890 lured victims into executing malicious files: a fake VLC installer '3-Video-VLC.exe' that dropped/ran 'CrashReporter.exe' (SUGARDUMP SMTP variant) while displaying a 'RealDo1080.mp4' robotic-dolls video, and a malicious Excel/.xls macro document (fake NexisLexis job offer) that dropped the SUGARDUMP HTTP variant executed via RunDLL.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "high — execution of a fake installer/macro document spawning CrashReporter.exe or a rundll32-launched PE from user-download/temp paths, immediately after opening a lure document, is a strong process-lineage detection via EDR (process creation, parent-child, Office-spawns-child).",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "UNC3890 used PowerShell downloaders and a PowerShell TCP reverse shell, and used the Unicorn tool to generate PowerShell-based shellcode-injection / downgrade payloads.",
+      "observed_tooling": ["PowerShell downloaders / PowerShell TCP reverse shell", "Unicorn (PowerShell downgrade + shellcode injection)"],
+      "detection_feasibility": "high — PowerShell script-block/module logging captures downloader cradles, TCP reverse-shell socket code, and Unicorn-style downgrade/injection patterns; suspicious PowerShell launched from Office/installer lineage adds context.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "The SUGARUSH backdoor establishes a reverse TCP shell to its hardcoded C2 and executes CMD (Windows command shell) commands received from the operator.",
+      "observed_tooling": ["SUGARUSH (custom first-stage backdoor / reverse-shell)"],
+      "detection_feasibility": "high — cmd.exe spawned by an anomalous parent (a Windows service host / SUGARUSH process) with an outbound TCP socket is a strong EDR process-creation + network-correlation detection.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "stealth",
+      "procedure_description": "The SUGARDUMP HTTP variant (April 2022) was dropped by a malicious Excel macro and its PE payload was executed via RunDLL (rundll32.exe) to proxy execution of the credential-stealer.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "high — rundll32.exe launched by a child of an Office/Excel process, or loading a non-standard DLL/PE from a user path, is a high-fidelity EDR detection (rundll32 abuse + Office-spawns-child).",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "SUGARUSH creates a Windows service named 'Service1' (establishing 'Logs'/'ServiceLog' folders) to persist and run its reverse-shell backdoor.",
+      "observed_tooling": ["SUGARUSH (custom first-stage backdoor / reverse-shell)"],
+      "detection_feasibility": "high — new service creation (Event ID 7045 / service-install) named 'Service1' pointing at an unusual binary is directly observable and actor-specific; pair with the outbound port-4585 connection for high confidence.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "procedure_description": "SUGARUSH executes as/through a Windows service ('Service1'), using the service control manager to launch the backdoor payload.",
+      "observed_tooling": ["SUGARUSH (custom first-stage backdoor / reverse-shell)"],
+      "detection_feasibility": "high — service-launched execution of an untrusted binary is observable via service-install and process-creation telemetry (parent = services.exe), especially correlated with the 'Service1' name and reverse-shell network activity.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "The SUGARDUMP SMTP variant copies itself to %AppData%\\Microsoft\\Internet Explorer\\TabRoaming\\CrashReporter.exe and creates a logon-triggered scheduled task for persistence — named 'MicrosoftInternetExplorerCrashRepoeterTaskMachineUA' on Windows 7 or 'MicrosoftEdgeCrashRepoeterTaskMachineUA' on other Windows versions (note the misspelling 'Repoeter').",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "high — scheduled-task creation (Event ID 4698 / Task Scheduler operational) with the misspelled 'CrashRepoeter...TaskMachineUA' name and a CrashReporter.exe action in TabRoaming is an actor-specific, high-fidelity detection.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "SUGARDUMP masquerades as benign Windows/utility software — dropped as 'CrashReporter.exe' staged under %AppData%\\Microsoft\\Internet Explorer\\TabRoaming\\, delivered by a fake '3-Video-VLC.exe' installer, exfil files named to look like system artifacts ('CrashLog.txt', %TEMP%\\DebugLogWindowsDefender.txt), and scheduled tasks named to mimic Microsoft/IE/Edge crash-reporter tasks.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "medium — legitimate-looking names in unusual paths (CrashReporter.exe in TabRoaming, DebugLogWindowsDefender.txt in %TEMP%) are detectable via name/path/hash baselining and signature-vs-name mismatch, but require tuned rules.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "SUGARDUMP harvests saved credentials from web browsers — Chrome (%AppData%\\Google\\Chrome\\User Data), Opera (%AppData%\\Opera Software\\Opera Stable), Edge Chromium (%AppData%\\Microsoft\\Edge\\User Data) and Firefox (%AppData%\\Mozilla\\Firefox\\Profiles).",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "high — a non-browser process opening browser 'Login Data'/profile SQLite files and User Data directories across multiple browsers is a strong EDR file-access/credential-theft detection.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1539",
+      "technique_name": "Steal Web Session Cookie",
+      "tactic": "credential-access",
+      "procedure_description": "In addition to saved passwords, the SUGARDUMP SMTP variant harvests browser cookies (along with browser version, browsing history and bookmarks) from targeted browser profiles.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "high — a non-browser process reading browser cookie stores across Chrome/Edge/Opera/Firefox profiles is detectable via EDR file-access telemetry, alongside the same process's credential-store access.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "procedure_description": "UNC3890 deployed fake login pages spoofing Office 365, LinkedIn, Facebook, Pfizer and an Israeli dating service (and the shipping-company watering hole) to capture credentials entered by victims into cloned web portals.",
+      "observed_tooling": ["Watering-hole / fake login credential-capture pages spoofing Office 365, LinkedIn, Facebook, Pfizer"],
+      "detection_feasibility": "low — credential capture happens on actor-controlled fake portals, off-victim; hunt/intel candidate via detection of employees resolving/browsing the fake-login typosquat domains and post-compromise anomalous logins to the spoofed services.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "SUGARDUMP gathers host/environment context (Windows version — branching persistence between Windows 7 and later versions — and browser versions installed) to tailor its persistence and collection.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "low — OS/version enumeration is common and largely benign; meaningful only within the malware's process-lineage context, so a hunt rather than a standalone detection.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "UNC3890 used PowerShell downloaders and staged malware/tools on actor-controlled hosting (e.g., 128.199.6.246 for malware/tools hosting and the watering hole; 161.35.123.176 for SUGARUSH C2 and malicious-domain hosting) to transfer follow-on payloads to victims.",
+      "observed_tooling": ["PowerShell downloaders / PowerShell TCP reverse shell"],
+      "detection_feasibility": "medium — outbound download requests to actor staging IPs/domains followed by new-executable file writes are detectable via proxy/DNS + process/file telemetry, but generic downloader traffic needs the IOC context to stand out.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "SUGARUSH beacons its reverse TCP shell to its hardcoded C2 over the non-standard port 4585 (observed C2 161.35.123.176).",
+      "observed_tooling": ["SUGARUSH (custom first-stage backdoor / reverse-shell)"],
+      "detection_feasibility": "high — outbound TCP to the fixed non-standard port 4585 (especially to the known SUGARUSH C2) originating from a service-host/backdoor process is a crisp network + host-correlated detection.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "The SUGARDUMP HTTP variant communicates/exfiltrates over HTTP (port 80) to actor C2 144.202.123.248, and the watering hole reported visitor data over web protocols to actor infrastructure; NorthStar C2 (143.110.155.195) also uses web-based C2.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)", "NorthStar C2 (open-source C2 framework)"],
+      "detection_feasibility": "medium — HTTP C2 to the specific actor IPs is detectable via proxy/netflow when those indicators are watchlisted, but generic HTTP beaconing blends with normal web traffic without the IOCs or beacon-cadence analytics.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "procedure_description": "UNC3890 operated the open-source NorthStar C2 framework (stager MD5 2fe42c52826787e24ea81c17303484f9; C2 server 143.110.155.195) for remote command-and-control of compromised hosts.",
+      "observed_tooling": ["NorthStar C2 (open-source C2 framework)"],
+      "detection_feasibility": "medium — the NorthStar C2 stager and its C2 beacon are detectable via known-payload hashes and outbound connections to the C2 IP, but the framework itself is generic and requires the actor IOCs/behavioral signatures.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "SUGARDUMP Base64-encodes harvested credential data before exfiltration — the SMTP variant sends Base64-encoded credentials in a 'CrashLog.txt' attachment (subject 'VLC Player'), and the HTTP variant Base64-encodes the AES-encrypted output.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "medium — Base64-encoded blobs in outbound SMTP/HTTP bodies are detectable via DLP/content inspection and the 'CrashLog.txt'/'VLC Player' artifacts, but encoding alone is common and needs pairing with the exfil-channel context.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "The SUGARDUMP HTTP variant encrypts exfiltration data with AES-CBC before Base64-encoding and sending over HTTP; the AES key is the SHA256 of the hardcoded password '1qazXSW@3edc123456be name KHODA 110 !!)1qazXSW@3edc' (the string 'KHODA' being Farsi for 'God').",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "medium — the encryption is implemented in-malware over plain HTTP, so the encrypted payload is detectable as high-entropy content to the actor C2 IP, but the crypto itself provides no standalone network signature without the IOC/host context.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1048",
+      "technique_name": "Exfiltration Over Alternative Protocol",
+      "tactic": "exfiltration",
+      "procedure_description": "The SUGARDUMP SMTP variant exfiltrates harvested browser credentials over SMTP (port 587) to legitimate webmail providers (smtp.yandex.com, smtp.mail.yahoo.com), sending Base64-encoded data as a 'CrashLog.txt' attachment with subject 'VLC Player' from/to actor personas (john.macperson2021@yandex.com, @yahoo.com, @gmail.com, john.macperson@protonmail.com). NOTE: the webmail service domains (yandex/yahoo/gmail/protonmail) are legitimate and are intentionally NOT listed in the domains IOC array — the detectable behavior is the exfil-to-webmail pattern captured here.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "high — an endpoint process making direct outbound SMTP (port 587) connections to smtp.yandex.com / smtp.mail.yahoo.com and sending a 'CrashLog.txt' attachment (subject 'VLC Player') to the john.macperson mailboxes is a strong host+network detection, since direct client-to-webmail SMTP from a workstation is anomalous.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "The SUGARDUMP HTTP variant exfiltrates AES-encrypted, Base64-encoded browser credentials over its HTTP C2 channel to actor server 144.202.123.248:80, writing staging data to %TEMP%\\DebugLogWindowsDefender.txt.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "high — creation of %TEMP%\\DebugLogWindowsDefender.txt by the stealer followed by an HTTP POST of encrypted data to 144.202.123.248 is detectable via correlated file-write + process + netflow telemetry against the watchlisted C2 IP.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "SUGARDUMP writes its collected credentials to disk in obfuscated/encrypted form prior to exfil — the HTTP variant stores AES-CBC-encrypted then Base64-encoded data in %TEMP%\\DebugLogWindowsDefender.txt, and the SMTP variant stages Base64-encoded credentials as CrashLog.txt.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "medium — high-entropy/encoded staging files (DebugLogWindowsDefender.txt, CrashLog.txt) in %TEMP%/user paths are detectable via file-entropy and name-pattern analytics, but require dedicated scanning to surface.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "UNC3890 employed tunneling within its C2 tradecraft (reported by Mandiant among the cluster's C2 techniques) to relay backdoor traffic through actor infrastructure and obscure the true source of connections.",
+      "observed_tooling": ["NorthStar C2 (open-source C2 framework)"],
+      "detection_feasibility": "medium — tunneled C2 is detectable via anomalous long-lived outbound sessions and known-tunnel process/port signatures, but generic tunneling blends with normal encrypted traffic without corroborating indicators.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1102.002",
+      "technique_name": "Web Service: Bidirectional Communication",
+      "tactic": "command-and-control",
+      "procedure_description": "UNC3890 abused legitimate webmail services (Gmail/Yahoo/Yandex via SMTP) as a bidirectional relay/dead-drop for SUGARDUMP credential exfiltration, blending malicious traffic with normal mail-provider connections.",
+      "observed_tooling": ["SUGARDUMP (custom browser-credential stealer; SMTP and HTTP exfil variants)"],
+      "detection_feasibility": "medium — use of legitimate webmail as a relay blends with normal traffic; detectable when direct workstation-to-webmail SMTP is baselined as anomalous and correlated with the stealer process, but not from the destination domain alone (which is legitimate).",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "procedure_description": "By compromising the legitimate login page of an Israeli shipping company to host the watering hole, UNC3890 abused a trusted third-party web property to reach and gather data on visitors from partner/sector organizations.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — abuse of a trusted third-party site is outside the victim's own telemetry; hunt/intel candidate via monitoring partner/supplier web assets and egress to the watering-hole C2.",
+      "sources": ["https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping"]
+    }
+  ],
+  "detection_signals": [
+    "SUGARUSH: creation of a Windows service named 'Service1' (Event ID 7045) launching an untrusted binary, plus 'Logs'/'ServiceLog' folders — correlated with an outbound reverse-shell TCP connection to port 4585 (C2 161.35.123.176)",
+    "SUGARUSH reverse shell: cmd.exe spawned by a service-host/backdoor process with a live outbound socket to a hardcoded C2 on non-standard port 4585",
+    "SUGARDUMP process behavior: a non-browser process reading Chrome/Edge/Opera 'User Data' and Firefox 'Profiles' credential and cookie stores across multiple browsers in one execution",
+    "SUGARDUMP SMTP exfil: direct workstation-originated SMTP (port 587) to smtp.yandex.com / smtp.mail.yahoo.com sending a 'CrashLog.txt' attachment with subject 'VLC Player' to john.macperson2021@{yandex,yahoo,gmail}.com or john.macperson@protonmail.com",
+    "SUGARDUMP HTTP exfil: creation of %TEMP%\\DebugLogWindowsDefender.txt followed by an HTTP POST of AES-encrypted/Base64 data to 144.202.123.248:80",
+    "SUGARDUMP persistence: CrashReporter.exe staged in %AppData%\\Microsoft\\Internet Explorer\\TabRoaming\\ and a logon-triggered scheduled task named 'MicrosoftInternetExplorerCrashRepoeterTaskMachineUA' or 'MicrosoftEdgeCrashRepoeterTaskMachineUA' (misspelled 'Repoeter') — Event ID 4698",
+    "Delivery lineage: a fake '3-Video-VLC.exe' installer dropping/running CrashReporter.exe (with RealDo1080.mp4 video), or an Excel/.xls macro (fake NexisLexis job offer) spawning rundll32.exe to run the SUGARDUMP PE",
+    "PowerShell downloaders, PowerShell TCP reverse shell, and Unicorn-style PowerShell downgrade/shellcode injection in script-block logs",
+    "NorthStar C2 stager (MD5 2fe42c52826787e24ea81c17303484f9) execution and outbound connection to 143.110.155.195",
+    "DNS/proxy resolution of actor typosquat/brand-spoof domains from user endpoints: lirikedin[.]com / xn--lirkedin-vkb[.]com, rnfacebook[.]com, office365update[.]live, pfizerpoll[.]com, celebritylife[.]news, fileupload[.]shop, naturaldolls[.]store, xxx-doll[.]com, aspiremovecentraldays[.]net",
+    "Watering-hole beacon: outbound traffic from web-browsing users to 128.199.6.246 (watering hole / fake-login / malware hosting) or 161.35.123.176 / 185.170.215.170 (malicious-domain/fake-login hosting) — hunt-leaning",
+    "Traffic to/from actor C2 IPs 143.110.155.195, 128.199.6.246, 161.35.123.176, 104.237.155.129, 146.185.219.88, 159.223.164.185, 144.202.123.248, 185.170.215.170"
+  ],
+  "iocs": {
+    "ips": [
+      "143.110.155.195",
+      "128.199.6.246",
+      "161.35.123.176",
+      "104.237.155.129",
+      "146.185.219.88",
+      "159.223.164.185",
+      "144.202.123.248",
+      "185.170.215.170"
+    ],
+    "domains": [
+      "lirikedin.com",
+      "xn--lirkedin-vkb.com",
+      "rnfacebook.com",
+      "office365update.live",
+      "pfizerpoll.com",
+      "celebritylife.news",
+      "fileupload.shop",
+      "naturaldolls.store",
+      "xxx-doll.com",
+      "aspiremovecentraldays.net"
+    ],
+    "emails": [
+      "john.macperson2021@yandex.com",
+      "john.macperson2021@yahoo.com",
+      "john.macperson2021@gmail.com",
+      "john.macperson@protonmail.com"
+    ],
+    "hashes": [
+      "f362a2d9194a09eaca7d2fa04d89e1e5",
+      "08dc5c2af21ecee6f2b25ebdd02a9079",
+      "ae0a16b6feddd53d1d52ff50d85a42d5",
+      "084ad50044d6650f9ed314e99351a608",
+      "d8fb3b6f5681cf5eec2b89be9b632b05",
+      "639f83fa4265ddbb43e85b763fe3dbac",
+      "e125ed072fc4529687d98cf4c62e283e",
+      "37bdb9ea33b2fe621587c887f6fb2989",
+      "3f045ebb014d859a4e7d15a4cf827957",
+      "a7a2d6a533b913bc50d14e91bcf6c716",
+      "d528e96271e791fab5818c01d4bc139f",
+      "d5671df2af6478ac108e92ba596d5557",
+      "fcc09a4262b9ca899ba08150e287caa9",
+      "d47bbec805c00a549ab364d20a884519",
+      "6dbd612bbc7986cf8beb9984b473330a",
+      "3b2a719ffb12a291acbfe9056daf52a7",
+      "f97c0f19e84c79e9423b4420531f5a25",
+      "f538cb2e584116a586a50d607d517cfd",
+      "532f5c8a85b706ccc317b9d4158014bf",
+      "9c8788e7ae87ae4f46bfe5ba7b7aa938",
+      "2fe42c52826787e24ea81c17303484f9",
+      "2a09c5d85667334d9accbd0e06ae9418",
+      "c5116a9818dcd48b8e9fb1ddf022df29"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Primary source is Mandiant/Google Cloud Threat Intelligence 'Suspected Iranian Actor Targeting Israeli Shipping, Healthcare, Government and Energy Sectors' (2022-08-15), a primary vendor report with a concrete IOC appendix (MD5 sample hashes, C2 IPs, malicious domains, exfil email addresses) and MITRE mappings; corroborated by secondary coverage (The Hacker News, SecurityWeek, Dark Reading 'Operation Sugarush'). Overall confidence set to 'medium' because ATTRIBUTION is Mandiant's medium-confidence Iran-nexus cluster assessment (Farsi artifacts 'yaal'/'KHODA', Israel-focused victimology) rather than a confirmed named-group/government attribution — the malware TTPs and IOCs themselves are high-confidence/primary-sourced, but the actor identity carries the uncertainty. UNC3890 has NO public MITRE ATT&CK group id, so actor.mitre_id is empty per tasking. mcp__mitre-attack search returned no group for UNC3890, confirming the uncategorized-cluster status. DETECTION POSTURE (per honest routing): DETECT-leaning (medium/high) — SUGARUSH Windows service 'Service1' + port-4585 reverse shell (T1543.003/T1569.002/T1059.003/T1571), SUGARDUMP browser-credential/cookie theft (T1555.003/T1539), SUGARDUMP SMTP-587 exfil to webmail with CrashLog.txt/'VLC Player' (T1048) and HTTP exfil to 144.202.123.248 via DebugLogWindowsDefender.txt (T1041), the misspelled 'CrashRepoeter' scheduled task (T1053.005), rundll32/Office-macro delivery lineage (T1218.011/T1204.002), and PowerShell tradecraft (T1059.001). HUNT-leaning (low) — watering-hole/strategic-web-compromise (T1189/T1199/T1608.004), fake-login web-portal credential capture (T1056.003), typosquat/brand-spoof domain and webmail-account infrastructure (T1583.001/T1585.002), social-engineering lures and malicious links (T1566.002/T1204.001), and off-victim capability development (T1587.001/T1588.002). ATT&CK NORMALIZATION for this environment's bundled dataset: report Defense-Evasion techniques (T1218.011 Rundll32, T1036.005, T1027.013) are placed under the env tactic slug 'stealth' (no 'defense-evasion' slug); every technique_id was validated as a present key in attack_dump.json (697 techniques) before inclusion — zero invalid IDs. Report's T1656 (Impersonation) is ABSENT from this env dataset, so the fake-brand/job-offer impersonation behavior is captured behaviorally via T1566.002 (spearphishing link), T1036.005 (masquerading) and T1583.001/T1585.002 (spoof infrastructure) instead. IOC HANDLING: all indicators taken verbatim from the Mandiant appendix; hashes are MD5 sample hashes as published (the report enumerated MD5s, not SHA256, for the malware/tooling samples). Legitimate webmail service domains (gmail.com, yahoo.com, yandex.com, protonmail.com and smtp.* variants) were deliberately EXCLUDED from the domains array — the exfil-to-webmail behavior is captured in the T1048/T1102.002 TTP text and detection_signals instead. cves is empty: UNC3890 relied on social engineering, watering-hole and custom malware rather than public CVE exploitation in this reporting. The AES password string, PDB paths ('passrecover.pdb', 'ChromeRecovery.pdb'), and Farsi project artifacts are retained in TTP prose for hunting/attribution rather than the machine IOC object. No YARA rules were published in the report, so yara_rules is empty (rules are never authored from scratch)."
+}

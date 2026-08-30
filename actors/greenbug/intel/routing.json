@@ -1,0 +1,223 @@
+{
+  "actor": "Greenbug",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "high — inbound mail with CHM/HTA attachments and business-proposal lures is detectable via mail-gateway attachment-type policy, sandbox detonation, and named-file (proposal_pakistan110.chm) indicators"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — user opening a CHM/HTA spawning script interpreters is detectable via process-lineage (hh.exe/mshta.exe -> powershell.exe/cmd.exe) but depends on endpoint process telemetry"
+    },
+    {
+      "technique_id": "T1218.001",
+      "technique_name": "System Binary Proxy Execution: Compiled HTML File",
+      "tactic": "execution",
+      "rationale": "high — hh.exe executing a CHM from a user-download path and then spawning script interpreters is a rare, high-fidelity process-lineage detection"
+    },
+    {
+      "technique_id": "T1564.004",
+      "technique_name": "Hide Artifacts: NTFS File Attributes",
+      "tactic": "stealth",
+      "rationale": "high — files carrying named alternate data streams (path:stream) and execution from an ADS are detectable via file-system telemetry (Sysmon FileCreateStreamHash EID 15) and ADS enumeration"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — script-block/module logging captures hidden -nop -w hidden downloadstring/IEX beacons and named .ps1 loaders; PowerShell spawned from hh.exe/mshta.exe adds high-fidelity context"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — ncat.exe with the -e cmd.exe argument and cmd.exe children of unusual parents are detectable via command-line logging, but individual net/arp/whoami commands are common"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — PowerShell downloadstring and bitsadmin /transfer to raw IP:port URLs writing to CSIDL_APPDATA are detectable via process command-line, proxy and file-write telemetry"
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "stealth",
+      "rationale": "high — bitsadmin.exe /transfer with an external IP URL and the BITS-Client operational log (EID 3/4/59/60) provide high-fidelity detection of malicious BITS jobs"
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "rationale": "medium — high-volume, high-entropy DNS queries with long hex subdomains and repetitive AAAA responses to the same base domain are detectable via DNS analytics, but blend with legitimate DNS and require baselining — hunt-leaning"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP beacons to raw-IP C2 on odd ports are detectable via proxy/netflow and JA3/beacon-interval analytics, but generic HTTP blends with normal traffic"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "medium — modified-base64 tokens in DNS labels/command lines are detectable via encoding/entropy heuristics, but require dedicated content inspection"
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP traffic on atypical ports (e.g. HTTP over 445/1003/1131) is detectable via protocol-vs-port mismatch analytics on netflow/proxy, but needs baselining"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — plink/bitvise command lines with -proxytype/-proxyip and unexpected internal-to-external proxy chains are detectable via process command-line and netflow, but generic proxying blends with normal traffic"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "high — plink.exe (or renamed comms.exe) and Bitvise clients with port-forwarding (-R/-L) arguments, and outbound SSH from hosts that normally never initiate SSH, are detectable via process and network telemetry"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — RDP (Type-10 4624) logons sourced from localhost/loopback tunnel endpoints or from hosts running plink/bitvise are detectable via correlation of logon and tunneling-process telemetry, but blend with admin RDP"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — process access to lsass.exe and Mimikatz signatures/command lines are highly observable via EDR process-access (Sysmon EID 10) and image-load telemetry"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "rationale": "high — a dropped keylogger executable (Winit.exe) writing capture files and registering keyboard hooks is detectable via file-write, process and known-hash telemetry"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium — screenshot capture leaves limited discrete signal; detectable mainly via known backdoor behavior/hashes and image-file writes to staging paths — hunt-leaning"
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "rationale": "medium — recursive scans for web.config and reads of application config files are detectable via file-access telemetry and PowerShell script-block logs, but blend with legitimate admin/dev activity"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — aspnet_regiis.exe invoked with -pdf/decrypt arguments outside a deployment context is an unusual, detectable command-line pattern, but is a legitimate admin tool"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high — new service installation (Event ID 7045 / 4697) with a name mimicking VMware but an unsigned/anomalous image path is a high-fidelity detection"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — vendor-like names in unusual paths and signed-tool binaries renamed (Plink -> comms.exe) are detectable via name/path/hash baselining and signature-vs-name mismatch"
+    },
+    {
+      "technique_id": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "tactic": "privilege-escalation",
+      "rationale": "high — the eventvwr.exe UAC bypass leaves a distinctive registry write (HKCU\\Software\\Classes\\mscfile\\shell\\open\\command) and eventvwr.exe -> mmc/powershell lineage, both high-fidelity detections"
+    },
+    {
+      "technique_id": "T1087.001",
+      "technique_name": "Account Discovery: Local Account",
+      "tactic": "discovery",
+      "rationale": "medium — net user and WMI account queries are detectable in command-line logs but are common admin actions; value comes from recon-burst/process-lineage correlation"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "rationale": "medium — WMI queries (wmic/Get-WmiObject) are detectable via command-line and WMI-activity logging, but are common; suspicious mainly in a recon-burst context"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — system-info enumeration is common and noisy; meaningful mainly within a tight recon-burst process-lineage window"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — arp/ipconfig discovery commands are detectable via command-line logging but common; value comes from correlation within a recon burst"
+    },
+    {
+      "technique_id": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — netstat execution is detectable in command-line logs but common; meaningful within recon-burst context"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — whoami is trivially detectable in command-line logs but extremely common; only meaningful in process-lineage/recon-burst context"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — file/directory enumeration is common and noisy; meaningful mainly in a tight recon-burst process-lineage window"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — new script files written to web-server content roots, anomalous w3wp.exe/httpd child processes, and the specific webshell hashes are detectable via file-integrity monitoring and web-server process telemetry"
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "persistence",
+      "rationale": "medium — reuse of harvested valid credentials is detectable via anomalous-authentication analytics (new source host, first-seen credential, off-hours logon) but blends with legitimate use"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy/encoded HTA and script payloads are detectable via file-entropy and encoding heuristics but require dedicated scanning"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "low — TLS-wrapped C2 content is opaque; detection relies on JA3/JA3S fingerprints, certificate anomalies and beacon-timing analytics rather than payload inspection — hunt-leaning"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware staging on adversary-controlled infrastructure occurs off-victim; intel/hunt candidate via infrastructure tracking and retro-hunting the staging IPs/URLs"
+    }
+  ],
+  "summary": {
+    "total": 35,
+    "detection": 33,
+    "hunt": 2
+  }
+}

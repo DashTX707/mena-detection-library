@@ -1,0 +1,58 @@
+title: Greenbug Host and Network Discovery Recon Burst
+id: 5e9c2a71-4b8d-43f6-8c27-1d3a9e5b7f42
+status: experimental
+description: |
+    Detects Greenbug living-off-the-land reconnaissance run from a compromised host: local account
+    enumeration with net user and WMI account queries (T1087.001, T1047), system information gathering
+    including ISMDOOR's SI command and Get-PSDrive (T1082), ARP-table network configuration discovery
+    (T1016), netstat network-connection discovery (T1049), whoami user-context checks (T1033), and
+    filesystem/web.config enumeration (T1083). Individually these are common admin commands; their
+    value is as a correlated recon burst, so this ships at low severity for Risk-Based Alerting rather
+    than a standalone page. Keys on the specific discovery command lines.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+    - https://www.netscout.com/blog/asert/greenbugs-dns-isms
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.execution
+    - attack.t1087.001
+    - attack.t1047
+    - attack.t1082
+    - attack.t1016
+    - attack.t1049
+    - attack.t1033
+    - attack.t1083
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_account:
+        CommandLine|contains:
+            - 'net user'
+            - 'net.exe user'
+    selection_wmi:
+        Image|endswith:
+            - '\wmic.exe'
+        CommandLine|contains: 'useraccount'
+    selection_sysinfo:
+        CommandLine|contains:
+            - 'systeminfo'
+            - 'Get-PSDrive -PSProvider FileSystem'
+    selection_netconfig:
+        CommandLine|contains:
+            - 'arp -a'
+            - 'ipconfig /all'
+    selection_netconn:
+        CommandLine|contains:
+            - 'netstat -a'
+            - 'netstat -ano'
+    selection_user:
+        Image|endswith: '\whoami.exe'
+    condition: 1 of selection_*
+falsepositives:
+    - All of these commands are used by legitimate administrators and support scripts - alert value is
+      in correlation/volume within a short window; deploy as RBA risk contribution, not a standalone page
+level: low

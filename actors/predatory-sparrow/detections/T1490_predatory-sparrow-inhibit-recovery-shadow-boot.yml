@@ -1,0 +1,49 @@
+title: Predatory Sparrow Inhibit Recovery via Shadow Copy Deletion and Boot Sabotage
+id: c4e2a196-7d38-4b0c-9f41-6a8e5c2b7d90
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress inhibit-recovery stage. The toolchain deletes Volume
+    Shadow Copies with vssadmin ('delete shadows /all /quiet') and redundantly with wmic
+    (shadowcopy delete via Windows Management Instrumentation), corrupts boot configuration with bcdedit
+    (recoveryenabled no / bootstatuspolicy ignoreallfailures / deletevalue safeboot), and overwrites
+    boot.ini with an impossible partition number (10000000). Covers Inhibit System Recovery (T1490) and
+    the redundant WMI execution path (T1047).
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.execution
+    - attack.t1490
+    - attack.t1047
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_vssadmin:
+        Image|endswith: '\vssadmin.exe'
+        CommandLine|contains|all:
+            - 'delete'
+            - 'shadows'
+    selection_wmic_shadow:
+        Image|endswith: '\wmic.exe'
+        CommandLine|contains|all:
+            - 'shadowcopy'
+            - 'delete'
+    selection_bcdedit:
+        Image|endswith: '\bcdedit.exe'
+        CommandLine|contains:
+            - 'recoveryenabled no'
+            - 'bootstatuspolicy ignoreallfailures'
+            - 'deletevalue'
+    selection_bootini:
+        CommandLine|contains: '10000000'
+        CommandLine|contains|all:
+            - 'boot.ini'
+    condition: 1 of selection_*
+falsepositives:
+    - Backup software and administrators occasionally purge shadow copies with vssadmin - the combination
+      with bcdedit boot tampering, wmic redundancy or the boot.ini overwrite is what makes this destructive
+level: high

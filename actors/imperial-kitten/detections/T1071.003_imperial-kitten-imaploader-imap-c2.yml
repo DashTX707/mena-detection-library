@@ -1,0 +1,43 @@
+title: Non-Mail-Client Process IMAP/SSL C2 to Actor Mailboxes (Imperial Kitten IMAPLoader)
+id: 36cf1ff2-49cc-4f32-a6c2-2c98dc0b10fb
+status: experimental
+description: |
+    Detects the signature Imperial Kitten (CURIUM / Yellow Liderc) email-C2 behavior: a
+    non-mail-client process establishing IMAP-over-SSL (TCP 993) sessions to consumer webmail
+    (imap.yandex.com) or the actor domain update-platform-check.online. IMAPLoader and
+    StandardKeyboard poll attacker-controlled Yandex mailboxes for tasking and exfiltrate results as
+    email content (T1071.003 Mail Protocols, T1041 Exfiltration Over C2 Channel). Keys on
+    destination port/host with an exclusion for legitimate mail clients.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+    - https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.003
+    - attack.t1041
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_imap:
+        Initiated: 'true'
+        DestinationPort: 993
+    selection_actorhost:
+        DestinationHostname|contains:
+            - 'imap.yandex.com'
+            - 'update-platform-check.online'
+    filter_mailclients:
+        Image|endswith:
+            - '\outlook.exe'
+            - '\thunderbird.exe'
+            - '\hxoutlook.exe'
+            - '\hxtsr.exe'
+    condition: (selection_actorhost or selection_imap) and not filter_mailclients
+falsepositives:
+    - Third-party or portable mail clients not in the exclusion list making IMAP connections -
+      extend the filter with sanctioned mail applications for the environment
+level: high

@@ -1,0 +1,32 @@
+title: UNC3890 SUGARUSH Reverse Shell to Non-Standard Port 4585
+id: 2c9f8a1d-3e4b-4c7a-8d1e-6f2a3b4c5d6e
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARUSH backdoor beaconing a reverse TCP shell to its
+    hardcoded command-and-control server over the non-standard port 4585 (T1571 Non-Standard Port).
+    SUGARUSH opens an outbound TCP connection to its C2 (observed 161.35.123.176) on the fixed port
+    4585 from a service-host / backdoor process. Keys on outbound network-connection telemetry to the
+    unusual port and, when watchlisted, the known actor C2 IP.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1571
+    - mena-detection-library.unc3890
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_port:
+        Initiated: 'true'
+        DestinationPort: 4585
+    selection_c2:
+        DestinationIp: '161.35.123.176'
+    condition: selection_port or selection_c2
+falsepositives:
+    - A small number of legitimate applications use ephemeral or custom high ports - correlate the
+      initiating Image and destination reputation before escalating
+level: high

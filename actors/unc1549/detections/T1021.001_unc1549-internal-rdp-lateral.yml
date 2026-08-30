@@ -1,0 +1,59 @@
+title: UNC1549 Internal RDP Interactive Logon
+id: c1a4fe1a-a4c8-4cb0-824e-fd82a1a8fac9
+status: experimental
+description: |
+    Detects UNC1549 / TA455 lateral movement via Remote Desktop Protocol (T1021.001), the actor's most
+    frequent lateral-movement method. The base rule keys on interactive remote-desktop logons (Event ID
+    4624 LogonType 10). The correlation fires when one source account establishes RDP logons across many
+    distinct workstations in a short window - the pattern of an operator pivoting through the estate.
+    Internal RDP blends with legitimate admin use, so the distinct-destination fan-out is what raises
+    fidelity; baseline sanctioned jump hosts and helpdesk accounts.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.unc1549
+name: unc1549_rdp_interactive_logon
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    condition: selection
+falsepositives:
+    - Jump-host administrators and helpdesk staff who legitimately RDP to many systems - baseline the
+      admin source accounts and exclude sanctioned jump hosts
+level: medium
+---
+title: UNC1549 RDP Lateral-Movement Fan-Out Correlation
+id: 704a1c2b-9d5e-4f0a-8c11-6b2f0d9e4a77
+status: experimental
+description: |
+    Fires when a single account performs RDP interactive logons to many distinct workstations in a short
+    window, consistent with UNC1549 / TA455 RDP-based lateral movement across the estate.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.unc1549
+correlation:
+    type: value_count
+    rules:
+        - unc1549_rdp_interactive_logon
+    group-by:
+        - TargetUserName
+    timespan: 30m
+    condition:
+        gte: 5
+        field: WorkstationName
+falsepositives:
+    - Jump-host administrators and helpdesk staff who legitimately RDP to many systems
+level: medium

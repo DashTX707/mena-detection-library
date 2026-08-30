@@ -1,0 +1,34 @@
+title: Greenbug ISMDOOR Keylogger and Screen Capture Collection Modules
+id: 7b3d9f25-8c6a-41e4-9b32-5d1a8c4e7f63
+status: experimental
+description: |
+    Detects Greenbug/ISMDOOR collection modules: the keylogger deployed via the ExecuteKL command
+    (Winit.exe, capturing keystrokes and credentials, T1056.001) and the screen-capture PWS command
+    that grabs the victim desktop (T1113). Keys on execution of the named keylogger binary and on the
+    ISMDOOR collection command markers appearing in process command lines / script-block content.
+references:
+    - https://www.netscout.com/blog/asert/greenbugs-dns-isms
+    - https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.collection
+    - attack.t1056.001
+    - attack.t1113
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_keylogger:
+        Image|endswith: '\Winit.exe'
+    selection_commands:
+        CommandLine|contains:
+            - 'ExecuteKL'
+            - 'RunNewVersion'
+    condition: selection_keylogger or selection_commands
+falsepositives:
+    - A legitimate binary named Winit.exe is uncommon - validate the file path, signer and hash;
+      the ISMDOOR command markers are specific to the backdoor
+level: high

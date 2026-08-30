@@ -1,0 +1,35 @@
+title: POLONIUM Implant-Driven File Deletion for Indicator Removal
+id: cf5a92a3-9da4-4b82-8ca9-ac4d5e7a8b99
+status: experimental
+description: |
+    Detects a POLONIUM Creep-family module deleting files to reduce its forensic footprint
+    (T1070.004 File Deletion). The implants delete their own artifacts and collected/staged data after
+    use. Requires file-delete telemetry (Sysmon EID 23/26). Keys on a masqueraded implant executable
+    being the process that deletes files; correlate with prior file-create events for the same paths
+    to confirm removal of recently staged data.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: file_delete
+detection:
+    selection:
+        Image|endswith:
+            - '\Mega.exe'
+            - '\DropBox.exe'
+            - '\OnDrive.exe'
+            - '\DeepCreep.exe'
+            - '\WinSc.exe'
+            - '\Device.exe'
+            - '\Regestries.exe'
+    condition: selection
+falsepositives:
+    - Generic implant filenames may collide with unrelated software performing cleanup - verify the
+      deleting binary's path and signer, and whether the deleted files were recently created
+level: medium

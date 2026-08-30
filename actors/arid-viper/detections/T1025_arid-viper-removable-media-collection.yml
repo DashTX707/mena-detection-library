@@ -1,0 +1,36 @@
+title: Arid Viper Removable Media Enumeration and Collection
+id: 7e1b5d84-2a69-4c37-90b8-5d3f1c7a9e42
+status: experimental
+description: |
+    Detects PyMicropsia collection from removable media (T1025 Data from Removable Media). PyMicropsia
+    detects inserted USB / flash drives, lists their contents and exfiltrates files from them. Keys on a
+    process querying logical disks filtered to removable drive types (Win32_LogicalDisk with DriveType=2)
+    or otherwise enumerating removable volumes, which precedes reading files off the inserted media.
+    Correlate with USB device-connect events for higher fidelity.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1025
+    - mena-detection-library.arid-viper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_class:
+        CommandLine|contains:
+            - 'Win32_LogicalDisk'
+            - 'Win32_Volume'
+    selection_drivetype:
+        CommandLine|contains:
+            - 'DriveType=2'
+            - 'DriveType = 2'
+            - 'DriveType=''2'''
+    condition: selection_class and selection_drivetype
+falsepositives:
+    - Backup or endpoint DLP agents that enumerate removable drives - allowlist the specific signed tools
+      and scope to untrusted parent processes
+level: medium

@@ -1,0 +1,38 @@
+title: Sea Turtle Exfiltration via External Download of Web-Root Archive
+id: 232ef846-c969-4032-9f86-f0bc2ab2ede9
+status: experimental
+description: |
+    Detects external retrieval of a staged archive file from an internet-facing web directory, the
+    exfiltration step Sea Turtle (Teal Kurma / Marbled Dust) uses to pull tar'd e-mail archives directly
+    over HTTP(S) from the compromised host (T1567 Exfiltration Over Web Service). Anchors on successful web
+    access-log GET requests whose URI ends in an archive extension, returning a 2xx status - correlate with
+    the archive-staged-in-web-root signal and treat downloads by external/non-victim client IPs as suspect.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/groups/G1041/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1567
+    - mena-detection-library.sea-turtle
+logsource:
+    category: webserver
+detection:
+    selection_get:
+        cs-method: 'GET'
+        c-uri|endswith:
+            - '.tar'
+            - '.tar.gz'
+            - '.tgz'
+            - '.tar.bz2'
+            - '.zip'
+    selection_ok:
+        sc-status:
+            - 200
+            - 206
+    condition: all of selection_*
+falsepositives:
+    - Legitimate download/release portals serving archive files
+    - Backup or software-distribution sites where archive downloads are expected - baseline URIs and clients
+level: medium

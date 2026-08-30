@@ -1,0 +1,38 @@
+title: Arid Viper PyMicropsia PyInstaller Python Execution
+id: c4e9a1b6-8d23-4f70-b5c1-3a7e6d902f18
+status: experimental
+description: |
+    Detects PyMicropsia, Arid Viper's (APT-C-23) PyInstaller-packaged Python info-stealer
+    (T1059.006 Command and Scripting Interpreter: Python). PyInstaller onefile binaries unpack to a
+    temporary _MEI directory and spawn a bundled Python runtime; PyMicropsia runs modular payloads
+    (keylogger, screenshotter, credential stealer) and launches subprocesses with base64-encoded
+    parameters. Keys on a PyInstaller _MEI unpack path or a bundled python interpreter running from a
+    user-writable location.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.006
+    - mena-detection-library.arid-viper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_meipath:
+        Image|contains: '\_MEI'
+    selection_python_userpath:
+        Image|endswith:
+            - '\python.exe'
+            - '\pythonw.exe'
+        Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+    condition: selection_meipath or selection_python_userpath
+falsepositives:
+    - Legitimate PyInstaller-packaged business applications also unpack to _MEI directories - validate
+      the parent binary, its signature and origin before dismissing
+level: medium

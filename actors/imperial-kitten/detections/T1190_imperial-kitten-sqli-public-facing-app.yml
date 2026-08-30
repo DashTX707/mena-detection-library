@@ -1,0 +1,35 @@
+title: SQL Injection Attempt Against Public-Facing Application (Imperial Kitten Initial Access)
+id: 4cdf6fda-073c-4058-be4e-5977fe887a63
+status: experimental
+description: |
+    Detects SQL-injection patterns in web-server / WAF request logs against internet-facing
+    applications. Imperial Kitten (CURIUM / Yellow Liderc) gains initial access using public one-day
+    exploits and SQL injection against public-facing apps (T1190 Exploit Public-Facing Application).
+    Keys on common SQLi markers appearing in request URIs. Corroborate the source IP against actor
+    infrastructure for attribution.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1190
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: webserver
+detection:
+    selection_sqli:
+        cs-uri-query|contains:
+            - ' UNION SELECT '
+            - 'UNION ALL SELECT'
+            - ' OR 1=1'
+            - "' OR '1'='1"
+            - 'information_schema'
+            - 'SLEEP('
+            - 'WAITFOR DELAY'
+            - 'xp_cmdshell'
+    condition: selection_sqli
+falsepositives:
+    - Security scanners, penetration tests and some application search terms can match these strings -
+      allowlist authorized testing sources and validate against WAF verdict
+level: medium

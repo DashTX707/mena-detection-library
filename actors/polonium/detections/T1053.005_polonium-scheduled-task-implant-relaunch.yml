@@ -1,0 +1,39 @@
+title: POLONIUM Scheduled Task Relaunching Creep Implant from User-Writable Path
+id: 9c2d6f70-6a71-4e5f-9f76-7f1a2b4d5e66
+status: experimental
+description: |
+    Detects creation of a scheduled task whose action points at a POLONIUM implant binary or a
+    user-writable directory (T1053.005 Scheduled Task). POLONIUM establishes persistence for its
+    Creep backdoors via Windows scheduled tasks that relaunch the implants. Keys on schtasks.exe
+    /create referencing masqueraded implant filenames or staging paths under Users\Public, AppData,
+    ProgramData or Temp. Complement with Task Scheduler operational EID 4698 where available.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_target:
+        CommandLine|contains:
+            - '\Users\Public\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - 'Mega.exe'
+            - 'DropBox.exe'
+            - 'OnDrive.exe'
+            - 'Regestries.exe'
+    condition: all of selection_*
+falsepositives:
+    - Software installers and management agents that register tasks from ProgramData/AppData -
+      baseline expected task actions and creators; validate the target binary
+level: high

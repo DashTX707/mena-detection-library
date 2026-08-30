@@ -1,0 +1,39 @@
+title: Predatory Sparrow Forced Unbootable Reboot After Boot Sabotage
+id: 0f9e9e0b-21c9-411e-9b88-19e7c8ecc62f
+status: experimental
+description: |
+    Detects the Predatory Sparrow denial finale (T1529 System Shutdown/Reboot): after corrupting boot
+    configuration (bcdedit) and wiping, the toolchain forces the system into an unbootable reboot state to
+    complete the denial effect and maximize downtime. Keys on shutdown/reboot command lines executed in
+    proximity to boot-configuration sabotage. High fidelity when the same host also shows bcdedit / boot.ini
+    tampering or the wiper sequence.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1529
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_shutdown:
+        Image|endswith: '\shutdown.exe'
+        CommandLine|contains:
+            - ' /r'
+            - ' /s'
+            - ' -r'
+            - ' -s'
+    selection_wmi_reboot:
+        CommandLine|contains:
+            - 'Win32Shutdown'
+            - 'Restart-Computer'
+            - 'InitiateSystemShutdown'
+    condition: selection_shutdown or selection_wmi_reboot
+falsepositives:
+    - Patch cycles, maintenance windows and administrator-initiated reboots are common - scope to reboots that
+      follow bcdedit/boot.ini tampering, shadow-copy deletion or wiper execution on the same host in a short window
+level: medium

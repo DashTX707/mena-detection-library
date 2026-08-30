@@ -1,0 +1,34 @@
+title: Greenbug Mimikatz LSASS Credential Dumping
+id: 4e8b1c73-5a2d-49f6-8c14-7b9e3a2d6f81
+status: experimental
+description: |
+    Detects Greenbug credential dumping with Mimikatz against LSASS (T1003.001). ISMDOOR carries a
+    CreateMimi1Bat command that runs Mimikatz via PowerShell (ccd61.ps1), and in the telecom campaign
+    Mimikatz was executed from %USERPROFILE%\documents\x64. Keys on Mimikatz command-line signatures and
+    its named loader, plus process access to lsass.exe requesting credential-relevant access rights.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+    - https://www.netscout.com/blog/asert/greenbugs-dns-isms
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        CommandLine|contains:
+            - 'sekurlsa::'
+            - 'privilege::debug'
+            - 'lsadump::'
+            - 'CreateMimi1Bat'
+            - 'ccd61.ps1'
+            - 'DumpCreds'
+    condition: selection_cmd
+falsepositives:
+    - Security research or red-team tooling that references Mimikatz module names - in production these
+      strings on a live host are almost always malicious; validate the executing account and host role
+level: high

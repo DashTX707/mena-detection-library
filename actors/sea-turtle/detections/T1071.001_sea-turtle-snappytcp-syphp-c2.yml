@@ -1,0 +1,34 @@
+title: Sea Turtle SnappyTCP sy.php HTTP C2 Beacon
+id: 6afeed07-cde7-4156-8259-c8a6aeb96cce
+status: experimental
+description: |
+    Detects the SnappyTCP webshell C2 check-in used by Sea Turtle (Teal Kurma / Marbled Dust): on startup
+    the implant issues an HTTP GET for the request URI 'sy.php' to its configured C2 and acts on the reply
+    only when the server returns the header 'X-Auth-43245-S-20' (T1071.001 Application Layer Protocol: Web
+    Protocols). Anchors on outbound GET requests to a '/sy.php' URI from internal hosts via proxy/web-gateway
+    logs, and raises fidelity when the destination matches documented Sea Turtle C2 domains. A server host
+    issuing outbound GETs to /sy.php is anomalous.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/software/S1163/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.sea-turtle
+logsource:
+    category: proxy
+detection:
+    selection_beacon:
+        cs-method: 'GET'
+        c-uri|contains: '/sy.php'
+    selection_c2host:
+        cs-host:
+            - 'forward.boord.info'
+            - 'lo0.systemctl.network'
+    condition: selection_beacon or selection_c2host
+falsepositives:
+    - A legitimate local application that genuinely exposes an endpoint literally named sy.php (rare) -
+      validate the requesting host, the destination and the response header before dismissing
+level: high

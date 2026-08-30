@@ -1,0 +1,43 @@
+title: Greenbug Plink/Bitvise SSH Tunneling Through HTTP Proxy
+id: 2d6b8f14-9c3e-4a57-8b19-4d7e2a6c9f31
+status: experimental
+description: |
+    Detects Greenbug protocol tunneling and proxying (T1572, T1090) used to maintain persistent
+    low-profile RDP/Terminal-Services access. Plink (often renamed comms.exe) is invoked with
+    -proxytype http_basic -proxyip <IP> and -R/-L port forwarding (e.g. -C -R host:4015:host:1540),
+    and the Bitvise SSH command-line client is used as an alternative tunneling tool through HTTP
+    proxies. Keys on the Plink/Bitvise proxy and port-forwarding arguments.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1572
+    - attack.t1090
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith:
+              - '\plink.exe'
+              - '\comms.exe'
+              - '\bvssh.exe'
+              - '\stnlc.exe'
+        - Description|contains:
+              - 'Plink'
+              - 'Bitvise'
+    selection_args:
+        CommandLine|contains:
+            - '-proxytype'
+            - '-proxyip'
+            - ' -R '
+            - ' -L '
+            - '-nc '
+    condition: selection_tool and selection_args
+falsepositives:
+    - Legitimate administrator use of Plink/Bitvise for SSH port forwarding - validate the proxy
+      arguments, the renamed binary (comms.exe) and whether the host normally initiates SSH
+level: high

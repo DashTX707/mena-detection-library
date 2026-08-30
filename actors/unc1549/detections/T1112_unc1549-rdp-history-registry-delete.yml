@@ -1,0 +1,31 @@
+title: UNC1549 RDP Connection-History Registry Deletion
+id: 228724f7-0ee6-4f15-8baf-c87c9d9bf0d4
+status: experimental
+description: |
+    Detects UNC1549 / TA455 anti-forensics via deletion of the Terminal Server Client RDP connection
+    history (T1112 Modify Registry) to erase lateral-movement traces. The actor runs
+    "reg delete HKEY_CURRENT_USER\Software\Microsoft\Terminal Server Client\Default /va /f" and
+    "...\Terminal Server Client\Servers /f". Keys on reg.exe process creation performing a delete against
+    the Terminal Server Client key. This is a specific, high-fidelity anti-forensic command rarely run by
+    legitimate users.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1112
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains: 'delete'
+        CommandLine|contains: '\Terminal Server Client\'
+    condition: selection
+falsepositives:
+    - Privacy-cleanup utilities or scripted profile hygiene that clears RDP MRU history - correlate with
+      the executing user, parent process and surrounding lateral-movement activity
+level: high

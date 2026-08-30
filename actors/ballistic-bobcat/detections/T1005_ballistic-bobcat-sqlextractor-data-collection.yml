@@ -1,0 +1,29 @@
+title: Ballistic Bobcat SQLExtractor Local Database Data Collection
+id: 3eec1d70-66cb-41a2-b38d-7d530b5fa7cc
+status: experimental
+description: |
+    Detects Ballistic Bobcat use of the non-standard SQLExtractor utility (sqlextractor.exe) to interact
+    with and bulk-extract data from SQL databases on compromised hosts (Data from Local System). Keys on
+    the tool image name / original filename rather than a single hash so renamed copies are still caught.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1005/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1005
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith: '\sqlextractor.exe'
+        - OriginalFileName: 'SQLExtractor.exe'
+        - CommandLine|contains: 'sqlextractor'
+    condition: selection_tool
+falsepositives:
+    - Legitimate DBA data-extraction utilities exist but SQLExtractor specifically is not standard admin
+      tooling - validate the account, host role and the databases accessed
+level: medium

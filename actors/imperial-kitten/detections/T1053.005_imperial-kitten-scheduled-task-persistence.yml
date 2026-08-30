@@ -1,0 +1,36 @@
+title: Scheduled Task Executing Binary From User-Writable Path (Imperial Kitten Persistence)
+id: 29bf3597-8969-4760-98a7-a009633f9190
+status: experimental
+description: |
+    Detects scheduled-task creation (Security 4698 / Task Scheduler operational) or schtasks.exe
+    task creation that runs a binary or script from a user-writable staging path (AppData,
+    ProgramData, Public, Temp). Imperial Kitten (CURIUM / Yellow Liderc) creates scheduled tasks to
+    persist and periodically re-execute their implants (T1053.005). Anchors on task creation whose
+    action target resides outside standard system directories.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.imperial-kitten
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_path:
+        CommandLine|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+            - '\Windows\Temp\'
+    condition: all of selection_*
+falsepositives:
+    - Software installers and management tools that register scheduled tasks referencing AppData or
+      ProgramData - validate the task action binary and creating account
+level: high

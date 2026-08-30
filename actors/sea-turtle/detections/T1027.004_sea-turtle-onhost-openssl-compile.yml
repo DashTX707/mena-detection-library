@@ -1,0 +1,49 @@
+title: Sea Turtle On-Host Compilation of OpenSSL-Linked Network Binary
+id: 235dd7fb-fe8b-4eab-8e6a-a2c28ef75684
+status: experimental
+description: |
+    Detects on-host compilation of a network binary that links against OpenSSL, the build step Sea Turtle
+    (Teal Kurma / Marbled Dust) performs for the SnappyTCP webshell delivered as source (T1027.004 Obfuscated
+    Files or Information: Compile After Delivery). Compiling on the victim reduces the static-detection surface
+    of the delivered payload. Anchors on gcc/cc/clang invocations that link -lssl / -lcrypto, especially when
+    the parent is a webserver/shell process or the compiler is run by a web/service account.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/software/S1163/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1027.004
+    - mena-detection-library.sea-turtle
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection_compiler:
+        Image|endswith:
+            - '/gcc'
+            - '/cc'
+            - '/g++'
+            - '/clang'
+            - '/clang++'
+    selection_openssl:
+        CommandLine|contains:
+            - '-lssl'
+            - '-lcrypto'
+            - 'openssl/ssl.h'
+    selection_webparent:
+        ParentImage|endswith:
+            - '/apache2'
+            - '/httpd'
+            - '/nginx'
+            - '/php-fpm'
+            - '/php'
+            - '/bash'
+            - '/sh'
+            - '/dash'
+    condition: selection_compiler and selection_openssl and selection_webparent
+falsepositives:
+    - Legitimate software builds / package compilation on development or build servers
+    - Configure/make steps of admin-installed software that link OpenSSL - baseline build hosts
+level: medium

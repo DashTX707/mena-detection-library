@@ -1,0 +1,58 @@
+title: UNC1549 SharePoint / Teams File Download
+id: 3b1d0704-25bc-4bc5-b720-406fff39c2de
+status: experimental
+description: |
+    Detects UNC1549 / TA455 collection from information repositories (T1213.002), where the actor browses
+    Microsoft Teams and SharePoint to locate and download files of interest. The base rule keys on the
+    Microsoft 365 Unified Audit Log SharePoint FileDownloaded operations; the correlation fires when a
+    single principal downloads a high volume of files in a short window - the pattern of an operator
+    harvesting a repository rather than normal document use. Requires SharePoint/OneDrive auditing enabled.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1213.002
+    - mena-detection-library.unc1549
+name: unc1549_sharepoint_file_download
+logsource:
+    product: m365
+    service: sharepoint
+detection:
+    selection:
+        Operation:
+            - 'FileDownloaded'
+            - 'FileSyncDownloadedFull'
+    condition: selection
+falsepositives:
+    - Users legitimately syncing large document libraries or migrating content - baseline per-user
+      download volume and exclude sanctioned bulk-migration accounts
+level: medium
+---
+title: UNC1549 SharePoint Bulk-Download Correlation
+id: 2f6b8c1d-4a90-4e7b-9c22-7d1e5a0b3f88
+status: experimental
+description: |
+    Fires when a single principal downloads a high volume of SharePoint/OneDrive files in a short window,
+    consistent with UNC1549 / TA455 repository harvesting.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1213.002
+    - mena-detection-library.unc1549
+correlation:
+    type: event_count
+    rules:
+        - unc1549_sharepoint_file_download
+    group-by:
+        - UserId
+    timespan: 1h
+    condition:
+        gte: 100
+falsepositives:
+    - Users legitimately syncing large document libraries or migrating content
+level: medium

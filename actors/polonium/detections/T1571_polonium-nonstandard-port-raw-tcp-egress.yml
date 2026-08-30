@@ -1,0 +1,42 @@
+title: POLONIUM Raw-TCP C2 and Exfiltration on Non-Standard Ports
+id: 1eafe7f8-e2f9-4ad7-9bfe-f19cadcfd0ee
+status: experimental
+description: |
+    Detects outbound connections from workstations to external hosts on the non-standard ports
+    POLONIUM uses for command-and-control and exfiltration (T1571 Non-Standard Port, T1095
+    Non-Application Layer Protocol, T1041 Exfiltration Over C2 Channel). TechnoCreep uses raw TCP
+    sockets (e.g. port 1302) and the group's C2/exfil channels use ports such as 63047, 5055, 1302,
+    2121 and 1433 to IP-only VPS hosts. Requires network-connection telemetry (Sysmon EID 3). Keys on
+    initiated egress on these uncommon ports to non-internal destinations; large sustained volume on
+    the same session indicates exfiltration.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1571
+    - attack.t1095
+    - attack.t1041
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: network_connection
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort:
+            - 1302
+            - 63047
+            - 5055
+    filter_internal:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: selection and not filter_internal
+falsepositives:
+    - Bespoke line-of-business applications that use high ephemeral-range ports for legitimate
+      services - baseline expected high-port destinations per host and confirm the destination IP
+level: medium

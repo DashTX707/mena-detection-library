@@ -1,0 +1,36 @@
+title: UNC3890 SUGARDUMP Masquerading Artifacts in User Paths
+id: b1a2c3d4-e5f6-4708-8192-a3b4c5d6e7f9
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARDUMP masquerading as benign Windows/utility software
+    (T1036.005 Match Legitimate Name or Location). SUGARDUMP stages 'CrashReporter.exe' under
+    %AppData%\Microsoft\Internet Explorer\TabRoaming\, is delivered via a fake '3-Video-VLC.exe'
+    installer, and writes exfil staging files named to look like system artifacts
+    ('DebugLogWindowsDefender.txt' in %TEMP%, 'CrashLog.txt'). Keys on file creation of these
+    legitimate-looking names in unusual user-writable locations where the genuine equivalents never
+    appear.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.unc3890
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_crashreporter:
+        TargetFilename|contains: '\Internet Explorer\TabRoaming\'
+        TargetFilename|endswith: '\CrashReporter.exe'
+    selection_masqfiles:
+        TargetFilename|endswith:
+            - '\DebugLogWindowsDefender.txt'
+            - '\3-Video-VLC.exe'
+    condition: selection_crashreporter or selection_masqfiles
+falsepositives:
+    - The named artifacts are actor-specific and do not correspond to real Microsoft files in these
+      paths - matches should be investigated rather than baselined away
+level: medium

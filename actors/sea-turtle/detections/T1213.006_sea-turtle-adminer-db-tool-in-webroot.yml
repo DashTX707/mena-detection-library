@@ -1,0 +1,41 @@
+title: Sea Turtle Adminer Database Tool Staged in Web Root
+id: 651edb9a-7d37-4f93-b154-85d42ec573ec
+status: experimental
+description: |
+    Detects the Adminer web-based database management tool being written into an internet-facing web
+    directory, a data-access technique Sea Turtle (Teal Kurma / Marbled Dust) uses to browse and extract
+    victim databases (T1213.006 Data from Information Repositories: Databases). Adminer ships as a single
+    PHP file; its appearance under a document root (often with an obscure filename) by a webserver user is
+    a strong host-side signal. Anchors on file creation of an adminer-style single-file DB admin PHP in a
+    web-served path.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/groups/G1041/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1213.006
+    - mena-detection-library.sea-turtle
+logsource:
+    category: file_event
+    product: linux
+detection:
+    selection_name:
+        TargetFilename|contains:
+            - 'adminer'
+            - 'adminr'
+            - 'dbadmin'
+    selection_webext:
+        TargetFilename|endswith: '.php'
+    selection_webpath:
+        TargetFilename|contains:
+            - '/var/www/'
+            - '/srv/www/'
+            - '/usr/share/nginx/html/'
+            - '/public_html/'
+    condition: (selection_name and selection_webext) and selection_webpath
+falsepositives:
+    - Administrators or developers who legitimately deploy Adminer for database management (rare on
+      production web roots - confirm it was expected and remove afterward)
+level: medium

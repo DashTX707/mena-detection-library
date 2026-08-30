@@ -1,0 +1,40 @@
+title: StandardKeyboard Windows Service Installation (Imperial Kitten Persistence)
+id: 73357f38-1f98-408b-97ae-ceeffd514167
+status: experimental
+description: |
+    Detects installation of a Windows Service (Security/System Event ID 7045) whose service name or
+    image matches the Imperial Kitten (CURIUM / Yellow Liderc) StandardKeyboard email-C2 implant
+    (WindowsServiceLive.exe / StandardKeyboard) or points at a service binary in a user-writable
+    path (T1543.003 Windows Service). StandardKeyboard is installed as a SYSTEM service to survive
+    reboot. Keys on service-creation auditing with the actor service-name pattern and anomalous
+    image paths.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.imperial-kitten
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_event:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_name:
+        ServiceName|contains:
+            - 'StandardKeyboard'
+            - 'WindowsServiceLive'
+    selection_path:
+        ImagePath|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+    condition: selection_event and (selection_name or selection_path)
+falsepositives:
+    - Legitimate third-party services installed to ProgramData - validate the service binary
+      signature and reputation; the StandardKeyboard/WindowsServiceLive names are actor-specific
+level: high

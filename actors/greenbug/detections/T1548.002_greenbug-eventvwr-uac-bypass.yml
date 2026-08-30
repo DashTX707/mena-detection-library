@@ -1,0 +1,28 @@
+title: Greenbug eventvwr.exe UAC Bypass
+id: 3d7b1f59-8a2c-46e3-9b14-7c5d1a8e2f63
+status: experimental
+description: |
+    Detects Greenbug/ISMDOOR UAC bypass via the Event Viewer hijack (T1548.002), delivered as ivb.ps1
+    (Invoke-EventVwrBypass). The technique writes a command to the HKCU mscfile shell-open-command
+    registry key and then launches eventvwr.exe, which auto-elevates and executes the hijacked command
+    (typically powershell/cmd) as a child. Keys on the distinctive registry write and on eventvwr.exe
+    spawning a script interpreter.
+references:
+    - https://www.netscout.com/blog/asert/greenbugs-dns-isms
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.privilege-escalation
+    - attack.t1548.002
+    - mena-detection-library.greenbug
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_reg:
+        TargetObject|contains: '\Software\Classes\mscfile\shell\open\command'
+    condition: selection_reg
+falsepositives:
+    - Legitimate writes to the mscfile shell-open-command key are extremely rare - almost always
+      indicative of an eventvwr UAC bypass; validate the value written
+level: high

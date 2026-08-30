@@ -1,0 +1,44 @@
+title: POLONIUM CreepyDrive/CreepySnail PowerShell Cloud-API C2
+id: 6f9a3c4d-3d4e-4b2c-8c43-4c8d9e1a2b33
+status: experimental
+description: |
+    Detects POLONIUM PowerShell implants CreepyDrive and CreepySnail (T1059.001 PowerShell) that
+    read tasking from and return results to cloud storage over HTTP APIs. The implants use
+    Invoke-WebRequest/Invoke-RestMethod or Net.WebClient to reach OneDrive Graph, Dropbox or Mega
+    endpoints, present OAuth refresh tokens, and read/write tasking files such as data.txt, cd.txt
+    and response.json. Requires PowerShell Script Block Logging (EID 4104). Keys on the co-occurrence
+    of a web-request cmdlet with cloud-C2 endpoints/tasking-file names.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: ps_script
+detection:
+    selection_web:
+        ScriptBlockText|contains:
+            - 'Invoke-WebRequest'
+            - 'Invoke-RestMethod'
+            - 'Net.WebClient'
+            - 'HttpClient'
+    selection_c2:
+        ScriptBlockText|contains:
+            - 'graph.microsoft.com'
+            - 'api.dropboxapi.com'
+            - 'content.dropboxapi.com'
+            - 'g.api.mega.co.nz'
+            - 'refresh_token'
+            - 'response.json'
+            - 'data.txt'
+            - 'cd.txt'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate administrative or DevOps PowerShell that calls Microsoft Graph or Dropbox APIs -
+      scope out known automation scripts, service accounts and signed modules
+level: high

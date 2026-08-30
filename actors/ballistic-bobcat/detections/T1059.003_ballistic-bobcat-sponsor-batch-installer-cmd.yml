@@ -1,0 +1,38 @@
+title: Ballistic Bobcat Sponsor Batch Installer and Backdoor install Argument
+id: fe40d99b-5800-47cd-ad1f-8a4b254de15a
+status: experimental
+description: |
+    Detects the Ballistic Bobcat Sponsor installation chain: batch-file installers (install.bat /
+    Uninstall.bat) run via cmd.exe, and the Sponsor backdoor binary launched with the controlled
+    'install' runtime argument that triggers its service-registration routine. Covers both the
+    Windows Command Shell interpreter usage (T1059.003) and the operator-driven install argument
+    (T1204). Anchored on the batch-driven install behavior and the install argument string rather
+    than on a single binary hash.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1059/003/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - attack.t1204
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_batch:
+        Image|endswith: '\cmd.exe'
+        CommandLine|contains:
+            - 'install.bat'
+            - 'Uninstall.bat'
+    selection_install_arg:
+        CommandLine|endswith:
+            - '.exe install'
+            - '.exe" install'
+    condition: 1 of selection_*
+falsepositives:
+    - Legitimate software packages ship install.bat scripts and binaries that take an install argument -
+      validate the parent process, the binary path and signature, and whether a service is created
+level: high

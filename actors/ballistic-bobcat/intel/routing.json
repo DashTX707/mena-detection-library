@@ -1,0 +1,199 @@
+{
+  "actor": "Ballistic Bobcat",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "high — exploitation of CVE-2021-26855 on Exchange is a strong detection surface: IIS/Exchange request logs, W3SVC anomalies, unexpected child processes of w3wp.exe/UMWorkerProcess, webshell writes to Exchange web roots, and version/patch-state monitoring all apply"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — file-integrity monitoring on Exchange/IIS web roots (inetpub\\wwwroot\\aspnet_client) and anomalous file writes by w3wp.exe are high-fidelity, actor-relevant detections"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "high — cmd.exe spawning from a service process or from batch installers, and cmd.exe /c children of the Sponsor service binary, are directly observable via process-creation telemetry (Event ID 4688 / Sysmon 1)"
+    },
+    {
+      "technique_id": "T1204",
+      "technique_name": "User Execution",
+      "tactic": "execution",
+      "rationale": "medium — the specific 'install' command-line argument on the Sponsor binary is a detectable string in process-creation logs, but requires knowing the binary name/argument pattern"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high — service creation (Event ID 7045 / 4697) with the names SystemNetwork or Update pointing at an unsigned binary in an unusual path is a high-fidelity, actor-specific detection"
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "rationale": "high — services.exe launching an unsigned backdoor binary from a non-standard path is observable via service-start and process-lineage telemetry"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — the on-disk config files (config.txt, node.txt, error.txt) co-located with the service binary are a detectable file-artifact pattern, though the decode logic itself is in-memory"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy config files adjacent to a service binary are detectable via file-entropy analytics, but need dedicated scanning"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "high — a CSRSS.EXE running from a path other than %WINDIR%\\System32 (or with a non-Microsoft signature) is a rare, high-fidelity masquerade detection via image-path/signature analytics"
+    },
+    {
+      "technique_id": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "tactic": "privilege-escalation",
+      "rationale": "medium — reuse of local credentials is detectable via anomalous local-logon analytics but blends with legitimate administration"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — procdump against lsass.exe (command line containing lsass / -ma) and process access to lsass by Mimikatz are highly observable via EDR process-access and command-line telemetry"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "high — WebBrowserPassView execution and its access to browser credential stores (Login Data files) are detectable via known-tool hashes/signatures and file-access telemetry"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — the discovery happens inside the backdoor via API calls rather than spawned commands, so it is subtle; detection leans on catching the backdoor process/beacon rather than the enumeration itself"
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — execution of host2ip.exe (a non-standard utility) and bursts of name-resolution/host enumeration are detectable via process and DNS telemetry"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — internal service discovery / connection fan-out is detectable via east-west network analytics, though it can blend with legitimate scanning tools"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — periodic HTTP/80 beacons from a service process to the known Sponsor C2 IPs are detectable via network/proxy telemetry and beacon-interval analytics, especially when correlated with the C2 IOCs"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — RC4-encrypted payloads inside plain HTTP produce high-entropy bodies over port 80 that can be flagged heuristically, but confirmation needs payload inspection"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "medium — Base64-encoded blobs in HTTP request/response bodies to the Sponsor C2 are detectable heuristically, particularly combined with the beacon interval and C2 IOCs"
+    },
+    {
+      "technique_id": "T1001",
+      "technique_name": "Data Obfuscation",
+      "tactic": "command-and-control",
+      "rationale": "medium — obfuscated C2 is best caught via anomaly on the HTTP/80 channel to the Sponsor C2 IPs rather than content signatures"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — the Sponsor service or a URLDownloadToFileW call fetching an executable followed by its execution is detectable via process+network+file-write correlation; outbound to the tool-delivery IOCs (5.255.97.172, 198.144.189.74) adds fidelity"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "high — execution of RevSocks/GOST/Chisel (by known hash or renamed CSRSS.EXE outside System32) and their outbound reverse-proxy connections are detectable via process and network telemetry"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "high — plink.exe/gost.exe/chisel.exe execution and their tunneling connections are detectable via process command-line and outbound-connection telemetry"
+    },
+    {
+      "technique_id": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "tactic": "lateral-movement",
+      "rationale": "medium — plink.exe execution and outbound SSH from unusual internal hosts are detectable via process and network telemetry, though SSH can be legitimate in some environments"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound data returned over the beacon channel is detectable as part of the C2 flow to the Sponsor IOCs, but distinguishing exfil volume from beaconing requires flow analysis"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "rationale": "medium — execution of Uninstall.bat and deletion of the service binary/config files (config.txt, node.txt, error.txt) are detectable via process-creation and file-delete telemetry if captured before cleanup completes"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — execution of a non-standard sqlextractor.exe and bulk local database reads are detectable via process and file/DB-access telemetry, though it can resemble legitimate DBA activity"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "rationale": "low — off-victim internet-wide scanning is not endpoint-observable; inbound probes may register at the perimeter but attribution to this actor is weak; hunt/intel candidate via external attack-surface monitoring"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware development occurs off-victim; the resulting binaries are where detection lands; intel/hunt candidate via sample tracking and YARA over the Sponsor family"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition itself is off-endpoint; downstream execution of each tool is the detection surface; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Location Discovery: System Language Discovery",
+      "tactic": "discovery",
+      "rationale": "low — locale/timezone queries are in-process and indistinguishable from benign activity; hunt candidate only in the context of the backdoor"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "low — a single PID lookup inside the backdoor is not meaningfully observable on its own; hunt candidate tied to the backdoor"
+    }
+  ],
+  "summary": {
+    "total": 31,
+    "detection": 26,
+    "hunt": 5
+  }
+}

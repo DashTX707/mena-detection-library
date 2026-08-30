@@ -1,0 +1,43 @@
+title: Arid Viper Document-Masquerading Executable Execution
+id: 5f3a9c21-7d64-4e08-b1a2-9c4e7f0a1b23
+status: experimental
+description: |
+    Detects execution of Micropsia / Arid Gopher Windows implants delivered as fake documents
+    (T1204.002 User Execution: Malicious File, T1036.007 Double File Extension, T1036.008 Masquerade
+    File Type). Arid Viper (APT-C-23) ships executables carrying Word/PDF icons with an embedded
+    document extension (e.g. .doc/.pdf) immediately before the real .exe, or uses an abnormally long
+    filename to push the .exe out of the visible name, and opens a benign decoy document at first run.
+    Keys on process-creation image-name patterns for an embedded document double-extension and for
+    excessively long executable filenames launched from user-writable paths.
+references:
+    - https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant
+    - https://www.security.com/threat-intelligence/mantis-palestinian-attacks
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.t1204.002
+    - attack.t1036.007
+    - attack.t1036.008
+    - mena-detection-library.arid-viper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_double_ext:
+        Image|re: '(?i)\.(doc|docx|xls|xlsx|pdf|ppt|pptx|rtf|odt|csv|txt)[^\\/]{0,10}\.exe$'
+    selection_long_name:
+        Image|re: '(?i)\\[^\\/]{75,}\.exe$'
+    selection_userpath:
+        Image|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\Downloads\'
+            - '\Temp\'
+    condition: (selection_double_ext or selection_long_name) and selection_userpath
+falsepositives:
+    - Legitimate installers or self-extracting archives with very long product names in Downloads
+    - Rare business applications that embed a document-like token in the executable name
+level: high

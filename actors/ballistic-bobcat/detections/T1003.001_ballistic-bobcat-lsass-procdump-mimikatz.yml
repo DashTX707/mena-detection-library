@@ -1,0 +1,40 @@
+title: Ballistic Bobcat LSASS Credential Dumping via ProcDump and Mimikatz
+id: 1c073cb2-5721-4d0f-b8a3-660cfdd5da57
+status: experimental
+description: |
+    Detects Ballistic Bobcat LSASS memory credential theft using ProcDump (procdump64.exe) and Mimikatz
+    (renamed mi.exe). ProcDump is invoked with a full-memory dump switch against lsass, and Mimikatz is
+    detected via its characteristic command modules. Keys on the LSASS-dump command-line behavior and
+    Mimikatz module strings rather than the specific tool hash, so renamed binaries are still caught.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1003/001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_procdump:
+        CommandLine|contains|all:
+            - '-ma'
+            - 'lsass'
+    selection_procdump_accepteula:
+        CommandLine|contains|all:
+            - '-accepteula'
+            - 'lsass'
+    selection_mimikatz:
+        CommandLine|contains:
+            - 'sekurlsa::'
+            - 'lsadump::'
+            - 'privilege::debug'
+            - 'log mimi'
+    condition: 1 of selection_*
+falsepositives:
+    - Administrators and forensic tooling occasionally dump lsass with ProcDump - validate the account,
+      the parent process and whether the dump file is exfiltrated; Mimikatz module strings are near-certain malicious
+level: high

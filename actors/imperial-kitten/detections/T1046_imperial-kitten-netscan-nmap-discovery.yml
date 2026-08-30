@@ -1,0 +1,35 @@
+title: SoftPerfect NetScan / Nmap Internal Network Service Discovery (Imperial Kitten)
+id: 4a93843e-5c76-4321-aa89-fb5703d9a505
+status: experimental
+description: |
+    Detects execution of network-scanning tools used by Imperial Kitten (CURIUM / Yellow Liderc)
+    for internal reconnaissance - SoftPerfect NetScan (netscan.exe) and Nmap (nmap.exe / ncat) -
+    after gaining a foothold (T1046 Network Service Discovery). Keys on the scanner process image,
+    original filename and scan-oriented command lines. On workstations these tools are rarely
+    legitimate.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1046
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_image:
+        Image|endswith:
+            - '\netscan.exe'
+            - '\nmap.exe'
+            - '\ncat.exe'
+    selection_origname:
+        OriginalFileName:
+            - 'netscan.exe'
+            - 'nmap.exe'
+    condition: selection_image or selection_origname
+falsepositives:
+    - Authorized IT/security staff running network inventory or vulnerability scans - allowlist
+      known scanning hosts and accounts
+level: medium

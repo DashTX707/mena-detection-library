@@ -1,0 +1,43 @@
+title: Ballistic Bobcat Sponsor SystemNetwork/Update Windows Service Persistence and Execution
+id: e12cba73-3c08-474c-ba9c-4f650af385a4
+status: experimental
+description: |
+    Detects creation and execution of the Ballistic Bobcat Sponsor backdoor as a Windows service.
+    The batch installer registers the backdoor for automatic start under the service name
+    'SystemNetwork' (Sponsor v1) or 'Update' (v2-v5) pointing at an unsigned binary in a non-standard
+    path such as %WINDIR%\Tasks or %WINDIR%\INF. Keys on Service Control Manager service-installation
+    events (Event ID 7045) with the actor service names and/or an image path outside System32, covering
+    both service creation (T1543.003) and service-based execution (T1569.002).
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1543/003/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.execution
+    - attack.t1543.003
+    - attack.t1569.002
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_event:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_name:
+        ServiceName:
+            - 'SystemNetwork'
+            - 'Update'
+    selection_path:
+        ImagePath|contains:
+            - '\Windows\Tasks\'
+            - '\Windows\INF\'
+            - '\AppData\Local\Temp\'
+            - '\inetpub\'
+    condition: selection_event and (selection_name or selection_path)
+falsepositives:
+    - A benign service literally named Update is possible - validate the ImagePath, the binary signature
+      and whether the path is a standard vendor install location before dismissing
+level: high

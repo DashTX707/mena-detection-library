@@ -1,0 +1,29 @@
+title: POLONIUM Startup Folder LNK Persistence
+id: ad3e7081-7b82-4f60-8a87-8a2b3c5e6f77
+status: experimental
+description: |
+    Detects creation of a .lnk shortcut in a Startup folder (T1547.009 Shortcut Modification).
+    POLONIUM places LNK files in the user or common Startup folder so that Creep-family backdoor
+    components execute automatically at logon. Requires file-creation telemetry (Sysmon EID 11 /
+    Security EID 4663). Keys on a shortcut being written under the Start Menu Programs Startup path;
+    triage the LNK target for a masqueraded implant binary in a user-writable location.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.009
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection:
+        TargetFilename|contains: '\Start Menu\Programs\Startup\'
+        TargetFilename|endswith: '.lnk'
+    condition: selection
+falsepositives:
+    - Legitimate application installers that add a Startup shortcut - resolve the LNK target and
+      confirm the referenced binary's signer and path
+level: medium

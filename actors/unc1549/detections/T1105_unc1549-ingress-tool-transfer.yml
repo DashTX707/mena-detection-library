@@ -1,0 +1,45 @@
+title: UNC1549 Ingress Tool Transfer by Side-Loaded Backdoor Process
+id: bd801a26-872c-4b6a-97a0-1b531104d00a
+status: experimental
+description: |
+    Detects UNC1549 / TA455 ingress tool transfer (T1105), where the MINIBIKE / TWOSTROKE / DEEPROOT
+    backdoors download additional utilities from Azure C2 to the victim host. Keys on file-creation of
+    executable payloads (.exe/.dll/.ps1/.bat) written into user-writable staging locations by a process
+    that is itself running from an abnormal, non-standard path (AppData, Temp, Public, ProgramData) - the
+    behaviour of a backdoor staging follow-on tooling. Correlate with C2 network activity and the DLL-
+    hijack host.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection_writer:
+        Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+    selection_target:
+        TargetFilename|endswith:
+            - '.exe'
+            - '.dll'
+            - '.ps1'
+            - '.bat'
+    filter_target_path:
+        TargetFilename|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+    condition: selection_writer and selection_target and filter_target_path
+falsepositives:
+    - Installers, updaters and packaging tools that unpack executables into temp/programdata locations -
+      baseline known updater processes and their write paths before alerting
+level: medium

@@ -1,0 +1,46 @@
+title: UNC3890 Spearphishing Typosquat and Brand-Spoof Domain Resolution
+id: 2e3f4a5b-6c7d-4e9f-9a0b-1c2d3e4f5a6b
+status: experimental
+description: |
+    Detects endpoints resolving UNC3890 (Operation Sugarush) typosquat / brand-spoof domains used in
+    the actor's email spearphishing-link and fake-login lures (T1566.002 Spearphishing Link). The
+    actor registered lookalike domains spoofing LinkedIn (lirikedin[.]com / punycode
+    xn--lirkedin-vkb[.]com), Facebook (rnfacebook[.]com), Office 365 (office365update[.]live), Pfizer
+    (pfizerpoll[.]com) and lure/robotic-dolls infrastructure. Keys on DNS query telemetry for the
+    watchlisted actor domains from user endpoints.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1566.002
+    - mena-detection-library.unc3890
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection_domains:
+        QueryName:
+            - 'lirikedin.com'
+            - 'xn--lirkedin-vkb.com'
+            - 'rnfacebook.com'
+            - 'office365update.live'
+            - 'pfizerpoll.com'
+            - 'celebritylife.news'
+            - 'fileupload.shop'
+            - 'naturaldolls.store'
+            - 'xxx-doll.com'
+            - 'aspiremovecentraldays.net'
+    selection_subdomains:
+        QueryName|endswith:
+            - '.lirikedin.com'
+            - '.rnfacebook.com'
+            - '.office365update.live'
+            - '.pfizerpoll.com'
+    condition: selection_domains or selection_subdomains
+falsepositives:
+    - The listed domains are actor-controlled lookalikes with no legitimate business use - resolution
+      from a user endpoint indicates a clicked lure and should be investigated
+level: high

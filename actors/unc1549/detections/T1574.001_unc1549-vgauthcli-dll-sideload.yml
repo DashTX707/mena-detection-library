@@ -1,0 +1,37 @@
+title: UNC1549 DLL Search-Order Hijack via VGAuthCLI.exe Loading VGAuth.dll
+id: 704d0cff-b429-4d93-9a38-4c798a89948e
+status: experimental
+description: |
+    Detects UNC1549 / TA455 core execution and persistence via DLL search-order hijacking
+    (T1574.001) against legitimate signed VMware software. The actor drops a malicious VGAuth.dll
+    (loading the LIGHTRAIL tunneler and other payloads) next to the signed VMware Guest Authentication
+    binary VGAuthCLI.exe so it is side-loaded at runtime. Keys on image-load telemetry (Sysmon EID 7)
+    where VGAuthCLI.exe loads VGAuth.dll from outside the canonical VMware VGAuth install path, or the
+    loaded module is unsigned/invalidly signed. This is the strongest endpoint surface for the actor,
+    which reuses the same technique across CRASHPAD, DCSYNCER.SLICK, GHOSTLINE, MINIBIKE, POLLBLEND,
+    SIGHTGRAB and TWOSTROKE against VMware/Citrix/Fortinet/Microsoft/NVIDIA binaries.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1574.001
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: image_load
+detection:
+    selection:
+        Image|endswith: '\VGAuthCLI.exe'
+        ImageLoaded|endswith: '\VGAuth.dll'
+    filter_signed_path:
+        ImageLoaded|contains: '\VMware\VMware Tools\VMware VGAuth\'
+        Signed: 'true'
+    condition: selection and not filter_signed_path
+falsepositives:
+    - Genuine VMware Guest Authentication Service updates that relocate the DLL - verify the module
+      signature, publisher and the fully-qualified load path before dismissing
+level: high

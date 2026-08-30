@@ -1,0 +1,37 @@
+title: Obfuscated / Encoded Script Execution (Imperial Kitten Delivery Scripts)
+id: b55f357a-0f12-4dfe-a3d4-b1a45e8323d0
+status: experimental
+description: |
+    Detects execution of obfuscated or encoded scripts consistent with Imperial Kitten (CURIUM /
+    Yellow Liderc) delivery tradecraft, whose VBA/Python/.NET payloads and PowerShell stagers are
+    obfuscated to hinder static analysis (T1027 Obfuscated Files or Information). Keys on PowerShell
+    encoded-command / obfuscation markers on the command line and via AMSI/script-block content.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1027
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_obf:
+        CommandLine|contains:
+            - '-enc '
+            - '-EncodedCommand'
+            - 'FromBase64String'
+            - '[Convert]::FromBase64'
+            - '-w hidden'
+            - '-nop -w'
+    condition: all of selection_*
+falsepositives:
+    - Some legitimate management and installer scripts use encoded commands - baseline expected
+      automation and allowlist by signing/parent process
+level: medium

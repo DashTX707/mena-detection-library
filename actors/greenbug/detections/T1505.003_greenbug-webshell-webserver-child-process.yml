@@ -1,0 +1,41 @@
+title: Greenbug Web Shell - Web Server Spawning Command Interpreter
+id: 8a2d6c14-7b9e-41f5-9c38-4e1b7a2d6f93
+status: experimental
+description: |
+    Detects Greenbug web-shell activity on compromised servers (T1505.003). The group deployed multiple
+    webshells to maintain web-based remote access to victim telecom networks. A web-server worker process
+    (w3wp.exe, httpd.exe, php-cgi.exe, tomcat) spawning a command interpreter (cmd.exe, powershell.exe)
+    is a hallmark of web-shell command execution. Keys on web-server parent to shell child process
+    lineage.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\httpd.exe'
+            - '\php-cgi.exe'
+            - '\tomcat.exe'
+            - '\nginx.exe'
+            - '\httpd.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\whoami.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Some web applications legitimately shell out (build agents, admin panels) - baseline expected
+      web-server child processes per application and alert on deviations
+level: high

@@ -1,0 +1,253 @@
+{
+  "actor": "UNC1549 (TA455)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — inbound links to newly-registered/look-alike domains are detectable via email-security URL analysis, proxy/DNS logging and user-reported phishing, but tailored lures on cloud infrastructure evade generic filtering"
+    },
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "rationale": "medium — credential-harvest landing pages are detectable via URL/domain reputation and post-submission anomalous logons, but the collection itself happens on attacker infrastructure"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium — link clicks are observable via proxy/DNS and browser telemetry, but distinguishing a malicious job-site click from normal browsing requires domain reputation context"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — execution of a downloaded payload is detectable via process-creation and download-provenance (mark-of-the-web) telemetry, though the initial dropper varies per campaign"
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "rationale": "medium — valid-account logons are detectable via identity analytics (impossible travel, new device/geo, atypical MFA) but blend with legitimate access without behavioral baselining"
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "rationale": "medium — third-party/VDI access is detectable via monitoring of vendor accounts, VDI session anomalies and unexpected process launches inside brokered sessions, but requires visibility into the trust boundary and the VDI layer"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "persistence",
+      "rationale": "high — a legitimate signed binary loading an unsigned/unexpected DLL from a non-standard path (e.g. VGAuthCLI.exe loading VGAuth.dll from a writable dir, files under VMware VGAuth) is detectable via module-load (Sysmon EID 7) and signature/path-mismatch analytics; this is the strongest endpoint surface for the actor"
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "rationale": "medium — signed malware evades trust controls, but the specific signing certificates (once identified/revoked) and signer-reputation anomalies are detectable via certificate-thumbprint watchlists and code-integrity telemetry"
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "rationale": "medium — files masquerading inside trusted product directories and service-like C2 hostnames are detectable via path/name baselining and file-integrity monitoring of vendor software folders"
+    },
+    {
+      "technique_id": "T1027.007",
+      "technique_name": "Obfuscated Files or Information: Dynamic API Resolution",
+      "tactic": "stealth",
+      "rationale": "medium — dynamic API resolution and string obfuscation are detectable via YARA/behavioral analysis (e.g. GetProcAddress loops, XOR string decoding) but require memory/behavioral inspection rather than static AV"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy/encoded artifacts (XOR-encrypted .jpg screenshots under Users\\Public) are detectable via file-entropy and content analytics with dedicated scanning"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-impairment",
+      "rationale": "medium — rapid file-creation-then-deletion of executables is detectable via file-system and EDR delete-event telemetry, but the window is short and requires continuous recording"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "defense-impairment",
+      "rationale": "high — deletion of the Terminal Server Client\\Default and \\Servers registry keys is a specific, high-fidelity command detectable via process command-line and registry-modification (Sysmon EID 12/13) telemetry"
+    },
+    {
+      "technique_id": "T1003.006",
+      "technique_name": "OS Credential Dumping: DCSync",
+      "tactic": "credential-access",
+      "rationale": "high — DCSync generates directory-replication requests (DRSUAPI DsGetNCChanges / Event ID 4662 with replication GUIDs) from non-DC principals, a high-fidelity identity detection; the LOG.txt output paths add host-level corroboration"
+    },
+    {
+      "technique_id": "T1110.003",
+      "technique_name": "Brute Force: Password Spraying",
+      "tactic": "credential-access",
+      "rationale": "high — password spraying (many accounts, few passwords, from a small set of sources) is detectable via authentication-failure fan-out analytics (Event ID 4625 / Azure AD sign-in logs)"
+    },
+    {
+      "technique_id": "T1558.003",
+      "technique_name": "Steal or Forge Kerberos Tickets: Kerberoasting",
+      "tactic": "credential-access",
+      "rationale": "high — bursts of Kerberos TGS requests (Event ID 4769) with RC4 encryption for many SPNs from one host are a well-established Kerberoasting detection"
+    },
+    {
+      "technique_id": "T1649",
+      "technique_name": "Steal or Forge Authentication Certificates",
+      "tactic": "credential-access",
+      "rationale": "medium — anomalous certificate enrollment (AD CS Event IDs 4886/4887) and RBCD/msDS-AllowedToActOnBehalfOfOtherIdentity modifications are detectable via CA and directory auditing, but require AD CS logging to be enabled"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "high — access to browser credential stores plus CryptUnprotectData usage and token impersonation of explorer.exe are detectable via EDR API/behavioral telemetry; the crash.log/config.txt paths add corroboration"
+    },
+    {
+      "technique_id": "T1056.002",
+      "technique_name": "Input Capture: GUI Input Capture",
+      "tactic": "credential-access",
+      "rationale": "medium — spurious credential-prompt processes and cleartext credential files are detectable via process/UI and file-write telemetry, but the fake dialog itself may resemble legitimate auth prompts"
+    },
+    {
+      "technique_id": "T1087",
+      "technique_name": "Account Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — net user/net group enumeration is detectable via command-line logging but is common admin activity; value comes from recon-burst/process-lineage correlation"
+    },
+    {
+      "technique_id": "T1482",
+      "technique_name": "Domain Trust Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — AD Explorer execution and bulk LDAP/directory queries are detectable via process and directory-service query auditing, but need baselining against legitimate admin use"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — internal RDP (Type-10 logon 4624) fan-out and session activity is detectable via authentication and RDP-session analytics, but blends with legitimate admin RDP without baselining"
+    },
+    {
+      "technique_id": "T1563.002",
+      "technique_name": "Remote Service Session Hijacking: RDP Hijacking",
+      "tactic": "lateral-movement",
+      "rationale": "high — RDP session hijacking (session reconnect to another user's session, SYSTEM-context tscon) produces distinctive session-change and logon events (4778/4779) that are high-fidelity when baselined"
+    },
+    {
+      "technique_id": "T1021.006",
+      "technique_name": "Remote Services: Windows Remote Management",
+      "tactic": "lateral-movement",
+      "rationale": "medium — WinRM/PowerShell Remoting is detectable via WinRM operational logs and wsmprovhost.exe process lineage, but overlaps with legitimate remote administration"
+    },
+    {
+      "technique_id": "T1072",
+      "technique_name": "Software Deployment Tools",
+      "tactic": "lateral-movement",
+      "rationale": "medium — abuse of SCCM Remote Control is detectable via SCCM audit logs, CmRcService activity, and unexpected remote-control sessions, but requires SCCM-specific monitoring"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Software",
+      "tactic": "command-and-control",
+      "rationale": "high — unsanctioned RMM/remote tools (AWRC, ZeroTier, ngrok) are detectable via process/known-binary signatures, install events and outbound connections to their service endpoints"
+    },
+    {
+      "technique_id": "T1213.002",
+      "technique_name": "Data from Information Repositories: SharePoint",
+      "tactic": "collection",
+      "rationale": "medium — anomalous SharePoint/Teams access and bulk downloads are detectable via M365 audit (unified audit log) analytics for unusual principals/volumes, but require cloud-app logging"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "high — periodic creation of timestamped image files under Users\\Public\\Videos|Music by a non-standard process is a specific, high-fidelity file-creation detection"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTPS beaconing to Azure blends with normal cloud traffic, but the hardcoded /news URI, /register/ endpoint, static User-Agent and JSON registration body are detectable via proxy/TLS-metadata and web-log analytics when combined with the actor domain list"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — tunneler processes side-loaded via legitimate binaries plus outbound proxy connections to Azure are detectable via process-execution and network telemetry when correlated with the DLL-hijack host and actor domains"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "high — Windows ssh.exe launched with reverse-tunnel flags (-R) to port 443 and StrictHostKeyChecking=no is an anomalous, high-fidelity command-line/process detection on Windows endpoints, corroborated by outbound 443 to the tunnel IPs"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — file writes following backdoor C2 activity are detectable via process+file telemetry and download-provenance, but the encrypted Azure channel obscures the transfer itself"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1593.001",
+      "technique_name": "Search Open Websites/Domains: Social Media",
+      "tactic": "reconnaissance",
+      "rationale": "low — off-victim social-media reconnaissance and recruiter outreach are not endpoint-observable; intel/brand-monitoring and employee-awareness candidate"
+    },
+    {
+      "technique_id": "T1590.005",
+      "technique_name": "Gather Victim Network Information: IP Addresses",
+      "tactic": "reconnaissance",
+      "rationale": "low — reconnaissance conducted from within already-compromised mailboxes/third parties is largely invisible to the ultimate victim; hunt candidate via mailbox audit logs on compromised tenants"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration is off-victim; intel/hunt candidate via newly-registered-domain and look-alike-domain monitoring"
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "rationale": "low — the C2 is hosted on legitimate Azure infrastructure that resolves and TLS-terminates like any benign cloud service; hunt-leaning via curated actor-domain blocklists, JA3/TLS and rare-Azure-tenant beaconing analytics rather than a generic signature"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; per-sample unique hashing specifically defeats IOC-hash matching, pushing detection toward behavior/YARA — intel candidate"
+    },
+    {
+      "technique_id": "T1588.003",
+      "technique_name": "Obtain Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "rationale": "low — certificate acquisition is off-victim; the downstream signed-binary execution is where detection lands (see T1553.002) — intel candidate"
+    },
+    {
+      "technique_id": "T1573",
+      "technique_name": "Encrypted Channel",
+      "tactic": "command-and-control",
+      "rationale": "low — TLS on 443 to Azure is ubiquitous and content is opaque; hunt-leaning via TLS-fingerprint (JA3/JA3S), beacon-periodicity and destination-reputation analytics rather than payload inspection"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "low — exfiltration rides the same encrypted Azure C2 as beaconing and blends with normal cloud egress; hunt-leaning via volumetric/egress-anomaly analytics tied to the actor domains"
+    }
+  ],
+  "summary": {
+    "total": 40,
+    "detection": 32,
+    "hunt": 8
+  }
+}

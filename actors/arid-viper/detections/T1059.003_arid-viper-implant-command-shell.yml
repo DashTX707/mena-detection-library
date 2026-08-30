@@ -1,0 +1,37 @@
+title: Arid Viper Implant-Spawned Windows Command Shell
+id: 9d3f7c20-1a56-4b8e-8c74-5e2b9a6d3f01
+status: experimental
+description: |
+    Detects Micropsia executing remote operator commands through the Windows command shell as part of
+    its RAT command set (T1059.003 Windows Command Shell). Keys on cmd.exe spawned by a parent process
+    that itself runs from a user-writable path (AppData, Temp, Downloads, Public) typical of Micropsia /
+    Arid Gopher implants, rather than by legitimate system or installed-application binaries. Process
+    lineage is the anchor; command-shell use is common, so scope by the suspicious parent path.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://www.security.com/threat-intelligence/mantis-palestinian-attacks
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.arid-viper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        Image|endswith: '\cmd.exe'
+    selection_parent:
+        ParentImage|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Downloads\'
+            - '\Users\Public\'
+        ParentImage|endswith: '.exe'
+    condition: selection_cmd and selection_parent
+falsepositives:
+    - Portable or user-installed tools in AppData that legitimately shell out to cmd.exe (build tools,
+      installers) - validate the parent binary reputation and the command line executed
+level: medium

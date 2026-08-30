@@ -1,0 +1,43 @@
+title: Greenbug VMwareUpdate Service Persistence and Masquerading
+id: 1c5e8a37-6b9d-42f4-9c81-3a7e2d5b8f14
+status: experimental
+description: |
+    Detects Greenbug persistence via a malicious Windows service (T1543.003) named to impersonate
+    trusted software (T1036.005). The group created a service named 'VMwareUpdate' running a payload
+    disguised as legitimate VMware software, and named its binaries adobe.exe, java.ee, printers.exe and
+    comms.exe (a renamed Plink) to blend in. Keys on service installation (Event ID 7045) with a
+    vendor-like service name whose image path is in a user-writable/anomalous location.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1543.003
+    - attack.t1036.005
+    - mena-detection-library.greenbug
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_svc:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_name:
+        ServiceName|contains: 'VMwareUpdate'
+    selection_path:
+        ImagePath|contains:
+            - '\appdata\'
+            - '\programdata\'
+            - '\users\'
+            - '\temp\'
+            - 'adobe.exe'
+            - 'java.ee'
+            - 'printers.exe'
+            - 'comms.exe'
+    condition: selection_svc and (selection_name or selection_path)
+falsepositives:
+    - Genuine third-party software occasionally installs services from ProgramData - validate the
+      binary signature and the exact service name; a VMware-like name with an unsigned image is high fidelity
+level: high

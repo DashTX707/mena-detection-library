@@ -1,0 +1,430 @@
+{
+  "report_title": "Predatory Sparrow / Gonjeshke Darande (persona) — Destructive & OT-ICS Anti-Iran Actor — Stage-1 CTI Extraction",
+  "source": "SentinelLabs 'MeteorExpress | Mysterious Wiper Paralyzes Iranian Trains with Epic Troll' (2021-07-29, https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/); Picus Security 'Predatory Sparrow: Inside the Cyber Warfare Targeting Iran's Critical Infrastructure' (https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure); Wikipedia 'Predatory Sparrow' (https://en.wikipedia.org/wiki/Predatory_Sparrow); CNBC (2023-12-18, https://www.cnbc.com/2023/12/18/pro-israel-hackers-claim-cyberattack-disrupting-irans-gas-stations.html); The Record (https://therecord.media/cyber-attack-on-iranian-railway-was-a-wiper-incident-not-ransomware); MITRE ATT&CK baseline (no public group id assigned to this actor as of extraction)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Predatory Sparrow",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Gonjeshke Darande",
+      "Indra (linked/overlapping cluster)",
+      "MeteorExpress (campaign/tooling name)"
+    ],
+    "related_clusters": [
+      "Indra (earlier Meteor/Comet/Stardust wiper operations against Iran-linked targets in Syria; assessed by some researchers as an overlapping or precursor cluster)",
+      "Meteor / Stardust / Comet wiper family"
+    ],
+    "attribution": "Anti-Iran destructive/OT actor operating publicly under the Persian-language persona 'Gonjeshke Darande' (Predatory Sparrow). The persona self-presents as anti-regime hacktivists, but the operational sophistication (validated OT/ICS access sufficient to cause a physical molten-metal spill at a steel plant, multi-stage wiper toolchains, and deconfliction/'safety' messaging) is widely assessed in journalistic and analyst reporting to indicate a state or state-directed actor, most commonly attributed to Israel. Public attribution is largely journalistic (e.g., anonymous US/Israeli official sourcing to the New York Times on the October 2021 fuel-system attack) plus the group's own self-claims on Telegram; there is no government advisory formally attributing the group. Attribution to Israel is therefore assessed at MEDIUM confidence, and the underlying 'destructive OT actor with genuine ICS access' assessment is better-evidenced than the specific nation-state naming.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Iran",
+      "Syria (Indra-linked precursor wiper activity)"
+    ],
+    "targeted_regions_global": [],
+    "targeted_sectors": [
+      "Metals / steel manufacturing (OT/ICS)",
+      "Oil & gas / fuel distribution (fuel-pump control systems)",
+      "Transportation / railway",
+      "Financial services / banking",
+      "Cryptocurrency exchange",
+      "Critical infrastructure / OT-ICS",
+      "Government"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Iranian Railways wiper & defacement (MeteorExpress)",
+        "date": "2021-07-09",
+        "summary": "Multi-component destructive attack against the Islamic Republic of Iran Railways and the Ministry of Roads & Urban Development. A batch-script toolchain deployed via Active Directory Group Policy dropped the Meteor wiper (env.exe/msapp.exe), a screenlocker (mssetup.exe) and an MBR corruptor (nti.exe). The malware wiped filesystems, deleted shadow copies, corrupted boot configuration, cleared event logs, changed user passwords, disconnected hosts from the domain controller to hinder remediation, and locked screens. Station display boards were defaced telling passengers to call '64411' — the office of Supreme Leader Khamenei. SentinelLabs recovered the toolchain and named the campaign MeteorExpress.",
+        "source_url": "https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"
+      },
+      {
+        "name": "Iranian fuel-station payment-system disruption (October 2021)",
+        "date": "2021-10-26",
+        "summary": "Nationwide disruption of Iran's subsidised-fuel card payment network; the majority of gas stations could not process government fuel-subsidy cards. The actor reportedly reached the stations by compromising a central management/technical-support server for the fuel-pump software, and altered roadside digital billboards to display anti-Khamenei messaging ('Khamenei, where is our fuel?'). Anonymous US defense officials attributed the operation to Israel in New York Times reporting.",
+        "source_url": "https://time.com/6548680/iran-hacker-gas-station-cyberattack-israel/"
+      },
+      {
+        "name": "Iranian steel plants OT sabotage (Khuzestan / Mobarakeh / Hormozgan)",
+        "date": "2022-06-27",
+        "summary": "Compromise of industrial control systems at three of Iran's largest steel producers. At Khuzestan Steel Company the actor manipulated the production-control plane and caused an overhead crane/ladle to spill molten metal onto the factory floor, igniting a fire and damaging equipment; production was halted. The group released CCTV 'proof' footage showing the incident and an HMI, claimed it timed the action to avoid worker injury, and leaked tens of thousands of exfiltrated emails/documents it framed as evidence of the companies' IRGC affiliation, via its Telegram channel.",
+        "source_url": "https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure"
+      },
+      {
+        "name": "Iranian fuel-station disruption (December 2023)",
+        "date": "2023-12-18",
+        "summary": "Repeat disruption of Iran's fuel distribution, with Iran's oil minister confirming a cyberattack that took roughly 70% of the country's fuel stations offline and forced many to operate manually. The actor again claimed responsibility on Telegram, framing it as a controlled/retaliatory operation and citing the ability to have caused more damage.",
+        "source_url": "https://www.cnbc.com/2023/12/18/pro-israel-hackers-claim-cyberattack-disrupting-irans-gas-stations.html"
+      },
+      {
+        "name": "Bank Sepah data destruction & Nobitex crypto burn (June 2025)",
+        "date": "2025-06-17",
+        "summary": "Amid the June 2025 Israel-Iran conflict, the actor claimed a destructive attack on state-owned Bank Sepah (asserting the bank funded the Iranian military and destroying banking data), and the following day drained/burned roughly $90M from the Iranian crypto exchange Nobitex by sending assets to provably unspendable 'vanity' addresses rather than stealing them for profit — a destructive, message-driven financial-impact operation. Chain-analysis firms corroborated the movement.",
+        "source_url": "https://en.wikipedia.org/wiki/Predatory_Sparrow"
+      }
+    ]
+  },
+  "threat_actors": ["Predatory Sparrow", "Gonjeshke Darande", "Indra (overlapping cluster)"],
+  "targeted_regions": ["Iran", "Syria"],
+  "targeted_sectors": ["Steel manufacturing", "Oil & gas / fuel", "Railway / transportation", "Banking", "Cryptocurrency", "Critical infrastructure", "Government"],
+  "malware": [
+    "Meteor (wiper; env.exe / msapp.exe; aka MeteorExpress)",
+    "Stardust (Meteor-family wiper variant)",
+    "Comet (Meteor-family wiper variant)",
+    "nti.exe (MBR corruptor / disk-structure wiper)",
+    "mssetup.exe (screenlocker)"
+  ],
+  "tooling_observed": [
+    "resolve.vbs (VBScript dropper)",
+    "Batch orchestration scripts: setup.bat, envxp.bat, update.bat, cache.bat, bcd.bat, msrun.bat",
+    "vssadmin.exe (delete shadows /all /quiet)",
+    "wmic.exe (shadow copy deletion / domain removal)",
+    "bcdedit.exe (boot configuration sabotage)",
+    "wevtutil.exe (event log clearing)",
+    "PowerShell (network-adapter disable; Windows Defender exclusions)",
+    "Active Directory Group Policy (malware distribution)",
+    "SysInternals Sync (cache flush)",
+    "WinRAR / password-protected RAR archives (password 'hackemall'; programs.rar, bcd.rar, ms.rar)",
+    "Telegram (hack-and-leak publication channel)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1592",
+      "technique_name": "Gather Victim Host Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "Toolchain artifacts reveal detailed prior knowledge of the victim environment before deployment — a hardcoded internal path (\\\\railways.ir\\sysvol\\railways.ir\\scripts\\env.cab), awareness of domain-controller configuration, and knowledge of Veeam backup infrastructure — indicating substantial pre-attack reconnaissance of hosts and infrastructure.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — pre-intrusion knowledge is inferred from later artifacts and is not itself endpoint-observable; intel/hunt candidate",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "The Meteor wiper is an externally configurable, purpose-built destructive tool assessed to have been in development for roughly three years, mixing custom code with open-source components and heavy sanity/error-checking; its configurability shows it was built for reuse beyond a single operation (consistent with the related Stardust/Comet variants).",
+      "observed_tooling": ["Meteor (wiper; env.exe / msapp.exe; aka MeteorExpress)"],
+      "detection_feasibility": "low — capability development occurs off-victim; intel candidate for tooling attribution",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "The actor operates a public 'Gonjeshke Darande / Predatory Sparrow' Telegram (and other social) presence used to claim operations, publish 'proof' CCTV footage of the steel-plant sabotage, and release exfiltrated documents in hack-and-leak fashion.",
+      "observed_tooling": ["Telegram (hack-and-leak publication channel)"],
+      "detection_feasibility": "low — actor-controlled social channels are off-victim; brand/OSINT-monitoring candidate",
+      "sources": ["https://en.wikipedia.org/wiki/Predatory_Sparrow"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "For the fuel-station operations the actor reportedly obtained access to a central management / technical-support server for the fuel-pump software and operated with valid/privileged access to reach downstream stations; the railway operation likewise deployed malware using existing domain privileges.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous logons to central OT-management/support servers (new source, off-hours, privileged) are detectable via identity/authentication analytics where such logging exists",
+      "sources": ["https://time.com/6548680/iran-hacker-gas-station-cyberattack-israel/"]
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "procedure_description": "Reporting on the fuel-station campaigns indicates the actor reached large numbers of stations by compromising the shared central management/technical-support system that operates the fuel-pump software, i.e. abusing a trusted upstream provider relationship to fan out to downstream operators.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — trust-relationship abuse via a third-party management platform is largely invisible to the downstream victim; hunt/intel candidate at the provider tier",
+      "sources": ["https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "A VBScript dropper (resolve.vbs) is used to stage/execute the destructive toolchain and deploy the password-protected RAR archives.",
+      "observed_tooling": ["resolve.vbs (VBScript dropper)"],
+      "detection_feasibility": "high — wscript/cscript executing a .vbs that spawns batch/archive-extraction and destructive utilities is a high-fidelity process-lineage detection",
+      "sources": ["https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "The operation is orchestrated by a chain of batch scripts — setup.bat (GPO entry / clears the 'AnalyzeAll' task / stages from a network CAB), update.bat (creates mutex lockfile C:\\Windows\\Temp\\__lock6423900.dat and extracts three RAR archives with password 'hackemall'), cache.bat, bcd.bat and msrun.bat — each invoking native destructive utilities.",
+      "observed_tooling": ["Batch orchestration scripts: setup.bat, envxp.bat, update.bat, cache.bat, bcd.bat, msrun.bat"],
+      "detection_feasibility": "high — cmd.exe executing this specific named batch chain, mutex file __lock6423900.dat, and rapid sequential invocation of vssadmin/bcdedit/wevtutil are strong host detections",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "cache.bat uses PowerShell to disable network adapters (isolating the host from remediation) and to create Windows Defender exclusions before the destructive payload runs.",
+      "observed_tooling": ["PowerShell (network-adapter disable; Windows Defender exclusions)"],
+      "detection_feasibility": "high — PowerShell script-block logging captures Add-MpPreference exclusions and Disable-NetAdapter, which are anomalous immediately preceding wiper execution",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "The Meteor toolchain uses WMI (wmic) redundantly alongside native APIs to delete shadow copies and to remove the host from its domain, ensuring the destructive actions complete even if one method fails.",
+      "observed_tooling": ["wmic.exe (shadow copy deletion / domain removal)"],
+      "detection_feasibility": "medium — wmic invocations for shadowcopy deletion and domain removal are detectable via command-line telemetry but require correlation with the surrounding destructive sequence",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "execution",
+      "procedure_description": "msrun.bat creates a scheduled task named 'mstask' set to execute the Meteor wiper at 23:55 (a delayed, synchronized detonation); the toolchain also deletes a pre-existing scheduled task named 'AnalyzeAll' as part of setup.",
+      "observed_tooling": ["Batch orchestration scripts: setup.bat, envxp.bat, update.bat, cache.bat, bcd.bat, msrun.bat"],
+      "detection_feasibility": "high — creation of a scheduled task named 'mstask' timed for 23:55 (Event ID 4698) and deletion of 'AnalyzeAll' are actor-specific, high-fidelity signals",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1484.001",
+      "technique_name": "Domain Policy Modification: Group Policy Modification",
+      "tactic": "lateral-movement",
+      "procedure_description": "Once inside the network the actor used Active Directory Group Policy to distribute and execute the wiper toolchain across many domain-joined hosts simultaneously — the mechanism that turned a single foothold into an organisation-wide destructive event.",
+      "observed_tooling": ["Active Directory Group Policy (malware distribution)"],
+      "detection_feasibility": "high — new/modified GPOs that stage scripts from SYSVOL or push scheduled tasks/startup scripts are detectable via directory-service change auditing and GPO monitoring (Event IDs 5136/5137, SYSVOL writes)",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "cache.bat checks for the presence of Kaspersky antivirus and aborts/branches if it is found, tailoring execution to the host's security posture.",
+      "observed_tooling": ["Batch orchestration scripts: setup.bat, envxp.bat, update.bat, cache.bat, bcd.bat, msrun.bat"],
+      "detection_feasibility": "medium — scripted queries for installed AV products are detectable via command-line/registry-query telemetry but resemble benign inventory checks in isolation",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The encrypted Meteor configuration (msconf.conf) contains a configurable 'processes_to_kill' list, which the wiper enumerates and terminates prior to/while wiping to free file handles and disable defences.",
+      "observed_tooling": ["Meteor (wiper; env.exe / msapp.exe; aka MeteorExpress)"],
+      "detection_feasibility": "low — process enumeration by the wiper is transient and immediately followed by destruction; limited standalone signal",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The toolchain fingerprints the host OS version to select the correct components — a separate envxp.bat path for legacy Windows XP systems and distinct lock-screen images for XP/7/10 — indicating per-OS branching.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — OS-version checks are ubiquitous and benign in isolation",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "Before detonation the toolchain creates Windows Defender exclusions via PowerShell and branches on the presence of Kaspersky, impairing local defences so the destructive components run unhindered. (Bundled-dataset normalization: public MITRE T1562.001 -> T1685.)",
+      "observed_tooling": ["PowerShell (network-adapter disable; Windows Defender exclusions)"],
+      "detection_feasibility": "high — creation of Defender exclusion paths (Add-MpPreference) is a strong, uncommon signal captured by EDR tamper telemetry and PowerShell logging",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1685.005",
+      "technique_name": "Clear Windows Event Logs",
+      "tactic": "defense-impairment",
+      "procedure_description": "bcd.bat uses wevtutil to clear the Security, System and Application event logs, destroying forensic evidence of the intrusion as part of the destructive sequence. (Bundled-dataset normalization: public MITRE T1070.001 -> T1685.005.)",
+      "observed_tooling": ["wevtutil.exe (event log clearing)"],
+      "detection_feasibility": "high — wevtutil clear-log invocations and Event ID 1102 (Security log cleared) are high-fidelity, especially clustered with wiper activity",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-impairment",
+      "procedure_description": "Toolchain components are cleaned up / self-deleted immediately after execution to remove forensic artifacts, complicating post-incident recovery of the full malware set (nti.exe was never recovered).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — deletion of just-executed binaries is detectable via file-delete + preceding-execution correlation, but the surrounding wipe destroys much of the evidence",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Payloads are shipped inside password-protected RAR archives (programs.rar, bcd.rar, ms.rar; password 'hackemall'), and the Meteor configuration (msconf.conf) is encrypted; logs/config are protected with an XOR key ('abcdz'), hindering static analysis.",
+      "observed_tooling": ["WinRAR / password-protected RAR archives (password 'hackemall'; programs.rar, bcd.rar, ms.rar)"],
+      "detection_feasibility": "medium — extraction of password-protected RARs by a script and high-entropy config files are detectable via file-write/entropy and command-line telemetry",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "The Meteor wiper modifies the registry to disable the screensaver, alter boot-policy error handling, and set the lock-screen image (per-OS variants), reinforcing the screenlocker denial effect and the boot sabotage.",
+      "observed_tooling": ["Meteor (wiper; env.exe / msapp.exe; aka MeteorExpress)"],
+      "detection_feasibility": "medium — registry writes to lock-screen/boot/screensaver keys by a non-standard process are detectable via registry-modification telemetry when clustered with the wipe",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "procedure_description": "Destructive components are named to blend into a Windows environment (env.exe/msapp.exe for the wiper, mssetup.exe for the screenlocker, mstask scheduled task, mscap.bmp/mscap.jpg wallpaper), imitating legitimate 'ms*' system naming.",
+      "observed_tooling": ["Meteor (wiper; env.exe / msapp.exe; aka MeteorExpress)", "mssetup.exe (screenlocker)"],
+      "detection_feasibility": "medium — 'ms*'-style names in unusual paths executing destructive utilities are detectable via name/path/hash baselining and signature-vs-name mismatch",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "setup.bat stages components by copying them from a network CAB file (env.cab on the railways SYSVOL share) and update.bat unpacks the RAR archives locally, transferring the full toolchain onto each target host from an internal staging point.",
+      "observed_tooling": ["Batch orchestration scripts: setup.bat, envxp.bat, update.bat, cache.bat, bcd.bat, msrun.bat"],
+      "detection_feasibility": "medium — reads of a .cab from SYSVOL followed by local RAR extraction are detectable via file-access and process telemetry, but resemble software distribution",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "In the June 2022 steel-plant operation the actor collected sensitive documents and 'top secret' files from compromised systems prior to the destructive/leak phase, later publishing them as evidence of IRGC affiliation.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — bulk local file collection is detectable via file-access/staging patterns but is common; value comes from process-lineage context",
+      "sources": ["https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure"]
+    },
+    {
+      "technique_id": "T1114",
+      "technique_name": "Email Collection",
+      "tactic": "collection",
+      "procedure_description": "The steel-plant operation exfiltrated tens of thousands of internal emails from the targeted companies, which the actor subsequently leaked.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — bulk mailbox/email export is detectable via mail-server access and export auditing where available",
+      "sources": ["https://en.wikipedia.org/wiki/Predatory_Sparrow"]
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "procedure_description": "Stolen documents, emails and 'proof' CCTV footage are exfiltrated and published through the actor's Telegram/social channels in a hack-and-leak model rather than exfiltrated to private infrastructure.",
+      "observed_tooling": ["Telegram (hack-and-leak publication channel)"],
+      "detection_feasibility": "low — publication occurs off-victim via web/messaging services; intel/leak-monitoring candidate",
+      "sources": ["https://en.wikipedia.org/wiki/Predatory_Sparrow"]
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "procedure_description": "The Meteor wiper destroys the filesystem, wiping the paths enumerated in its encrypted configuration ('paths_to_wipe'); in the June 2025 Nobitex operation the actor destroyed ~$90M in crypto by sending it to provably unspendable 'burn' addresses, a destruction-not-theft impact.",
+      "observed_tooling": ["Meteor (wiper; env.exe / msapp.exe; aka MeteorExpress)"],
+      "detection_feasibility": "high — mass file overwrite/deletion by a single process is high-signal on host/EDR telemetry (rapid file-modification bursts, mass MFT changes)",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/", "https://en.wikipedia.org/wiki/Predatory_Sparrow"]
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "procedure_description": "A dedicated component (nti.exe) overwrites the Master Boot Record — reportedly the same sectors targeted by NotPetya — rendering the machine unbootable independently of the filesystem wipe.",
+      "observed_tooling": ["nti.exe (MBR corruptor / disk-structure wiper)"],
+      "detection_feasibility": "high — raw writes to \\\\.\\PhysicalDrive0 / sector 0 (MBR) by a user-mode process are rare and high-fidelity on host telemetry",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "procedure_description": "The toolchain deletes Volume Shadow Copies (vssadmin 'delete shadows /all /quiet' and redundant wmic), corrupts boot configuration with bcdedit and overwrites boot.ini with impossible partition numbers (10000000), and flushes cache with SysInternals Sync — collectively preventing recovery and reboot.",
+      "observed_tooling": ["vssadmin.exe (delete shadows /all /quiet)", "bcdedit.exe (boot configuration sabotage)", "SysInternals Sync (cache flush)"],
+      "detection_feasibility": "high — vssadmin/wmic shadow deletion and bcdedit boot-record tampering are classic, high-fidelity pre-impact detections",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "procedure_description": "The actor defaced internal victim-controlled display systems — railway station arrival/departure boards (instructing passengers to call '64411', Khamenei's office) in July 2021 and roadside/fuel-station digital billboards ('Khamenei, where is our fuel?') in the October 2021 fuel operation — for psychological/propaganda effect.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — unauthorized content changes on internal signage/HMI systems are observable where those systems are logged/monitored, but such OT signage often lacks telemetry",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1565.003",
+      "technique_name": "Data Manipulation: Runtime Data Manipulation",
+      "tactic": "impact",
+      "procedure_description": "Nearest-Enterprise mapping of the steel-plant OT/ICS impact: the actor manipulated the production-control plane (HMI/PLC layer) at Khuzestan Steel to drive an overhead crane/ladle to spill molten metal onto the factory floor — a runtime manipulation of the industrial process producing physical damage and fire. (ATT&CK-for-ICS 'Manipulation of Control' has no Enterprise equivalent in the bundled dataset; mapped to the nearest present technique.)",
+      "observed_tooling": [],
+      "detection_feasibility": "high — anomalous HMI/PLC commands and out-of-envelope process setpoints are high-signal on OT/ICS historian, engineering-workstation and safety-system telemetry, though such OT visibility is frequently absent in practice",
+      "sources": ["https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure"]
+    },
+    {
+      "technique_id": "T1489",
+      "technique_name": "Service Stop",
+      "tactic": "impact",
+      "procedure_description": "The fuel-station operations disabled the pump payment/control services (roughly 70% of stations offline in Dec 2023, forcing manual operation); the railway toolchain also disconnected network adapters and terminated configured processes to halt services.",
+      "observed_tooling": ["PowerShell (network-adapter disable; Windows Defender exclusions)"],
+      "detection_feasibility": "medium — service/adapter disablement is detectable on affected hosts, but the fuel-pump control layer is OT-side and often under-instrumented",
+      "sources": ["https://www.cnbc.com/2023/12/18/pro-israel-hackers-claim-cyberattack-disrupting-irans-gas-stations.html"]
+    },
+    {
+      "technique_id": "T1499",
+      "technique_name": "Endpoint Denial of Service",
+      "tactic": "impact",
+      "procedure_description": "The screenlocker component (mssetup.exe) locks the user out of the workstation with a replacement lock screen (mscap.bmp/mscap.jpg wallpaper), denying interactive access as part of the destructive campaign.",
+      "observed_tooling": ["mssetup.exe (screenlocker)"],
+      "detection_feasibility": "medium — a non-standard process replacing the lock screen/wallpaper and forcing logoff is detectable on host telemetry when clustered with the wipe sequence",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1531",
+      "technique_name": "Account Access Removal",
+      "tactic": "impact",
+      "procedure_description": "The Meteor wiper changes user passwords, removes the host from its domain (via WinAPI and WMI redundantly), and logs off local sessions — cutting administrators off from the machines and preventing quick remediation from the domain controller.",
+      "observed_tooling": ["Meteor (wiper; env.exe / msapp.exe; aka MeteorExpress)", "wmic.exe (shadow copy deletion / domain removal)"],
+      "detection_feasibility": "high — mass password changes, forced domain unjoin, and bulk session logoff across hosts are anomalous, high-signal events on identity/host telemetry",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1529",
+      "technique_name": "System Shutdown/Reboot",
+      "tactic": "impact",
+      "procedure_description": "After corrupting boot configuration and wiping, the toolchain forces the system into an unbootable reboot state, completing the denial effect and maximizing downtime.",
+      "observed_tooling": ["bcdedit.exe (boot configuration sabotage)"],
+      "detection_feasibility": "medium — forced reboot/shutdown following boot-record tampering is detectable but is the final step after higher-signal precursors",
+      "sources": ["https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/"]
+    },
+    {
+      "technique_id": "T1657",
+      "technique_name": "Financial Theft",
+      "tactic": "impact",
+      "procedure_description": "In June 2025 the actor destroyed banking data at state-owned Bank Sepah and drained/burned roughly $90M from the Nobitex crypto exchange to unspendable vanity addresses — financially themed impact motivated by disruption/message rather than profit.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the on-chain burn and destructive banking actions are largely observed off-victim (chain analysis, victim disclosure); intel candidate",
+      "sources": ["https://en.wikipedia.org/wiki/Predatory_Sparrow"]
+    }
+  ],
+  "detection_signals": [
+    "Batch chain executing sequentially: setup.bat -> update.bat -> cache.bat -> bcd.bat -> msrun.bat, launched from a VBScript (resolve.vbs) via wscript/cscript",
+    "Mutex/lock file C:\\Windows\\Temp\\__lock6423900.dat created before destructive activity",
+    "Scheduled task named 'mstask' created to run at 23:55 (Event ID 4698); deletion of a scheduled task named 'AnalyzeAll'",
+    "Group Policy pushing scripts/scheduled tasks from SYSVOL to many hosts (GPO change auditing 5136/5137; staging of env.cab / RAR archives on SYSVOL)",
+    "Extraction of password-protected RAR archives programs.rar / bcd.rar / ms.rar with password 'hackemall'; encrypted config msconf.conf; XOR key 'abcdz'",
+    "vssadmin 'delete shadows /all /quiet' and redundant wmic shadowcopy deletion; bcdedit boot tampering; boot.ini overwritten with impossible partition number 10000000; SysInternals Sync cache flush",
+    "wevtutil clearing Security/System/Application logs; Event ID 1102 (Security log cleared)",
+    "PowerShell creating Windows Defender exclusions (Add-MpPreference) and disabling network adapters immediately before payload run; scripted check for Kaspersky AV",
+    "Raw sector-0 / MBR writes to \\\\.\\PhysicalDrive0 (nti.exe disk-structure wipe)",
+    "Mass file overwrite/deletion bursts across many domain hosts (Meteor filesystem wipe); mass user password changes, forced domain unjoin, and bulk session logoff",
+    "Lock-screen/wallpaper replacement using mscap.bmp / mscap.jpg by a non-standard process (mssetup.exe screenlocker)",
+    "OT/ICS: anomalous HMI/PLC commands or out-of-envelope setpoints on steel-plant / fuel-pump control systems (crane/ladle manipulation; pump-control disablement) on historian / engineering-workstation / safety-system telemetry",
+    "Unauthorized content changes on internal display boards / digital signage / fuel billboards (defacement referencing Khamenei / phone 64411)",
+    "Presence of named binaries env.exe / msapp.exe (Meteor), mssetup.exe (screenlocker), nti.exe (MBR corruptor) — match on the SHA256/MD5 hashes below"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [],
+    "emails": [],
+    "hashes": [
+      "2aa6e42cb33ec3c132ffce425a92dfdb5e29d8ac112631aec068c8a78314d49b",
+      "04633656756847a79c7a2a02d62e5522",
+      "074bcc51b77d8e35b96ed444dc479b2878bf61bf7b07e4d7bd4cf136cc3c0dce",
+      "9a49102f53291a644bd14c8202d8fbe3",
+      "68e95a3ccde3ea22b8eb8adcf0ad53c7993b2ea5316948e31d9eadd11b5151d7"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Actor included in the MENA Detection Library for REGIONAL DESTRUCTIVE/OT RELEVANCE, not as a threat to defenders' own estates: Predatory Sparrow / Gonjeshke Darande operates AGAINST Iranian critical infrastructure, but its tradecraft (multi-stage wipers, MBR corruption, OT/ICS process manipulation with physical impact, boot/recovery sabotage, screenlockers, and hack-and-leak) is precisely what MENA CNI/OT defenders must be able to detect regardless of who wields it. ATTRIBUTION: the 'Gonjeshke Darande' persona self-claims anti-regime hacktivism; journalistic/analyst reporting widely assesses an Israel state or state-directed nexus, but there is NO government advisory formally attributing the group, so attribution_confidence is MEDIUM and the actor.mitre_id / mitre_canonical_name are empty (no public MITRE group id is assigned to this actor as of extraction). CONFIDENCE is MEDIUM overall: the July 2021 railway operation is technically well-documented by SentinelLabs (recovered toolchain + hashes), but the steel-plant OT sabotage, fuel-station, banking and crypto operations are documented primarily through journalism and the actor's own claims, with limited independent forensic detail. DETECTION FEASIBILITY is honestly split: the Windows destructive host tradecraft (wiper, shadow-copy/boot sabotage, event-log clearing, GPO distribution, scheduled task, Defender exclusions, MBR overwrite, mass password change/domain unjoin) is HIGH-signal on host/EDR/identity telemetry and forms the detection-candidate core; the OT/ICS process manipulation (T1565.003) is high-signal WHERE OT visibility exists but is frequently un-instrumented; and the off-victim actions (capability development, Telegram hack-and-leak, on-chain crypto burn, third-party trust-relationship abuse, defacement of un-logged signage) are LOW feasibility and route to hunt/intel. BUNDLED-DATASET NORMALIZATIONS APPLIED AND VALIDATED against attack_dump.json: Clear Windows Event Logs public T1070.001 -> T1685.005; Disable/Modify Tools public T1562.001 -> T1685; Encrypted/Encoded File -> T1027.013; Scheduled Task -> T1053.005; File Deletion -> T1070.004 (present). MBR overwrite mapped to T1561.002 (Disk Structure Wipe). OT 'Manipulation of Control' (no Enterprise equivalent in the bundled 697-technique dataset) mapped to nearest present technique T1565.003 (Runtime Data Manipulation) and flagged as an approximation. Every technique_id in this pack was checked to exist as a key in attack_dump.json. IOCs are limited to the concretely reported Meteor toolchain hashes from SentinelLabs (Meteor env.exe/msapp.exe, mssetup.exe screenlocker, msconf.conf config); no C2 IPs/domains or CVEs were reported for these destructive operations (initial access was via valid accounts / trusted-relationship abuse rather than a named CVE), so those IOC arrays are intentionally empty rather than padded. Related cluster 'Indra' (earlier Meteor/Stardust/Comet wiper activity against Iran-linked targets, incl. in Syria) is noted as an overlapping/precursor cluster, not a confirmed identity."
+}

@@ -1,0 +1,38 @@
+title: UNC1549 Tool Self-Deletion From Staging Path
+id: 2397576f-bcbf-45e8-8418-20216bcd454d
+status: experimental
+description: |
+    Detects UNC1549 / TA455 anti-forensic file deletion (T1070.004): the actor deletes its utilities from
+    disk immediately after execution to minimise forensic artifacts. Keys on file-delete telemetry
+    (Sysmon Event ID 23 / 26 FileDelete) for executable/script files removed from user-writable staging
+    locations (AppData, Temp, Public, ProgramData) or the VMware VGAuth directory. Rapid removal of an
+    executable from these paths - especially the same file that was just created and run - is suspicious.
+    Requires FileDelete auditing to be enabled in Sysmon.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1070.004
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: file_delete
+detection:
+    selection:
+        TargetFilename|endswith:
+            - '.exe'
+            - '.dll'
+            - '.ps1'
+        TargetFilename|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\VMware VGAuth\'
+    condition: selection
+falsepositives:
+    - Installers, updaters and cleanup routines that remove their own temporary executables - baseline
+      known updater/uninstaller processes and correlate the delete with the preceding create/execute
+level: medium

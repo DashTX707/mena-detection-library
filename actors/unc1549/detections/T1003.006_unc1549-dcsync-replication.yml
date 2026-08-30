@@ -1,0 +1,41 @@
+title: UNC1549 DCSync Directory Replication From Non-DC Principal
+id: 2335c9d4-8106-486f-ae99-d1d7c2cee0b8
+status: experimental
+description: |
+    Detects UNC1549 / TA455 credential theft via DCSync (T1003.006) using the custom DCSYNCER.SLICK
+    utility (open-source DCSyncer + Mimikatz derivative). DCSync issues a DRSUAPI DsGetNCChanges
+    directory-replication request; Windows records Event ID 4662 with the replication control-access
+    rights GUIDs (Replicating Directory Changes / Replicating Directory Changes All). When such a
+    replication request originates from an account that is not a domain controller computer account,
+    it is high-fidelity evidence of DCSync. Exclude known DC computer accounts and legitimate directory-
+    sync service accounts (e.g. Azure AD Connect / MSOL).
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.006
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4662
+        Properties|contains:
+            - '1131f6aa-9c07-11d1-f79f-00c04fc2dcd2'
+            - '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2'
+            - '89e95b76-444d-4c62-991a-0facbeda640c'
+    filter_dc_accounts:
+        SubjectUserName|endswith: '$'
+    filter_sync_accounts:
+        SubjectUserName|startswith:
+            - 'MSOL_'
+            - 'AAD_'
+    condition: selection and not 1 of filter_*
+falsepositives:
+    - Directory-synchronization service accounts (Azure AD Connect / MSOL) - baseline and allowlist by
+      account name and source host before enabling as an alert
+    - Legitimate domain controller replication - excluded via the computer-account filter
+level: high

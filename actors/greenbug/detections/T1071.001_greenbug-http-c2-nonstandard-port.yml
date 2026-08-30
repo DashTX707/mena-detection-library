@@ -1,0 +1,46 @@
+title: Greenbug HTTP C2 Beacon to Raw-IP on Non-Standard Port
+id: 8e2a4c56-7d9b-41f3-9a26-1b5c8d3e7f42
+status: experimental
+description: |
+    Detects Greenbug HTTP(S) command-and-control and staging over non-standard ports (T1071.001,
+    T1571). ISMDOOR/Covenant/Cobalt Strike/Metasploit stagers beacon to raw-IP C2 on atypical ports -
+    observed 95.179.177.157 on 445/8081 and 185.205.210.46 on 1003/1131. Keys on outbound connections
+    to the known C2 IPs and on HTTP-class client processes reaching external hosts over web-protocol
+    ports that are not the standard 80/443.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+    - https://www.netscout.com/blog/asert/greenbugs-dns-isms
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1571
+    - mena-detection-library.greenbug
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_c2ip:
+        DestinationIp:
+            - '95.179.177.157'
+            - '185.205.210.46'
+            - '185.243.115.69'
+            - '185.243.114.247'
+    selection_beacon:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+        DestinationPort:
+            - 445
+            - 1003
+            - 1131
+            - 8081
+        Initiated: 'true'
+    condition: selection_c2ip or selection_beacon
+falsepositives:
+    - Internal SMB traffic on 445 from legitimate processes - this rule scopes 445 to browser/script
+      interpreter processes reaching external hosts; validate the destination and process before alerting
+level: medium

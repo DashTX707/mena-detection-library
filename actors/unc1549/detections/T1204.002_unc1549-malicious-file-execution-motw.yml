@@ -1,0 +1,46 @@
+title: UNC1549 Malicious Payload Execution From Browser Download Path
+id: e66dfa01-bf30-4c87-a5c6-03a866d351a8
+status: experimental
+description: |
+    Detects UNC1549 / TA455 user execution of a downloaded malicious file (T1204.002) delivered by the
+    fake-recruitment lure chain to deploy the MINIBIKE / MINIBUS backdoor. Keys on process creation of an
+    executable or script-hosting binary that runs from a browser Downloads folder or a temp/AppData
+    staging path with a browser/email-client parent (msedge, chrome, firefox, outlook) - the behaviour of
+    a user opening a payload they just downloaded. Correlate with mark-of-the-web / download provenance
+    where available.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\msedge.exe'
+            - '\chrome.exe'
+            - '\firefox.exe'
+            - '\outlook.exe'
+    selection_child:
+        Image|endswith:
+            - '.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+    selection_path:
+        Image|contains:
+            - '\Downloads\'
+            - '\Temp\'
+            - '\AppData\'
+    condition: selection_parent and selection_child and selection_path
+falsepositives:
+    - Users legitimately running installers or tools downloaded via the browser - baseline expected
+      download-and-run behaviour and correlate with the download source reputation
+level: medium

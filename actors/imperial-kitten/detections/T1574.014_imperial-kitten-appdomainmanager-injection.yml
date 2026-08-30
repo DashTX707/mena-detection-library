@@ -1,0 +1,33 @@
+title: AppDomainManager Injection Artefacts (Imperial Kitten IMAPLoader)
+id: ed5beac1-f28c-4732-9b36-c2174f71b2b9
+status: experimental
+description: |
+    Detects AppDomainManager hijacking / injection artefacts used by Imperial Kitten (CURIUM /
+    Yellow Liderc) IMAPLoader to load its .NET DLL payload into a benign host process
+    (T1574.014 AppDomainManager, T1055.001 DLL Injection). Keys on the APPDOMAIN_MANAGER_ASM /
+    APPDOMAIN_MANAGER_TYPE environment-variable configuration passed on the command line or set in
+    the process environment, and on the appDomainManagerAssembly directive appearing in dropped
+    .exe.config files. Requires .NET-aware / command-line + file telemetry.
+references:
+    - https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1574.014
+    - attack.t1055.001
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_env:
+        CommandLine|contains:
+            - 'APPDOMAIN_MANAGER_ASM'
+            - 'APPDOMAIN_MANAGER_TYPE'
+            - 'appDomainManagerAssembly'
+    condition: selection_env
+falsepositives:
+    - Rare legitimate .NET applications that customise the AppDomainManager - validate the referenced
+      assembly is signed and expected
+level: medium

@@ -1,0 +1,34 @@
+title: UNC1549 SIGHTGRAB Timestamped XOR-Encrypted Screenshot Files
+id: 6b006abb-fdec-48e0-9098-914c763ef14a
+status: experimental
+description: |
+    Detects UNC1549 / TA455 collection via the SIGHTGRAB utility (T1113 Screen Capture) which
+    autonomously captures periodic screenshots and saves them as XOR(0x41)-encrypted .jpg files
+    (T1027.013 Encrypted/Encoded File) under timestamped directories such as
+    C:\Users\Public\Videos\YYYY-MM-DD-HH-MM\1.jpg and C:\Users\Public\Music\... . Keys on file-creation
+    of .jpg files under Users\Public\Videos or Users\Public\Music, an atypical location for image output.
+    Periodic creation of numbered image files there by a non-standard process is high-fidelity.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.stealth
+    - attack.t1113
+    - attack.t1027.013
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection:
+        TargetFilename|contains:
+            - '\Users\Public\Videos\'
+            - '\Users\Public\Music\'
+        TargetFilename|endswith: '.jpg'
+    condition: selection
+falsepositives:
+    - Legitimate applications rarely write .jpg files under Public\Videos or Public\Music - investigate
+      the creating process and whether the file content is high-entropy/XOR-encrypted rather than a valid image
+level: high

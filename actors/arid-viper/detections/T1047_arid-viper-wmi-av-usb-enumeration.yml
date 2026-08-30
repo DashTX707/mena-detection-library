@@ -1,0 +1,44 @@
+title: Arid Viper WMI Antivirus and Peripheral Enumeration
+id: 4d7a2c98-3e51-4f06-b294-8c1e6a9d7f35
+status: experimental
+description: |
+    Detects Arid Gopher / PyMicropsia reconnaissance via WMI (T1047 Windows Management Instrumentation,
+    T1518.001 Security Software Discovery, T1120 Peripheral Device Discovery). Arid Viper (APT-C-23)
+    queries installed antivirus products through the SecurityCenter2 AntiVirusProduct class (adapting
+    behavior, e.g. deploying an 'Arid Helper' component when 360 Total Security is present) and enumerates
+    USB / disk devices via Win32_USB* / Win32_DiskDrive / Win32_PnPEntity classes. Keys on command-line
+    references to these WMI namespaces/classes or wmic invocations naming them.
+references:
+    - https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.discovery
+    - attack.t1047
+    - attack.t1518.001
+    - attack.t1120
+    - mena-detection-library.arid-viper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_av:
+        CommandLine|contains:
+            - 'SecurityCenter2'
+            - 'AntiVirusProduct'
+            - '360 Total Security'
+            - '360tray'
+    selection_usb:
+        CommandLine|contains:
+            - 'Win32_USBHub'
+            - 'Win32_USBControllerDevice'
+            - 'Win32_DiskDrive'
+            - 'Win32_PnPEntity'
+    condition: selection_av or selection_usb
+falsepositives:
+    - Asset-inventory, endpoint-management and security tools legitimately querying these WMI classes -
+      scope to untrusted or user-path parent processes and allowlist known management agents
+level: medium

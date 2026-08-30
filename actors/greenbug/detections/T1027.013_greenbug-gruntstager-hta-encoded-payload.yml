@@ -1,0 +1,40 @@
+title: Greenbug Covenant GRUNTStager HTA and Encoded Payload Execution
+id: 2f6b9e48-3c7a-45d1-8b26-9a4e1c7d3f52
+status: experimental
+description: |
+    Detects Greenbug execution of encoded/obfuscated HTA stagers (T1027.013). The group delivered the
+    Covenant GRUNTStager.hta and base64/HTA-wrapped scripts to hinder static detection. Keys on
+    mshta.exe executing the named GRUNTStager.hta or an HTA/script from a user-writable/temp path, and
+    on mshta command lines carrying inline encoded/vbscript execution content.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+    - https://www.netscout.com/blog/asert/greenbugs-dns-isms
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1027.013
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mshta:
+        Image|endswith: '\mshta.exe'
+    selection_payload:
+        CommandLine|contains:
+            - 'GRUNTStager'
+            - '.hta'
+            - 'vbscript:'
+            - 'javascript:'
+    selection_path:
+        CommandLine|contains:
+            - '\appdata\'
+            - '\temp\'
+            - '\programdata\'
+            - '\users\public\'
+    condition: selection_mshta and (selection_payload or selection_path)
+falsepositives:
+    - Legitimate enterprise apps that ship HTA files invoked by mshta - baseline expected HTA usage and
+      alert on temp/AppData-sourced or encoded/inline-script command lines
+level: high

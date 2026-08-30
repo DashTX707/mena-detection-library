@@ -1,0 +1,39 @@
+title: Ballistic Bobcat Sponsor Ingress Tool Transfer (Download-and-Execute)
+id: eb3ad2f5-664a-4d46-8dbb-67894fb38e84
+status: experimental
+description: |
+    Detects Ballistic Bobcat ingress tool transfer driven by the Sponsor backdoor's 'd' and 'u' operator
+    commands, which download and execute additional files (the 'u' command using URLDownloadToFileW).
+    Detected as a service-hosted or backdoor process spawning a native downloader LOLBin (certutil,
+    bitsadmin, curl) with a URL, or fetching content from the ESET-reported tool-delivery servers. Keys
+    on the download-then-stage behavior; the delivery IPs add fidelity but are supplementary.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1105/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_downloader:
+        Image|endswith:
+            - '\certutil.exe'
+            - '\bitsadmin.exe'
+            - '\curl.exe'
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+    selection_ioc_host:
+        CommandLine|contains:
+            - '5.255.97.172'
+            - '198.144.189.74'
+    condition: selection_downloader or selection_ioc_host
+falsepositives:
+    - certutil / bitsadmin / curl are used by legitimate admin scripts and installers - validate the
+      parent process, the destination and the fetched file; downloads by a service binary are suspicious
+level: high

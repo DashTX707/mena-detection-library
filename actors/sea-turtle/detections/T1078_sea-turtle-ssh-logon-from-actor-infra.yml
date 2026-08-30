@@ -1,0 +1,45 @@
+title: Sea Turtle SSH / Remote Logon from Documented Actor and VPN Infrastructure
+id: e5fe97e7-21e8-4edb-a1f7-1abbf3ffabbf
+status: experimental
+description: |
+    Detects successful SSH / remote-service authentication from IP addresses documented as Sea Turtle
+    (Teal Kurma / Marbled Dust) C2 / MitM / operator infrastructure. The actor abuses external remote
+    services (T1133), authenticates with valid stolen or compromised credentials (T1078) and reuses local
+    hosting/cPanel/webserver accounts (T1078.003), frequently sourcing logons from commercial VPN provider
+    ranges. Anchors on accepted authentication events whose source IP matches the documented actor IP set;
+    high-fidelity infrastructure selector layered on the successful-logon behavior.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://blog.talosintelligence.com/seaturtle/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.persistence
+    - attack.t1078
+    - attack.t1078.003
+    - attack.t1133
+    - mena-detection-library.sea-turtle
+logsource:
+    product: linux
+    service: sshd
+detection:
+    selection_success:
+        - 'Accepted password for'
+        - 'Accepted publickey for'
+        - 'session opened for user'
+    selection_actor_ip:
+        - '82.102.19.88'
+        - '62.115.255.163'
+        - '193.34.167.245'
+        - '93.115.22.212'
+        - '95.179.176.250'
+        - '95.179.150.101'
+        - '95.179.150.92'
+        - '185.203.116.116'
+    condition: all of selection_*
+falsepositives:
+    - Shared VPN egress IPs can occasionally be reused by unrelated legitimate remote administrators -
+      corroborate with account, timing and post-logon activity before actioning
+    - Threat-intel IP reassignment over time; re-validate the IOC set periodically
+level: high

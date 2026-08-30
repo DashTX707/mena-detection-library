@@ -1,0 +1,42 @@
+title: UNC1549 Payload Masquerading Inside VMware VGAuth Directory
+id: 892ebe2c-dfff-4b72-aaef-1583dde42f7b
+status: experimental
+description: |
+    Detects UNC1549 / TA455 masquerading (T1036) whereby malicious modules and tool output are
+    planted inside the trusted VMware Tools "VMware VGAuth" product directory to blend with legitimate
+    vendor software. The actor writes VGAuth.dll (side-load payload) and tool artifacts (LOG.txt from
+    DCSYNCER.SLICK, crash.log / config.txt from CRASHPAD) into this signed-software folder. Keys on
+    file-creation of DLLs or these tool artifacts under the VMware VGAuth path by a process that is not
+    the legitimate VMware installer/updater. File-integrity monitoring of vendor software directories
+    is required.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1036
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection_dir:
+        TargetFilename|contains: '\VMware\VMware Tools\VMware VGAuth\'
+    selection_artifact:
+        TargetFilename|endswith:
+            - '\VGAuth.dll'
+            - '\LOG.txt'
+            - '\crash.log'
+            - '\config.txt'
+    filter_installer:
+        Image|endswith:
+            - '\vmware-tools.exe'
+            - '\setup.exe'
+            - '\msiexec.exe'
+            - '\TrustedInstaller.exe'
+    condition: selection_dir and selection_artifact and not filter_installer
+falsepositives:
+    - VMware Tools servicing that legitimately rewrites files in this directory - confirm the writing
+      process, its signature and whether the file content matches the shipped module
+level: high

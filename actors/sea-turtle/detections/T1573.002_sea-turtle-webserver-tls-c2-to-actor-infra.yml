@@ -1,0 +1,40 @@
+title: Sea Turtle Web Server Process Opening TLS C2 to Documented Infrastructure
+id: 96698ecc-5ba8-4b69-be1f-6b4dacf44a73
+status: experimental
+description: |
+    Detects a webserver / PHP process (or a nohup'd SnappyTCP/socat child) opening an outbound TLS
+    connection to documented Sea Turtle (Teal Kurma / Marbled Dust) C2 infrastructure. The OpenSSL-linked
+    SnappyTCP variant wraps its reverse-shell channel in TLS over port 443 to blend with normal HTTPS
+    (T1573.002 Encrypted Channel: Asymmetric Cryptography). A server-tier process initiating outbound 443
+    to a non-CDN host that matches the documented actor IPs is high fidelity. Anchors on outbound network
+    connections whose destination is the documented C2 IP set.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/software/S1163/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1573.002
+    - mena-detection-library.sea-turtle
+logsource:
+    category: network_connection
+    product: linux
+detection:
+    selection_c2ip:
+        DestinationIp:
+            - '82.102.19.88'
+            - '62.115.255.163'
+            - '193.34.167.245'
+            - '93.115.22.212'
+            - '95.179.176.250'
+            - '95.179.150.101'
+    selection_c2domain:
+        DestinationHostname:
+            - 'forward.boord.info'
+            - 'lo0.systemctl.network'
+    condition: selection_c2ip or selection_c2domain
+falsepositives:
+    - Threat-intel IP reassignment over time (shared hosting/VPS ranges may later host benign services) -
+      re-validate the IOC set and corroborate with the initiating process before actioning
+level: high

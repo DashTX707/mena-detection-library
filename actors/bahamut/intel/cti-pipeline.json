@@ -1,0 +1,504 @@
+{
+  "report_title": "Bahamut (Windshift-clustered mercenary APT / \"Hack-for-Hire\") Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "BlackBerry Research & Intelligence 'BAHAMUT: Hack-for-Hire Masters of Phishing, Fake News, and Fake Apps' (2020-10, https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals); ESET 'Bahamut cybermercenary group targets Android users with fake VPN apps' (SecureVPN campaign, 2022-11-23, https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/); CYFIRMA 'APT Bahamut Targets Individuals with Android Malware Using Spear Messaging' (SafeChat/CoverIm, 2023, https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/); Bellingcat 'Bahamut, Pursuing a Cyber Espionage Actor in the Middle East' (2017-06-12, https://www.bellingcat.com/news/mena/2017/06/12/bahamut-pursuing-cyber-espionage-actor-middle-east/); MITRE ATT&CK Group Windshift/Bahamut G0112 (https://attack.mitre.org/groups/G0112/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Bahamut",
+    "mitre_id": "",
+    "mitre_canonical_name": "Windshift",
+    "aliases": [
+      "Bahamut",
+      "Windshift (MITRE ATT&CK G0112, clustered)",
+      "EHDevel (historical linkage)"
+    ],
+    "related_clusters": [
+      "Windshift (G0112) — MITRE clusters Bahamut and Windshift together",
+      "DoNot APT / Donot Team (APT-C-35) — CYFIRMA notes shared code-signing certificate authority / tactical overlap on the SafeChat campaign",
+      "EHDevel — earlier reporting linking Bahamut to historical malware campaigns"
+    ],
+    "attribution": "Mercenary 'hack-for-hire' / cyber-espionage-for-hire operation active since at least 2016-2017. Bahamut is best understood as a service provider that runs espionage and disinformation operations on behalf of multiple, likely-changing paying clients, rather than a single-sponsor state APT. This mixed victimology (across rival Middle East and South Asia states and causes) is a core reason attribution to any one government sponsor is unresolved. BlackBerry (2020) declined to attribute to a specific state. Some vendors have proposed nexus indicators — CYFIRMA (2023) assessed compelling evidence linking the SafeChat activity to an India nexus and noted a shared certificate authority with the India-aligned DoNot APT — but these are single-vendor assessments and remain contested. MITRE ATT&CK clusters Bahamut with the Windshift group (G0112). Treat sponsor attribution as UNRESOLVED.",
+    "attribution_confidence": "low",
+    "targeted_regions_mena": [
+      "United Arab Emirates",
+      "Saudi Arabia",
+      "Qatar",
+      "Egypt",
+      "Iran",
+      "Palestine",
+      "Turkey",
+      "Tunisia"
+    ],
+    "targeted_regions_global": [
+      "India",
+      "Pakistan (incl. Kashmir region)",
+      "South Asia (broadly)",
+      "Middle East (broadly)"
+    ],
+    "targeted_sectors": [
+      "Government officials and diplomats",
+      "Military / defense personnel",
+      "Human-rights activists and NGOs",
+      "Journalists and media",
+      "Islamic scholars / religious and separatist activists (incl. Sikh-rights and Kashmir advocates)",
+      "Business executives and industry figures",
+      "Finance / financial-sector individuals"
+    ],
+    "key_campaigns": [
+      {
+        "name": "BlackBerry unmasking — phishing, fake news, and fake apps",
+        "date": "2020-10 (activity from ~2016 onward)",
+        "summary": "BlackBerry documented Bahamut as a prolific hack-for-hire group running highly targeted credential-phishing and account-takeover operations backed by a vast network of fake news websites, social-media personas, and single-use, frequently-rotated (weekly/daily) infrastructure. Included hundreds of custom Windows malware samples, an in-house zero-day exploit developer, nine malicious iOS App Store applications, and Android apps that abused permissions and evaded store review. Malware was used as a last resort; the core tradecraft was social engineering, credential harvesting, and psychological operations.",
+        "source_url": "https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"
+      },
+      {
+        "name": "SecureVPN — fake VPN Android spyware",
+        "date": "2022 (ESET disclosed 2022-11)",
+        "summary": "Bahamut distributed trojanized versions of the legitimate SoftVPN and OpenVPN Android apps (packages com.secure.vpn and com.openvpn.secure) via a fake distribution site, thesecurevpn[.]com, mimicking the real SecureVPN service. At least eight spyware versions; apps required an activation key to unlock, then abused Android Accessibility Services to keylog and exfiltrate messages from Signal, Viber, WhatsApp, Telegram, Facebook Messenger, WeChat, imo and Conion, plus SMS, contacts, call logs, device location and identifiers over HTTPS to C2 ft8hua063okwfdcu21pw[.]de. Never on Google Play (ESET detection Android/Spy.Bahamut.M).",
+        "source_url": "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"
+      },
+      {
+        "name": "SafeChat / CoverIm (CoverLM) — WhatsApp spear-message spyware",
+        "date": "2023 (CYFIRMA)",
+        "summary": "Bahamut delivered a fake Android chat app 'SafeChat' (Safe_Chat.apk, malware family CoverIm/CoverLM) to individuals in South Asia via WhatsApp spear-messaging. The app repeatedly prompted for Accessibility Services and battery-optimization exemptions, then stole SMS, call logs, contacts, GPS location, and messages from Signal/WhatsApp/Telegram/Viber/Facebook Messenger. Exfiltrated data was encrypted with RSA/ECB/OAEPPadding and sent over a Let's Encrypt-secured channel to laborer-posted[.]nl on non-standard port 2053, using a Ktor (Kotlin) client.",
+        "source_url": "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"
+      },
+      {
+        "name": "Original discovery — Middle East cyber-espionage",
+        "date": "2017-06 (Bellingcat)",
+        "summary": "Bellingcat first exposed Bahamut as a hack-for-hire operation targeting government officials, human-rights groups and other high-profile entities across South Asia and the Middle East using malicious Android and iOS apps for surveillance, establishing the group's long-running mercenary espionage profile.",
+        "source_url": "https://www.bellingcat.com/news/mena/2017/06/12/bahamut-pursuing-cyber-espionage-actor-middle-east/"
+      }
+    ]
+  },
+  "threat_actors": ["Bahamut", "Windshift", "EHDevel"],
+  "targeted_regions": ["United Arab Emirates", "Saudi Arabia", "Qatar", "Egypt", "Iran", "Palestine", "Turkey", "Tunisia", "India", "Pakistan", "South Asia"],
+  "targeted_sectors": ["Government", "Defense/Military", "Human-rights activists/NGOs", "Journalists/Media", "Religious/separatist activists", "Business executives", "Finance"],
+  "malware": [
+    "Bahamut Android spyware (ESET Android/Spy.Bahamut.M) — trojanized SoftVPN/OpenVPN, packages com.secure.vpn and com.openvpn.secure",
+    "CoverIm / CoverLM / SafeChat (Safe_Chat.apk) — Android chat-app spyware",
+    "Custom Windows malware (hundreds of samples; BlackBerry 2020, not individually enumerated with hashes)",
+    "Malicious iOS App Store applications (nine apps; BlackBerry 2020)"
+  ],
+  "tooling_observed": [
+    "Android Accessibility Services abuse (keylogging / message capture)",
+    "Ktor (Kotlin) HTTP client for C2",
+    "Let's Encrypt TLS certificates for C2 channel",
+    "Cloudflare fronting of C2 / distribution infrastructure",
+    "Fake news website network and disinformation infrastructure",
+    "Fake social-media personas and accounts",
+    "In-house zero-day exploit development (per BlackBerry 2020)",
+    "Repackaged legitimate apps (SoftVPN, OpenVPN)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "Bahamut researches specific high-value individuals (government officials, diplomats, activists, journalists, military and business figures) and develops bespoke phishing content tailored to each target, indicating detailed pre-attack collection of victim identity/contact information.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — target research occurs off-victim and is not endpoint-observable; intel/hunt candidate via monitoring of executive/at-risk-individual exposure",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1591",
+      "technique_name": "Gather Victim Org Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "The group mimics specific government-agency login portals and organizational webmail, implying reconnaissance of victim organizations' branding, portals and staff to build convincing lures.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim reconnaissance; intel/hunt candidate via brand and look-alike-portal monitoring",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "procedure_description": "Bahamut operates a highly tuned credential-harvesting system: fake login pages mimicking government agencies, private email and trusted applications, sometimes with bespoke per-target content and embedded logic to detect victim click patterns and validate real targets before harvesting credentials.",
+      "observed_tooling": ["Fake news website network and disinformation infrastructure"],
+      "detection_feasibility": "low — credential-harvesting pages are hosted on off-victim, single-use infrastructure; hunt/intel candidate via phishing-domain and brand monitoring, and inbound-referrer analysis on the impersonated portals",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "The group registers large numbers of single-use, look-alike domains — impersonating login portals, news outlets, and app/VPN vendors (e.g. thesecurevpn[.]com mimicking SecureVPN) — and rotates infrastructure weekly or even daily to frustrate tracking.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — domain registration is off-victim; intel/hunt candidate via newly-registered/look-alike-domain monitoring (e.g. brand permutation feeds)",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals", "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "Bahamut fronts C2 and distribution infrastructure behind third-party web services (e.g. Cloudflare) and stands up a sprawling network of fake news websites to lend legitimacy to lures and personas.",
+      "observed_tooling": ["Cloudflare fronting of C2 / distribution infrastructure", "Fake news website network and disinformation infrastructure"],
+      "detection_feasibility": "low — third-party web-service abuse is off-victim; intel/hunt candidate via infrastructure clustering and CDN-fronting analysis",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals", "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1585",
+      "technique_name": "Establish Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "The group builds and maintains elaborate fake personas — journalists, activists, and organizations — with fabricated online histories to approach and social-engineer targets and to author their fake-news ecosystem.",
+      "observed_tooling": ["Fake social-media personas and accounts"],
+      "detection_feasibility": "low — persona creation is off-victim; intel/brand-monitoring candidate",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Bahamut operates numerous fake social-media accounts to amplify fake-news content, build persona credibility, and initiate contact with targets ahead of phishing or spyware delivery.",
+      "observed_tooling": ["Fake social-media personas and accounts"],
+      "detection_feasibility": "low — off-victim social-media accounts; intel/brand-monitoring candidate",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "The group provisions attacker-controlled email accounts to send spearphishing lures and to back the identities of its fake personas.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim account provisioning; hunt candidate via sender-reputation and look-alike-sender analytics at the mail gateway",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1586.001",
+      "technique_name": "Compromise Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Consistent with its account-takeover-centric tradecraft, Bahamut repurposes compromised accounts (obtained via credential phishing) to further its espionage and disinformation objectives and to reach additional targets from trusted identities.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — abuse of compromised third-party accounts is off-victim; intel/hunt candidate",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Bahamut develops custom malware in-house across platforms — hundreds of custom Windows samples, bespoke iOS App Store apps, and Android spyware families (Bahamut spyware, CoverIm/CoverLM) built by repackaging legitimate apps with espionage code.",
+      "observed_tooling": ["Repackaged legitimate apps (SoftVPN, OpenVPN)", "Ktor (Kotlin) HTTP client for C2"],
+      "detection_feasibility": "low — capability development is off-victim; the deployed malware is where detection lands",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals", "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1588.005",
+      "technique_name": "Obtain Capabilities: Exploits",
+      "tactic": "resource-development",
+      "procedure_description": "BlackBerry assessed Bahamut had access to an in-house zero-day exploit developer and used zero-day exploits in operations, an unusually advanced capability for a hack-for-hire group.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — exploit acquisition/development is off-victim; intel candidate (exploitation itself surfaces at the victim)",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1588.006",
+      "technique_name": "Obtain Capabilities: Vulnerabilities",
+      "tactic": "resource-development",
+      "procedure_description": "The group researches and stockpiles vulnerabilities (feeding its in-house exploit development) to enable targeted compromise.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim; intel candidate",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Bahamut stages trojanized apps on attacker-controlled distribution sites (e.g. thesecurevpn[.]com serving trojanized SoftVPN/OpenVPN builds) and, historically, smuggled malicious iOS/Android apps into official app stores for download by targets.",
+      "observed_tooling": ["Repackaged legitimate apps (SoftVPN, OpenVPN)"],
+      "detection_feasibility": "low — staging occurs on off-victim infrastructure/app stores; intel/hunt candidate via distribution-domain monitoring",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1608.003",
+      "technique_name": "Stage Capabilities: Install Digital Certificate",
+      "tactic": "resource-development",
+      "procedure_description": "The SafeChat/CoverIm spyware uses a Let's Encrypt TLS certificate on its C2 endpoint to present an encrypted, trusted-looking channel for exfiltration.",
+      "observed_tooling": ["Let's Encrypt TLS certificates for C2 channel"],
+      "detection_feasibility": "low — certificate provisioning is off-victim; intel/hunt candidate via certificate-transparency monitoring of look-alike C2 domains",
+      "sources": ["https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector: targeted spearphishing emails and messages carrying links to credential-harvesting pages or trojanized-app downloads, with lures bespoke to each victim.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — links point to single-use off-victim infrastructure; hunt candidate via mail-gateway URL detonation and newly-registered-domain reputation",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Bahamut has delivered malicious document/attachment lures to targets to drop custom Windows malware, consistent with its hundreds of Windows samples and use of document-based social engineering.",
+      "observed_tooling": ["Custom Windows malware (hundreds of samples; BlackBerry 2020, not individually enumerated with hashes)"],
+      "detection_feasibility": "medium — malicious attachments arriving at the mail gateway and their execution on Windows endpoints are observable via attachment sandboxing and process-lineage (office-app spawning script/child processes), though specific samples are not publicly enumerated",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals"]
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "procedure_description": "In the SafeChat/CoverIm campaign, the malicious 'SafeChat' Android app was delivered to targets directly over WhatsApp via spear-messaging (a third-party messaging service rather than email).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — delivery over a third-party messaging app is not visible in enterprise telemetry; intel/awareness candidate",
+      "sources": ["https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Bahamut lures targets to its fake-news and fake-vendor websites (and app-store listings) where trojanized apps and malicious content are served, using the fabricated ecosystem to give downloads a veneer of legitimacy.",
+      "observed_tooling": ["Fake news website network and disinformation infrastructure"],
+      "detection_feasibility": "low — delivery sites are off-victim/single-use; hunt candidate via web-proxy telemetry to newly-registered look-alike domains",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals", "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Compromise depends on the target clicking attacker links — to credential-harvesting portals or to attacker-hosted app downloads (e.g. thesecurevpn[.]com).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — user click on off-victim link; hunt candidate via URL-click telemetry where mail/browser isolation is deployed",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "The target must install the trojanized app (SecureVPN/SoftVPN/OpenVPN, SafeChat) or open the malicious Windows document/attachment for the payload to run; the Android apps then repeatedly prompt the user to grant Accessibility and battery-exemption permissions.",
+      "observed_tooling": ["Repackaged legitimate apps (SoftVPN, OpenVPN)"],
+      "detection_feasibility": "medium — on Windows, execution of a malicious document payload is observable via process-lineage/EDR; on Android the sideloaded-APK install and accessibility-grant prompts are observable only with mobile EDR/MDM",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "Per MITRE ATT&CK's Windshift/Bahamut (G0112) profile, the group has used Visual Basic (macro) execution in its document-lure delivery of Windows payloads.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — VBA-macro execution (office app spawning wscript/cscript/powershell, VBA project instantiation) is observable via macro-security logging and EDR process-lineage",
+      "sources": ["https://attack.mitre.org/groups/G0112/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "On Windows, the Windshift/Bahamut cluster (G0112) establishes persistence via Registry Run keys / Startup folder. On Android, the spyware achieves the equivalent by registering for the BOOT_COMPLETED broadcast to auto-start at device boot (mapped here to the nearest Enterprise autostart technique).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — Windows Run-key writes are observable via registry-modification telemetry (Sysmon EID 13 / autoruns baselining); the Android BOOT_COMPLETED equivalent needs mobile EDR",
+      "sources": ["https://attack.mitre.org/groups/G0112/", "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The Android spyware enumerates the list of installed applications on the device to identify which messaging/target apps are present and to tailor collection.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — on-device app enumeration is not visible without mobile EDR; hunt/intel candidate",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://attack.mitre.org/groups/G0112/"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Consistent with its AV-evasion and anti-forensic tradecraft on Windows, the Windshift/Bahamut cluster (G0112) checks for security software present on the host before proceeding.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — enumeration of installed AV/EDR products (service/registry/process queries) is observable in command-line and API telemetry on Windows, but is common and needs correlation",
+      "sources": ["https://attack.mitre.org/groups/G0112/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The spyware collects device identifiers and system information — IMEI, device ID, IP address, SIM serial number, and device accounts — for fingerprinting and C2 registration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — device-info collection on-endpoint (mobile) is not visible without mobile EDR; hunt/intel candidate",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The malware harvests device accounts and owner information to identify the victim and support targeting.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — on-device; hunt/intel candidate",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://attack.mitre.org/groups/G0112/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Per the Windshift/Bahamut (G0112) profile, the group enumerates running processes on compromised hosts as part of environment assessment.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — process enumeration on Windows is observable via command-line/API telemetry but is common and low-fidelity in isolation",
+      "sources": ["https://attack.mitre.org/groups/G0112/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "By abusing Android Accessibility Services, the spyware captures on-screen activity and keystrokes, including text entered into secure messaging apps (Signal, WhatsApp, Telegram, Viber, Facebook Messenger, WeChat, imo, Conion), effectively defeating end-to-end encryption at the input layer.",
+      "observed_tooling": ["Android Accessibility Services abuse (keylogging / message capture)"],
+      "detection_feasibility": "low — accessibility-based keylogging is on-device and invisible to enterprise telemetry; hunt candidate via mobile EDR / MDM accessibility-grant monitoring",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "Through Accessibility Services the malware captures the content displayed on screen (including messages rendered by target chat apps), a screen-scraping form of collection.",
+      "observed_tooling": ["Android Accessibility Services abuse (keylogging / message capture)"],
+      "detection_feasibility": "low — on-device screen capture; hunt candidate via mobile EDR",
+      "sources": ["https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/", "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "The Bahamut Android spyware records phone calls, exfiltrating recorded call audio to the C2 server.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — on-device audio/call recording; hunt candidate via mobile EDR and permission auditing",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "The spyware harvests locally stored data — SMS messages, call logs, contacts, GPS/location data, device accounts and files from external storage — and stages it in a local database prior to exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — on-device data collection is invisible to enterprise telemetry; hunt candidate via mobile EDR / permission monitoring",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "Collection is automated: exfiltrated data is continuously gathered and written to a local SQLite/database before being batched and sent to the C2, requiring no per-item operator interaction.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — automated on-device collection; hunt candidate",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "procedure_description": "Before exfiltration the SafeChat/CoverIm spyware encrypts collected data using RSA/ECB/OAEPPadding, packaging it in an encrypted form that also hampers analyst recovery of stolen content.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — on-device pre-exfil encryption; hunt/intel candidate",
+      "sources": ["https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "The Android spyware communicates with its C2 over HTTPS web protocols (SecureVPN campaign C2 ft8hua063okwfdcu21pw[.]de; SafeChat C2 laborer-posted[.]nl), using a Ktor (Kotlin) HTTP client.",
+      "observed_tooling": ["Ktor (Kotlin) HTTP client for C2"],
+      "detection_feasibility": "medium — outbound HTTPS to the specific C2 domains/IPs is detectable at the network egress (DNS/proxy/firewall) if those indicators are deployed, though the payload is TLS-encrypted",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "The SafeChat/CoverIm C2 channel is protected with a Let's Encrypt TLS certificate and the exfiltrated payload is additionally encrypted with RSA (OAEP padding), layering asymmetric cryptography over the transport.",
+      "observed_tooling": ["Let's Encrypt TLS certificates for C2 channel"],
+      "detection_feasibility": "medium — the encrypted channel itself blends with normal TLS, but the specific C2 certificate/SNI and destination can be flagged via TLS-metadata and certificate-transparency-informed detections",
+      "sources": ["https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "SafeChat/CoverIm beacons to its C2 (laborer-posted[.]nl) over non-standard TCP port 2053 rather than the usual 443.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — TLS/HTTPS to an unusual port (2053) is a detectable anomaly at the network egress via firewall/NetFlow analytics",
+      "sources": ["https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The trojanized VPN apps require an operator-supplied activation key that, once validated by the C2, unlocks/delivers the spyware functionality — the server gating and enabling of malicious capability post-install (per the Windshift/Bahamut G0112 ingress-transfer behavior).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — activation callbacks and any secondary payload retrieval are observable as anomalous outbound connections at network egress, but content is encrypted",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://attack.mitre.org/groups/G0112/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Collected data (messages, SMS, call logs, contacts, location, recorded calls, device info) is exfiltrated from the local database to the C2 over the same HTTPS channel used for command-and-control.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — exfil rides the C2 channel; detectable via outbound-volume anomalies to the known C2 destinations at network egress, but encrypted",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "procedure_description": "Bahamut's entire delivery model is masquerade-based: fake VPN/chat apps posing as legitimate privacy tools, fake-news sites and personas posing as real journalists/outlets, and login portals impersonating real government and email services.",
+      "observed_tooling": ["Fake news website network and disinformation infrastructure", "Fake social-media personas and accounts"],
+      "detection_feasibility": "low — masquerading manifests off-victim and on-device; intel/brand-monitoring and mobile-app-vetting candidate",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals", "https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "The trojanized apps reuse the exact names, icons and package identities of real software — 'SecureVPN', trojanized SoftVPN/OpenVPN (packages com.secure.vpn, com.openvpn.secure), and 'SafeChat' — so victims believe they are installing genuine privacy apps.",
+      "observed_tooling": ["Repackaged legitimate apps (SoftVPN, OpenVPN)"],
+      "detection_feasibility": "low — name/package look-alikes are detectable via app-store/MDM app-reputation vetting rather than enterprise endpoint logs; hunt/intel candidate",
+      "sources": ["https://www.welivesecurity.com/2022/11/23/bahamut-cybermercenary-group-targets-android-users-fake-vpn-apps/", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The group employs anti-forensic and anti-analysis techniques (per BlackBerry) and the mobile payloads use encryption of stolen data (RSA/ECB/OAEP) to obstruct reverse-engineering and content recovery.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — obfuscation is a sample-analysis property, not a live log signal; intel candidate",
+      "sources": ["https://blogs.blackberry.com/en/2020/10/blackberry-uncovers-massive-hack-for-hire-group-targeting-governments-businesses-human-rights-groups-and-influential-individuals", "https://www.cyfirma.com/research/apt-bahamut-targets-individuals-with-android-malware-using-spear-messaging/"]
+    }
+  ],
+  "detection_signals": [
+    "Android device installing sideloaded APKs from outside Google Play impersonating VPN/chat apps — packages com.secure.vpn and com.openvpn.secure ('SecureVPN'/trojanized SoftVPN/OpenVPN) and 'SafeChat'/Safe_Chat.apk (mobile EDR/MDM)",
+    "Newly-installed app aggressively/repeatedly requesting Android Accessibility Services and battery-optimization exemption immediately after install",
+    "DNS/HTTP(S) resolution or connections to C2 domains ft8hua063okwfdcu21pw[.]de and laborer-posted[.]nl, and distribution domain thesecurevpn[.]com",
+    "TLS/HTTPS egress to non-standard port 2053 (SafeChat/CoverIm C2 beacon)",
+    "Connections to C2/distribution IPs 104.21.10.79 and 172.67.185.54 (Cloudflare-fronted — low fidelity alone; corroborate with SNI/domain)",
+    "Presence of the known malicious app hashes (ESET SecureVPN SHA-1 set; CYFIRMA Safe_Chat.apk SHA-256 8A35D0B2...53989)",
+    "Windows: Office application spawning script/child processes from a document lure (VBA macro execution), and Run-key/Startup-folder persistence writes on hosts of targeted individuals",
+    "Inbound referrers / look-alike login portals impersonating the organization's government/webmail SSO (credential-harvesting pages on newly-registered, single-use domains)",
+    "Newly-registered look-alike domains impersonating the organization or trusted news/app brands (weekly/daily rotation is characteristic of Bahamut)",
+    "Certificate-transparency hits for Let's Encrypt certificates on look-alike C2/distribution domains"
+  ],
+  "iocs": {
+    "ips": [
+      "104.21.10.79",
+      "172.67.185.54"
+    ],
+    "domains": [
+      "ft8hua063okwfdcu21pw.de",
+      "thesecurevpn.com",
+      "laborer-posted.nl"
+    ],
+    "emails": [],
+    "hashes": [
+      "3144B187EDF4309263FF0BCFD02C6542704145B1",
+      "2FBDC11613A065AFBBF36A66E8F17C0D802F8347",
+      "4F05482E93825E6A40AF3DFE45F6226A044D8635",
+      "79BD0BDFDC3645531C6285C3EB7C24CD0D6B0FAF",
+      "7C49C8A34D1D032606A5E9CDDEBB33AAC86CE4A6",
+      "2E40F7FD49FA8538879F90A85300247FBF2F8F67",
+      "1A9371B8AEAD5BA7D309AEBE4BFFB86B23E38229",
+      "976CC12B71805F4E8E49DCA232E95E00432C1778",
+      "B54FFF5A7F0A279040A4499D5AABCE41EA1840FB",
+      "C74B006BADBB3844843609DD5811AB2CEF16D63B",
+      "8A35D0B20B6F057FE42E606A124CB84D78FA95900A16B056269F1CC613853989"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Bahamut is a mercenary 'hack-for-hire' cyber-espionage-and-disinformation service; sponsor attribution is UNRESOLVED (attribution_confidence 'low'). BlackBerry (2020) declined single-state attribution; CYFIRMA (2023) proposed an India nexus with a DoNot-APT certificate/tactic overlap on the SafeChat campaign, but that is a single-vendor, contested assessment. MITRE ATT&CK clusters Bahamut with the Windshift group (G0112) — used here as the technique baseline and cited only as a source; actor.mitre_id is intentionally left empty per tasking (public group id G0112 appears only in source/aliases/notes). Overall confidence 'medium': the mobile campaigns (ESET SecureVPN, CYFIRMA SafeChat) are primary/technical with concrete IOC appendices, while the Windows/phishing/fake-news TTPs rest on the BlackBerry 2020 report reached via reputable secondary summaries (the original blog URL 301-redirects), and several Windows behaviors (T1059.005, T1547.001, T1518.001, T1057, T1105) are corroborated via the MITRE Windshift/G0112 profile. DETECTION ROUTING: this actor's surface is predominantly OFF-VICTIM (phishing/credential-harvest infrastructure, fake-news/persona ops, app-store staging) and ON-MOBILE (Android/iOS spyware) — inherently HUNT-leaning (low feasibility). The crisper DETECT-candidate signals are network and Windows-endpoint: C2/distribution domains (ft8hua063okwfdcu21pw[.]de, laborer-posted[.]nl, thesecurevpn[.]com), non-standard C2 port 2053 (T1571), HTTPS C2/exfil to known destinations (T1071.001/T1041), Windows document-macro execution (T1059.005/T1566.001), and Run-key persistence (T1547.001) — rated medium. IOC PROVENANCE: SHA-1 app hashes and the C2/distribution domains+IPs are verbatim from the ESET SecureVPN appendix; the Safe_Chat.apk SHA-256 and laborer-posted[.]nl:2053 are verbatim from the CYFIRMA SafeChat report. CAVEAT: the two IPs (104.21.10.79 = C2 resolution, 172.67.185.54 = thesecurevpn[.]com resolution) are Cloudflare-fronted ranges shared across many sites — retained because they appear in the ESET appendix, but they are LOW-fidelity on their own and must be corroborated with the domain/SNI; the domains and hashes are the higher-value indicators. Mobile package identifiers (com.secure.vpn, com.openvpn.secure) and the Safe_Chat.apk filename are recorded in malware[]/detection_signals (no dedicated iocs field exists for package names). No file hashes are provided for the BlackBerry-reported Windows/iOS samples (hundreds of samples / nine iOS apps were not enumerated with hashes in the accessible reporting), and no CVEs are listed because Bahamut's zero-days were undisclosed. ATT&CK normalization: Defense-Evasion techniques use env tactic slug 'stealth'; encrypted/encoded-file behavior uses T1027 (generic; T1027.013 available if a specific encoded-file artifact is later confirmed). MITRE technique T1656 (Impersonation) is ABSENT from this environment's bundled dataset, so persona/portal impersonation is captured under T1036 Masquerading, T1585 Establish Accounts, and T1598.003. Every technique_id was validated against attack_dump.json before inclusion — zero invalid IDs."
+}

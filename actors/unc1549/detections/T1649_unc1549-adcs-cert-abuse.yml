@@ -1,0 +1,32 @@
+title: UNC1549 AD CS Certificate Enrollment for Authentication Abuse
+id: 084e8aab-5317-4102-a2a5-173918fe29af
+status: experimental
+description: |
+    Detects UNC1549 / TA455 abuse of Active Directory Certificate Services (T1649 Steal or Forge
+    Authentication Certificates) to obtain certificates enabling certificate-based authentication and
+    impersonation, alongside resource-based constrained delegation abuse. Keys on AD CS certificate-
+    request events (Event IDs 4886 certificate requested / 4887 certificate issued) which, when correlated
+    with unexpected requesters or client-authentication templates, indicate malicious enrollment. Requires
+    AD CS auditing to be enabled on the issuing CA. Baseline normal enrollment volume and template usage.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1649
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID:
+            - 4886
+            - 4887
+    condition: selection
+falsepositives:
+    - Routine certificate enrollment is common - this rule is intended for correlation/baselining and
+      should be scoped to unexpected requesters, client-auth templates or off-hours enrollment before
+      being promoted from a low-severity signal
+level: medium

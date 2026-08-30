@@ -1,0 +1,37 @@
+title: Greenbug Payload Hidden in NTFS Alternate Data Stream
+id: 7c1b9e34-2a6f-4d18-9b52-3e7a1c8d4f60
+status: experimental
+description: |
+    Detects Greenbug (ISMDOOR) tradecraft of hiding payloads inside NTFS alternate data streams
+    (T1564.004). The CHM lure carried its payload as the ADS proposal_pakistan110.chm:error.html and
+    ISMDOOR historically stored components in ADS. Keys on Sysmon FileCreateStreamHash (EID 15) writes
+    of a named data stream to executable/script/help file types, and on execution of content directly
+    from an ADS (a colon-delimited stream in the command line).
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+    - https://www.security.com/threat-intelligence/shamoon-attacks-mount-middle-east
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1564.004
+    - mena-detection-library.greenbug
+logsource:
+    product: windows
+    category: create_stream_hash
+detection:
+    selection_stream:
+        TargetFilename|contains:
+            - '.chm:'
+            - '.html:'
+            - '.hta:'
+            - '.exe:'
+            - '.dll:'
+            - '.ps1:'
+    filter_zone:
+        TargetFilename|endswith: ':Zone.Identifier'
+    condition: selection_stream and not filter_zone
+falsepositives:
+    - Browsers and archivers legitimately create Zone.Identifier streams (excluded); other named streams
+      are uncommon and should be inspected for hidden executable/script content
+level: high

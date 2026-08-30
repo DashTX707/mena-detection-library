@@ -1,0 +1,35 @@
+title: PAExec Service Creation and Remote Execution (Imperial Kitten Lateral Movement)
+id: 0e4197b5-b6e4-4d4f-a830-d51628790aca
+status: experimental
+description: |
+    Detects PAExec (PsExec alternative) usage for remote execution over SMB/admin shares. Imperial
+    Kitten (CURIUM / Yellow Liderc) uses PAExec to move laterally after harvesting credentials
+    (T1021.002 SMB/Windows Admin Shares). Keys on the transient PAEXEC-* service name created on the
+    target (Event ID 7045) and on the paexec.exe process/command line, both high-fidelity artefacts.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.002
+    - mena-detection-library.imperial-kitten
+logsource:
+    product: windows
+detection:
+    selection_service:
+        EventID: 7045
+        ServiceName|startswith: 'PAExec'
+    selection_service_img:
+        EventID: 7045
+        ImagePath|contains: 'PAExec'
+    selection_proc:
+        Image|endswith: '\paexec.exe'
+    selection_proc_cli:
+        CommandLine|contains: 'paexec'
+        CommandLine|contains: '\\\\'
+    condition: selection_service or selection_service_img or selection_proc or selection_proc_cli
+falsepositives:
+    - Legitimate administrative use of PAExec/PsExec-class tools - allowlist known admin jump hosts
+      and accounts
+level: high

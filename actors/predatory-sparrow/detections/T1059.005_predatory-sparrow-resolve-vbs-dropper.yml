@@ -1,0 +1,36 @@
+title: Predatory Sparrow resolve.vbs VBScript Dropper Spawning Batch Toolchain
+id: 3f2a9c14-8b6d-4e51-9a72-1c0d5e8b4a10
+status: experimental
+description: |
+    Detects the Predatory Sparrow / Gonjeshke Darande (MeteorExpress) VBScript dropper stage where
+    wscript.exe or cscript.exe executes resolve.vbs, which in turn stages and launches the destructive
+    batch orchestration chain (setup.bat / update.bat / cache.bat / bcd.bat / msrun.bat) and the
+    password-protected RAR payloads. Keys on the process lineage of a Windows Script Host interpreter
+    running a .vbs and spawning cmd.exe, optionally combined with the actor-specific script name.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_host:
+        ParentImage|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+        Image|endswith: '\cmd.exe'
+    selection_vbs:
+        ParentCommandLine|contains: '.vbs'
+    selection_named:
+        ParentCommandLine|contains: 'resolve.vbs'
+    condition: (selection_host and selection_vbs) or selection_named
+falsepositives:
+    - Legitimate administrative or software-deployment VBScripts that shell out to batch files - validate
+      the .vbs name, its path and the batch/utilities the child cmd.exe subsequently invokes
+level: high

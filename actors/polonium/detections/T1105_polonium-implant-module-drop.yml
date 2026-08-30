@@ -1,0 +1,45 @@
+title: POLONIUM Implant Dropping Additional Executable Modules
+id: 41d21a21-152c-4d0a-8e21-24cfd0f20311
+status: experimental
+description: |
+    Detects a POLONIUM implant process writing new executable or DLL modules to a user-writable path
+    (T1105 Ingress Tool Transfer). After cloud/C2 fetches, the backdoors download additional tooling -
+    keylogger, screenshot, webcam, reverse-shell and Plink tunneling modules - to extend capability.
+    Requires file-creation telemetry (Sysmon EID 11). Keys on a masqueraded implant or PowerShell
+    process creating .exe/.dll files under Users/AppData/ProgramData/Temp/Public.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\Mega.exe'
+            - '\DropBox.exe'
+            - '\OnDrive.exe'
+            - '\DeepCreep.exe'
+            - '\Regestries.exe'
+            - '\powershell.exe'
+    selection_file:
+        TargetFilename|endswith:
+            - '.exe'
+            - '.dll'
+    selection_path:
+        TargetFilename|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Public\'
+    condition: all of selection_*
+falsepositives:
+    - PowerShell-based software deployment that writes binaries to user paths - scope out known
+      installers and packaging tools; confirm the written file's signer and reputation
+level: medium

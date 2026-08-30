@@ -1,0 +1,40 @@
+title: Predatory Sparrow Service Stop and Network Adapter Disable
+id: 8fbd1635-3351-4b98-979d-dd57ceb81489
+status: experimental
+description: |
+    Detects the Predatory Sparrow denial sequence that stops services to halt operations (T1489 Service Stop):
+    the fuel-station operations disabled pump payment/control services, and the railway toolchain disconnected
+    network adapters and terminated configured processes. Keys on net/sc service-stop commands and on PowerShell
+    Disable-NetAdapter / Set-Service invocations that immediately precede payload execution. Behavior-based on
+    service-control command lines rather than a single service name so it survives target-specific service labels.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1489
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_scnet:
+        Image|endswith:
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - ' stop '
+            - 'config start= disabled'
+    selection_ps_adapter:
+        CommandLine|contains:
+            - 'Disable-NetAdapter'
+            - 'Stop-Service'
+            - 'Set-Service'
+    condition: selection_scnet or selection_ps_adapter
+falsepositives:
+    - Administrators and management agents stop services and disable adapters during maintenance - scope to
+      bursts of multiple service stops, off-hours execution, or clustering with the destructive toolchain
+level: medium

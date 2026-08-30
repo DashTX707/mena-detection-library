@@ -1,0 +1,35 @@
+title: Predatory Sparrow mstask Scheduled Task Creation and AnalyzeAll Deletion
+id: 6a90f3d7-2b14-4e8c-9d05-3f7a1c6e8b42
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress delayed-detonation persistence: msrun.bat creates a
+    scheduled task named 'mstask' set to run the Meteor wiper at 23:55 for a synchronized organisation-wide
+    trigger, and the toolchain deletes a pre-existing scheduled task named 'AnalyzeAll' during setup. Keys
+    on Task Scheduler operational logging (Event ID 4698 task creation, 4699 task deletion) and on
+    schtasks.exe command lines carrying these actor-specific task names.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1053.005
+    - mena-detection-library.predatory-sparrow
+logsource:
+    product: windows
+    service: taskscheduler
+detection:
+    selection_event:
+        EventID:
+            - 4698
+            - 4699
+            - 4702
+    selection_name:
+        TaskName|contains:
+            - 'mstask'
+            - 'AnalyzeAll'
+    condition: all of selection_*
+falsepositives:
+    - A legitimately named 'mstask' task is unusual - validate the task action (should point at the Meteor
+      wiper binary), the trigger time (23:55) and the creating account before dismissing
+level: high

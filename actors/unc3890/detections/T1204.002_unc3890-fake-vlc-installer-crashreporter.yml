@@ -1,0 +1,36 @@
+title: UNC3890 Fake VLC Installer Spawning CrashReporter.exe (SUGARDUMP Delivery)
+id: 3f4e5d6c-7b8a-4991-8021-3243546576a8
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) user-execution delivery lineage (T1204.002 Malicious
+    File). The actor lured victims into running a fake VLC installer '3-Video-VLC.exe' which drops and
+    runs 'CrashReporter.exe' (the SUGARDUMP SMTP variant) while displaying a decoy 'RealDo1080.mp4'
+    robotic-dolls video. Keys on process creation where a fake installer or Office/archive parent
+    spawns CrashReporter.exe, or where 3-Video-VLC.exe executes, from a user download/temp path.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.unc3890
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_installer:
+        Image|endswith: '\3-Video-VLC.exe'
+    selection_dropped:
+        Image|endswith: '\CrashReporter.exe'
+        Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\TabRoaming\'
+            - '\Downloads\'
+    condition: selection_installer or selection_dropped
+falsepositives:
+    - The genuine Windows CrashReporter/WerFault lives under system directories - a CrashReporter.exe
+      running from AppData/Temp/Downloads is anomalous and warrants investigation
+level: high

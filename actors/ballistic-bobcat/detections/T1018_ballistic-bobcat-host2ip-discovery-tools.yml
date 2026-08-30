@@ -1,0 +1,35 @@
+title: Ballistic Bobcat Host2IP Remote/Network System Discovery Tooling
+id: b36c78fe-d484-4654-bcdd-173caaa376cc
+status: experimental
+description: |
+    Detects Ballistic Bobcat host and network discovery via the non-standard Host2IP utility
+    (host2ip.exe), used to resolve hostnames to IP addresses and map remote systems and reachable
+    internal services in preparation for tunneling and lateral movement. Also covers the Sponsor
+    backdoor's built-in host reconnaissance (System Information Discovery) which is observable only
+    through the discovery tooling and beacon, keyed here on the discrete discovery utility execution.
+    Covers T1018 (Remote System Discovery), T1046 (Network Service Discovery) and T1082 (System
+    Information Discovery).
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1018/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1018
+    - attack.t1046
+    - attack.t1082
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith: '\host2ip.exe'
+        - OriginalFileName: 'host2ip.exe'
+        - CommandLine|contains: 'host2ip'
+    condition: selection_tool
+falsepositives:
+    - Host2IP is a niche utility rarely present on production servers; any execution on an Exchange or
+      application server warrants investigation
+level: medium

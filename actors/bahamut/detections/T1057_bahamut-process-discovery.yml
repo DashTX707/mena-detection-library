@@ -1,0 +1,45 @@
+title: Bahamut Process Discovery Following Office Lure Execution
+id: 4e1b7d3a-8c5f-4a2e-9b6d-1c3f5e7a9b2d
+status: experimental
+description: |
+    Detects native process-enumeration utilities invoked by a script interpreter or Office
+    child process, consistent with Bahamut (Windshift-clustered, G0112) enumerating running
+    processes during environment assessment after initial execution (T1057 Process Discovery).
+    Process discovery is common and low-fidelity in isolation, so this rule scopes to
+    tasklist/qprocess/Get-Process spawned from a scripting/LOLBin or Office parent - the
+    lineage that follows a Bahamut document-macro drop - rather than any standalone run.
+references:
+    - https://attack.mitre.org/groups/G0112/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1057
+    - mena-detection-library.bahamut
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_native:
+        Image|endswith:
+            - '\tasklist.exe'
+            - '\qprocess.exe'
+    selection_cli:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        CommandLine|contains: 'Get-Process'
+    selection_parent:
+        ParentImage|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\cmd.exe'
+    condition: (selection_native or selection_cli) and selection_parent
+falsepositives:
+    - Administrative and monitoring scripts that enumerate processes from scheduled tasks -
+      baseline the parent chain and executing account before dismissing
+level: medium

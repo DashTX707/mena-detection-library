@@ -1,0 +1,44 @@
+title: Predatory Sparrow Internal Defacement of Display Boards, Billboards and HMI Screens
+id: 3100621f-4d2c-4ee0-86cb-aee2acb83c44
+status: experimental
+description: |
+    Detects the Predatory Sparrow internal defacement of victim-controlled display systems (T1491.001 Internal
+    Defacement): railway arrival/departure boards instructing passengers to call '64411' (Khamenei's office) in
+    July 2021, and roadside/fuel-station digital billboards ('Khamenei, where is our fuel?') in October 2021 -
+    for psychological/propaganda effect. Keys on host-observable precursors on the machines that render those
+    displays: replacement of display/wallpaper image assets by a non-standard process and command lines carrying
+    the actor propaganda strings/phone number pushed to signage or HMI screens.
+references:
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+    - https://en.wikipedia.org/wiki/Predatory_Sparrow
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1491.001
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_strings:
+        CommandLine|contains:
+            - '64411'
+            - 'mscap.bmp'
+            - 'mscap.jpg'
+    selection_display_write:
+        CommandLine|contains:
+            - 'copy '
+            - 'Copy-Item'
+            - 'Set-Content'
+        CommandLine|contains:
+            - '.bmp'
+            - '.jpg'
+            - '.png'
+            - '.html'
+    condition: selection_strings or selection_display_write
+falsepositives:
+    - Digital-signage refresh and wallpaper/GPO management legitimately overwrite display image/HTML assets -
+      scope to writes on signage/HMI/board-controller hosts by non-management processes and correlate with the
+      actor propaganda strings; the '64411' string is a high-fidelity anchor.
+level: medium

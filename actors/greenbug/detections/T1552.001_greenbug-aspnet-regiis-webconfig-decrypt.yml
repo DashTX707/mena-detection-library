@@ -1,0 +1,39 @@
+title: Greenbug aspnet_regiis web.config Credential Decryption
+id: 9f4a2c68-3b7d-45e1-8a19-6c2d9e4b1f75
+status: experimental
+description: |
+    Detects Greenbug harvesting stored database credentials from application configuration files
+    (T1552.001) and decrypting them (T1140). The group recursively enumerated web.config files to
+    extract encrypted SQL-server connection strings, then used the legitimate .NET aspnet_regiis.exe
+    utility with decrypt (-pdf/-pd) arguments to reveal cleartext SQL usernames/passwords. Keys on
+    aspnet_regiis.exe invoked with connection-string decryption arguments outside a deployment context,
+    and on PowerShell recursive web.config enumeration.
+references:
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.stealth
+    - attack.t1552.001
+    - attack.t1140
+    - mena-detection-library.greenbug
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_decrypt:
+        Image|endswith: '\aspnet_regiis.exe'
+        CommandLine|contains:
+            - '-pdf'
+            - '-pd '
+            - 'connectionStrings'
+    selection_enum:
+        CommandLine|contains|all:
+            - 'web.config'
+            - '-recurse'
+    condition: selection_decrypt or selection_enum
+falsepositives:
+    - Legitimate developers/admins decrypt connection strings with aspnet_regiis during deployment -
+      validate the user, host role and whether it follows web.config enumeration by an unusual parent
+level: medium

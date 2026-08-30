@@ -1,0 +1,43 @@
+title: UNC3890 SUGARDUMP SMTP Exfiltration to Webmail Relay
+id: 4a5b6c7d-8e9f-40a1-b2c3-d4e5f6a7b8c9
+status: experimental
+description: |
+    Detects the UNC3890 (Operation Sugarush) SUGARDUMP SMTP variant exfiltrating harvested browser
+    credentials over SMTP submission port 587 to legitimate webmail providers used as a relay
+    (T1048 Exfiltration Over Alternative Protocol, T1102.002 Web Service: Bidirectional
+    Communication). SUGARDUMP sends Base64-encoded data as a 'CrashLog.txt' attachment with subject
+    'VLC Player' to actor personas (john.macperson2021@{yandex,yahoo,gmail}.com,
+    john.macperson@protonmail.com). Keys on a direct workstation-originated SMTP (port 587) connection
+    from a non-mail process - direct client-to-webmail SMTP from an endpoint is anomalous.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-actor-targeting-israeli-shipping
+    - https://thehackernews.com/2022/08/suspected-iranian-hackers-targeted.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.command-and-control
+    - attack.t1048
+    - attack.t1102.002
+    - mena-detection-library.unc3890
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_smtp:
+        Initiated: 'true'
+        DestinationPort:
+            - 587
+            - 465
+    filter_mailclients:
+        Image|endswith:
+            - '\outlook.exe'
+            - '\thunderbird.exe'
+            - '\HxTsr.exe'
+            - '\msedge.exe'
+            - '\chrome.exe'
+    condition: selection_smtp and not filter_mailclients
+falsepositives:
+    - Some line-of-business apps and scanners send mail via SMTP submission - allowlist the specific
+      approved sender Image/host; unexpected processes connecting to webmail SMTP warrant triage
+level: high

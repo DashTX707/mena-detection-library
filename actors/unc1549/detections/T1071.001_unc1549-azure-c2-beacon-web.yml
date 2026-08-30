@@ -1,0 +1,43 @@
+title: UNC1549 Backdoor and Tunneler Beaconing to Azure C2 Endpoints
+id: c1c77c15-4ea9-4f60-a0fd-2d0acb202e57
+status: experimental
+description: |
+    Detects UNC1549 / TA455 command-and-control over web protocols (T1071.001) and proxy/tunneler relay
+    traffic (T1090) to actor-controlled Azure endpoints. POLLBLEND registers via an HTTP POST of a JSON
+    body {"username":"<computer_name>"} to a /register/ endpoint; LIGHTRAIL requests a hardcoded /news
+    path with a fixed Chrome/42.0.2311.135 ... Edge/12.10136 User-Agent; the custom tunnelers relay SOCKS
+    traffic through *.azurewebsites.net and *.cloudapp.azure.com hosts. Keys on proxy/web-gateway logs
+    showing these hardcoded URI/UA fingerprints or connections to the actor Azure C2 host list. Anchor on
+    the request fingerprints and correlate with the actor domain list rather than on Azure alone.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1090
+    - mena-detection-library.unc1549
+logsource:
+    category: proxy
+detection:
+    selection_uri:
+        cs-uri-stem|endswith:
+            - '/news'
+            - '/register/'
+    selection_ua:
+        cs-User-Agent|contains: 'Chrome/42.0.2311.135'
+    selection_host:
+        cs-host|contains:
+            - 'active-internal-log'
+            - 'active-intranet-logs'
+            - 'mso-internal-log'
+            - 'mso-intranet-logs'
+            - 'vm-tools-svc'
+            - 'vmware-health-ms'
+            - '.cloudapp.azure.com'
+    condition: selection_host and (selection_uri or selection_ua)
+falsepositives:
+    - Legitimate traffic to Azure App Service / Azure VM hosts - restrict the host list to the confirmed
+      actor IOC domains and validate the URI and User-Agent fingerprints before alerting
+level: high

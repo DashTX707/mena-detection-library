@@ -1,0 +1,36 @@
+title: POLONIUM FlipCreep FTP Command-and-Control to External Host
+id: 0d9ed6e7-d1e8-4fc6-8aed-e08b9cbecfdd
+status: experimental
+description: |
+    Detects outbound FTP command-and-control from a workstation to an external host (T1071.002 File
+    Transfer Protocols). POLONIUM's FlipCreep backdoor and several exfiltration modules use FTP
+    servers (observed on ports 21 and 2121) hosted on IP-only VPS infrastructure. Requires
+    network-connection telemetry (Sysmon EID 3). Keys on initiated FTP connections to non-internal
+    destinations; workstation-originated FTP to external IPs is unusual in most environments.
+references:
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.002
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: network_connection
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort:
+            - 21
+            - 2121
+    filter_internal:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: selection and not filter_internal
+falsepositives:
+    - Legitimate FTP clients and file-transfer software connecting to sanctioned external partners -
+      allowlist known FTP destinations and the applications that use them
+level: medium

@@ -1,0 +1,48 @@
+title: Predatory Sparrow Toolchain Self-Deletion of Executed Binaries
+id: 7d3c1a58-6e29-4b74-8f01-2c9e5b7a4d16
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress cleanup stage where toolchain components (batch scripts,
+    RAR archives, and the named destructive binaries env.exe/msapp.exe/mssetup.exe/nti.exe) are deleted
+    immediately after execution to remove forensic artifacts. Keys on cmd/PowerShell file-deletion commands
+    ('del /f', Remove-Item -Force) targeting the actor's named artifacts, typically from a Temp or user path.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1070.004
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_del:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        CommandLine|contains:
+            - 'del '
+            - 'del/'
+            - 'erase '
+            - 'Remove-Item'
+    selection_artifacts:
+        CommandLine|contains:
+            - 'env.exe'
+            - 'msapp.exe'
+            - 'mssetup.exe'
+            - 'nti.exe'
+            - 'update.bat'
+            - 'cache.bat'
+            - 'bcd.bat'
+            - 'msrun.bat'
+            - 'programs.rar'
+            - 'bcd.rar'
+            - 'ms.rar'
+    condition: all of selection_*
+falsepositives:
+    - Installers and scripts clean up their own temporary files - the named destructive artifacts and the
+      preceding execution of those same binaries distinguish malicious self-deletion
+level: medium

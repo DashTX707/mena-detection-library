@@ -1,0 +1,36 @@
+title: Arid Viper Startup Folder LNK Persistence
+id: a1c8e4d2-3b7f-4a19-9e05-6d2c8f1b4a70
+status: experimental
+description: |
+    Detects Arid Gopher / PyMicropsia logon persistence via a shortcut dropped into the Windows
+    Startup folder (T1547.009 Shortcut Modification). Arid Gopher V2 creates NetworkBoosterUtilities.lnk
+    in the Startup folder (V1 names the .lnk after the masquerading executable), and PyMicropsia uses a
+    dedicated payload (SynLocSynMomentum.exe) to drop a .lnk into the Start Menu Programs\Startup folder.
+    Keys on file-creation of a .lnk in the per-user or all-users Startup path, with the actor-specific
+    shortcut name as a high-fidelity booster.
+references:
+    - https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.009
+    - mena-detection-library.arid-viper
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_lnk:
+        TargetFilename|contains: '\Start Menu\Programs\Startup\'
+        TargetFilename|endswith: '.lnk'
+    selection_named:
+        TargetFilename|contains:
+            - 'NetworkBoosterUtilities'
+            - 'SynLocSynMomentum'
+    condition: selection_lnk or selection_named
+falsepositives:
+    - Legitimate application installers that place a shortcut in the Startup folder - validate the LNK
+      target binary, its path and the creating process before dismissing
+level: high

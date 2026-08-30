@@ -1,0 +1,34 @@
+title: MeshAgent / MeshCentral Remote Access Tool Execution (Imperial Kitten)
+id: cfabb412-3c55-4ea8-8fb7-9d6742bad274
+status: experimental
+description: |
+    Detects execution or service install of MeshAgent (MeshCentral remote-management agent), which
+    Imperial Kitten (CURIUM / Yellow Liderc) deploys to maintain interactive remote access to
+    compromised hosts (T1219 Remote Access Tools). Keys on the MeshAgent process image / original
+    filename and MeshCentral service/command-line markers. In environments where MeshCentral is not
+    the sanctioned RMM this is high fidelity; tune against the approved RMM allowlist.
+references:
+    - https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1219
+    - mena-detection-library.imperial-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_image:
+        Image|endswith:
+            - '\meshagent.exe'
+            - '\meshagent64.exe'
+    selection_meta:
+        - OriginalFileName|contains: 'MeshAgent'
+        - Product|contains: 'MeshCentral'
+        - CommandLine|contains: 'meshcentral'
+    condition: selection_image or selection_meta
+falsepositives:
+    - Organizations that legitimately use MeshCentral as their sanctioned RMM - allowlist the
+      approved deployment and alert only on unexpected hosts
+level: high

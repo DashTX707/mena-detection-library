@@ -1,0 +1,253 @@
+{
+  "actor": "Arid Viper (APT-C-23)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — first-execution of an unsigned executable masquerading as a document from a user-writable path is detectable via process-creation telemetry, image-path and icon/extension-mismatch heuristics"
+    },
+    {
+      "technique_id": "T1036.007",
+      "technique_name": "Masquerading: Double File Extension",
+      "tactic": "stealth",
+      "rationale": "medium — filenames with excessive length or embedded double extensions before .exe are detectable via file-name pattern analytics on process creation and file writes"
+    },
+    {
+      "technique_id": "T1036.008",
+      "technique_name": "Masquerading: Masquerade File Type",
+      "tactic": "stealth",
+      "rationale": "medium — executables carrying document icons and dropping/opening a decoy doc are detectable via resource/icon inspection and process-lineage (an .exe spawning a document viewer at first run)"
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "rationale": "high — creation of .lnk files in the Startup folder is directly observable via file-creation telemetry (Sysmon EID 11) on a well-known persistence path; NetworkBoosterUtilities.lnk is an actor-specific artifact"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — writes to HKCU...\\Run and startup-folder entries are directly observable via registry-modification and file-creation auditing (Sysmon EID 13/11)"
+    },
+    {
+      "technique_id": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "tactic": "execution",
+      "rationale": "medium — PyInstaller-bundled executables and Python-runtime child processes are detectable via process telemetry, but resemble legitimate packaged Python apps without additional context"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — cmd.exe spawned by an unusual parent implant process is detectable via process-lineage analytics, but command-shell use is common and needs context"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "medium — keylogging is stealthy at runtime, but the keystroke-log output directory/files and the dedicated keylogger binary are detectable via file-creation and process telemetry"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium — screen-capture APIs are hard to catch directly, but the resulting timestamped PNG artifacts and periodic capture behavior are detectable via file-write telemetry in the implant's working directory"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "medium — access to Chrome's Login Data SQLite store by a non-browser process is detectable via file-access and process telemetry, though it requires targeted instrumentation"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — bulk enumeration/reads of many office documents by an unusual process are detectable via file-access analytics and staging correlation, but blend with normal user activity"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "medium — regular, periodic collection bursts (screenshots/logs on a timer) are detectable via file-creation cadence analytics in the implant working directory"
+    },
+    {
+      "technique_id": "T1025",
+      "technique_name": "Data from Removable Media",
+      "tactic": "collection",
+      "rationale": "medium — programmatic enumeration of removable-drive contents shortly after device insertion is detectable via WMI-query and file-access telemetry correlated with USB device-connect events"
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — WMI queries against Win32_USB/DiskDrive classes from a non-management process are detectable via WMI-activity and command-line telemetry"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "rationale": "medium — WMI queries for AntiVirusProduct/SecurityCenter2 and disk devices from an untrusted process are detectable via WMI operational logging and process telemetry"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — enumeration of security products via WMI/registry by an unknown process is detectable via WMI and command-line telemetry and is a meaningful early-stage signal"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "rationale": "high — execution of rar.exe with password-protection flags creating archives of document collections in a staging directory is a high-fidelity, detectable pre-exfiltration signal via process command-line and file-write telemetry"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium — accumulation of collection artifacts in a hidden/fixed staging directory is detectable via file-creation clustering; the HPFusionManagerDell directory name is an actor-specific artifact"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — beaconing HTTP POSTs to the specific persona C2 domains with the distinctive URI structure are detectable via proxy/DNS and network telemetry when the domains/paths are known"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — implant processes writing and launching new executables fetched from C2 are detectable via file-write + process-creation lineage, especially tied to the known C2 domains"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "medium — base64-encoded C2 parameters in HTTP requests are detectable via network/proxy content analytics when combined with the known URI patterns"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound uploads to the known persona C2 domains, sized/paced unusually, are detectable via network egress and DLP telemetry once C2 is identified"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled social-media personas are off-victim and not endpoint-observable; intel/brand-monitoring and takedown candidate"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration occurs off-victim; hunt/intel candidate via WHOIS/registration-pattern pivoting and C2 domain blocklisting"
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "rationale": "low — acquisition/standing-up of cloud web-service C2 is off-victim; the downstream Firebase traffic is where limited detection lands"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; intel/tracking candidate via code-lineage and family clustering"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — staging on actor-owned infrastructure is off-victim; hunt candidate via URL/domain blocklisting and web telemetry for the specific download paths"
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "rationale": "low — off-platform social-engineering over third-party services is not enterprise-log-observable; awareness/policy and mobile-threat-defense candidate"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "low — link delivery occurs on social/video platforms off-victim; the endpoint signal is the subsequent APK install, not the link"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "low — user click on an external link is largely off the defended endpoint; web-proxy/DNS telemetry to the specific persona domains is the only weak signal"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "low — microphone/call recording on mobile is opaque to enterprise logging; mobile-threat-defense and permission-audit candidate"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — single OS/version queries are ubiquitous and low-signal; hunt-only in tight process-lineage context"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "low — retrieval of computer/user name is ubiquitous; low-signal hunt-only"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "low — file enumeration is high-volume and largely legitimate; hunt-only within a recon-burst window"
+    },
+    {
+      "technique_id": "T1102",
+      "technique_name": "Web Service",
+      "tactic": "command-and-control",
+      "rationale": "low — Firebase C2 rides legitimate Google infrastructure and blends with normal mobile traffic; mobile-threat-defense candidate, weakly detectable in enterprise logs"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "low — vendor-specific notification suppression on mobile is not enterprise-log-observable; mobile-threat-defense and permission-audit candidate"
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "stealth",
+      "rationale": "low — on-device evasion logic is not enterprise-observable; relevant to malware-analysis tradecraft rather than production detection"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — obfuscation is an intrinsic sample property observed in analysis rather than a runtime host signal; YARA/static-analysis candidate"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — in-process decoding leaves little discrete host signal; analysis-time indicator rather than a production detection"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "low — webshells on the actor's own infrastructure are off-victim; intel/hunt candidate via infrastructure fingerprinting"
+    }
+  ],
+  "summary": {
+    "total": 40,
+    "detection": 22,
+    "hunt": 18
+  }
+}

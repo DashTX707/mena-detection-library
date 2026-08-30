@@ -1,0 +1,50 @@
+title: POLONIUM Non-Browser Process Cloud C2 and Exfiltration to OneDrive/Dropbox/Mega
+id: 30c10910-041b-4cf9-9d10-13becfe1f200
+status: experimental
+description: |
+    Detects a non-browser, non-sync-client process contacting OneDrive Graph, Dropbox or Mega cloud
+    endpoints (T1102.002 Bidirectional Communication, T1567.002 Exfiltration to Cloud Storage).
+    POLONIUM's CreepyDrive/CreepyBox, DeepCreep and MegaCreep abuse legitimate cloud services for
+    bidirectional C2 - tasking placed in files such as data.txt/cd.txt and results in response.json -
+    and exfiltrate stolen files to the same accounts, using embedded OAuth refresh tokens. Requires
+    network-connection telemetry (Sysmon EID 3). Keys on the cloud destinations while excluding
+    genuine browsers, the official sync clients and Office/OS processes.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/06/02/exposing-polonium-activity-and-infrastructure-targeting-israeli-organizations/
+    - https://www.welivesecurity.com/2022/10/11/polonium-targets-israel-creepy-malware/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1102.002
+    - attack.t1567.002
+    - mena-detection-library.polonium
+logsource:
+    product: windows
+    category: network_connection
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationHostname|contains:
+            - 'graph.microsoft.com'
+            - 'api.dropboxapi.com'
+            - 'content.dropboxapi.com'
+            - 'g.api.mega.co.nz'
+            - 'api.mega.co.nz'
+    filter_expected:
+        Image|endswith:
+            - '\onedrive.exe'
+            - '\dropbox.exe'
+            - '\megasync.exe'
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\outlook.exe'
+            - '\teams.exe'
+            - '\svchost.exe'
+    condition: selection and not filter_expected
+falsepositives:
+    - Line-of-business or backup applications that legitimately integrate with Graph/Dropbox/Mega -
+      allowlist the specific signed executables per environment
+level: medium

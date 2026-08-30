@@ -1,0 +1,46 @@
+title: Ballistic Bobcat Exchange ProxyLogon Exploitation via Anomalous IIS Worker Child Process
+id: e88415fb-669f-437f-9a40-2f6d2ae6a7bc
+status: experimental
+description: |
+    Detects post-exploitation of internet-facing Microsoft Exchange (CVE-2021-26855 / ProxyLogon)
+    by Ballistic Bobcat (Sponsor "Sponsoring Access" campaign) via unexpected child processes of the
+    Exchange/IIS worker processes w3wp.exe and UMWorkerProcess.exe. Successful ProxyLogon exploitation
+    results in command interpreters, script hosts and reconnaissance binaries being spawned by the IIS
+    worker as a prelude to dropping the Sponsor backdoor. Keys on the process-lineage anomaly rather
+    than a specific payload, so it survives changes in dropped tooling.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1190/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1190
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\UMWorkerProcess.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\whoami.exe'
+            - '\cscript.exe'
+            - '\wscript.exe'
+            - '\certutil.exe'
+            - '\bitsadmin.exe'
+            - '\reg.exe'
+            - '\sc.exe'
+    condition: all of selection_*
+falsepositives:
+    - Some Exchange management scripts and monitoring agents legitimately spawn cmd.exe or powershell.exe
+      from w3wp.exe - validate the command line, the account and whether the host is a patched Exchange server
+level: high

@@ -1,0 +1,41 @@
+title: UNC1549 TRUSTTRAP Fake Credential-Prompt Binary From User-Writable Path
+id: 1209474c-f120-4b21-b22d-79929b0dfcf0
+status: experimental
+description: |
+    Detects UNC1549 / TA455 GUI input capture via the TRUSTTRAP malware (T1056.002), which displays a
+    spoofed Microsoft / Outlook login dialog to trick the user into entering credentials that are then
+    stored in cleartext. Keys on execution of a binary that masquerades with a Microsoft/Outlook/login
+    themed name but runs from a user-writable path (AppData, Temp, Public, Downloads) rather than a
+    signed Office/Windows install location - the pattern of a credential-prompt process launched from an
+    abnormal location. Tune against the organisation's legitimate authentication-helper inventory.
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1056.002
+    - mena-detection-library.unc1549
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_path:
+        Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+            - '\Downloads\'
+    selection_name:
+        Image|endswith:
+            - 'outlook.exe'
+            - 'login.exe'
+            - 'signin.exe'
+            - 'microsoft.exe'
+            - 'msoauth.exe'
+            - 'authhost.exe'
+    condition: all of selection_*
+falsepositives:
+    - Portable or user-installed tools with authentication-themed names - baseline the legitimate binaries
+      and their install paths before enabling as an alert
+level: medium

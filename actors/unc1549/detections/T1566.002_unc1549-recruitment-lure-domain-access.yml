@@ -1,0 +1,43 @@
+title: UNC1549 Access to Fake-Recruitment and Credential-Harvest Lure Domains
+id: e50ed27a-6112-42cb-b16a-62bc67795793
+status: experimental
+description: |
+    Detects UNC1549 / TA455 initial-access and credential-harvest chain: a user's browser connecting to
+    an actor-controlled fake job-recruitment / Israel-Hamas-themed lure or fake-login domain. This single
+    web/proxy observable covers the spearphishing-link delivery (T1566.002), the credential-harvest
+    landing page (T1598.003) and the resulting user link-click execution (T1204.001). Keys on proxy/web-
+    gateway requests to the actor lure domains from the IOC list. Anchor is the curated actor-domain list;
+    extend it as new look-alike domains are reported (usa-careers, airplaneserviceticketings, airtravellog).
+references:
+    - https://cloud.google.com/blog/topics/threat-intelligence/suspected-iranian-unc1549-targets-israel-middle-east
+    - https://cloud.google.com/blog/topics/threat-intelligence/analysis-of-unc1549-ttps-targeting-aerospace-defense
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.reconnaissance
+    - attack.execution
+    - attack.t1566.002
+    - attack.t1598.003
+    - attack.t1204.001
+    - mena-detection-library.unc1549
+logsource:
+    category: proxy
+detection:
+    selection:
+        cs-host:
+            - 'airbus.usa-careers.com'
+            - 'airplaneserviceticketings.com'
+            - 'airtravellog.com'
+            - 'automationagencybusiness.com'
+            - 'fdtsprobusinesssolutions.com'
+            - 'forcecodestore.com'
+            - 'tini-ventures.com'
+            - 'thetacticstore.com'
+            - 'politicalanorak.com'
+            - 'vcs-news.com'
+    condition: selection
+falsepositives:
+    - Security researchers or awareness-training platforms deliberately visiting these domains -
+      correlate the accessing user and referrer; a genuine end-user hit is high-fidelity
+level: high

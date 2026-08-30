@@ -1,0 +1,51 @@
+title: Ballistic Bobcat Reverse-Proxy and Tunneling Tools (RevSocks/GOST/Chisel/Plink)
+id: fdedf11a-f675-40fe-ab3b-0b501cfdf99e
+status: experimental
+description: |
+    Detects Ballistic Bobcat proxy and protocol-tunneling tooling used to relay traffic out of victim
+    networks: RevSocks (dropped as CSRSS.EXE) and GOST for reverse SOCKS/TCP-UDP relays, Chisel for
+    HTTP/SSH-tunneled proxying, and Plink (PuTTY CLI SSH client) for SSH tunnels and pivoting. Keys on
+    the tool image names and their characteristic tunneling command-line flags rather than a single
+    hash. Covers Proxy (T1090), Protocol Tunneling (T1572) and Remote Services: SSH (T1021.004).
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1090/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.lateral-movement
+    - attack.t1090
+    - attack.t1572
+    - attack.t1021.004
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool_image:
+        Image|endswith:
+            - '\gost.exe'
+            - '\chisel.exe'
+            - '\plink.exe'
+            - '\revsocks.exe'
+    selection_plink_tunnel:
+        Image|endswith: '\plink.exe'
+        CommandLine|contains:
+            - ' -R '
+            - ' -L '
+            - ' -D '
+            - ' -N '
+    selection_gost_chisel_flags:
+        CommandLine|contains:
+            - 'chisel client'
+            - 'chisel server'
+            - '-L=socks'
+            - '-L socks'
+            - 'socks5://'
+            - 'relay+tls://'
+    condition: 1 of selection_*
+falsepositives:
+    - Plink and GOST have legitimate administrative uses - validate the host role, the account and the
+      remote endpoint; reverse (-R) tunnels and socks relays from a server are rarely benign
+level: high

@@ -1,0 +1,48 @@
+title: Predatory Sparrow OT/ICS Runtime Data Manipulation - HMI/PLC Control-Plane Tampering
+id: 8619df42-7914-448a-bbaa-b77973094c2d
+status: experimental
+description: |
+    Detects host-observable precursors to Predatory Sparrow runtime manipulation of an industrial process
+    (T1565.003 Runtime Data Manipulation). At Khuzestan Steel the actor manipulated the production-control
+    plane (HMI/PLC layer) to drive an overhead crane/ladle and spill molten metal, causing physical damage.
+    ATT&CK-for-ICS 'Manipulation of Control' has no bundled Enterprise equivalent; this rule maps to the
+    nearest Enterprise technique and keys on the IT/OT bridge behavior visible on Windows engineering/HMI
+    workstations: non-engineering processes launching HMI/SCADA client binaries or writing to their project/
+    runtime config directories, and command lines invoking vendor engineering-station tooling out of context.
+    OT-protocol manipulation itself is only visible with ICS/OT telemetry - see falsepositives for the dependency.
+references:
+    - https://www.picussecurity.com/resource/blog/predatory-sparrow-inside-the-cyber-warfare-targeting-irans-critical-infrastructure
+    - https://en.wikipedia.org/wiki/Predatory_Sparrow
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1565.003
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_hmi_client:
+        Image|endswith:
+            - '\WinCC.exe'
+            - '\HMIRTm.exe'
+            - '\PLCSIM.exe'
+            - '\Studio5000.exe'
+            - '\RSLogix.exe'
+            - '\view.exe'
+    selection_anom_parent:
+        ParentImage|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+    condition: selection_hmi_client and selection_anom_parent
+falsepositives:
+    - Legitimate engineers launch HMI/SCADA clients and run automation scripts against them - this rule fires
+      only on scripting-host/shell parents launching those clients, which is unusual; tune to your vendor stack.
+    - Actual manipulation of the OT process (PLC logic/setpoint changes) is NOT visible in Windows process
+      telemetry and requires ICS/OT monitoring (protocol-aware sensors, historian/HMI audit) - deploy those to
+      close the visibility gap; this rule only covers the IT-side engineering-workstation precursor.
+level: medium

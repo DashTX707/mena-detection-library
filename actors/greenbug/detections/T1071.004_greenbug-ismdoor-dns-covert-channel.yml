@@ -1,0 +1,45 @@
+title: Greenbug ISMDOOR DNS Covert Channel and Modified-Base64 Encoding
+id: 5c8e1a23-4b6d-49f2-8e15-9a2c3d7b1e64
+status: experimental
+description: |
+    Detects Greenbug's ISMDOOR DNS-based covert command-and-control channel (T1071.004) and its
+    modified-base64 data encoding (T1132.001). ISMDOOR encodes a bidirectional protocol into DNS
+    queries using 32-character hex session IDs and structured labels (n.n.c.<session>.<c2>,
+    <enc>.<n>.dr.<session>.<c2>, www.<n>.s.<session>.<c2>) with modified-base64 substitutions
+    (= -> !, / -> &, + -> @) so encoded messages remain valid DNS labels, and resolves the known
+    ISMDOOR C2 domains. Keys on the label structure/session-id pattern and known C2 domains.
+references:
+    - https://www.netscout.com/blog/asert/greenbugs-dns-isms
+    - https://www.security.com/threat-intelligence/greenbug-espionage-telco-south-asia
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.004
+    - attack.t1132.001
+    - mena-detection-library.greenbug
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection_domains:
+        QueryName|contains:
+            - 'vsiegru.com'
+            - 'kopilkaorukov.com'
+            - 'winrepp.com'
+            - 'winsecupdater.com'
+            - 'dnslookupdater.com'
+            - 'dnssecupdater.com'
+            - 'vvvnews.com'
+    selection_structure:
+        QueryName|contains:
+            - '.dr.'
+            - '.n.c.'
+    selection_sessionid:
+        QueryName|re: '\.[0-9a-f]{32}\.'
+    condition: selection_domains or (selection_structure and selection_sessionid)
+falsepositives:
+    - Long random-looking subdomains from CDNs, security telemetry and cloud services can resemble the
+      session-id pattern - the structured labels plus known C2 domains raise fidelity; baseline noisy
+      base domains before alerting broadly
+level: medium

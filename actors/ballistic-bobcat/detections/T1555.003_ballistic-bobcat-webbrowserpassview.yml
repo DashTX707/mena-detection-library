@@ -1,0 +1,29 @@
+title: Ballistic Bobcat WebBrowserPassView Browser Credential Theft
+id: d259e314-5cc2-4bde-9c38-ca85e108ced1
+status: experimental
+description: |
+    Detects execution of WebBrowserPassView, the NirSoft utility Ballistic Bobcat runs to recover stored
+    credentials from web browsers on compromised hosts. Keys on the tool's original filename / product
+    metadata and image name so that a renamed copy is still detected, rather than on a single hash.
+references:
+    - https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/
+    - https://attack.mitre.org/techniques/T1555/003/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1555.003
+    - mena-detection-library.ballistic-bobcat
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_meta:
+        - OriginalFileName: 'WebBrowserPassView.exe'
+        - Product|contains: 'WebBrowserPassView'
+        - Image|endswith: '\WebBrowserPassView.exe'
+    condition: selection_meta
+falsepositives:
+    - A sanctioned password-audit engagement could run WebBrowserPassView - validate authorization,
+      the executing account and host
+level: high

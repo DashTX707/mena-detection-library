@@ -1,0 +1,41 @@
+title: Arid Viper Screenshot and Automated Collection Artifacts
+id: 8a1c6f39-2d47-4e91-b0a5-4c7e2f9b6d38
+status: experimental
+description: |
+    Detects the file artifacts of Arid Viper's (APT-C-23) automated screen-capture collection
+    (T1113 Screen Capture, T1119 Automated Collection). PyMicropsia captures screenshots with the Python
+    'mss' library and Arid Gopher with the 'kbinani' library, saving PNG images periodically and on C2
+    command into the implant working directory. Keys on PNG image files written by a process running from
+    a PyInstaller _MEI unpack path or the HPFusionManagerDell staging directory, i.e. screenshots produced
+    by the implant rather than a normal user application.
+references:
+    - https://unit42.paloaltonetworks.com/pymicropsia/
+    - https://www.deepinstinct.com/blog/arid-gopher-the-newest-micropsia-malware-variant
+    - https://attack.mitre.org/groups/G1028/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1113
+    - attack.t1119
+    - mena-detection-library.arid-viper
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_png:
+        TargetFilename|endswith:
+            - '.png'
+            - '.jpg'
+            - '.bmp'
+    selection_implantproc:
+        Image|contains:
+            - '\_MEI'
+            - '\HPFusionManagerDell'
+    selection_stagingdir:
+        TargetFilename|contains: '\HPFusionManagerDell'
+    condition: selection_png and (selection_implantproc or selection_stagingdir)
+falsepositives:
+    - Legitimate PyInstaller-packaged screenshot or screen-recording tools writing images from an _MEI
+      path - validate the parent binary reputation and the destination directory
+level: medium

@@ -1,0 +1,31 @@
+title: Predatory Sparrow mssetup.exe Screenlocker Endpoint Denial of Service
+id: e6e2ec35-b43a-4771-9106-26b80402ceaf
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress screenlocker component (mssetup.exe) that locks the user out
+    of the workstation with a replacement lock screen (mscap.bmp / mscap.jpg wallpaper), denying interactive
+    access as part of the destructive campaign (T1499 Endpoint Denial of Service). Keys on the masquerading
+    binary name running from a non-system path and on references to the mscap lock-screen image artifacts.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1499
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_binary:
+        Image|endswith: '\mssetup.exe'
+    selection_image_artifact:
+        CommandLine|contains:
+            - 'mscap.bmp'
+            - 'mscap.jpg'
+    condition: selection_binary or selection_image_artifact
+falsepositives:
+    - mssetup.exe is a generic installer-style name that some legitimate setup packages use - scope by execution
+      from a Temp/user path, unsigned binary, and co-occurrence with the mscap wallpaper or the wiper sequence
+level: high

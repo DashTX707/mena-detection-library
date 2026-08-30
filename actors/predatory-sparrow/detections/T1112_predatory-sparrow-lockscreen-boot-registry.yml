@@ -1,0 +1,39 @@
+title: Predatory Sparrow Registry Modification of Lock Screen Boot and Screensaver Keys
+id: 1e9a4c73-5d28-46b0-8f61-3c7e2a9d6b40
+status: experimental
+description: |
+    Detects the Predatory Sparrow / MeteorExpress Meteor wiper registry tampering that reinforces the
+    screenlocker and boot sabotage: disabling the screensaver, altering boot-policy error handling, and
+    setting the replacement lock-screen/logon wallpaper image (per-OS variants). Keys on registry writes to
+    the personalization lock-screen, Winlogon legal-notice/wallpaper, screensaver policy and boot-related
+    values by a non-standard process, high fidelity when clustered with the wipe sequence.
+references:
+    - https://www.sentinelone.com/labs/meteorexpress-mysterious-wiper-paralyzes-iranian-trains-with-epic-troll/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1112
+    - mena-detection-library.predatory-sparrow
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_keys:
+        TargetObject|contains:
+            - '\Software\Policies\Microsoft\Windows\Personalization\LockScreenImage'
+            - '\Control Panel\Desktop\SCRNSAVE.EXE'
+            - '\Control Panel\Desktop\ScreenSaveActive'
+            - '\Microsoft\Windows\CurrentVersion\Policies\System\LegalNoticeCaption'
+            - '\Microsoft\Windows\CurrentVersion\Policies\System\LegalNoticeText'
+            - '\Microsoft\Windows NT\CurrentVersion\Winlogon\LegalNoticeText'
+            - '\CurrentVersion\Authentication\LogonUI\Background'
+    selection_wallpaper:
+        Details|contains:
+            - 'mscap.bmp'
+            - 'mscap.jpg'
+    condition: selection_keys or selection_wallpaper
+falsepositives:
+    - Enterprise policy legitimately sets lock-screen images and logon banners via GPO - scope to writes by
+      non-policy processes (not gpsvc/SYSTEM policy application) and correlate with the mscap wallpaper artifacts
+level: medium

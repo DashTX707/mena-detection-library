@@ -22,7 +22,7 @@
   --detect:#0c7a68; --detect-ink:#0c7a68; --detect-fill:#0c7a68;
   --hunt:#a8631a; --hunt-ink:#a8631a; --hunt-fill:#bd7526;
   --accent:#0c7a68; --accent-ink:#095f52;
-  --iran:#8a5a2b; --pal:#2e6f4e; --dest:#a8342b;
+  --iran:#8a5a2b; --pal:#2e6f4e; --dest:#a8342b; --turkey:#1f6f8b; --merc:#6d4a8f;
   --shadow:0 1px 2px rgba(10,20,17,.06),0 10px 26px -14px rgba(10,20,17,.22);
   --grid-line:rgba(20,28,26,.06);
   --stamp:rgba(10,16,14,.5);
@@ -35,7 +35,7 @@
     --detect:#33d6ac; --detect-ink:#3fe0b6; --detect-fill:#1fa383;
     --hunt:#e3a94a; --hunt-ink:#edb95c; --hunt-fill:#c88f37;
     --accent:#33d6ac; --accent-ink:#5be8c4;
-    --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a;
+    --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a; --turkey:#5fb4d0; --merc:#b490d8;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 42px -20px rgba(0,0,0,.75);
     --grid-line:rgba(216,230,223,.05);
     --stamp:rgba(216,230,223,.55);
@@ -48,7 +48,7 @@
   --detect:#33d6ac; --detect-ink:#3fe0b6; --detect-fill:#1fa383;
   --hunt:#e3a94a; --hunt-ink:#edb95c; --hunt-fill:#c88f37;
   --accent:#33d6ac; --accent-ink:#5be8c4;
-  --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a;
+  --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a; --turkey:#5fb4d0; --merc:#b490d8;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 42px -20px rgba(0,0,0,.75);
   --grid-line:rgba(216,230,223,.05);
   --stamp:rgba(216,230,223,.55);
@@ -170,6 +170,8 @@ tr.tot-row th{font-size:13px}
 .stamp.iran{color:var(--iran);border-color:color-mix(in srgb,var(--iran) 55%,transparent)}
 .stamp.pal{color:var(--pal);border-color:color-mix(in srgb,var(--pal) 55%,transparent)}
 .stamp.dest{color:var(--dest);border-color:color-mix(in srgb,var(--dest) 58%,transparent)}
+.stamp.turkey{color:var(--turkey);border-color:color-mix(in srgb,var(--turkey) 55%,transparent)}
+.stamp.merc{color:var(--merc);border-color:color-mix(in srgb,var(--merc) 55%,transparent)}
 .card h3{font-size:1.36rem;margin:8px 0 2px;letter-spacing:-.01em;font-weight:600;max-width:80%}
 .card .mid{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--muted)}
 .card .meta{margin:14px 0 0;font-size:13.5px;color:var(--muted);line-height:1.5}
@@ -263,11 +265,11 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
 
     <div class="hero-split">
       <div class="ledger" id="stats">
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="18">18</div><div class="k">actors tracked · 3 threat clusters</div></div>
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="827">827</div><div class="k">ATT&amp;CK techniques mapped</div></div>
-        <div class="ltab hl"><div class="tick"></div><div class="n tnum" data-to="338">338</div><div class="k">Sigma detections, CI-validated</div></div>
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="129">129</div><div class="k">hunt packages written</div></div>
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="530">530</div><div class="k">sourced, defanged IOCs</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="28">28</div><div class="k">actors tracked · 5 threat clusters</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="1190">1190</div><div class="k">ATT&amp;CK techniques mapped</div></div>
+        <div class="ltab hl"><div class="tick"></div><div class="n tnum" data-to="508">508</div><div class="k">Sigma detections, CI-validated</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="179">179</div><div class="k">hunt packages written</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="974">974</div><div class="k">sourced, defanged IOCs</div></div>
       </div>
 
       <div class="preview-card">
@@ -276,7 +278,7 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
           <span class="live"><i></i>live from routing.json</span>
         </div>
         <div class="pv-grid" id="pvGrid" aria-hidden="true"></div>
-        <div class="preview-foot">Six actors, six tactics, out of the full <b class="mono" style="color:var(--ink)">18 × 14</b> ledger. <a href="#coverage">Open the full matrix ↓</a></div>
+        <div class="preview-foot">Six actors, six tactics, out of the full <b class="mono" style="color:var(--ink)">28 × 14</b> ledger. <a href="#coverage">Open the full matrix ↓</a></div>
       </div>
     </div>
   </div>
@@ -311,8 +313,8 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <div class="sec-head">
       <div>
         <div class="sec-num">02 / ACTOR DOSSIERS</div>
-        <h2>Eighteen actors, three threat clusters</h2>
-        <p>Iran-nexus espionage, credential and access brokers, OT/ICS disruption and destructive <em>wipers</em>, IRGC influence operations, plus Palestinian-nexus operators — each chosen for documented, sourced MENA targeting. More to follow.</p>
+        <h2>Twenty-eight actors, five threat clusters</h2>
+        <p>Iran-nexus espionage, credential and access brokers, OT/ICS disruption and destructive <em>wipers</em>, IRGC influence operations, Palestinian-nexus operators, a Türkiye-nexus DNS-hijacking group, and a mercenary hack-for-hire — each chosen for documented, sourced MENA targeting. More to follow.</p>
       </div>
     </div>
     <div class="actors" id="cards"></div>
@@ -403,9 +405,9 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
       <div>
         <h5>Coverage</h5>
         <ul>
-          <li><span class="mono">18</span> actor packs published</li>
-          <li><span class="mono">338</span> Sigma · <span class="mono">129</span> hunts</li>
-          <li><span class="mono">827</span> techniques · <span class="mono">530</span> IOCs</li>
+          <li><span class="mono">28</span> actor packs published</li>
+          <li><span class="mono">508</span> Sigma · <span class="mono">179</span> hunts</li>
+          <li><span class="mono">1190</span> techniques · <span class="mono">974</span> IOCs</li>
           <li>CI-validated on every change</li>
         </ul>
       </div>
@@ -505,7 +507,47 @@ var ACTORS=[
  {name:"Pioneer Kitten",id:"Fox Kitten",cluster:"iran",clbl:"Iran · access broker",
   targ:"UAE, Israel, Azerbaijan, US / global", sect:"Education, finance, healthcare, defense, government",
   ttps:50,sig:26,hunts:5,iocs:25,
-  t:{"reconnaissance":[1,1],"resource-development":[0,3],"initial-access":[2,0],"execution":[1,0],"persistence":[5,1],"privilege-escalation":[2,0],"defense-evasion":[7,0],"credential-access":[4,1],"discovery":[6,0],"lateral-movement":[5,0],"collection":[3,1],"command-and-control":[5,0],"exfiltration":[1,0],"impact":[0,1]}}
+  t:{"reconnaissance":[1,1],"resource-development":[0,3],"initial-access":[2,0],"execution":[1,0],"persistence":[5,1],"privilege-escalation":[2,0],"defense-evasion":[7,0],"credential-access":[4,1],"discovery":[6,0],"lateral-movement":[5,0],"collection":[3,1],"command-and-control":[5,0],"exfiltration":[1,0],"impact":[0,1]}},
+ {name:"POLONIUM",id:"Plaid Rain",cluster:"iran",clbl:"Lebanon · MOIS-linked",
+  targ:"Israel, Lebanon", sect:"Critical manufacturing, IT, defense, engineering",
+  ttps:42,sig:17,hunts:6,iocs:63,
+  t:{"resource-development":[0,5],"initial-access":[3,1],"execution":[3,0],"persistence":[2,0],"defense-evasion":[4,1],"discovery":[0,5],"collection":[3,3],"command-and-control":[8,2],"exfiltration":[2,0]}},
+ {name:"Arid Viper",id:"APT-C-23",cluster:"pal",clbl:"Palestinian · spyware",
+  targ:"Palestinian Territories, Israel, Egypt", sect:"Government, military, activists, academia",
+  ttps:40,sig:15,hunts:6,iocs:50,
+  t:{"resource-development":[0,5],"initial-access":[0,2],"execution":[4,1],"persistence":[2,1],"defense-evasion":[2,4],"credential-access":[1,0],"discovery":[2,3],"collection":[7,1],"command-and-control":[3,1],"exfiltration":[1,0]}},
+ {name:"Predatory Sparrow",id:"Gonjeshke Darande",cluster:"dest",clbl:"Israel-linked · OT wiper",
+  targ:"Iran — steel, fuel, rail, banking (OT/ICS)", sect:"Metals/steel OT, oil & gas, transport, finance",
+  ttps:34,sig:23,hunts:6,iocs:5,
+  t:{"reconnaissance":[0,1],"resource-development":[0,2],"initial-access":[1,1],"execution":[5,0],"defense-evasion":[6,0],"discovery":[1,2],"lateral-movement":[1,0],"collection":[2,0],"command-and-control":[1,0],"exfiltration":[0,1],"impact":[9,1]}},
+ {name:"Imperial Kitten",id:"CURIUM",cluster:"iran",clbl:"Iran · IRGC",
+  targ:"Israel, E. Mediterranean shipping", sect:"Transportation, logistics, maritime, technology",
+  ttps:35,sig:19,hunts:5,iocs:83,
+  t:{"reconnaissance":[0,1],"resource-development":[0,6],"initial-access":[4,0],"execution":[4,0],"persistence":[3,0],"defense-evasion":[4,0],"credential-access":[1,1],"discovery":[1,1],"lateral-movement":[2,0],"collection":[0,1],"command-and-control":[5,0],"exfiltration":[1,0]}},
+ {name:"UNC1549",id:"TA455",cluster:"iran",clbl:"Iran · aerospace/defense",
+  targ:"Israel, UAE, Turkey, Qatar", sect:"Aerospace, aviation, defense industrial base",
+  ttps:40,sig:28,hunts:5,iocs:80,
+  t:{"reconnaissance":[1,2],"resource-development":[0,4],"initial-access":[3,0],"execution":[2,0],"persistence":[1,0],"defense-evasion":[6,0],"credential-access":[6,0],"discovery":[2,0],"lateral-movement":[4,0],"collection":[2,0],"command-and-control":[5,1],"exfiltration":[0,1]}},
+ {name:"UNC3890",id:"UNC3890",cluster:"iran",clbl:"Iran · shipping/energy",
+  targ:"Israel", sect:"Shipping/maritime, government, energy, healthcare",
+  ttps:32,sig:15,hunts:5,iocs:45,
+  t:{"resource-development":[0,5],"initial-access":[1,2],"execution":[4,1],"persistence":[2,0],"defense-evasion":[3,0],"credential-access":[2,1],"discovery":[0,1],"command-and-control":[8,0],"exfiltration":[2,0]}},
+ {name:"Ballistic Bobcat",id:"APT35-adjacent",cluster:"iran",clbl:"Iran · Sponsor backdoor",
+  targ:"Israel, UAE", sect:"Automotive, manufacturing, engineering, finance",
+  ttps:31,sig:15,hunts:3,iocs:19,
+  t:{"reconnaissance":[0,1],"resource-development":[0,2],"initial-access":[1,0],"execution":[3,0],"persistence":[2,0],"privilege-escalation":[1,0],"defense-evasion":[4,0],"credential-access":[2,0],"discovery":[3,2],"lateral-movement":[1,0],"collection":[1,0],"command-and-control":[7,0],"exfiltration":[1,0]}},
+ {name:"Greenbug",id:"ISMDOOR",cluster:"iran",clbl:"Iran · Shamoon precursor",
+  targ:"Saudi Arabia, Iraq, Bahrain, Qatar, Kuwait", sect:"Government, telecom, aviation, energy",
+  ttps:35,sig:17,hunts:2,iocs:38,
+  t:{"resource-development":[0,1],"initial-access":[1,0],"execution":[5,0],"persistence":[3,0],"privilege-escalation":[1,0],"defense-evasion":[5,0],"credential-access":[3,0],"discovery":[6,0],"lateral-movement":[1,0],"collection":[1,0],"command-and-control":[7,1]}},
+ {name:"Sea Turtle",id:"Marbled Dust",cluster:"turkey",clbl:"Türkiye · DNS hijack",
+  targ:"Egypt, Iraq, Syria, UAE, Jordan", sect:"Government, telecom, ISPs, IT/MSPs",
+  ttps:33,sig:15,hunts:5,iocs:45,
+  t:{"reconnaissance":[0,2],"resource-development":[0,7],"initial-access":[3,1],"execution":[2,0],"persistence":[2,0],"defense-evasion":[4,0],"credential-access":[0,2],"collection":[5,0],"command-and-control":[3,0],"exfiltration":[2,0]}},
+ {name:"Bahamut",id:"Windshift-adj",cluster:"merc",clbl:"Mercenary · hack-for-hire",
+  targ:"UAE, Saudi Arabia, Qatar, Egypt, Iran", sect:"Officials, military, activists, journalists",
+  ttps:41,sig:6,hunts:7,iocs:16,
+  t:{"reconnaissance":[0,3],"resource-development":[0,11],"initial-access":[1,3],"execution":[2,1],"persistence":[1,0],"defense-evasion":[0,3],"credential-access":[0,1],"discovery":[2,3],"collection":[0,5],"command-and-control":[4,0],"exfiltration":[1,0]}}
 ];
 
 // global max cell total for bar scaling

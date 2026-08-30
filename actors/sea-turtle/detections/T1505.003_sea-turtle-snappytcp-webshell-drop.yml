@@ -1,0 +1,54 @@
+title: Sea Turtle SnappyTCP Web Shell Written to Web Root
+id: 9663e76a-9ba5-4a20-afed-131754b103aa
+status: experimental
+description: |
+    Detects creation of a script or executable inside an internet-facing web directory by the webserver
+    user, the deployment pattern for Sea Turtle's custom SnappyTCP Linux/Unix reverse-shell webshell
+    (MITRE S1163, T1505.003 Server Software Component: Web Shell). SnappyTCP is dropped into web-accessible
+    paths for persistence and C2; it ships in TLS/OpenSSL and cleartext variants and its config references
+    the C2 URI 'sy.php'. New executables or unexpected PHP/CGI files appearing under document roots written
+    by apache/www-data/php are a strong host-side signal.
+references:
+    - https://www.huntandhackett.com/blog/turkish-espionage-campaigns
+    - https://attack.mitre.org/software/S1163/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.sea-turtle
+logsource:
+    category: file_event
+    product: linux
+detection:
+    selection_path:
+        TargetFilename|contains:
+            - '/var/www/'
+            - '/srv/www/'
+            - '/usr/share/nginx/html/'
+            - '/var/lib/tomcat/webapps/'
+            - '/home/'
+    selection_ext:
+        TargetFilename|endswith:
+            - '.php'
+            - '.phtml'
+            - '.cgi'
+            - '.jsp'
+            - '/sy.php'
+            - '/snappytcp'
+    selection_writer:
+        User|contains:
+            - 'www-data'
+            - 'apache'
+            - 'nginx'
+            - 'httpd'
+            - 'php'
+    filter_web_home:
+        TargetFilename|contains:
+            - '/public_html/'
+            - '/www/'
+    condition: (selection_path and selection_ext and selection_writer) or (selection_writer and selection_ext and filter_web_home)
+falsepositives:
+    - CMS/plugin updates, composer/npm deploys and web-app cache generation writing PHP/CGI files
+    - Legitimate developer or CI/CD deployments running under the webserver account
+level: high
