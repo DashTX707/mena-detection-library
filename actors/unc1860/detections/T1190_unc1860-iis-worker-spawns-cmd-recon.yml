@@ -1,0 +1,52 @@
+title: IIS/SharePoint Worker Spawning cmd.exe or Recon Utilities (UNC1860 VIROGREEN / TEMPLEPLAY)
+id: d0557be2-738f-402f-9fb5-be339c41f16c
+status: experimental
+description: |
+    Detects post-exploitation command execution on an Internet-facing IIS/SharePoint server consistent with
+    UNC1860 initial access and hands-on operation. The VIROGREEN framework exploits Microsoft SharePoint via
+    CVE-2019-0604 and deploys the STAYSHANTE web shell / BASEWALK backdoor to gain a foothold (T1190);
+    thereafter the TEMPLEPLAY controller instructs TEMPLEDOOR to run operator commands through cmd.exe on the
+    compromised host (T1059.003). Once a web shell or passive implant executes inside the IIS worker
+    (w3wp.exe) or the SharePoint worker, operator activity surfaces as the web process spawning a command
+    interpreter or discovery utilities - abnormal on a hardened production web server. Keys on those parent
+    web/worker processes spawning cmd/powershell or common recon binaries.
+references:
+    - https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html
+    - https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.t1190
+    - attack.t1059.003
+    - mena-detection-library.unc1860
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\MicrosoftSharePointServerManager.exe'
+            - '\Microsoft.Exchange.RpcClientAccess.Service.exe'
+            - '\UMWorkerProcess.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\whoami.exe'
+            - '\systeminfo.exe'
+            - '\ipconfig.exe'
+            - '\hostname.exe'
+            - '\tasklist.exe'
+            - '\query.exe'
+            - '\reg.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Web applications that legitimately shell out (build agents, admin panels) - baseline per app pool
+    - SharePoint/Exchange maintenance scripts run under the worker identity (baseline maintenance windows)
+level: high

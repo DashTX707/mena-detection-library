@@ -1,0 +1,24 @@
+value,type,context,source
+87[.]120[.]8[.]210,ip,Moses Staff operational IP (defanged),https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+techzenspace[.]com,domain,Moses Staff C2/masquerading domain (defanged),https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+moses-staff[.]se,domain,Moses Staff C2/masquerading domain (defanged),https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+e776c4e24c00fa3eeba68cde38ae24f3,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+3dfb7626dbe46136bc19404b63c6d1dc,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+7be30062c1a2c42a7061dfbfec364588,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+93c19436e6e5207e2e2bed425107f080,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+a06c125e6da566be67aacf6c4e44005e,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+2372c7639e70820f253a098dfcaf5060,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+680ce7d56fc427ee2fbedb5baea59d68,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+1094aa25e2d637e7f5795edd6c0f60e4,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+5ffc255557796512798617ae61c4274d,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+3dde69212234c98b503081d64b9beb52,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+a44775e7568b790505bbcaadbd61c993,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+3649c106c6edd7ef47acd46586c74d8e,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+c1bc20a9bbebbbdd19869999b9cec03b,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+29a08031c4debc7f91ca8efb40b7858c9aafc3ed,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+76a35d4087a766e2a5a06da7e25ef76a8314ec84,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+5cacfad2bb7979d7e823a92fb936c5929081e691,hash,Moses Staff sample hash,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+CVE-2021-34473,cve,Exploited by Moses Staff,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+CVE-2021-34523,cve,Exploited by Moses Staff,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+CVE-2021-31207,cve,Exploited by Moses Staff,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+CVE-2021-26855,cve,Exploited by Moses Staff,https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/

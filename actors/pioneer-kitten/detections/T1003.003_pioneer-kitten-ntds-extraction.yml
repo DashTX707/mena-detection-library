@@ -1,0 +1,43 @@
+title: Pioneer Kitten NTDS.dit Extraction from Domain Controllers
+id: 1fbfcaa2-6eec-43e9-a1f9-65a3903705c0
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten domain-credential theft at scale from domain-controller
+    credential stores (T1003.003 OS Credential Dumping: NTDS). The actor targets NTDS.dit to obtain
+    the domain credentials it subsequently brokers as domain-admin access. Keys on the common
+    extraction methods: ntdsutil "ac i ntds" ifm create, vssadmin/wmic shadow-copy creation to read a
+    locked NTDS.dit, and direct references to ntds.dit on command lines. Pair with DC file-access
+    auditing on %SystemRoot%\NTDS\ntds.dit and VSS creation events.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.003
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ntdsutil:
+        CommandLine|contains|all:
+            - 'ntdsutil'
+            - 'ifm'
+    selection_vss_method:
+        CommandLine|contains:
+            - 'vssadmin create shadow'
+            - 'wmic shadowcopy call create'
+            - 'shadowcopy'
+    selection_vss_target:
+        CommandLine|contains:
+            - 'ntds'
+            - 'C:\Windows\NTDS'
+    selection_direct:
+        CommandLine|contains: 'ntds.dit'
+    condition: selection_ntdsutil or (selection_vss_method and selection_vss_target) or selection_direct
+falsepositives:
+    - Legitimate DC backup or migration using ntdsutil/IFM - correlate with change management and
+      restrict to authorized backup windows and operators
+level: high

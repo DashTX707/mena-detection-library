@@ -61,6 +61,18 @@ scripts/                 helpers (validation, Navigator export)
 | [Scarred Manticore (Storm-0861)](actors/scarred-manticore/) | Iran-nexus · LIONTAIL | ✅ published | 28 | 10 | 7 |
 | [Charming Kitten (APT35, G0059)](actors/charming-kitten/) | Iran-nexus · IRGC | ✅ published | 84 | 26 | 8 |
 | [APT33 (G0064)](actors/apt33/) | Iran-nexus · aviation/Shamoon | ✅ published | 48 | 26 | 6 |
+| [Void Manticore (Storm-1084)](actors/void-manticore/) | Iran-nexus · BiBi wiper | ✅ published | 21 | 10 | 5 |
+| [HEXANE / Lyceum (G1001)](actors/hexane/) | Iran-nexus · telecom/energy | ✅ published | 63 | 22 | 8 |
+| [APT39 / Chafer (G0087)](actors/apt39/) | Iran-nexus (MOIS) · surveillance | ✅ published | 53 | 26 | 6 |
+| [CyberAv3ngers (IRGC-CEC)](actors/cyberav3ngers/) | Iran-nexus · OT/ICS | ✅ published | 20 | 10 | 5 |
+| [Moses Staff (Cobalt Sapling)](actors/moses-staff/) | Iran-nexus · hack-and-leak | ✅ published | 28 | 13 | 6 |
+| [Tortoiseshell (G0139)](actors/tortoiseshell/) | Iran-nexus (IRGC) · supply-chain | ✅ published | 74 | 28 | 7 |
+| [UNC1860](actors/unc1860/) | Iran-nexus (MOIS) · access broker | ✅ published | 30 | 9 | 6 |
+| [Cotton Sandstorm (G1009)](actors/cotton-sandstorm/) | Iran-nexus (IRGC) · influence | ✅ published | 30 | 9 | 7 |
+| [Homeland Justice (Storm-0842)](actors/homeland-justice/) | Iran-nexus · Albania wiper | ✅ published | 34 | 14 | 5 |
+| [Pioneer Kitten (Fox Kitten)](actors/pioneer-kitten/) | Iran-nexus · access broker | ✅ published | 50 | 26 | 5 |
+
+**18 actors · 827 ATT&CK techniques · 338 Sigma detections · 129 hunt packages · 466 sourced IOCs.**
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

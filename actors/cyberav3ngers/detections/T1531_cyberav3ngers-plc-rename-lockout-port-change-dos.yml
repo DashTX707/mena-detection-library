@@ -1,0 +1,48 @@
+title: CyberAv3ngers Unitronics PLC Rename, Upload Lockout and Port-Change Operator Denial
+id: c632b5bd-a8bc-480c-8811-5a4bb1ca45f9
+status: experimental
+description: |
+    Detects the operator-lockout / endpoint-denial configuration changes CyberAv3ngers (IRGC-CEC) applied to
+    compromised Unitronics PLC/HMI devices: renaming the device (the device name is required for remote
+    connections, so a rename blocks operator remote access) and enabling upload/settings password protection
+    to prevent operators from reverting the programming (T1531 account access removal); and disabling the
+    upload/download functions plus changing the default remote-communication port from 20256 to 20257 to deny
+    legitimate remote operation (T1499 endpoint denial of service). Where an OT asset-management / config-change
+    monitor emits device-name-change, password-protection-enabled, function-disabled or port-change events via
+    syslog, this keys on those change strings on Unitronics assets. Requires OT config-change instrumentation;
+    on bare devices this manifests as sudden loss of remote access and is a visibility gap. Map strings to your
+    OT-monitor schema.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1531
+    - attack.t1499
+    - mena-detection-library.cyberav3ngers
+logsource:
+    product: linux
+    service: syslog
+detection:
+    selection_change:
+        Message|contains:
+            - 'device renamed'
+            - 'device name changed'
+            - 'upload password'
+            - 'password protection enabled'
+            - 'upload disabled'
+            - 'download disabled'
+            - 'port changed'
+            - '20257'
+    selection_asset:
+        Message|contains:
+            - 'unitronics'
+            - 'vision'
+            - 'PLC'
+            - 'HMI'
+    condition: selection_change and selection_asset
+falsepositives:
+    - Legitimate asset commissioning that renames a device or hardens the port during an approved change window - allowlist and gate on change management
+    - Sanctioned migration of the programming port away from the default as a hardening step - correlate with the change record
+level: high

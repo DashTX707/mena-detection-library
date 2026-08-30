@@ -1,0 +1,54 @@
+title: Homeland Justice No-Justice Wiper - EldoS RawDisk Driver Service Load and Raw Disk Wipe
+id: 42ab17bb-1543-40e5-9265-fce5da757221
+status: experimental
+description: |
+    FLAGSHIP wiper-precursor detection for Homeland Justice / Storm-0842 (Iran/MOIS). The
+    No-Justice / NACL wiper (cl.exe, a ZEROCLEARE-lineage tool) loads rwdsk.sys - a legitimate
+    EldoS Corporation RawDisk commercial driver installed as a kernel service - to obtain raw
+    block-level access to the physical disk, then overwrites file content (T1561.001 Disk
+    Content Wipe) and corrupts the boot sector / partition structures so the system will not
+    boot (T1561.002 Disk Structure Wipe). Installing/loading a kernel driver as a new service
+    is the persistence/execution primitive (T1543.003) and, critically, the actionable
+    early-warning signal: by the time the raw writes complete, data is gone. Keys on driver-load
+    (Sysmon EID 6) for the RawDisk/EldoS driver name or signer and on new kernel-service
+    creation (System Event ID 7045) referencing the driver, plus execution of the named wiper
+    cl.exe. Requires driver-load telemetry (Sysmon EID 6) and/or service-install logs (7045).
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.impact
+    - attack.t1543.003
+    - attack.t1561.001
+    - attack.t1561.002
+    - mena-detection-library.homeland-justice
+logsource:
+    category: driver_load
+    product: windows
+detection:
+    selection_rawdisk_name:
+        ImageLoaded|contains:
+            - 'rwdsk.sys'
+            - 'rawdisk'
+            - 'elrawdisk'
+            - 'eldos'
+    selection_signer:
+        Signature|contains: 'EldoS'
+    selection_userwritable:
+        ImageLoaded|contains:
+            - '\ProgramData\'
+            - '\Users\'
+            - '\AppData\'
+            - '\Windows\Temp\'
+            - '\Temp\'
+        ImageLoaded|endswith: '.sys'
+    condition: selection_rawdisk_name or selection_signer or selection_userwritable
+falsepositives:
+    - Legitimate low-level disk, backup, or imaging software that ships an EldoS/RawDisk-class
+      driver - allowlist the specific known-good driver hashes, signers, and install paths
+      deployed in your environment
+    - Third-party tools loading signed kernel drivers from ProgramData - baseline the expected
+      signed drivers and their paths per host image
+level: high

@@ -1,0 +1,39 @@
+title: APT39 SSH / PLINK Client Execution for Lateral Movement and Tunneling
+id: 7361e001-d0a4-4e9e-882c-a619f039e6cb
+status: experimental
+description: |
+    Detects APT39 / Chafer use of SSH clients - notably PuTTY Link (PLINK) - to access and move
+    between compromised systems and to establish tunnels. Keys on plink.exe/ssh.exe execution and
+    PLINK port-forwarding flags (-R/-L/-D dynamic proxy, -pw for inline password). SSH client
+    presence and outbound SSH from unusual Windows hosts in a Windows-centric enterprise is a strong
+    anomaly, especially when combined with tunneling arguments.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.004
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith:
+            - '\plink.exe'
+            - '\ssh.exe'
+    selection_tunnel:
+        CommandLine|contains:
+            - ' -R '
+            - ' -L '
+            - ' -D '
+            - ' -pw '
+            - ' -N '
+    condition: selection_img and selection_tunnel
+falsepositives:
+    - Legitimate administrators using SSH/PLINK to manage network devices or Linux hosts - allowlist
+      known jump hosts and admin accounts
+    - Developer tooling that wraps ssh.exe for git or CI operations
+level: medium

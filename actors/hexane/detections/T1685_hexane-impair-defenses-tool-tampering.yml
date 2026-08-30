@@ -1,0 +1,48 @@
+title: HEXANE Impair Defenses - Disable or Modify Security Tools
+id: 48e152e0-2530-4ea0-812c-f441edd82733
+status: experimental
+description: |
+    Detects HEXANE / Lyceum impairing host defensive tooling to reduce detection of its implants
+    (T1685 - Impair Defenses: Disable or Modify Tools). Keys on Set-/Add-MpPreference disable switches
+    and Defender exclusion additions, and sc.exe / net stop against AV/EDR services. Requires
+    process-creation logging with command lines.
+references:
+    - https://www.clearskysec.com/siamesekitten/
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_defender:
+        CommandLine|contains:
+            - 'Set-MpPreference -DisableRealtimeMonitoring'
+            - 'DisableRealtimeMonitoring $true'
+            - 'Add-MpPreference -ExclusionPath'
+            - 'Add-MpPreference -ExclusionProcess'
+            - 'DisableIOAVProtection'
+            - 'DisableBehaviorMonitoring'
+            - 'MpCmdRun.exe -RemoveDefinitions'
+    selection_avstop:
+        Image|endswith:
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - 'stop windefend'
+            - 'stop sense'
+            - 'stop MsMpSvc'
+            - 'config windefend'
+            - 'disabled'
+    condition: selection_defender or selection_avstop
+falsepositives:
+    - Administrators legitimately adjusting Defender exclusions or stopping AV during maintenance -
+      baseline expected admin hosts and change windows
+    - Security-tooling deployment/upgrade scripts stopping services - allowlist known management
+      processes
+level: high

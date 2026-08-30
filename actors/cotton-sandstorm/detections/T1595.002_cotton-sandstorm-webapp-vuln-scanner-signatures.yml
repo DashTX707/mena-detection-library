@@ -1,0 +1,48 @@
+title: Cotton Sandstorm Web Application Vulnerability Scanner Signatures (Acunetix/Burp/SQLMap)
+id: 661298da-4108-41e4-b9d9-dde19f941844
+status: experimental
+description: |
+    Detects the on-target use of the commodity web vulnerability scanners Cotton Sandstorm / Emennet
+    Pasargad (ASA) obtains and runs against public-facing applications and CMS before exploitation:
+    Acunetix and Burp Suite for scanning (T1595.002) and SQLMap for injection probing, all obtained as
+    legitimate/openly-available tooling (T1588.002). Keys on the distinctive scanner fingerprints left
+    in web-server / WAF request logs - default user-agent strings, Acunetix probe headers and canary
+    paths, and SQLMap's default UA - which are high-signal because production users do not emit them.
+    A single matching request is a reconnaissance indicator; a burst against many URLs is a scan
+    campaign. Requires web-server access logs or WAF request logging that captures user-agent, URI and
+    request headers.
+references:
+    - https://www.ic3.gov/CSA/2024/241030.pdf
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-290a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.reconnaissance
+    - attack.resource-development
+    - attack.t1595.002
+    - attack.t1588.002
+    - mena-detection-library.cotton-sandstorm
+logsource:
+    category: webserver
+detection:
+    selection_ua:
+        c-useragent|contains:
+            - 'sqlmap'
+            - 'Acunetix'
+            - 'acunetix-product'
+            - 'Nikto'
+    selection_probe:
+        cs-uri-query|contains:
+            - 'acunetix'
+            - 'acu_phpaspects'
+            - 'X-Scanner'
+    selection_hdr:
+        cs-uri-stem|contains:
+            - '/acunetix-wvs-test'
+            - '/_awvs'
+    condition: selection_ua or selection_probe or selection_hdr
+falsepositives:
+    - Authorized internal penetration tests or DAST pipeline scans - allowlist the source IPs and run
+      windows of sanctioned testing
+    - Security research crawlers that echo scanner UA strings
+level: medium

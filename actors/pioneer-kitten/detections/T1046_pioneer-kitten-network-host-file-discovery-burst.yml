@@ -1,0 +1,48 @@
+title: Pioneer Kitten Internal Network, Host and File Discovery Burst
+id: d4e4bf79-47e6-445c-9031-ea9ff5b40f8a
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten internal reconnaissance after gaining a foothold via an
+    exploited edge appliance (T1046 Network Service Discovery, T1018 Remote System Discovery, T1083
+    File and Directory Discovery). The actor scans internal networks to identify services and hosts,
+    enumerates remote systems to plan lateral movement toward domain controllers, and enumerates files
+    and directories to locate configuration files, credentials and data of interest. Keys on the
+    discovery command lines (net view, ping sweeps, arp, known scanner processes, and recursive dir /
+    Get-ChildItem enumeration). These commands are individually common; value comes from a tight
+    process-lineage burst from a recently compromised host - operate with correlation/thresholding.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1046
+    - attack.t1018
+    - attack.t1083
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_net:
+        CommandLine|contains:
+            - 'net view'
+            - 'arp -a'
+            - 'nbtstat'
+    selection_scanner:
+        Image|endswith:
+            - '\nmap.exe'
+            - '\fscan.exe'
+            - '\Advanced_Port_Scanner.exe'
+    selection_file:
+        CommandLine|contains:
+            - 'dir /s'
+            - 'Get-ChildItem -Recurse'
+            - 'gci -recurse'
+            - 'tree /f'
+    condition: 1 of selection_*
+falsepositives:
+    - Routine administration and inventory tooling performs similar enumeration - correlate multiple
+      discovery actions within a short window from the same host/user to raise fidelity
+level: medium

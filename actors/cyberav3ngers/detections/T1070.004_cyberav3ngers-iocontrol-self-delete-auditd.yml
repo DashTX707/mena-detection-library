@@ -1,0 +1,39 @@
+title: CyberAv3ngers IOCONTROL Self-Delete of Implant, Boot Script and Logs on Linux Gateway
+id: fcc871da-9748-4eac-9e6b-e28058cf3a32
+status: experimental
+description: |
+    Detects the anti-forensic file-deletion burst of the IOCONTROL (OrpaCrypt) 'Self-delete' module used by
+    CyberAv3ngers (IRGC-CEC): it stops execution and removes the malware main binary (/usr/bin/iocontrol),
+    its rc3.d persistence boot script (/etc/rc3.d/S93InitSystemd.sh) and related log files to erase its
+    footprint, then reports completion to C2. Covers T1070.004 (indicator removal: file deletion). On managed
+    Linux OT gateways with auditd, this keys on unlink/unlinkat/delete syscalls targeting the known implant and
+    persistence paths, or deletion of the iocontrol binary / S93InitSystemd script. Closed embedded PLC/HMI
+    firmware lacks this telemetry - deploy on the managed Linux gateways/IoT hosts that do. Requires auditd
+    with a watch on /usr/bin, /etc/rc3.d and the delete syscalls.
+references:
+    - https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.cyberav3ngers
+logsource:
+    product: linux
+    service: auditd
+detection:
+    selection_syscall:
+        type: SYSCALL
+        syscall:
+            - 'unlink'
+            - 'unlinkat'
+    selection_path:
+        name|contains:
+            - '/usr/bin/iocontrol'
+            - '/etc/rc3.d/S93InitSystemd.sh'
+            - 'S93InitSystemd'
+    condition: selection_syscall and selection_path
+falsepositives:
+    - Legitimate package removal or maintenance that happens to touch these exact paths - unlikely for these actor-specific filenames
+    - Administrative cleanup of a confirmed infection during remediation - expected during IR
+level: high

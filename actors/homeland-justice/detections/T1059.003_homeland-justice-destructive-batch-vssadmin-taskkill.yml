@@ -1,0 +1,53 @@
+title: Homeland Justice Destructive Batch Chain - Shadow Copy Deletion and Taskkill Loop
+id: 56cb96b3-5153-466e-9698-f5f8bb71a97d
+status: experimental
+description: |
+    FLAGSHIP destructive-precursor detection for Homeland Justice / Storm-0842 (Iran/MOIS). In
+    the July 2022 Albanian government attack the actor orchestrated the destructive stage with
+    batch scripts run via cmd.exe (win.bat, bb.bat) that, immediately before ROADSWEEP
+    encryption, (1) deleted all Volume Shadow Copies to inhibit recovery -
+    'vssadmin.exe delete shadows /all /quiet' (T1490), and (2) ran a taskkill /f loop against a
+    hardcoded process list to unlock database/application files for encryption (T1489), all
+    driven from the Windows command shell (T1059.003). This is the highest-value early-warning
+    signal: firing here defines the practical containment window before impact. Each branch is
+    independently high fidelity; co-occurrence within a short window is near-certain destructive
+    intent. Requires process-creation telemetry (Sysmon EID 1 / Security 4688) with command line.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.impact
+    - attack.t1059.003
+    - attack.t1490
+    - attack.t1489
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_vss:
+        Image|endswith: '\vssadmin.exe'
+        CommandLine|contains|all:
+            - 'delete'
+            - 'shadows'
+    selection_wmic_vss:
+        Image|endswith: '\wmic.exe'
+        CommandLine|contains|all:
+            - 'shadowcopy'
+            - 'delete'
+    selection_taskkill_loop:
+        ParentImage|endswith: '\cmd.exe'
+        Image|endswith: '\taskkill.exe'
+        CommandLine|contains|all:
+            - '/f'
+            - '/im'
+    condition: selection_vss or selection_wmic_vss or selection_taskkill_loop
+falsepositives:
+    - Backup software or admins pruning shadow copies during maintenance - allowlist the backup
+      service accounts and scheduled maintenance windows
+    - Legitimate scripted process termination during application upgrades - scope the taskkill
+      branch to cmd.exe-parented bursts and correlate with the shadow-copy deletion or the
+      wiper/web-shell rules for confirmation
+level: high

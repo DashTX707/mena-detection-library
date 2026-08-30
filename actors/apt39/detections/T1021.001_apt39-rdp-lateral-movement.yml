@@ -1,0 +1,33 @@
+title: APT39 RDP Lateral Movement - Type 10 Interactive Logon from Internal Host
+id: 45fc8e2c-7509-449b-9ce5-a76a97a6a8c1
+status: experimental
+description: |
+    Detects APT39 / Chafer lateral movement over Remote Desktop Protocol using stolen valid accounts.
+    Keys on successful RemoteInteractive (LogonType 10) logons (Event ID 4624) sourced from internal
+    hosts. APT39 relies heavily on valid-account RDP to move between compromised systems; this analytic
+    is best operated with per-account/per-source baselining to surface RDP fanout, first-seen source
+    hosts, and logons outside business hours. Correlate with anomalous authentication analytics.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.apt39
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    filter_null:
+        IpAddress: '-'
+    condition: selection and not filter_null
+falsepositives:
+    - Legitimate administrators and helpdesk staff using RDP - baseline expected admin source hosts,
+      jump servers, and accounts; alert on first-seen or off-hours source/target pairs
+    - RD Gateway / VDI brokers that concentrate RDP sessions
+level: medium

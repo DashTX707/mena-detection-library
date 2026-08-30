@@ -1,0 +1,41 @@
+title: Homeland Justice RDP Lateral Movement to Payload Distribution Host
+id: 19dc1a0b-4c80-4dab-93c1-55bd8113ee66
+status: experimental
+description: |
+    Detects the RDP lateral movement used by Homeland Justice / Storm-0842 (Iran/MOIS) in the
+    Albanian government intrusion, where the actor logged in to a victim organization print
+    server over RDP and used it as a payload distribution point, and used RDP with compromised
+    accounts to reach the servers targeted for encryption/wiping (T1021.001). Keys on remote
+    interactive logons (Windows Security Event ID 4624 LogonType 10) - the observable of an
+    inbound RDP session. This is best operated as an analytic that surfaces RDP to/from atypical
+    internal hosts (e.g. a print or file server that should never source or receive interactive
+    RDP) and off-hours logons with recently reused credentials. Requires Windows Security
+    authentication logs (4624) with LogonType and IpAddress fields.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.homeland-justice
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    filter_null_ip:
+        IpAddress:
+            - '-'
+            - '127.0.0.1'
+            - '::1'
+    condition: selection and not filter_null_ip
+falsepositives:
+    - Legitimate remote administration and helpdesk RDP sessions - baseline the normal
+      RDP source/destination pairs and admin accounts, then alert on new or server-to-server
+      RDP graphs (e.g. a print/file server originating or receiving interactive RDP)
+    - Jump-host / bastion architectures where RDP is expected - allowlist the sanctioned
+      jump hosts and treat direct server-to-server RDP as the anomaly
+level: medium

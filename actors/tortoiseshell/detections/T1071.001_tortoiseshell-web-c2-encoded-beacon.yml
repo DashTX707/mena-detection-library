@@ -1,0 +1,49 @@
+title: Tortoiseshell Web-Protocol C2 with Encoded Content to Reported Infrastructure
+id: 567a6e9b-133c-4563-ad09-f1735f77754c
+status: experimental
+description: |
+    Detects HTTP(S) web-protocol command-and-control (T1071.001) and standard-encoded (base64) C2 content
+    (T1132.001) across Tortoiseshell Backdoor.Syskit and custom implants. Keys on outbound network
+    connections to the Symantec-reported C2 IPs (64.235.60.123, 64.235.39.45) and, more durably, on
+    non-browser processes making periodic outbound web connections - to be correlated with beacon/URI/JA3
+    analytics. The IP selectors are low-robustness (L1) supplementary indicators that decay; the
+    process-behaviour selector carries the weight. Requires network-connection telemetry (Sysmon EID 3 /
+    proxy logs) with initiating process.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1132.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_ip:
+        DestinationIp:
+            - '64.235.60.123'
+            - '64.235.39.45'
+    selection_nonbrowser_web:
+        Initiated: 'true'
+        DestinationPort:
+            - 80
+            - 443
+            - 8080
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+    condition: selection_ip or selection_nonbrowser_web
+falsepositives:
+    - Scripted admin automation making legitimate outbound web calls (PowerShell/cURL) - baseline expected
+      automation hosts and destinations
+    - LOLBins with legitimate update/telemetry endpoints - allowlist known destinations
+level: medium

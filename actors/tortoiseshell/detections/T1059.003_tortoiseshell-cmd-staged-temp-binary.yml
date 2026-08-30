@@ -1,0 +1,43 @@
+title: Tortoiseshell Windows Command Shell Executing Staged Temp Binary
+id: 86ecbb1a-aa90-4533-abda-767d38af2281
+status: experimental
+description: |
+    Detects Tortoiseshell / Imperial Kitten use of the Windows command shell (T1059.003) to run staged
+    executables from temporary/writable paths - e.g. the Symantec-observed %Windir%\temp\bak.exe. Keys on
+    cmd.exe launching (or being launched to run) a binary from \Windows\Temp, \ProgramData, \Users\Public
+    or a user AppData/Temp path, and on cmd invocation by anomalous script-host/office parents. Requires
+    process-creation logging with parent image and command line.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        Image|endswith: '\cmd.exe'
+    selection_path:
+        CommandLine|contains:
+            - '\Windows\Temp\'
+            - '\Windir\temp\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+    selection_named:
+        CommandLine|contains:
+            - '\bak.exe'
+            - '\sha.exe'
+            - '\sha432.exe'
+            - 'stereoversioncontrol'
+    condition: selection_cmd and (selection_path or selection_named)
+falsepositives:
+    - Legitimate installers/updaters that stage helpers in ProgramData/Temp - baseline signed known
+      software and specific value names
+    - Admin batch jobs writing to temp - scope to unsigned binaries and anomalous parents
+level: medium

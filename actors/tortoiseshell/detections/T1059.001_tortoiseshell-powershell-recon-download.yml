@@ -1,0 +1,46 @@
+title: Tortoiseshell PowerShell Reconnaissance and Download Cradle
+id: e06d4d74-4084-4426-a235-67aaab466905
+status: experimental
+description: |
+    Detects the PowerShell execution tradecraft of Tortoiseshell / Imperial Kitten (T1059.001). The actor
+    ran PowerShell tooling including the distinctive get-logon-history.ps1 reconnaissance script and used
+    PowerShell to download and run payloads. Keys on the named recon script and on classic download-cradle /
+    obfuscated-invocation flags (DownloadString/DownloadFile, IEX, -EncodedCommand, -Nop -W hidden,
+    FromBase64String). The get-logon-history.ps1 file name is a low-robustness (L2) but cheap supplementary
+    tell; the cradle/flag selectors carry the behavioural weight. Requires PowerShell process-creation and
+    ideally Script Block Logging (EID 4104).
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_indicators:
+        CommandLine|contains:
+            - 'get-logon-history'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'Invoke-WebRequest'
+            - 'IEX('
+            - 'Invoke-Expression'
+            - '-EncodedCommand'
+            - ' -enc '
+            - 'FromBase64String'
+            - 'Net.WebClient'
+    condition: selection_ps and selection_indicators
+falsepositives:
+    - Administrative PowerShell that legitimately downloads modules/packages - baseline expected admin
+      hosts and package sources
+    - Software deployment using encoded PowerShell - allowlist known management tooling command lines
+level: medium

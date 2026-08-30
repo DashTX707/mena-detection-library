@@ -1,0 +1,46 @@
+title: Cotton Sandstorm WezRat Post-Execution Ingress Transfer and System Information Discovery
+id: 5e1f4fff-8037-44c0-baff-a746684e9222
+status: experimental
+description: |
+    Detects the on-host behaviour of the Cotton Sandstorm / Emennet Pasargad (ASA) WezRat implant after
+    it lands: pulling additional executable content/instructions from its C2 web server into the victim
+    environment (T1105, Ingress Tool Transfer) and enumerating basic host information to report back
+    (T1082, System Information Discovery). Keys on the recently-spawned bd.exe / First.exe implant
+    lineage either performing an outbound download of a new binary or invoking native host-enumeration
+    utilities (systeminfo, hostname, whoami, ipconfig, wmic os/computersystem) as child processes. Each
+    utility is individually low-signal; anchoring them to the WezRat process image raises fidelity.
+    Requires process-creation telemetry with parent image and command line (Sysmon EID 1 / 4688), ideally
+    joined with network-connection or file-create events from the same implant.
+references:
+    - https://www.ic3.gov/CSA/2024/241030.pdf
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-290a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.discovery
+    - attack.t1105
+    - attack.t1082
+    - mena-detection-library.cotton-sandstorm
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\bd.exe'
+            - '\First.exe'
+    selection_discovery:
+        Image|endswith:
+            - '\systeminfo.exe'
+            - '\hostname.exe'
+            - '\whoami.exe'
+            - '\ipconfig.exe'
+            - '\wmic.exe'
+            - '\net.exe'
+            - '\reg.exe'
+    condition: selection_parent and selection_discovery
+falsepositives:
+    - Rare - a benign process legitimately named bd.exe orchestrating admin scripts; validate the image
+      hash and signer before dismissing
+level: high

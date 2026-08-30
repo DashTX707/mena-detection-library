@@ -1,0 +1,38 @@
+title: Void Manticore Partition Wiper Raw PhysicalDrive Access and DELETE_DRIVE_LAYOUT
+id: 0febf20f-444d-4b3a-94f4-7dae41752c51
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) disk-structure wiping (T1561.002). Its partition wipers - JustMBR
+    (Israel), LowEraser/No-Justice and Pinky (Albania), and code adopted into late-2024 BiBi variants -
+    iterate over physical disks, open a raw \\.\PhysicalDrive handle, and issue IOCTL_DISK_DELETE_DRIVE_
+    LAYOUT (0x7C100), wiping the MBR signature or the primary and backup GPT tables and causing a BSOD
+    and boot failure. Keys on a non-system, user-mode process opening a raw \\.\PhysicalDrive device
+    handle from a user-writable staging path - a rare, high-fidelity destructive signal best surfaced by
+    EDR raw-disk-write analytics. This Sysmon file-create approximation flags creation/opening of the
+    PhysicalDrive device object; tune the process allowlist to your known disk-management tooling.
+    Requires raw-device-access telemetry (EDR) or Sysmon RawAccessRead/FileCreate on \\.\PhysicalDrive.
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+    - https://blog.checkpoint.com/research/unveiling-void-manticore-structured-collaboration-between-espionage-and-destruction-in-mois/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1561.002
+    - mena-detection-library.void-manticore
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_rawdisk:
+        TargetFilename|contains: '\\.\PhysicalDrive'
+    filter_system:
+        Image|startswith:
+            - 'C:\Windows\System32\'
+            - 'C:\Windows\SysWOW64\'
+    condition: selection_rawdisk and not filter_system
+falsepositives:
+    - Legitimate disk-imaging, partitioning, encryption or backup software opening PhysicalDrive handles -
+      allowlist the specific known-good tooling by image path/hash; system utilities are already filtered
+    - Endpoint management agents performing disk operations - baseline expected raw-disk writers
+level: high

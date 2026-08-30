@@ -1,0 +1,46 @@
+title: APT39 Anomalous Script Interpreter Execution (Python / AutoIt)
+id: 0f59ae4e-4e14-470f-b3ce-3d61f4955c42
+status: experimental
+description: |
+    Detects APT39 / Chafer execution via command and scripting interpreters beyond the built-in
+    Windows shells - specifically Python (python.exe/pythonw.exe) and AutoIt (AutoIt3.exe), which
+    APT39 has used for tooling and task automation. On hosts with no legitimate developer/automation
+    baseline the mere presence of these interpreters, or their execution of scripts from user-writable
+    paths or under anomalous parents (Office, script host, web worker), is a meaningful anomaly. This
+    is the generic-interpreter (T1059) analytic complementing the PowerShell and VBScript rules.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059
+    - attack.t1059.006
+    - attack.t1059.010
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_python:
+        Image|endswith:
+            - '\python.exe'
+            - '\pythonw.exe'
+    selection_autoit:
+        Image|endswith:
+            - '\autoit3.exe'
+            - '\autoit3_x64.exe'
+            - '\autohotkey.exe'
+    selection_ctx:
+        CommandLine|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Downloads\'
+    condition: (selection_python or selection_autoit) and selection_ctx
+falsepositives:
+    - Developer workstations and packaged apps that legitimately bundle Python or AutoIt - allowlist
+      known engineering hosts and signed application interpreters
+level: medium

@@ -1,0 +1,52 @@
+title: Pioneer Kitten Disabling of Antivirus and Security Software
+id: 91502725-c41e-4928-ae2b-e0e368f744f0
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten using administrator credentials to disable antivirus and
+    endpoint security software (T1685 Disable or Modify Tools). Keys on command-line execution that
+    stops or disables well-known security services and tamper-protection surfaces - sc stop / sc config
+    start=disabled, net stop, and Set-MpPreference disabling Microsoft Defender real-time protection.
+    Best paired with EDR tamper-protection and security-product heartbeat/health telemetry, which
+    independently flags an agent going silent. Deploy alert-only first and baseline expected admin
+    maintenance windows.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_sc:
+        Image|endswith:
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - 'stop'
+            - 'start= disabled'
+            - 'start=disabled'
+    selection_target:
+        CommandLine|contains:
+            - 'Sense'
+            - 'WinDefend'
+            - 'MsMpSvc'
+            - 'SentinelAgent'
+            - 'CSFalcon'
+            - 'CrowdStrike'
+            - 'Sophos'
+    selection_defender:
+        CommandLine|contains|all:
+            - 'Set-MpPreference'
+            - 'DisableRealtimeMonitoring'
+            - '$true'
+    condition: (selection_sc and selection_target) or selection_defender
+falsepositives:
+    - Sanctioned maintenance where administrators legitimately stop a security agent - correlate with
+      change management and restrict to authorized maintenance windows
+level: high

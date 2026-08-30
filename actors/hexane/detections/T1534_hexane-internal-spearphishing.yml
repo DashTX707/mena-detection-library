@@ -1,0 +1,39 @@
+title: HEXANE Internal Spearphishing from Compromised Mailbox
+id: be8ccfd3-f550-4154-97b7-d2e4a5c03db8
+status: experimental
+description: |
+    Detects HEXANE / Lyceum using compromised internal mailboxes to spearphish additional users
+    within the target organization (T1534). Keys on internal-to-internal mail sent with anomalous
+    volume/recipient fan-out or carrying lure links/attachments, from an account whose sign-in was
+    flagged by the spray/valid-account analytics. Best operated as a mail-flow anomaly analytic on
+    Exchange Online message-trace / audit telemetry over sender behavior. Requires Office 365 /
+    Exchange message-trace or mailflow logging.
+references:
+    - https://attack.mitre.org/groups/G1001/
+    - https://www.clearskysec.com/siamesekitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1534
+    - mena-detection-library.hexane
+logsource:
+    product: azure
+    service: exchange
+detection:
+    selection_internal:
+        SenderDomain|contains: '@'
+        RecipientCount|gte: 20
+    selection_lure:
+        Subject|contains:
+            - 'careers'
+            - 'urgent'
+            - 'invoice'
+            - 'password'
+            - 'review this'
+    condition: selection_internal or selection_lure
+falsepositives:
+    - Legitimate internal bulk mail (newsletters, HR announcements, distribution lists) - allowlist
+      known senders and mailing lists
+    - Automated notification mailboxes - baseline expected high-fan-out senders
+level: medium

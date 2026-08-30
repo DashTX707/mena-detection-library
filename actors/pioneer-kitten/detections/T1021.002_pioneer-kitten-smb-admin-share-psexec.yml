@@ -1,0 +1,39 @@
+title: Pioneer Kitten SMB Admin-Share and PsExec Lateral Movement
+id: 875b56f6-8ae8-48ad-b696-b9261dfc66c4
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten lateral movement over SMB / Windows admin shares (T1021.002
+    Remote Services: SMB/Windows Admin Shares), including PsExec-style remote execution after
+    harvesting credentials. Keys on network logons (Event ID 4624 LogonType 3) that establish admin
+    shares and on PsExec service-install artifacts (PSEXESVC) via the service-install event. Admin-share
+    access is common for legitimate administration; correlate with remote service creation and the
+    source account/host to raise fidelity.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.002
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_psexec:
+        EventID: 5145
+        ShareName|contains: 'ADMIN$'
+        RelativeTargetName|contains: 'PSEXESVC'
+    selection_execsvc:
+        EventID: 5145
+        ShareName|contains: 'IPC$'
+        RelativeTargetName|contains:
+            - 'psexecsvc'
+            - '-stdin'
+            - '-stdout'
+    condition: 1 of selection_*
+falsepositives:
+    - Sanctioned use of PsExec/SMB remote administration by IT - allowlist known jump hosts and admin
+      accounts; unsanctioned PsExec toward servers/DCs is the actor signal
+level: medium

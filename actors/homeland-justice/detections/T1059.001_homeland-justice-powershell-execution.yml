@@ -1,0 +1,52 @@
+title: Homeland Justice PowerShell Follow-On Execution
+id: 5d6176b2-5219-4f94-811a-6413b6dd07f7
+status: experimental
+description: |
+    Detects suspicious PowerShell execution consistent with Homeland Justice / Storm-0842
+    (Iran/MOIS) follow-on activity observed by Microsoft during the Albanian government
+    intrusion, where PowerShell and remote-execution tooling were used to run commands and move
+    tooling across the network (T1059.001). Keys on PowerShell invoked with evasion/execution
+    flags commonly used to stage destructive tooling - encoded commands, hidden window,
+    execution-policy bypass, or download-and-run cradles. PowerShell blends easily with admin
+    activity, so this is best operated with script-block logging (Event ID 4104) and AMSI
+    context; treat as a medium-severity contributor that gains weight when correlated with the
+    web-shell, credential-access, or destructive-precursor rules. Requires process-creation
+    telemetry (Sysmon EID 1 / Security 4688) with command line.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_flags:
+        CommandLine|contains:
+            - ' -enc '
+            - ' -EncodedCommand'
+            - ' -e '
+            - ' -w hidden'
+            - ' -WindowStyle Hidden'
+            - ' -nop '
+            - ' -ExecutionPolicy Bypass'
+            - ' -ep bypass'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'IEX('
+            - 'Invoke-Expression'
+            - 'FromBase64String'
+    condition: selection_ps and selection_flags
+falsepositives:
+    - Administrative and deployment scripts that legitimately use -ExecutionPolicy Bypass or
+      encoded commands - baseline expected scripts, signing, and originating hosts
+    - Software management agents invoking PowerShell download cradles - allowlist known-good
+      management tooling
+level: medium

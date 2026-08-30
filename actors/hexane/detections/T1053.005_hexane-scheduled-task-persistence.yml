@@ -1,0 +1,45 @@
+title: HEXANE Scheduled Task Creation for Persistence
+id: 2c821881-2a73-4433-a3a1-3ff3c43d9dd7
+status: experimental
+description: |
+    Detects scheduled-task creation used by HEXANE / Lyceum to persist its DanBot/DanDrop implants
+    (T1053.005). Keys on schtasks.exe /create or PowerShell Register-ScheduledTask whose action
+    launches a command interpreter, script host, or a binary from a user-writable path - the tell of
+    an implant persistence task rather than a benign software task. Pair with Security EID 4698 (task
+    registered). Requires process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G1001/
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith: '\schtasks.exe'
+          CommandLine|contains: '/create'
+        - CommandLine|contains: 'Register-ScheduledTask'
+    selection_action:
+        CommandLine|contains:
+            - 'cmd.exe'
+            - 'powershell'
+            - 'pwsh'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection_tool and selection_action
+falsepositives:
+    - Software installers and management tools that register tasks invoking scripts - baseline known
+      task names and publishers
+    - Legitimate admin automation - scope to tasks whose action runs from user-writable paths
+level: medium

@@ -1,0 +1,47 @@
+title: Homeland Justice Wallpaper Registry Write and Internal Defacement
+id: 12cecb2e-49a7-4b64-bc91-85cc322d1fa3
+status: experimental
+description: |
+    Detects the internal-defacement step of the Homeland Justice / Storm-0842 (Iran/MOIS)
+    destructive operation: win.bat writes the desktop Wallpaper registry value to point at a
+    Homeland Justice message image (goxml.jpg) and forces a per-user parameter refresh via
+    RUNDLL32 user32.dll,UpdatePerUserSystemParameters (T1112 registry modification realizing
+    T1491.001 internal defacement). Keys on two observables: (1) reg.exe / registry-set writes
+    to HKCU...\Control Panel\Desktop\Wallpaper, and (2) the tell-tale forced desktop refresh
+    'rundll32 user32.dll,UpdatePerUserSystemParameters'. A single scripted wallpaper change is
+    low signal, but a wallpaper write immediately followed by the UpdatePerUserSystemParameters
+    refresh - especially across many hosts in a short window - is an anomalous defacement
+    pattern. Requires process-creation and/or registry-set telemetry (Sysmon EID 1 / EID 13).
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.impact
+    - attack.t1112
+    - attack.t1491.001
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_reg_wallpaper:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains|all:
+            - '\Control Panel\Desktop'
+            - 'Wallpaper'
+    selection_refresh:
+        Image|endswith: '\rundll32.exe'
+        CommandLine|contains|all:
+            - 'user32.dll'
+            - 'UpdatePerUserSystemParameters'
+    selection_image_target:
+        CommandLine|contains: 'goxml.jpg'
+    condition: selection_reg_wallpaper or selection_refresh or selection_image_target
+falsepositives:
+    - Enterprise desktop-management / GPO tooling that sets corporate wallpaper and refreshes
+      parameters - allowlist the management agent and its wallpaper path
+    - Legitimate use of UpdatePerUserSystemParameters by theming utilities - correlate the
+      refresh with a non-standard wallpaper image path or the destructive-precursor rules
+level: high

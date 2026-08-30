@@ -1,0 +1,40 @@
+title: Tortoiseshell IMAPLoader DLL Side-Loading via Signed Host Binary
+id: dc900295-82a7-40c4-9495-9a0e760c6304
+status: experimental
+description: |
+    Detects the DLL search-order hijacking / side-loading (T1574.001) used to load Tortoiseshell / Yellow
+    Liderc IMAPLoader components, abusing the trust of a signed legitimate host binary (T1553.002 Code
+    Signing) to load a malicious DLL from a non-standard writable path. Keys on image-load events where a
+    signed process loads a DLL from a user-writable location (Temp/AppData/ProgramData/Users\Public) rather
+    than System32 - the robust behavioural tell independent of the specific host binary. Tagged under
+    stealth (defense-evasion) per environment convention. Requires image-load logging (Sysmon EID 7) with
+    signature fields - without it this rule will not populate (visibility gap).
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1574.001
+    - attack.t1553.002
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection:
+        ImageLoaded|endswith: '.dll'
+        ImageLoaded|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    filter_signed_dll:
+        Signed: 'true'
+    condition: selection and not filter_signed_dll
+falsepositives:
+    - Legitimate applications that ship and load DLLs from ProgramData/AppData (some updaters, dev tools) -
+      baseline expected image/DLL path pairs and signed publishers
+    - Installer temp-extraction loads - correlate with parent process reputation before escalating
+level: medium

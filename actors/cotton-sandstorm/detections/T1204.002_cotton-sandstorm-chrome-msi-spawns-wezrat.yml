@@ -1,0 +1,41 @@
+title: Cotton Sandstorm Trojanized Chrome Installer MSI Spawning WezRat (bd.exe)
+id: aceacd38-8257-430d-84f5-bb10ab2b1edf
+status: experimental
+description: |
+    Detects execution of the Cotton Sandstorm / Emennet Pasargad (ASA) WezRat delivery chain, in which
+    a victim is induced to run a trojanized 'Google Chrome Installer.msi' that performs a real Chrome
+    install to look benign but then executes the embedded, heavily-obfuscated 'bd.exe' (also seen as
+    First.exe) RAT (T1204.002). Keys on msiexec.exe spawning an unexpected, non-Google child executable -
+    especially bd.exe / First.exe - and on the RAT being launched with a bare numeric command-line
+    de-obfuscation key (observed value 8765) required to decode its embedded C2 configuration. The
+    msiexec-to-unsigned-child lineage is the durable behavioural anchor; the specific names and the 8765
+    key are supplementary IOCs that sharpen it. Requires process-creation telemetry (Sysmon EID 1 /
+    Security 4688) with parent image and command line.
+references:
+    - https://www.ic3.gov/CSA/2024/241030.pdf
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-290a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.cotton-sandstorm
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\msiexec.exe'
+    selection_child_name:
+        Image|endswith:
+            - '\bd.exe'
+            - '\First.exe'
+    selection_key:
+        CommandLine|re: '(?i)\b8765\b'
+    condition: selection_parent and (selection_child_name or selection_key)
+falsepositives:
+    - Legitimate MSI packages that launch a bundled post-install helper - baseline the expected signed
+      child processes per installer and exclude them by publisher
+    - Unrelated software using the literal argument 8765 (e.g. a port) - the msiexec parent constraint
+      keeps this rare
+level: high

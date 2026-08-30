@@ -1,0 +1,313 @@
+{
+  "actor": "Pioneer Kitten (Fox Kitten)",
+  "provenance": "Lane split derived by the orchestrator applying the Stage-2 decision-agent's documented routing rule (detect-vs-hunt by detection feasibility: low=hunt, medium/high=detect) because the decision-agent run was interrupted by a session rate limit. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "rationale": "medium — inbound vulnerability scanning/probing against internet-facing appliances is observable at the perimeter via firewall/IDS/WAF and edge-appliance access logs, but attribution to this actor is weak without corroborating infrastructure"
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "high — exploitation of these specific CVEs on edge appliances is the strongest detection surface: appliance/WAF logs, exploit signatures, anomalous requests to vulnerable endpoints, post-exploit process/file activity on the appliance, and patch-state/version monitoring all apply"
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "rationale": "medium — new/unexpected directories and files on edge appliances and anomalous remote-service authentication (impossible travel, new device, off-hours VPN logon) are detectable via appliance file-integrity monitoring and identity/authentication analytics"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — file-integrity monitoring on NetScaler/edge web roots for the named webshell files and directories, appliance process anomalies, and re-appearance of webshells shortly after patching are high-fidelity, actor-specific detection opportunities"
+    },
+    {
+      "technique_id": "T1056",
+      "technique_name": "Input Capture",
+      "tactic": "credential-access",
+      "rationale": "medium — creation/growth of a netscaler.1 (or similar) credential-capture file adjacent to a webshell on the appliance is detectable via file-integrity monitoring, but requires appliance-level visibility"
+    },
+    {
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "tactic": "persistence",
+      "rationale": "high — creation of accounts with these specific/masquerading names is directly observable via account-creation logging (Event ID 4720) and makes strong actor-specific watchlist detections"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); the specific task name SpaceAgentTaskMgrSHR and the Windows/Spaceport/ folder are actor-specific, high-fidelity detections"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "stealth",
+      "rationale": "high — a signed Microsoft binary loading an unsigned version.dll from an unusual path (Windows Downloads), and contig.exe renamed to dllhost.ext, are detectable via module-load (Sysmon EID 7) and signature-mismatch telemetry"
+    },
+    {
+      "technique_id": "T1505",
+      "technique_name": "Server Software Component",
+      "tactic": "persistence",
+      "rationale": "medium — new service creation (Event ID 7045) loading a driver .sys from system32\\drivers, especially with random 8-character names created daily, is detectable via service-install and driver-load telemetry but needs baselining to reduce noise"
+    },
+    {
+      "technique_id": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "tactic": "privilege-escalation",
+      "rationale": "medium — reuse of appliance-harvested local credentials against internal applications is detectable via anomalous authentication analytics (new source, credential seen first on an edge device), but blends with legitimate use"
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "privilege-escalation",
+      "rationale": "medium — anomalous domain-admin logons to DCs (new host, off-hours, impossible travel) are detectable via identity/authentication analytics, but admin-credential reuse blends with legitimate administration"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "high — stopping/disabling AV/EDR services and tampering with security-tool configuration is detectable via EDR tamper-protection alerts, service-stop events, and security-product health/heartbeat monitoring"
+    },
+    {
+      "technique_id": "T1689",
+      "technique_name": "Downgrade Attack",
+      "tactic": "defense-impairment",
+      "rationale": "high — changes to PowerShell execution policy / language mode and downgrade of logging are detectable via registry-modification and PowerShell operational telemetry"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — PowerShell script-block/module logging captures Invoke-WebRequest to catbox.moe and enabling of PowerShell Web Access; suspicious PowerShell ISE launch over RDP adds context"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — outbound requests to files.catbox.moe and inbound file writes following PowerShell downloads are detectable via proxy/DNS and process+file telemetry; catbox.moe is an explicit hunt/detect IOC in the advisory"
+    },
+    {
+      "technique_id": "T1012",
+      "technique_name": "Query Registry",
+      "tactic": "discovery",
+      "rationale": "medium — registry-hive export (reg save / reg export) and firewall-config dumps are detectable via command-line and file-write telemetry, but require correlation to distinguish from admin activity"
+    },
+    {
+      "technique_id": "T1482",
+      "technique_name": "Domain Trust Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — bulk enumeration of DC account/user data and trust information is detectable via directory-service query and object-access auditing, but is subtle and needs baselining"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Software",
+      "tactic": "command-and-control",
+      "rationale": "high — unsanctioned RMM tools (Meshcentral, AnyDesk) are detectable via process/known-binary signatures, installation events, and outbound connections to their service endpoints"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "high — Ligolo and ngrok processes plus outbound connections to *.ngrok.io (random subdomains) are detectable via process execution and network/DNS telemetry; ngrok.io and catbox.moe are explicitly called out for hunting in the advisory"
+    },
+    {
+      "technique_id": "T1530",
+      "technique_name": "Data from Cloud Storage",
+      "tactic": "collection",
+      "rationale": "medium — anomalous access to and egress from cloud storage/accounts is detectable via cloud audit logs (unusual principals, new locations, cross-tenant data movement), but requires cloud-native logging"
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
+      "tactic": "exfiltration",
+      "rationale": "medium — large or unusual outbound transfers to cloud-storage services and cross-organization data flows through compromised cloud accounts are detectable via cloud audit/DLP telemetry"
+    },
+    {
+      "technique_id": "T1036.004",
+      "technique_name": "Masquerading: Masquerade Task or Service",
+      "tactic": "stealth",
+      "rationale": "medium — task/service names that mimic legitimate agents, and daily-created randomly named services, are detectable via task/service-creation auditing with name-pattern baselining"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — legitimate-looking names in unusual locations and signed binaries renamed to odd extensions (dllhost.ext) are detectable via name/path/hash baselining and signature-vs-name mismatch"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — process access to lsass.exe and Mimikatz signatures are highly observable via EDR process-access and image-load telemetry"
+    },
+    {
+      "technique_id": "T1003.003",
+      "technique_name": "OS Credential Dumping: NTDS",
+      "tactic": "credential-access",
+      "rationale": "high — NTDS.dit extraction (ntdsutil, volume-shadow copy, or direct file access on a DC) is detectable via process command-line, VSS creation, and DC file-access auditing"
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "rationale": "medium — authentication-failure spikes (Event ID 4625), lockouts and password-spray patterns are detectable via authentication analytics"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — internal scanning bursts are detectable via connection-fanout/east-west network analytics and known-scanner process signatures"
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — host-enumeration commands (net view, ping sweeps, nltest) are detectable in command-line logs but common; value comes from recon-burst/process-lineage correlation"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — file/directory enumeration is common and noisy; meaningful mainly in a tight recon-burst process-lineage window"
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "rationale": "high — domain account enumeration (net user /domain, LDAP queries) is directly observable in command-line and directory-service query logging"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — RDP lateral movement is detectable via Type-10 logons (4624) and internal-RDP fanout analytics, but blends with legitimate admin RDP"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "rationale": "medium — admin-share access (ADMIN$/C$) and remote service creation via SMB are detectable via 5140/4624 Type-3 logons and remote service-install events"
+    },
+    {
+      "technique_id": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "tactic": "lateral-movement",
+      "rationale": "medium — SSH client execution and outbound SSH from unusual internal hosts are detectable via process and network telemetry"
+    },
+    {
+      "technique_id": "T1210",
+      "technique_name": "Exploitation of Remote Services",
+      "tactic": "lateral-movement",
+      "rationale": "medium — internal exploitation is detectable via service crash/anomaly telemetry and IDS on east-west traffic, but requires internal instrumentation"
+    },
+    {
+      "technique_id": "T1550.002",
+      "technique_name": "Use Alternate Authentication Material: Pass the Hash",
+      "tactic": "lateral-movement",
+      "rationale": "medium — pass-the-hash is detectable via NTLM logon anomalies (Type-3, seclogo) and mismatched logon/credential-source analytics, but is subtle"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — proxy/tunnel utilities are detectable via process execution and outbound connections to tunneling-service endpoints, but generic proxying blends with normal traffic"
+    },
+    {
+      "technique_id": "T1102",
+      "technique_name": "Web Service",
+      "tactic": "command-and-control",
+      "rationale": "medium — use of legitimate web services for C2 blends with normal traffic; detectable when specific services (catbox.moe) are baselined/blocklisted and correlated with process activity"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "rationale": "medium — archive-utility execution (7z/rar/winrar) with large or password-protected outputs preceding egress is detectable via process command-line and file-write telemetry"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — local data collection is common; suspicious mainly via staging patterns and process-lineage context"
+    },
+    {
+      "technique_id": "T1546.008",
+      "technique_name": "Event Triggered Execution: Accessibility Features",
+      "tactic": "persistence",
+      "rationale": "high — replacement of or debugger hijack on accessibility binaries (sethc.exe, utilman.exe) and their Image File Execution Options keys is a rare, high-fidelity registry/file detection"
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "rationale": "medium — heavily obfuscated/encoded command lines are detectable via entropy and encoding heuristics on process command-line and script-block logs"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy/encoded payloads are detectable via file-entropy analytics but require dedicated scanning"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1596",
+      "technique_name": "Search Open Technical Databases",
+      "tactic": "reconnaissance",
+      "rationale": "low — third-party database queries occur off-victim and are not endpoint-observable; hunt/intel candidate via external attack-surface and exposure monitoring"
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactic": "persistence",
+      "rationale": "low — policy-exemption requests are largely a social/process action outside standard endpoint telemetry; hunt candidate via review of security-exemption/allowlisting change tickets"
+    },
+    {
+      "technique_id": "T1657",
+      "technique_name": "Financial Theft",
+      "tactic": "impact",
+      "rationale": "low — the access-brokering, ransom negotiation and financial-theft coordination occur off-victim on criminal marketplaces/messaging; intel/hunt candidate (the on-network ransomware deployment that follows is where host detection lands)"
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "rationale": "low — adversary infrastructure acquisition (including staging leak sites on compromised cloud) is off-victim; intel/hunt candidate via infrastructure tracking and abuse of victim cloud tenancy"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled social-media accounts are off-victim; intel/brand-monitoring candidate"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition itself is off-endpoint; the downstream use of each tool is where detection lands — this entry is an intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "rationale": "low — reading credential-bearing files leaves little discrete signal; hunt candidate via file-access telemetry and honeytoken files"
+    },
+    {
+      "technique_id": "T1039",
+      "technique_name": "Data from Network Shared Drive",
+      "tactic": "collection",
+      "rationale": "low — reads from network shares are high-volume and largely legitimate; better as a hunt over file-server access auditing"
+    }
+  ],
+  "summary": {
+    "total": 50,
+    "detection": 42,
+    "hunt": 8
+  }
+}

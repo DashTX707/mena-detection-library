@@ -1,0 +1,35 @@
+title: Pioneer Kitten Randomly-Named Driver Service Installation
+id: c48f4078-bdd3-4140-aced-f099378f0737
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten persistence via server software component / service creation
+    (T1505 Server Software Component). During detection and mitigation the actor creates, on a daily
+    basis, a Windows service named with a random eight-character string that attempts to load a
+    similarly named driver (.sys) from C:\Windows\system32\drivers\ - e.g. a service named "test"
+    loading C:\WINDOWS\system32\drivers\test.sys. Keys on service-install events (Event ID 7045) where
+    the image path points at a .sys in the drivers directory whose base name matches the service name.
+    Daily recurrence of new short random-named driver services is the actor pattern; baseline known
+    legitimate drivers to reduce noise.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    service: system
+detection:
+    selection:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+        ImagePath|contains: '\system32\drivers\'
+        ImagePath|endswith: '.sys'
+    condition: selection
+falsepositives:
+    - Legitimate third-party or vendor driver installations - allowlist known driver names and signing
+      publishers; the actor pattern is a NEW short random-named driver service appearing daily
+level: medium

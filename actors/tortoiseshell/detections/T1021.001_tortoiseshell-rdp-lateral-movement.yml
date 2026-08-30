@@ -1,0 +1,32 @@
+title: Tortoiseshell RDP Lateral Movement - RemoteInteractive Logon Fanout
+id: cbe84630-a23a-44bd-964d-769f672bb3a8
+status: experimental
+description: |
+    Detects RDP lateral movement (T1021.001) used by Tortoiseshell / Imperial Kitten to move within
+    compromised networks. Keys on RemoteInteractive logons (EventID 4624 LogonType 10) which, per source
+    account/host, should be baselined - alerting on RDP from an account/source not normally seen using RDP,
+    or one source fanning out to many internal destinations. Best operated as a per-account/per-source
+    anomaly and fanout analytic. Requires Windows Security authentication logs.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    filter_machine:
+        TargetUserName|endswith: '$'
+    condition: selection and not filter_machine
+falsepositives:
+    - Legitimate remote administration and jump-host RDP - baseline expected admin accounts, source hosts and
+      RDP fanout; alert on new account/source pairs or unusual internal fanout
+    - VDI/terminal-server environments with heavy RDP - tune per environment topology
+level: medium

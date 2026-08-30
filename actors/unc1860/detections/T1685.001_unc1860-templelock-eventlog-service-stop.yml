@@ -1,0 +1,39 @@
+title: Windows Event Log Service Stopped for Anti-Forensics (UNC1860 TEMPLELOCK)
+id: 7021b369-451f-47d8-942c-4c7228fb41e1
+status: experimental
+description: |
+    Detects UNC1860's TEMPLELOCK, a .NET defense-evasion utility that terminates and later restarts the
+    Windows Event Log service (via undocumented IOCTL commands) to suppress event logging while the operator
+    works and then resume it to reduce forensic traces (T1685.001). Keys on the Service Control Manager
+    reporting the 'Windows Event Log' service entering a stopped state (System log Event ID 7036) or being
+    sent a stop control (Event ID 7035) - the EventLog service is not normally stopped on a running server.
+    Corroborate with Security log Event ID 1100 (the event logging service was shut down) and with abrupt
+    gaps in Security/System channel continuity on the same host, which confirm the suppression window.
+references:
+    - https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html
+    - https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685.001
+    - mena-detection-library.unc1860
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_state:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7036
+        param1: 'Windows Event Log'
+        param2: 'stopped'
+    selection_control:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7035
+        param1: 'Windows Event Log'
+        param2: 'stop'
+    condition: selection_state or selection_control
+falsepositives:
+    - Legitimate administrative maintenance or patching that briefly stops the EventLog service (rare on a
+      production server - baseline change windows and correlate with an approved change ticket)
+level: high

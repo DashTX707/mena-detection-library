@@ -1,0 +1,48 @@
+title: Tortoiseshell Watering-Hole Browser Spawning Script/LOLBin Child Process
+id: 0f51db6b-60d6-46b0-91eb-865ae345297d
+status: experimental
+description: |
+    Detects the endpoint tail of Tortoiseshell / Yellow Liderc strategic web compromise (drive-by /
+    watering-hole, T1189). The actor injects bespoke fingerprinting JavaScript into legitimate
+    (Israel-related maritime/logistics) sites to profile visitors and deliver IMAPLoader to selected
+    targets. While the profiling runs off-endpoint, the resulting browser-to-payload chain is visible on
+    the victim host: a browser process spawning a script interpreter or LOLBin (mshta/wscript/cscript/
+    powershell/cmd/rundll32/regsvr32). Keys on browser parent + script/LOLBin child - a rare, high-signal
+    combination. Requires process-creation logging (Sysmon EID 1 / Security 4688) with parent image.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1189
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\iexplore.exe'
+            - '\brave.exe'
+    selection_child:
+        Image|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Browser-integrated enterprise tooling or updaters that legitimately launch scripts - baseline the
+      expected parent/child pairs per environment
+    - Users launching downloaded installers via the browser 'open' action - correlate with subsequent
+      network/persistence activity before escalating
+level: high

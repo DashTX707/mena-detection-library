@@ -1,0 +1,38 @@
+title: Moses Staff PsExec PSEXESVC Service Execution for DCSrv Spread
+id: e32fad02-fd77-49a5-a95f-9f31794dfee4
+status: experimental
+description: |
+    Detects the Moses Staff PyDCrypt loader using PsExec to remotely execute the DCSrv payload as a
+    service on target machines during network spreading (T1569.002). PsExec installs and starts a
+    service (default PSEXESVC) on the remote host, which appears as a Service Control Manager
+    new-service event (Event ID 7045) for PSEXESVC.exe running from ADMIN$, and drives the
+    \PSEXESVC named pipe. Keys on the 7045 service-creation footprint of PsExec-style remote
+    execution; correlate with a preceding admin-share executable write and DCUMSrv/DCDrv creation.
+    Requires the System event log (Service Control Manager 7045).
+references:
+    - https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1569.002
+    - mena-detection-library.moses-staff
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_eid:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_psexec:
+        ServiceName|contains: 'PSEXESVC'
+    selection_image:
+        ImagePath|contains:
+            - '\PSEXESVC'
+            - 'PSEXESVC.exe'
+    condition: selection_eid and (selection_psexec or selection_image)
+falsepositives:
+    - Sanctioned use of PsExec by IT administration and software-deployment tooling - baseline the
+      management source hosts and operators; Moses Staff activity is distinguished by PSEXESVC
+      service creation fanning out to many hosts alongside DCSrv service creation
+level: medium

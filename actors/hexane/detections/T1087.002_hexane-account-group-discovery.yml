@@ -1,0 +1,44 @@
+title: HEXANE Account and Local Group Discovery via net.exe
+id: 9fa15e45-7969-4894-86a3-2d3728f00e94
+status: experimental
+description: |
+    Detects account and group enumeration run by HEXANE / Lyceum to expand access and plan lateral
+    movement (T1087 account discovery, T1087.002 domain account discovery, T1069.001 local group
+    discovery). Keys on net.exe / net1.exe user and group enumeration - notably 'net user /domain',
+    'net group /domain' and 'net localgroup administrators', which HEXANE used against compromised
+    hosts - plus PowerShell AD cmdlet equivalents. Requires process-creation logging with command
+    lines.
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1087
+    - attack.t1087.002
+    - attack.t1069.001
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_net:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - 'user'
+            - 'group'
+            - 'localgroup'
+    selection_ad:
+        CommandLine|contains:
+            - 'Get-ADUser'
+            - 'Get-ADGroupMember'
+            - 'Get-LocalGroupMember'
+            - 'dsquery user'
+    condition: selection_net or selection_ad
+falsepositives:
+    - Administrators and helpdesk enumerating accounts/groups - baseline expected admin hosts
+    - Directory-sync or IAM tooling querying accounts - allowlist known service accounts
+level: medium

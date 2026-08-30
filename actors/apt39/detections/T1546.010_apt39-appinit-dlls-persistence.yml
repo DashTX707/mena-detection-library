@@ -1,0 +1,32 @@
+title: APT39 AppInit_DLLs Registry Modification for Persistence
+id: 99642aff-885e-4fea-b1e4-2c6c773b0e2d
+status: experimental
+description: |
+    Detects APT39 / Chafer abuse of the AppInit_DLLs registry mechanism to load a malicious DLL into
+    processes that link user32.dll, achieving broad persistence and code execution. Keys on writes to
+    HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs (and the Wow6432Node view)
+    and flipping LoadAppInit_DLLs to 1. This key is rarely modified in modern environments, making it a
+    high-fidelity persistence signal.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1546.010
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains:
+            - 'AppInit_DLLs'
+            - 'LoadAppInit_DLLs'
+    condition: selection
+falsepositives:
+    - Rare legitimate software (some AV/DLP/accessibility products) that registers an AppInit DLL -
+      allowlist the specific signed DLL and vendor
+level: high

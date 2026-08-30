@@ -1,0 +1,42 @@
+title: Pioneer Kitten LSASS Credential Dumping with Mimikatz
+id: 202c5d13-f0eb-4394-a8ff-9dd2f8b128a9
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten credential theft from LSASS memory (T1003.001 OS Credential
+    Dumping: LSASS Memory), including the use of Mimikatz to harvest credentials for lateral movement
+    and privilege escalation. Keys on process command lines that dump lsass.exe (comsvcs.dll
+    MiniDump, rundll32 minidump, procdump against lsass) and on Mimikatz command signatures
+    (sekurlsa::logonpasswords, privilege::debug). Pair with EDR process-access telemetry for handles
+    to lsass.exe requesting read (0x1010 / 0x1410) access masks for the most durable coverage.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_comsvcs:
+        CommandLine|contains|all:
+            - 'comsvcs.dll'
+            - 'MiniDump'
+    selection_procdump:
+        CommandLine|contains|all:
+            - 'procdump'
+            - 'lsass'
+    selection_mimikatz:
+        CommandLine|contains:
+            - 'sekurlsa::logonpasswords'
+            - 'sekurlsa::minidump'
+            - 'privilege::debug'
+            - 'lsadump::'
+    condition: 1 of selection_*
+falsepositives:
+    - Sanctioned crash-dump collection or forensic tooling accessing lsass - restrict to authorized
+      IR/DFIR operators and hosts
+level: high

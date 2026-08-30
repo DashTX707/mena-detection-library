@@ -1,0 +1,40 @@
+title: Tortoiseshell Mshta HTA Proxy Execution for IMAPLoader Delivery
+id: 4df7591e-14e3-4a8c-9fcd-e5ee067f6281
+status: experimental
+description: |
+    Detects mshta.exe proxy execution (T1218.005) used by Tortoiseshell / Yellow Liderc to deliver and load
+    IMAPLoader components via HTA. Keys on mshta executing remote content (http/https), a local .hta from a
+    writable path, inline vbscript/javascript, or mshta spawning a script/LOLBin child - a rare LOLBin
+    pattern with low false-positive rate. Tagged under the stealth (defense-evasion) tactic per environment
+    convention. Requires process-creation logging with parent/child image and command line.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1218.005
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mshta:
+        Image|endswith: '\mshta.exe'
+    selection_content:
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+            - 'javascript:'
+            - 'vbscript:'
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    selection_childparent:
+        ParentImage|endswith: '\mshta.exe'
+    condition: (selection_mshta and selection_content) or selection_childparent
+falsepositives:
+    - Rare legacy line-of-business HTA applications - baseline the specific HTA paths and allowlist them
+    - Admin tooling invoking mshta - scope out known internal HTA URLs
+level: high

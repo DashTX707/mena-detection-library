@@ -1,0 +1,791 @@
+{
+  "report_title": "Tortoiseshell / Imperial Kitten (Yellow Liderc / TA456 / Crimson Sandstorm) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "MITRE ATT&CK (group techniques enriched from named public reporting — see notes on the G0139 ID collision); Symantec/Broadcom 'Tortoiseshell Group Targets IT Providers in Saudi Arabia in Probable Supply Chain Attacks' (2019, https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain); CrowdStrike 'IMPERIAL KITTEN' adversary profile (2023, https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/); PwC 'Yellow Liderc / IMAPLoader' strategic-web-compromise reporting (2023)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Tortoiseshell",
+    "mitre_id": "G0139",
+    "mitre_canonical_name": "Tortoiseshell (as tracked by MITRE ATT&CK on the public site; NOTE: the ATT&CK dataset bundled in this environment resolves the ID G0139 to 'TeamTNT', a cloud/container cryptomining group — the numeric ID is stale/reorganized in the local dataset and MUST NOT be used as the technique base; this pack is built from named Tortoiseshell/Imperial Kitten public reporting instead)",
+    "aliases": [
+      "Imperial Kitten",
+      "Yellow Liderc",
+      "TA456",
+      "Crimson Sandstorm",
+      "Curium",
+      "CURIUM",
+      "Smoke Sandstorm",
+      "Cuboid Sandstorm",
+      "DEV-0056",
+      "DEV-0228"
+    ],
+    "related_clusters": [
+      "Overlaps and is frequently co-reported with CrowdStrike's IMPERIAL KITTEN and PwC's Yellow Liderc; Microsoft tracks overlapping activity as Crimson Sandstorm (formerly Curium); TA456 is Proofpoint's tracking of the long-con fake-persona ('Marcella Flores') social-engineering operations. Some vendors caution that 'Tortoiseshell', 'Imperial Kitten', and 'Yellow Liderc' are convergent-but-not-identical clusters; attribution across the aliases is assessed at medium-high convergence, not proven single-entity identity."
+    ],
+    "attribution": "Iran-nexus; assessed to operate on behalf of the Iranian state with a suspected nexus to the Islamic Revolutionary Guard Corps (IRGC). Active since at least 2018 (Symantec, first Saudi IT-provider supply-chain wave) through 2024, per Symantec/Broadcom, CrowdStrike (IMPERIAL KITTEN) and PwC (Yellow Liderc).",
+    "attribution_confidence": "medium-high",
+    "targeted_regions_mena": [
+      "Saudi Arabia",
+      "Israel",
+      "United Arab Emirates",
+      "Kuwait",
+      "Bahrain",
+      "Qatar"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Europe (Mediterranean maritime/shipping)",
+      "India"
+    ],
+    "targeted_sectors": [
+      "IT / managed service providers (supply-chain pivot)",
+      "Maritime / shipping",
+      "Transportation & logistics",
+      "Defense / aerospace",
+      "Technology",
+      "Energy",
+      "Government"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Saudi IT-provider supply-chain compromise",
+        "date": "2018 to 2019",
+        "summary": "Compromised at least 11 organizations, majority in Saudi Arabia, focusing on IT providers to reach downstream customers via a trusted-relationship / supply-chain pivot. Deployed Backdoor.Syskit (a basic .NET/Delphi downloader-backdoor) plus publicly available and custom info-gathering tools (Sha.exe, Sha432.exe, stereoversioncontrol.exe, get-logon-history.ps1). Achieved domain-admin on at least two networks; several hundred hosts infected in some environments.",
+        "source_url": "https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"
+      },
+      {
+        "name": "IMPERIAL KITTEN social-engineering & malware operations",
+        "date": "2017 to 2024",
+        "summary": "Job-recruitment-themed social engineering and fake personas used to deliver custom .NET implants; strategic web compromise (watering hole) and, in some intrusions, SQL injection of public-facing apps for initial access; publicly available tooling (ProcDump, NSSM, PAExec) alongside custom malware for credential theft and exfiltration against Middle East technology, logistics and IT targets, with heavy focus on Israel.",
+        "source_url": "https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"
+      },
+      {
+        "name": "Yellow Liderc / IMAPLoader watering-hole campaign",
+        "date": "2022 to 2023",
+        "summary": "Strategic web compromises injecting bespoke JavaScript into legitimate (primarily Israel-related, maritime/shipping/logistics) websites to fingerprint visitors and exfiltrate host information to attacker-controlled domains, leading to deployment of IMAPLoader — a .NET malware that abuses IMAP email as its command-and-control channel and is delivered/loaded via HTA and DLL side-loading.",
+        "source_url": "https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"
+      }
+    ]
+  },
+  "threat_actors": ["Tortoiseshell", "Imperial Kitten", "Yellow Liderc", "TA456", "Crimson Sandstorm"],
+  "targeted_regions": ["Saudi Arabia", "Israel", "UAE", "Kuwait", "Bahrain", "Qatar", "United States", "Europe", "India"],
+  "targeted_sectors": ["IT / managed service providers", "Maritime / shipping", "Transportation & logistics", "Defense / aerospace", "Technology", "Energy", "Government"],
+  "malware": [
+    "Backdoor.Syskit",
+    "IMAPLoader",
+    "Poison Frog",
+    "Infostealer/Sha.exe",
+    "Infostealer/Sha432.exe",
+    "Infostealer/stereoversioncontrol.exe"
+  ],
+  "tooling_observed": [
+    "get-logon-history.ps1",
+    "ProcDump",
+    "NSSM (Non-Sucking Service Manager)",
+    "PAExec / PsExec",
+    "Mimikatz",
+    "certutil",
+    "net.exe",
+    "systeminfo",
+    "whoami",
+    "ipconfig",
+    "bespoke browser-fingerprinting JavaScript"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1592",
+      "technique_name": "Gather Victim Host Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "In the Yellow Liderc watering-hole operations, bespoke JavaScript injected into compromised legitimate websites fingerprints visiting hosts (browser, OS, configuration) and exfiltrates the profile to attacker-controlled infrastructure to select targets for follow-on IMAPLoader delivery.",
+      "observed_tooling": ["bespoke browser-fingerprinting JavaScript"],
+      "detection_feasibility": "low — visitor fingerprinting executes in the browser on third-party compromised sites and is largely off victim-endpoint telemetry; hunt candidate via web-content integrity monitoring and outbound requests to newly-registered profiling domains",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1592.002",
+      "technique_name": "Gather Victim Host Information: Software",
+      "tactic": "reconnaissance",
+      "procedure_description": "The injected profiling JavaScript enumerates browser/software attributes of visitors to compromised watering-hole sites to distinguish intended targets from incidental traffic.",
+      "observed_tooling": ["bespoke browser-fingerprinting JavaScript"],
+      "detection_feasibility": "low — client-side software enumeration is not visible in victim server/endpoint logs; hunt candidate only",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Registered domains for fake recruiting/job sites, fake-persona infrastructure, browser-profiling exfiltration endpoints, and C2.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim infrastructure acquisition is not endpoint-observable; intel/hunt candidate via lookalike-domain and registration monitoring",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "Used attacker-controlled web services/domains to receive exfiltrated visitor-fingerprint data from watering-hole JavaScript.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim web-service acquisition; intel/hunt candidate",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1585",
+      "technique_name": "Establish Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Built elaborate long-con fake personas (e.g. the TA456 'Marcella Flores' persona) maintained over long periods to build rapport with targets before delivering malware.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — persona account creation is off-victim; intel/hunt candidate via persona and social-graph analysis",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Created fake recruiter/social-media personas (LinkedIn/Facebook) to run job-recruitment-themed social engineering against targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — social-media persona creation is off-victim; intel/hunt candidate",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Established email accounts used both for social-engineering correspondence and, for IMAPLoader, as mailbox infrastructure for IMAP-based command-and-control.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim mailbox creation; intel/hunt candidate (downstream IMAP C2 use is where detection lands, see T1071.003)",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Developed custom malware including Backdoor.Syskit (in both Delphi and .NET) and the .NET IMAPLoader implant.",
+      "observed_tooling": ["Backdoor.Syskit", "IMAPLoader"],
+      "detection_feasibility": "low — capability development is not observable in victim telemetry; intel/hunt candidate",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain", "https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "Leveraged publicly available tools including ProcDump, NSSM, PAExec/PsExec and Mimikatz alongside custom implants.",
+      "observed_tooling": ["ProcDump", "NSSM", "PAExec / PsExec", "Mimikatz"],
+      "detection_feasibility": "low — tool acquisition is off-endpoint; downstream use is detectable — this entry is a hunt/intel candidate",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Hosted malicious installers/payloads on fake recruiting and job-application websites designed to be delivered to targeted audiences.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — staging on adversary infrastructure is off-victim; intel/hunt candidate via lookalike-site and hosting monitoring",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "procedure_description": "Compromised legitimate (primarily Israel-related maritime/logistics) websites and injected bespoke JavaScript to stage strategic web compromises against their visitors.",
+      "observed_tooling": ["bespoke browser-fingerprinting JavaScript"],
+      "detection_feasibility": "low — drive-by staging occurs on third-party sites; intel/hunt candidate via third-party web-content integrity monitoring",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1195",
+      "technique_name": "Supply Chain Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Compromised IT/managed service providers (primarily in Saudi Arabia) as a stepping stone to reach their downstream customers — the defining Tortoiseshell tradecraft.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — upstream supply-chain compromise is largely outside a downstream victim's endpoint visibility; strategic intel/hunt candidate",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1195.002",
+      "technique_name": "Supply Chain Compromise: Compromise Software Supply Chain",
+      "tactic": "initial-access",
+      "procedure_description": "Abused compromised IT-provider software/administration channels to distribute malware to downstream customer environments.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — software supply-chain compromise is upstream and hard to see from the victim; hunt candidate via unexpected provider-pushed binaries and integrity monitoring",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1199",
+      "technique_name": "Trusted Relationship",
+      "tactic": "initial-access",
+      "procedure_description": "Exploited the trusted access that compromised IT/managed service providers already held into their customers' networks to gain initial access downstream.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — provider-originated access is detectable via anomalous third-party/remote-management logons and unexpected provider account activity, but requires baselining of legitimate provider behavior",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Conducted strategic web compromises (watering holes) — injecting profiling JavaScript into legitimate sites and delivering payloads to selected visitors (Yellow Liderc / IMAPLoader).",
+      "observed_tooling": ["bespoke browser-fingerprinting JavaScript"],
+      "detection_feasibility": "medium — the delivery occurs on third-party sites (off-victim), but the resulting browser-to-payload chain and outbound requests to profiling/staging domains are detectable via proxy and browser child-process telemetry on the victim endpoint",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "procedure_description": "Used social-media/job-recruitment services (LinkedIn/Facebook fake personas) to deliver lures and links outside corporate mail controls.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — social-media-delivered lures bypass corporate mail gateways; user-awareness/hunt candidate with limited endpoint signal",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "In some IMPERIAL KITTEN intrusions used SQL injection against public-facing web applications to gain initial access.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — SQLi and web-app exploitation are detectable via WAF alerts, web-server error/anomaly logs and unexpected DB-to-shell process chains, but require web-tier instrumentation",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "Used stolen/legitimate credentials (harvested from compromised IT providers and via credential theft) to access downstream systems and move within victim networks.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — valid-account abuse is detectable via anomalous logon analytics (impossible travel, new host/time) but blends with legitimate use",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "privilege-escalation",
+      "procedure_description": "Obtained domain-admin-level access on at least two compromised networks, then used those privileged domain accounts to broaden access (several hundred hosts infected in some environments).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — privileged domain-account use is detectable via anomalous admin-logon and privileged-group authentication analytics, but requires identity telemetry and good baselines",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "Executed PowerShell tooling including get-logon-history.ps1 for reconnaissance and used PowerShell to download and run payloads.",
+      "observed_tooling": ["get-logon-history.ps1"],
+      "detection_feasibility": "high — script-block/module logging and suspicious PowerShell parenting are core, well-covered detections",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "Ran commands and dropped/executed batch and staged executables (e.g. %Windir%\\temp\\bak.exe) via the Windows command shell.",
+      "observed_tooling": ["cmd.exe"],
+      "detection_feasibility": "high — cmd.exe execution with anomalous parents and staged-binary paths (\\Windows\\Temp) is visible in process-creation logs",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "Used VBScript-based scripting/droppers in social-engineering delivery chains.",
+      "observed_tooling": ["wscript.exe", "cscript.exe"],
+      "detection_feasibility": "high — wscript/cscript executing VBS, especially spawned by Office or archive extraction, is a strong detectable signal",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1059.007",
+      "technique_name": "Command and Scripting Interpreter: JavaScript",
+      "tactic": "execution",
+      "procedure_description": "Injected bespoke JavaScript into compromised watering-hole websites to fingerprint and target visitors.",
+      "observed_tooling": ["bespoke browser-fingerprinting JavaScript"],
+      "detection_feasibility": "low — the JavaScript runs in visitors' browsers on third-party sites; limited victim-endpoint signal; hunt candidate via web-content integrity monitoring",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Relied on targets clicking recruitment-themed links delivered via social media / fake personas to reach payloads.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — malicious-link clicks are detectable via URL-gateway/proxy logs; endpoint signal is indirect",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Relied on targets running malicious files (fake job-application installers / weaponized documents) to execute custom .NET implants.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — user-launched installers/documents spawning script or child processes is a core detectable behavior",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1218.005",
+      "technique_name": "System Binary Proxy Execution: Mshta",
+      "tactic": "stealth",
+      "procedure_description": "Delivered/loaded IMAPLoader components via HTA files executed through mshta to proxy execution and evade defenses.",
+      "observed_tooling": ["mshta.exe"],
+      "detection_feasibility": "high — mshta.exe executing HTA/remote content and spawning child processes is a rare LOLBin pattern with low false-positive rate",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "Used WMI for execution and remote command running during hands-on-keyboard activity.",
+      "observed_tooling": ["wmic.exe"],
+      "detection_feasibility": "high — WMI process creation and WMI-Activity operational logs provide strong telemetry",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "Created scheduled tasks to persist and execute payloads on compromised hosts.",
+      "observed_tooling": ["schtasks.exe"],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable, especially with script/binary actions",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "Used NSSM (Non-Sucking Service Manager) to install malware as a Windows service for persistence.",
+      "observed_tooling": ["NSSM"],
+      "detection_feasibility": "high — service creation (Event ID 7045 / 4697) and NSSM-registered services are strongly detectable",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "Used registry Run keys / startup locations for autostart persistence of implants.",
+      "observed_tooling": ["reg.exe"],
+      "detection_feasibility": "high — Run-key writes are logged via registry-modification telemetry and are a well-covered persistence detection",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL Search Order Hijacking",
+      "tactic": "persistence",
+      "procedure_description": "IMAPLoader is loaded via DLL side-loading / search-order hijacking of a legitimate signed host process.",
+      "observed_tooling": ["IMAPLoader"],
+      "detection_feasibility": "medium — side-loading is detectable via unusual DLL loads from non-standard paths by signed binaries (image-load telemetry), but requires module-load logging and good baselines",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "procedure_description": "Custom .NET implants used process injection to run in the context of legitimate processes.",
+      "observed_tooling": ["IMAPLoader"],
+      "detection_feasibility": "medium — injection is detectable via EDR cross-process memory-write/thread-creation telemetry but generates volume that needs behavioral correlation",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "tactic": "stealth",
+      "procedure_description": "Loaded .NET payloads reflectively in memory (IMAPLoader / custom implants) to avoid writing the full payload to disk.",
+      "observed_tooling": ["IMAPLoader"],
+      "detection_feasibility": "medium — in-memory .NET/reflective loading is detectable via CLR-load and AMSI/ETW telemetry but requires managed-runtime instrumentation",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Obfuscated implant code and configuration to hinder analysis and detection.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — obfuscation is inferable from static/entropy analysis but needs dedicated inspection",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Stored/transferred encrypted or encoded payloads and configuration to evade content inspection.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — high-entropy/encoded payloads are detectable via file-entropy analytics but require dedicated scanning",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Decoded/deobfuscated staged payloads at runtime (including via certutil in the Symantec-observed toolset).",
+      "observed_tooling": ["certutil"],
+      "detection_feasibility": "high — 'certutil -decode' and in-script decode routines are directly observable in command-line and script-block logging",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "procedure_description": "Named payloads and staged binaries to blend in (e.g. bak.exe, sha.exe) and used recruitment-themed lures to appear legitimate.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — masquerading is detectable via name/path baselining and signature/content mismatch analysis",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Staged executables in trusted-looking locations/names such as %Windir%\\temp\\bak.exe to reduce suspicion.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — legit-looking names in non-standard/temp paths are detectable via path/name baselining and signature mismatch",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "Modified registry values including HKLM\\...\\CurrentVersion\\Policies\\System\\Enablevmd and \\Sendvmd during Syskit operations.",
+      "observed_tooling": ["reg.exe"],
+      "detection_feasibility": "medium — registry modification is logged, but volume is high; value comes from watching the specific policy keys the actor sets",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "Deleted staged tools and payload artifacts after use to hinder investigation.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — file deletion is detectable via file-system audit / EDR delete events but is noisy and needs correlation with prior payload writes",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "procedure_description": "Abused signed/side-loaded legitimate binaries to gain trust when loading IMAPLoader components.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — signature-trust abuse is detectable via certificate/thumbprint and load-path anomaly analytics on loaded binaries",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "Used ProcDump (and Mimikatz-style tooling) to dump LSASS memory for credential theft.",
+      "observed_tooling": ["ProcDump", "Mimikatz"],
+      "detection_feasibility": "high — process access to lsass.exe and ProcDump/Mimikatz signatures are highly observable in EDR and process-access telemetry",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "tactic": "credential-access",
+      "procedure_description": "Harvested credentials from local password stores using custom infostealers and public tools.",
+      "observed_tooling": ["Infostealer/Sha.exe", "Infostealer/Sha432.exe", "Infostealer/stereoversioncontrol.exe"],
+      "detection_feasibility": "medium — password-store access is detectable mainly through known-tool execution and file/DPAPI-access telemetry",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "Stole credentials from web browsers as part of the infostealer collection.",
+      "observed_tooling": ["Infostealer/Sha.exe", "Infostealer/Sha432.exe"],
+      "detection_feasibility": "medium — access to browser Login Data stores is detectable via file-access and known-tool telemetry",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1555.004",
+      "technique_name": "Credentials from Password Stores: Windows Credential Manager",
+      "tactic": "credential-access",
+      "procedure_description": "Collected credentials stored in the Windows Credential Manager/vault.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — Credential Manager/vault access is detectable via known-tool signatures and DPAPI/file-access telemetry",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "Deployed keylogging capability within infostealer implants to capture typed credentials.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — keystroke-hooking APIs leave little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "procedure_description": "Used fake login / recruitment web portals to capture credentials submitted by targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — credential harvesting occurs on attacker-hosted portals off the victim endpoint; hunt/intel candidate via phishing-page and domain monitoring",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "procedure_description": "Collected credentials stored in files across compromised hosts as part of infostealer activity.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — reading credential-bearing files leaves little discrete log signal; hunt candidate via file-access telemetry",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Ran systeminfo and used info-gathering tools to enumerate host details.",
+      "observed_tooling": ["systeminfo"],
+      "detection_feasibility": "medium — systeminfo discovery is common; suspicious mainly in tight process-lineage/recon-burst context",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Ran ipconfig and related commands to enumerate network configuration.",
+      "observed_tooling": ["ipconfig"],
+      "detection_feasibility": "medium — 'ipconfig' is common but suspicious when clustered with other recon in a short process-lineage window",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Ran whoami and get-logon-history.ps1 to enumerate the current user and prior logon history.",
+      "observed_tooling": ["whoami", "get-logon-history.ps1"],
+      "detection_feasibility": "medium — whoami/logon-history enumeration is common; value is in process-lineage correlation and the distinctive get-logon-history.ps1 tool name",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Enumerated running processes on compromised hosts via info-gathering tools.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — process enumeration is common but meaningful in recon-burst/process-lineage context",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1087.001",
+      "technique_name": "Account Discovery: Local Account",
+      "tactic": "discovery",
+      "procedure_description": "Enumerated local accounts using net.exe and info-gathering scripts.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net user'/'net localgroup' enumeration is directly observable in command-line logging",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "procedure_description": "Enumerated domain accounts and groups en route to domain-admin access.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net user /domain' / 'net group /domain' enumeration is directly observable in command-line logging",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1069.001",
+      "technique_name": "Permission Groups Discovery: Local Groups",
+      "tactic": "discovery",
+      "procedure_description": "Enumerated local group membership to identify local administrators on compromised hosts.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net localgroup administrators' is directly observable in command-line logging",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Checked for installed security/AV software prior to deploying payloads.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — security-software enumeration is detectable via command-line and process queries against AV services/registry, but is low-volume and needs targeted rules",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Enumerated active network connections on compromised hosts.",
+      "observed_tooling": ["netstat"],
+      "detection_feasibility": "medium — 'netstat' is common; meaningful in recon-burst/process-lineage context",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1007",
+      "technique_name": "System Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Queried installed services on compromised hosts during hands-on activity.",
+      "observed_tooling": ["sc.exe"],
+      "detection_feasibility": "medium — service enumeration is common; suspicious mainly in recon-burst/process-lineage context",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Enumerated files and directories to locate credentials and data of interest.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — file/directory enumeration is high-volume and low-signal; hunt candidate via behavioral correlation",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "Used RDP to move laterally within compromised networks.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — RDP lateral movement is detectable via 4624 type-10 logons and internal-RDP fanout analytics",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "procedure_description": "Used PAExec/PsExec over SMB admin shares to execute payloads on remote hosts and spread within networks (several hundred hosts infected in some environments).",
+      "observed_tooling": ["PAExec / PsExec"],
+      "detection_feasibility": "high — PsExec/PAExec service creation over admin shares (7045, 5145, remote service install) is strongly detectable",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "Captured screenshots of compromised desktops via infostealer capability.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Collected files and data of interest from compromised local systems for exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — local collection is common; suspicious mainly via staging/archiving and upload command-lines in process-lineage context",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "Used infostealer implants to automatically collect credentials, browser data and host information.",
+      "observed_tooling": ["Infostealer/Sha.exe", "Infostealer/Sha432.exe", "Infostealer/stereoversioncontrol.exe"],
+      "detection_feasibility": "low — automated collection leaves little discrete log signal beyond the tool execution itself; behavioral/EDR hunt candidate",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Staged collected data and tooling in temporary directories (e.g. %Windir%\\temp) prior to exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — local staging in temp is common and noisy; better as a hunt over file-write telemetry to \\Windows\\Temp",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "Archived collected data using utilities prior to exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — archive-utility execution (rar/7z/zip) against staged data is detectable via process command-lines but needs correlation with prior collection",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "Used HTTP(S) web protocols for command-and-control and payload retrieval across Syskit and custom implants.",
+      "observed_tooling": ["Backdoor.Syskit"],
+      "detection_feasibility": "medium — HTTP C2 is detectable via proxy/beacon analytics and URI/JA3 anomalies but blends with normal web traffic",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1071.003",
+      "technique_name": "Application Layer Protocol: Mail Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "IMAPLoader uses IMAP email as its command-and-control channel — polling an attacker-controlled mailbox for commands and returning results by email, a signature Yellow Liderc / Imperial Kitten technique.",
+      "observed_tooling": ["IMAPLoader"],
+      "detection_feasibility": "low — IMAP/email-based C2 blends into normal mail traffic and its content is often encrypted; strong HUNT candidate via anomalous host-initiated IMAP to non-corporate mail providers, non-mail-client processes speaking IMAP, and beacon-like mailbox polling",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Downloaded additional tools and payloads onto compromised hosts (Syskit is a downloader-backdoor; PowerShell/certutil also used to pull files).",
+      "observed_tooling": ["Backdoor.Syskit", "certutil"],
+      "detection_feasibility": "high — remote downloads via certutil/PowerShell and unexpected inbound file writes are strongly detectable in process + network telemetry",
+      "sources": ["https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "Encrypted C2 content (including within the IMAP mail-based channel) to defeat inspection.",
+      "observed_tooling": ["IMAPLoader"],
+      "detection_feasibility": "low — symmetric-encrypted C2 content defeats content inspection; hunt on beacon/traffic-shape anomalies",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "Encoded C2 data (e.g. base64) within mail/web channels.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — base64-encoded C2 content is detectable via network inspection/encoding heuristics where TLS is absent",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "Routed C2 through intermediary infrastructure to obscure the true endpoints.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — proxy/relay use is inferred from network analysis; hunt candidate via connections to known-bad or anomalous intermediary infrastructure",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Exfiltrated collected credentials and data back over the established C2 channel (including via the IMAPLoader mail channel).",
+      "observed_tooling": ["IMAPLoader"],
+      "detection_feasibility": "medium — C2-channel exfil is detectable via outbound-volume anomalies on beaconing sessions, though the mail-based variant blends into normal mail flow",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "procedure_description": "Watering-hole profiling JavaScript exfiltrated visitor host-fingerprint data to attacker-controlled web services/domains.",
+      "observed_tooling": ["bespoke browser-fingerprinting JavaScript"],
+      "detection_feasibility": "low — browser-originated exfil to a web service from third-party sites is largely off victim-endpoint; hunt candidate via proxy telemetry to newly-registered profiling domains",
+      "sources": ["https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/"]
+    }
+  ],
+  "detection_signals": [
+    "Non-mail-client process initiating outbound IMAP (TCP 143/993) to a non-corporate/webmail provider, with beacon-like periodic mailbox polling (IMAPLoader mail-based C2)",
+    "mshta.exe executing an HTA (local or remote) that spawns script/child processes (IMAPLoader delivery)",
+    "Signed/legitimate binary loading an unexpected DLL from a non-standard/writable path (IMAPLoader DLL side-loading)",
+    "NSSM (nssm.exe) or sc.exe registering a new service pointing at a payload in a temp/user-writable path (Event ID 7045)",
+    "PAExec/PsExec service creation over SMB admin shares fanning out to many internal hosts (7045 / 5145)",
+    "ProcDump or comsvcs.dll MiniDump targeting lsass.exe; process access to lsass with dump-flag access masks",
+    "Execution of get-logon-history.ps1 or the named infostealers Sha.exe / Sha432.exe / stereoversioncontrol.exe / bak.exe (Symantec Tortoiseshell tooling)",
+    "Registry writes to HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Enablevmd and \\Sendvmd (Syskit)",
+    "certutil.exe with -decode / -urlcache, or PowerShell FromBase64String decoding staged payloads",
+    "Files written to %Windir%\\temp\\ such as rconfig.xml and bak.exe",
+    "Outbound connections to attacker profiling/staging domains from a browser process shortly after visiting a legitimate maritime/logistics site (watering-hole chain)",
+    "Provider/managed-service remote-management account performing anomalous logons or pushing unexpected binaries into a customer environment (supply-chain / trusted-relationship pivot)",
+    "Connections to the Symantec-reported C2 IPs 64.235.60.123 and 64.235.39.45"
+  ],
+  "iocs": {
+    "ips": ["64.235.60.123", "64.235.39.45"],
+    "domains": [],
+    "emails": [],
+    "hashes": [
+      "f71732f997c53fa45eef5c988697eb4aa62c8655d8f0be3268636fc23addd193",
+      "02a3296238a3d127a2e517f4949d31914c15d96726fb4902322c065153b364b2",
+      "07d123364d8d04e3fe0bfa4e0e23ddc7050ef039602ecd72baed70e6553c3ae4",
+      "d9ac9c950e5495c9005b04843a40f01fa49d5fd49226cb5b03a055232ffc36f3"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium-high",
+  "notes": "IMPORTANT ID-COLLISION FINDING: the task base 'MITRE G0139 = Tortoiseshell' does NOT hold in this environment's bundled/reorganized ATT&CK dataset, where G0139 resolves to 'TeamTNT' (a cloud/container cryptomining group) and G1009 resolves to 'Moses Staff'. Basing a Tortoiseshell pack on the local G0139 technique list would have injected TeamTNT's cloud-miner TTPs (T1610/T1611/T1613/T1496.001/T1136.001 etc.) into an Iranian-espionage actor and poisoned every downstream pipeline stage. This pack therefore does NOT use the local G0139 technique array; it is built entirely from named public Tortoiseshell/Imperial Kitten/Yellow Liderc reporting (Symantec/Broadcom 2019, CrowdStrike IMPERIAL KITTEN 2023, PwC Yellow Liderc/IMAPLoader 2023) with each technique_id independently verified to exist in this environment's sigma-bundled ATT&CK dataset (all 57 verified True; one candidate, T1574.002, was dropped as absent — replaced by T1574.001 DLL Search-Order Hijacking, which is present and better matches IMAPLoader side-loading). TACTIC CONVENTIONS per the CI rules for this dataset: general defense-evasion techniques carry the tactic slug 'stealth' (T1218.005, T1055, T1620, T1027, T1027.013, T1140, T1036, T1036.005, T1112, T1070.004, T1553.002); no Impair-Defenses ('defense-impairment' T1685/T1686.x) technique is included because no public report credibly documents Tortoiseshell disabling AV/firewall — omitted rather than fabricated. All other tactics use canonical reconnaissance…exfiltration slugs. DETECTION vs HUNT routing hints are encoded in detection_feasibility: endpoint execution/persistence/credential-access lean DETECTION (mshta, NSSM service, PsExec fan-out, LSASS dump, scheduled task, net enumeration, certutil decode); the signature IMAP-based C2 (T1071.003), fake-persona/social-engineering resource-development, watering-hole browser fingerprinting/exfil, and supply-chain/trusted-relationship pivot lean HUNT (LOW feasibility). IOCs are conservative and sourced ONLY from the fetched Symantec/Broadcom report: 4 SHA256 hashes and 2 C2 IPs (64.235.60.123, 64.235.39.45). No domains/emails/CVEs are asserted because they were not present in a successfully-fetched primary source in this pass — the CrowdStrike adversary profile page and PwC report bodies were gated (profile landing page only; full IOC appendices behind gated reports), so IMAPLoader hashes/C2 mailbox domains should be ingested directly from those reports before being added. ATTRIBUTION is medium-high (Iran-nexus, suspected IRGC): the Tortoiseshell/Imperial Kitten/Yellow Liderc/TA456 aliases are convergent but not proven single-entity, so per pipeline rules the disagreement is preserved, not adjudicated. NO prompt-injection content was encountered in the fetched sources."
+}

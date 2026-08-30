@@ -1,0 +1,664 @@
+{
+  "report_title": "Cotton Sandstorm / Emennet Pasargad (Aria Sepehr Ayandehsazan, ASA) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Primary sources: (1) Joint FBI / U.S. Department of the Treasury / Israel National Cyber Directorate (INCD) Cybersecurity Advisory 'New Tradecraft of Iranian Cyber Group Aria Sepehr Ayandehsazan aka Emennet Pasargad', Product ID AA24-233A / JCSA-20241030-001, 2024-10-30 (https://www.ic3.gov/CSA/2024/241030.pdf), which maps this actor's TTPs and IOCs to MITRE ATT&CK for Enterprise v15.1 and supersedes the 2022-10-20 FBI PIN (https://www.ic3.gov/Media/News/2022/221020.pdf). (2) Microsoft Threat Intelligence, 'As the U.S. election nears, Russia, Iran and China step up influence efforts' / 'Iran surges cyber-enabled influence operations in support of Hamas', which tracks this actor as Cotton Sandstorm and documents the 'For-Humanity' generative-AI IPTV operation, IP-camera harvesting, and 'Cyber Court' cover-hacktivist persona network (https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/). (3) Check Point Research WezRat analysis for the 'bd.exe' remote access trojan family. Every technique_id in the ttps array was verified to exist in this environment's bundled (reorganized) ATT&CK dataset via `sigma.data.mitre_attack.mitre_attack_techniques`; the defense-evasion tactic is emitted as 'stealth' per this dataset's convention. NOTE ON GROUP ID: the task brief asserts MITRE tracks Emennet Pasargad as G1009, but in this environment's bundled dataset G1009 resolves to 'Moses Staff' (an unrelated Iranian hack-and-leak/wiper group) and G1044 resolves to APT42 — there is NO Emennet Pasargad / Cotton Sandstorm group object in this dataset, so no G-ID base mapping was inheritable and the extraction is built directly from the advisory's own ATT&CK table plus enrichment. NO IOCs were taken from advisory AA24-290A (a separate Iranian brute-force credential-access actor whose IPs/hashes/CVE-2020-1472 are unrelated to Cotton Sandstorm).",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Cotton Sandstorm",
+    "mitre_id": "G1009",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Cotton Sandstorm",
+      "Emennet Pasargad",
+      "Aria Sepehr Ayandehsazan",
+      "ASA",
+      "Marnanbridge",
+      "Haywire Kitten",
+      "Eeleyanet Gostar",
+      "Net Peygard Samavat Company",
+      "For Humanity (persona)",
+      "Cyber Flood (persona)",
+      "Contact-HSTG (persona)",
+      "Cyber Court (persona)",
+      "Cyber Avengers-adjacent hacktivist fronts"
+    ],
+    "related_clusters": [
+      "IRGC — assessed sponsoring body; ASA operates as a nominal cover company (Iranian Registration Number 504415) providing HR/financial cover for IRGC-nexus operators",
+      "Moses Staff / DEV-0500 / Marigold Sandstorm (G1009 in this dataset) — a DISTINCT but ideologically-similar Iranian hack-and-leak/anti-Israel group; NOT the same actor as Cotton Sandstorm despite the task's G1009 reference. Included here only to flag the group-ID collision, not as an alias",
+      "Cover-hacktivist personas run BY ASA: 'Makhlab al-Nasr', 'NET Hunter', 'Emirate Students Movement', 'Zeus is Talking' (zeusistalking[.]io/net/com), 'Regiment GUD' (rgud-group[.]net/com; impersonates real French far-right group GUD), 'Anzu Team' (operation vs Sweden)",
+      "Lebanon-based hosting clients supported by ASA cover-resellers (alqassam[.]ps HAMAS military-wing site; almaq[.]org)"
+    ],
+    "attribution": "Iranian state-sponsored cyber-enabled information-operations actor, assessed by FBI/Treasury/INCD and Microsoft to be affiliated with the Islamic Revolutionary Guard Corps (IRGC). Two Emennet Pasargad-linked Iranian nationals were previously indicted by the U.S. DOJ for the 2020 U.S. presidential-election voter-intimidation/disinformation campaign, and the U.S. Rewards for Justice program offers up to $10M for information on the group. Group attribution to Iran/IRGC is high-confidence and convergent across U.S. government, Israeli government, and Microsoft reporting. Per the advisory's own caveat, individual TTPs/IOCs can overlap with third-party actors who purchase access, so single-indicator attribution should be avoided.",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "Israel",
+      "Gaza / Palestinian Territories",
+      "Iran (domestic camera enumeration / diaspora targeting)",
+      "United Arab Emirates (Emirate Students Movement persona targeting)"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "France",
+      "Sweden",
+      "United Kingdom (cover-reseller infrastructure via Stark Industries/PQ Hosting)",
+      "Moldova / Lithuania (cover-reseller upstream providers)"
+    ],
+    "targeted_sectors": [
+      "Elections / democratic process",
+      "News media and election-related websites",
+      "Sports / international events (2024 Paris Olympic & Paralympic Games)",
+      "IPTV / streaming and broadcast providers",
+      "Commercial dynamic-display / digital-signage providers",
+      "Israeli military and defense personnel (fighter pilots, UAV operators)",
+      "Critical infrastructure and general Israeli commercial entities (hack-and-leak)",
+      "IoT / IP-camera owners (surveillance content harvesting)"
+    ],
+    "key_campaigns": [
+      {
+        "name": "2020 U.S. Presidential election voter-intimidation & false-flag disinformation (Emennet Pasargad)",
+        "date": "2020",
+        "summary": "Original Emennet Pasargad hack-and-leak / cyber-enabled influence operation that sent intimidating emails to U.S. voters posing as the Proud Boys, produced a video alleging election-system vulnerabilities, and accessed election-related infrastructure — leading to a DOJ indictment of two Iranian nationals. Established the group's signature blend of intrusion plus exaggerated/fictitious claims to maximize psychological effect.",
+        "source_url": "https://www.ic3.gov/CSA/2024/241030.pdf"
+      },
+      {
+        "name": "Israel hack-and-leak operations (pre-2022 PIN baseline)",
+        "date": "2021 – 2022",
+        "summary": "Hack-and-leak operations against primarily Israeli organizations, combining data theft with information operations that inflict financial loss and reputational damage, using false-flag personas and exaggerated claims of access. Documented in the 2022-10-20 FBI PIN that this advisory supersedes.",
+        "source_url": "https://www.ic3.gov/Media/News/2022/221020.pdf"
+      },
+      {
+        "name": "Contact-HSTG / Cyber Flood hostage-family intimidation",
+        "date": "October 2023 onward (post Oct-7)",
+        "summary": "Following the 7 October 2023 HAMAS attack, ASA used cover personas 'Cyber Flood' and 'Contact-HSTG' to send threatening SMS/messaging to family members of Israeli hostages (via https://Contact-hstg[.]com forms), posing as Al-Qassam to cause additional psychological trauma.",
+        "source_url": "https://www.ic3.gov/CSA/2024/241030.pdf"
+      },
+      {
+        "name": "For-Humanity IPTV compromise with generative-AI news anchor",
+        "date": "December 2023",
+        "summary": "Under the 'For-Humanity' persona, ASA leveraged unauthorized access to a US-based IPTV streaming company to disseminate crafted Israel-Hamas-war messaging, notably incorporating a generative-AI-generated fake news anchor. Part of a broader adoption of AI services (Remini AI Photo Enhancer, Voicemod, Murf AI voice modulation, Appy Pie image generation).",
+        "source_url": "https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/"
+      },
+      {
+        "name": "IP-camera / RTSP surveillance harvesting",
+        "date": "October 2023 – October 2024",
+        "summary": "Hours after the Oct-7 attack, ASA enumerated internet-facing IP addresses running Real Time Streaming Protocol (TCP/554), primarily in Israel but also Gaza and Iran, and made harvested camera images/content available to clients via several servers (e.g. 5.230.56[.]148, 77.91.74[.]158; platform later at 195.26.87[.]80, 213.109.147[.]97, 185.110.188[.]112).",
+        "source_url": "https://www.ic3.gov/CSA/2024/241030.pdf"
+      },
+      {
+        "name": "Cyber Court cover-hacktivist promotion network",
+        "date": "April 2024 – September 2024",
+        "summary": "ASA operated the online persona 'Cyber Court' (cybercourt[.]io, Telegram @cybercourt_io) to amplify the activities of several ASA-run cover-hacktivist groups — Makhlab al-Nasr, NET Hunter, Emirate Students Movement, Zeus is Talking — as apparent grassroots protest of the Israel-Hamas conflict. Also developed a crowdsourced 'Sample' campaign to identify and intimidate Israeli law-enforcement individuals.",
+        "source_url": "https://www.ic3.gov/CSA/2024/241030.pdf"
+      },
+      {
+        "name": "2024 Paris Olympics dynamic-display compromise (Regiment GUD false flag)",
+        "date": "July 2024",
+        "summary": "Using 'VPS-Agent' cover infrastructure, ASA compromised a French commercial dynamic-display provider to show photo montages denouncing Israeli athletes' participation in the 2024 Olympic/Paralympic Games, coupled with a fake news article on a spoofed French collaborative-media site and threat messages to Israeli athletes under the banner of a fake French far-right group 'Regiment GUD' (impersonating the real group GUD).",
+        "source_url": "https://www.ic3.gov/CSA/2024/241030.pdf"
+      },
+      {
+        "name": "Anzu Team operation against Sweden",
+        "date": "2024",
+        "summary": "Cyber-enabled information operation against Sweden conducted under the 'Anzu Team' banner, corroborated by public statements from the Swedish Security Service and Sweden's Prosecutor's Office.",
+        "source_url": "https://www.ic3.gov/CSA/2024/241030.pdf"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Cotton Sandstorm",
+    "Emennet Pasargad",
+    "Aria Sepehr Ayandehsazan (ASA)",
+    "Marnanbridge",
+    "Haywire Kitten"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "Gaza / Palestinian Territories",
+    "Iran",
+    "United States",
+    "France",
+    "Sweden",
+    "United Arab Emirates",
+    "United Kingdom"
+  ],
+  "targeted_sectors": [
+    "Elections / democratic process",
+    "News media",
+    "Sports / international events",
+    "IPTV / streaming / broadcast",
+    "Digital-signage / dynamic-display providers",
+    "Military / defense personnel",
+    "Critical infrastructure / commercial (Israel)",
+    "IoT / IP cameras"
+  ],
+  "malware": [
+    "WezRat (aka 'bd' / bd.exe / First.exe) — heavily-obfuscated remote access trojan that collects basic host information and connects to a hard-coded web server for tasking; delivered via a trojanized 'Google Chrome Installer.msi' that runs the RAT after a legitimate Chrome install/update; uses a command-line de-obfuscation key (observed '8765') and C2 web-server 'connect.il-cert[.]net'; C2 paths http://onlinelive[.]info/wez/insert.php and /wez/api.php"
+  ],
+  "tooling_observed": [
+    "Masscan (IP-block / port scanning, incl. RTSP TCP/554 enumeration)",
+    "Acunetix (vulnerability scanning)",
+    "Burp Suite",
+    "SQLMap (SQL-injection exploitation of public-facing apps)",
+    "Shodan (shodan[.]io) — internet-exposed device/camera discovery",
+    "ip2location[.]com, subdomainfinder.c99[.]nl — network/domain recon",
+    "knowem[.]com, facecheck[.]id, socialcatfish[.]com, peekyou[.]com, ancestry[.]com, familysearch[.]org — people-search / reverse-image / username checks",
+    "snov[.]io, email-format[.]com, hunter[.]io — email-address harvesting",
+    "Wikimapia[.]org, OpenStreetMap (openstreetmap.org), Pastebin, Instagram, LinkedIn — location/OSINT correlation",
+    "ghostproject[.]fr — leaked-dataset / credential lookups",
+    "crackstation[.]net, hashes[.]com, md5hashing[.]net — password-hash cracking",
+    "Commercial VPNs: Private Internet Access, Windscribe, ExpressVPN, Urban VPN, NordVPN",
+    "Fictitious cover-hosting resellers 'Server-Speed' (server-speed[.]com, ~Apr 2023–May 2024) and 'VPS-Agent' (vps-agent[.]net, ~May 2024 onward); upstream from BAcloud (Lithuania) and Stark Industries Solutions / PQ Hosting (UK/Moldova)",
+    "Generative-AI services: Remini AI Photo Enhancer, Voicemod (voicemod.net), Murf AI (murf.ai) voice modulation, Appy Pie image generation",
+    "WinRAR CVE-2023-38831 exploit (weaponized)",
+    "Cover personas & channels: Cyber Court (cybercourt[.]io, Telegram @cybercourt_io), Cyber Flood, Contact-HSTG (Contact-hstg[.]com), For-Humanity, Regiment GUD (rgud-group[.]net/com), Zeus is Talking (zeusistalking[.]io/net/com), Anzu Team, Makhlab al-Nasr, NET Hunter, Emirate Students Movement"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1596",
+      "technique_name": "Search Open Technical Databases",
+      "tactic": "reconnaissance",
+      "procedure_description": "ASA uses open technical-database services to find internet-exposed targets: Shodan (shodan[.]io) to identify infrastructure hosting IP cameras and other devices, and ip2location[.]com for network geolocation, when conducting reconnaissance and enumeration against organizations.",
+      "observed_tooling": [
+        "Shodan",
+        "ip2location.com"
+      ],
+      "detection_feasibility": "low — third-party database queries occur entirely off-victim and leave no defender-side telemetry; a HUNT/attack-surface-awareness item (know what of yours is indexed in Shodan) rather than a log detection",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "When targeting individuals, ASA profiles identities using people-search, reverse-image and username-check services — knowem[.]com, facecheck[.]id, ancestry[.]com, socialcatfish[.]com, peekyou[.]com, familysearch[.]org — to build dossiers on targets such as Israeli fighter pilots and UAV operators.",
+      "observed_tooling": [
+        "knowem.com",
+        "facecheck.id",
+        "socialcatfish.com",
+        "peekyou.com",
+        "ancestry.com",
+        "familysearch.org"
+      ],
+      "detection_feasibility": "low — off-victim OSINT against public/commercial data sources; not observable in defender telemetry",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1589.002",
+      "technique_name": "Gather Victim Identity Information: Email Addresses",
+      "tactic": "reconnaissance",
+      "procedure_description": "ASA harvests target email addresses associated with particular domains using services such as snov[.]io, email-format[.]com and hunter[.]io to seed messaging, phishing and account-targeting.",
+      "observed_tooling": [
+        "snov.io",
+        "email-format.com",
+        "hunter.io"
+      ],
+      "detection_feasibility": "low — email-address enumeration is off-victim; a threat-intel/hunt awareness item",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1589.003",
+      "technique_name": "Gather Victim Identity Information: Employee Names",
+      "tactic": "reconnaissance",
+      "procedure_description": "ASA researches potential victims and their roles on social media including Instagram and LinkedIn, and used a Python script to correlate Instagram location data with OpenStreetMap to identify individuals of interest (e.g. Israeli military personnel).",
+      "observed_tooling": [
+        "Instagram",
+        "LinkedIn",
+        "OpenStreetMap",
+        "custom Python geolocation script"
+      ],
+      "detection_feasibility": "low — social-media reconnaissance is off-victim; not detectable in enterprise telemetry",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1591.001",
+      "technique_name": "Gather Victim Org Information: Determine Physical Locations",
+      "tactic": "reconnaissance",
+      "procedure_description": "ASA searches for physical-location information on Israeli military bases and the Israeli Air Force flight academy, using mapping resources such as Wikimapia[.]org and correlating Instagram geolocation with OpenStreetMap.",
+      "observed_tooling": [
+        "Wikimapia.org",
+        "OpenStreetMap"
+      ],
+      "detection_feasibility": "low — off-victim geolocation reconnaissance; not detectable in defender telemetry",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1590.001",
+      "technique_name": "Gather Victim Network Information: Domain Properties",
+      "tactic": "reconnaissance",
+      "procedure_description": "ASA uses subdomainfinder.c99[.]nl to enumerate subdomains and domain properties of target organizations during reconnaissance.",
+      "observed_tooling": [
+        "subdomainfinder.c99.nl"
+      ],
+      "detection_feasibility": "low — passive subdomain enumeration via third-party services is off-victim; hunt via attack-surface monitoring of your own exposed subdomains",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1595.001",
+      "technique_name": "Active Scanning: Scanning IP Blocks",
+      "tactic": "reconnaissance",
+      "procedure_description": "ASA uses the Masscan application to scan IP blocks, including enumerating internet-facing hosts running Real Time Streaming Protocol on TCP/554 across Israel, Gaza and Iran to locate accessible IP cameras.",
+      "observed_tooling": [
+        "Masscan",
+        "RTSP TCP/554 enumeration"
+      ],
+      "detection_feasibility": "medium — mass port scanning (esp. RTSP/554 sweeps) against internet-facing assets is observable via perimeter/IDS, netflow and honeypot telemetry, though source IPs are VPN-fronted and attribution is hard",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "procedure_description": "ASA runs vulnerability scans against target infrastructure using Acunetix and Burp Suite to identify exploitable web-application flaws prior to exploitation.",
+      "observed_tooling": [
+        "Acunetix",
+        "Burp Suite"
+      ],
+      "detection_feasibility": "medium — web-app vulnerability scanning generates distinctive request patterns detectable via WAF/IDS and web-server log analysis",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1650",
+      "technique_name": "Acquire Access",
+      "tactic": "resource-development",
+      "procedure_description": "ASA acquires access to previously-leaked datasets containing account credentials from online resources such as ghostproject[.]fr, reusing them against targets and to enrich victim profiling.",
+      "observed_tooling": [
+        "ghostproject.fr"
+      ],
+      "detection_feasibility": "low — acquisition of leaked data is off-victim; the downstream credential reuse is where detection becomes feasible (authentication anomaly monitoring)",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1583",
+      "technique_name": "Acquire Infrastructure",
+      "tactic": "resource-development",
+      "procedure_description": "ASA acquires operational infrastructure through commercial VPN providers (Private Internet Access, Windscribe, ExpressVPN, Urban VPN, NordVPN) for anonymization, and procures operational servers via its own fictitious cover-hosting resellers 'Server-Speed' (server-speed[.]com) and 'VPS-Agent' (vps-agent[.]net), themselves upstreamed from BAcloud (Lithuania) and Stark Industries/PQ Hosting (UK/Moldova).",
+      "observed_tooling": [
+        "commercial VPNs",
+        "server-speed.com",
+        "vps-agent.net"
+      ],
+      "detection_feasibility": "low — infrastructure acquisition is off-victim; a HUNT/attribution surface via reseller pivots and VPN-node reputation, and the advisory notes VPN nodes are shared so are not exclusive indicators",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "ASA registers persona and operational domains for influence and hosting operations, including cybercourt[.]io, zeusistalking[.]io/net/com, rgud-group[.]net/com, pro-today[.]org, onlinelive[.]info, cyberflood[.]io, Contact-hstg[.]com and il-cert[.]net (used for RAT C2).",
+      "observed_tooling": [
+        "cybercourt.io",
+        "zeusistalking[.]io",
+        "rgud-group[.]net",
+        "onlinelive[.]info",
+        "il-cert.net"
+      ],
+      "detection_feasibility": "low — domain registration is off-victim; a HUNT signal via newly-registered/lookalike-domain feeds and persona-domain clustering",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "ASA stands up and abuses web/cloud services — including its own cover-hosting reseller storefronts (VPS-Agent, Server-Speed) and generative-AI SaaS (Remini, Voicemod, Murf AI, Appy Pie) — to provision servers and produce influence content while providing plausible deniability that malicious infrastructure came from a legitimate provider.",
+      "observed_tooling": [
+        "vps-agent.net",
+        "server-speed.com",
+        "Voicemod",
+        "Murf AI",
+        "Remini",
+        "Appy Pie"
+      ],
+      "detection_feasibility": "low — off-victim service acquisition; a hunt/attribution artifact rather than a host or log detection",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf",
+        "https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/"
+      ]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "A hallmark of the actor: creating fictitious cover personas and sock-puppet/cover-hacktivist social-media presences — 'Cyber Court' (Telegram @cybercourt_io), 'Cyber Flood', 'For-Humanity', 'Regiment GUD', 'Zeus is Talking', 'Anzu Team', 'Makhlab al-Nasr', 'NET Hunter', 'Emirate Students Movement' — to amplify influence messaging and manufacture apparent grassroots hacktivism.",
+      "observed_tooling": [
+        "Telegram @cybercourt_io",
+        "sock-puppet hacktivist personas"
+      ],
+      "detection_feasibility": "low — persona creation is entirely off-victim; a HUNT/attribution artifact (persona-network mapping, avatar/handle reuse, cross-platform linkage), not a host or log detection",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf",
+        "https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/"
+      ]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "ASA establishes email/messaging accounts under fabricated personas to send intimidation messages (e.g. Contact-HSTG SMS to hostage families) and to operate its cover-hosting reseller businesses (e.g. Info@Vps-Agent[.]Net).",
+      "observed_tooling": [
+        "persona email accounts",
+        "info@vps-agent.net"
+      ],
+      "detection_feasibility": "low — account creation is off-victim; only the inbound intimidation messages themselves are observable, on the recipient side",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1587.004",
+      "technique_name": "Develop Capabilities: Exploits",
+      "tactic": "resource-development",
+      "procedure_description": "ASA weaponized an exploit for CVE-2023-38831 (WinRAR) for use in its operations, per the advisory's Resource Development mapping.",
+      "observed_tooling": [
+        "CVE-2023-38831 exploit"
+      ],
+      "detection_feasibility": "low — exploit development is off-victim; downstream exploitation attempts are the detection surface",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "ASA obtains and operates commercially/openly available tooling — Masscan, Acunetix, Burp Suite and SQLMap for scanning and exploitation, and hash-cracking and OSINT services — living off widely-available tools to reduce custom-malware exposure.",
+      "observed_tooling": [
+        "Masscan",
+        "Acunetix",
+        "Burp Suite",
+        "SQLMap"
+      ],
+      "detection_feasibility": "medium — the tools are legitimate, but their on-target use (SQLMap injection strings, Acunetix/Burp scan signatures) is detectable via WAF/IDS and web-log analytics",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "ASA stages its WezRat payload on actor-controlled web infrastructure (onlinelive[.]info, with C2 fetch/report paths /wez/insert.php and /wez/api.php) so the trojanized 'Google Chrome Installer.msi' can retrieve and beacon to it post-execution.",
+      "observed_tooling": [
+        "onlinelive.info",
+        "WezRat"
+      ],
+      "detection_feasibility": "low — staging on attacker infrastructure is off-victim; the resulting client callbacks (T1071.001) are the detection surface",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "ASA exploits internet-facing applications and content-management systems to gain access, notably using SQLMap for SQL-injection against target infrastructure, and seeking mass-compromise opportunities against shared hosting providers or a common CMS used by a sector. Public-facing exploitation also underpinned access to the compromised French dynamic-display provider and IPTV/streaming services.",
+      "observed_tooling": [
+        "SQLMap",
+        "CVE-2023-38831",
+        "CMS exploitation"
+      ],
+      "detection_feasibility": "medium — SQL-injection and web-exploitation attempts are detectable via WAF/IPS signatures, anomalous web-server child-process spawns, and web-application logging; this is a primary DETECTION surface for the actor",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "ASA leverages unauthorized/valid access to third-party services for influence delivery — e.g. accessing a US IPTV streaming service to inject 'For-Humanity' messaging, accessing internet-facing IP-camera streams, and accessing the compromised French dynamic-display provider to push montages.",
+      "observed_tooling": [
+        "compromised/valid streaming & display credentials"
+      ],
+      "detection_feasibility": "medium — anomalous logins to streaming/display/admin panels from VPN ASNs and impossible-travel analytics can surface valid-account abuse, though it can resemble legitimate use",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf",
+        "https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/"
+      ]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "ASA induces victims to run a trojanized 'Google Chrome Installer.msi' that masquerades as a legitimate Chrome security-patch installer; the altered MSI installs Chrome but then executes the embedded, heavily-obfuscated 'bd.exe' (WezRat) RAT.",
+      "observed_tooling": [
+        "Google Chrome Installer.msi",
+        "bd.exe (WezRat)"
+      ],
+      "detection_feasibility": "medium — msiexec spawning an unexpected child executable (bd.exe) and MSI package integrity/signing anomalies are detectable via process-creation and EDR telemetry",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1110.001",
+      "technique_name": "Brute Force: Password Guessing",
+      "tactic": "credential-access",
+      "procedure_description": "ASA accesses victim infrastructure via automated password-guessing attempts against exposed accounts and services.",
+      "observed_tooling": [
+        "automated password-guessing"
+      ],
+      "detection_feasibility": "medium — repeated authentication failures across accounts/services are detectable via authentication-log analytics and lockout monitoring",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1110.002",
+      "technique_name": "Brute Force: Password Cracking",
+      "tactic": "credential-access",
+      "procedure_description": "ASA cracks obtained password hashes offline using online resources such as crackstation[.]net, hashes[.]com and md5hashing[.]net.",
+      "observed_tooling": [
+        "crackstation.net",
+        "hashes.com",
+        "md5hashing.net"
+      ],
+      "detection_feasibility": "low — offline hash cracking occurs entirely on attacker/third-party resources with no victim-side telemetry; a hunt/awareness item",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The WezRat 'bd.exe' RAT is heavily obfuscated and requires a runtime de-obfuscation key passed on the command line (observed value '8765') to decode its embedded configuration, including the C2 web-server address, impeding static analysis.",
+      "observed_tooling": [
+        "bd.exe command-line de-obfuscation key '8765'"
+      ],
+      "detection_feasibility": "low — obfuscation defeats static signatures; hunt via entropy analysis, the published WezRat detection content, and behavioral (decode-then-beacon) analytics",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "ASA disguises malicious artifacts and personas as legitimate: the RAT dropper is named 'Google Chrome Installer.msi' and performs a real Chrome install to appear benign; the C2 domain il-cert[.]net (connect.il-cert[.]net) mimics a security/CERT resource; and the 'Regiment GUD' persona impersonates the real French far-right group 'GUD'.",
+      "observed_tooling": [
+        "Google Chrome Installer.msi",
+        "il-cert.net",
+        "Regiment GUD impersonation"
+      ],
+      "detection_feasibility": "low — name/location masquerade defeats name-based trust; a HUNT via signer/metadata mismatch, MSI-behavior anomaly and lookalike-domain analysis",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "The WezRat RAT beacons over HTTP web protocols to its C2, checking in for tasking and returning collected data — observed communicating to http://onlinelive[.]info/wez/insert.php and http://onlinelive[.]info/wez/api.php (and C2 host connect.il-cert[.]net), with the C2 host address decoded from the obfuscated config at runtime. It can persist by being added to the Windows Startup directory.",
+      "observed_tooling": [
+        "WezRat HTTP C2",
+        "onlinelive.info/wez/insert.php",
+        "onlinelive.info/wez/api.php"
+      ],
+      "detection_feasibility": "medium — HTTP beaconing to the known WezRat C2 paths/domains and periodic web callbacks are detectable via network/proxy logging, DNS monitoring and IOC matching",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The trojanized MSI retrieves and executes the WezRat payload, and the RAT can pull additional instructions/content from its C2 web server — transferring tooling into the victim environment after initial execution.",
+      "observed_tooling": [
+        "MSI-delivered WezRat payload",
+        "HTTP tool transfer"
+      ],
+      "detection_feasibility": "medium — post-install downloads of executable content and new-binary drops correlated with process lineage are detectable via EDR and proxy telemetry",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "procedure_description": "ASA deploys the WezRat remote access trojan (mapped to T1219 in the advisory's C2 table) which collects basic system information, checks in to a specified web server when run from the command line, and awaits interactive tasking — providing hands-off-keyboard remote control of infected hosts.",
+      "observed_tooling": [
+        "WezRat / bd.exe RAT"
+      ],
+      "detection_feasibility": "medium — RAT beaconing, command-line-launched implant behavior and the known WezRat hashes/C2 give a workable detection surface via EDR and network IOCs",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Upon execution, the WezRat RAT collects basic system information about the infected computer to report to its C2, per the advisory's description of the 'bd' program's behavior.",
+      "observed_tooling": [
+        "WezRat host-info collection"
+      ],
+      "detection_feasibility": "medium — host-enumeration API/command patterns from a freshly-spawned implant are detectable via EDR behavioral analytics, though individually low-signal",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "procedure_description": "Central to the actor's hack-and-leak model: after stealing data ASA exfiltrates and publishes it (and harvested IP-camera content) via actor-controlled web services and servers, making stolen material available to 'clients' and leaking it to inflict reputational/psychological damage.",
+      "observed_tooling": [
+        "actor-controlled leak/staging servers",
+        "IP-camera content servers"
+      ],
+      "detection_feasibility": "low — exfiltration to web services can blend with normal outbound web traffic; hunt via large/anomalous outbound transfers to newly-seen destinations and DLP, though the leak itself often surfaces externally first",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf"
+      ]
+    },
+    {
+      "technique_id": "T1491.002",
+      "technique_name": "Defacement: External Defacement",
+      "tactic": "impact",
+      "procedure_description": "As part of its cyber-enabled influence operations, ASA defaces and hijacks externally-visible surfaces to display crafted propaganda — e.g. injecting Israel-Hamas-war messaging into a compromised US IPTV stream ('For-Humanity'), pushing anti-Israel photo montages via a compromised French dynamic-display provider during the 2024 Olympics, and website defacements against Israeli targets.",
+      "observed_tooling": [
+        "IPTV stream hijack",
+        "dynamic-display montages",
+        "website defacement"
+      ],
+      "detection_feasibility": "medium — external defacement/content-injection is detectable via file-integrity monitoring, 'known-good' content baselining and external brand/surface monitoring; a DETECTION surface for the influence payoff",
+      "sources": [
+        "https://www.ic3.gov/CSA/2024/241030.pdf",
+        "https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "Inbound mass port scanning against internet-facing assets, especially RTSP TCP/554 sweeps (Masscan) — correlate source IPs against the advisory's VPN-fronted IP list before action",
+    "Web-application logs showing SQL-injection / SQLMap and Acunetix/Burp scanner signatures against public-facing apps and CMS",
+    "msiexec.exe spawning an unexpected child process (bd.exe) shortly after a 'Google Chrome Installer.msi' execution; MSI signature/integrity anomalies",
+    "Command line containing a bare numeric de-obfuscation argument (e.g. '8765') passed to an unsigned executable",
+    "HTTP callbacks to onlinelive[.]info/wez/insert.php or /wez/api.php, or to C2 host connect.il-cert[.]net",
+    "File hash matches for WezRat: SHA256 4431b2a4d7758907f81fb1a0c1e36b2ce03e08d43123b1c398487770afd20727 (First.exe) and 6f765dda126e830c6cd2c7938dbb970d03be728e82c00388903a4ef3f9ecc853 (Google Chrome Installer.msi)",
+    "New executable added to the Windows Startup directory correlated with recent web-beaconing (WezRat persistence)",
+    "Successful authentications originating from Private Internet Access / Windscribe / ExpressVPN / Urban VPN / NordVPN exit nodes to sensitive/admin services",
+    "File-integrity / content-baseline alerts on externally-served content (websites, digital-signage, streaming feeds) indicating defacement or content injection",
+    "Outbound connections to actor persona/leak/staging domains (cybercourt[.]io, zeusistalking[.]*, rgud-group[.]*, cyberflood[.]io, pro-today[.]org, Contact-hstg[.]com)"
+  ],
+  "iocs": {
+    "ips": [
+      "45.140.146.139",
+      "45.84.0.237",
+      "45.140.146.197",
+      "45.140.146.137",
+      "45.84.0.254",
+      "45.142.212.21",
+      "45.140.146.108",
+      "45.140.146.208",
+      "85.206.170.160-85.206.170.191",
+      "85.206.167.224-85.206.167.255",
+      "85.206.169.64-85.206.169.79",
+      "85.206.169.80-85.206.169.95",
+      "213.109.147.63",
+      "146.19.254.61",
+      "31.42.177.114",
+      "45.143.167.87",
+      "45.143.166.233",
+      "45.120.177.8",
+      "5.230.56.148",
+      "77.91.74.158",
+      "195.26.87.80",
+      "213.109.147.97",
+      "185.110.188.112"
+    ],
+    "domains": [
+      "onlinelive.info",
+      "zeusistalking.io",
+      "zeusistalking.net",
+      "zeusistalking.com",
+      "rgud-group.net",
+      "rgud-group.com",
+      "cyberflood.io",
+      "cybercourt.io",
+      "pro-today.org",
+      "il-cert.net",
+      "connect.il-cert.net",
+      "Contact-hstg.com",
+      "server-speed.com",
+      "vps-agent.net",
+      "alqassam.ps",
+      "almaq.org"
+    ],
+    "emails": [
+      "info@vps-agent.net"
+    ],
+    "hashes": [
+      "4431b2a4d7758907f81fb1a0c1e36b2ce03e08d43123b1c398487770afd20727",
+      "6f765dda126e830c6cd2c7938dbb970d03be728e82c00388903a4ef3f9ecc853"
+    ],
+    "cves": [
+      "CVE-2023-38831"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "GROUP-ID DISCREPANCY (important for downstream): the task brief states MITRE tracks Emennet Pasargad as G1009 and to use it as the base mapping, but in THIS environment's bundled/reorganized ATT&CK dataset G1009 = 'Moses Staff' (DEV-0500 / Marigold Sandstorm) and G1044 = 'APT42' — neither is Emennet Pasargad / Cotton Sandstorm, and no dedicated Emennet Pasargad group object exists in this dataset. actor.mitre_id and actor.mitre_canonical_name are therefore left empty rather than asserting an unverifiable/incorrect ID; Moses Staff is listed under related_clusters solely to flag the collision, NOT as an alias. All 32 ttps were built from the actor's OWN ATT&CK table in advisory AA24-233A (v15.1) plus Microsoft-sourced enrichment, and EVERY technique_id was verified present in this dataset via sigma.data.mitre_attack; T1656 (Impersonation) was evaluated but is NOT in this dataset and was dropped (the Regiment-GUD/GUD and il-cert masquerade behavior is instead carried under T1036.005). SOURCE-HYGIENE: the brief's cited 'AA24-290A' is a DIFFERENT advisory ('Iranian Cyber Actors' Brute Force and Credential Access Activity', Zerologon/CVE-2020-1472, unrelated brute-force actor); its IPs/SHA1 hashes/CVE were deliberately EXCLUDED to avoid poisoning the pack — the correct Emennet Pasargad advisory is AA24-233A / IC3 241030 / JCSA-20241030-001. IOC caveats from the advisory itself: listed IPs are largely shared commercial-VPN exit nodes (Private Internet Access etc.), are not exclusive to the actor, and should be used for retrospective hunting, not blind blocking; two 85.206.x entries are CIDR-style ranges preserved verbatim. Tactic slugs use this dataset's conventions (defense-evasion emitted as 'stealth'). No YARA rules were present verbatim in the fetched primary sources, so yara_rules is empty (none authored). This actor is influence/hack-and-leak-centric, so much of the kill chain (personas, cover-hosting, leak-site operations, OSINT) is inherently HUNT (low feasibility, off-victim); the concrete DETECTION surfaces are T1190 public-app/CMS exploitation, T1595.* mass/RTSP scanning, the trojanized-MSI→WezRat execution & HTTP C2 chain, and T1491.002 external defacement/content-injection of served surfaces."
+}

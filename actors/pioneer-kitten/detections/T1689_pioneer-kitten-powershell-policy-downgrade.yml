@@ -1,0 +1,38 @@
+title: Pioneer Kitten PowerShell Execution-Policy Downgrade
+id: 1a3e22c7-b32e-4d55-b1db-78fa6e2a9739
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten lowering PowerShell policies to a less secure level to enable
+    execution of their scripts (T1689 Downgrade Attack). Keys on command-line invocations that weaken
+    the PowerShell execution policy (Set-ExecutionPolicy Bypass/Unrestricted, -ExecutionPolicy Bypass)
+    and downgrade constrained/protected execution. These changes precede script execution and are a
+    deliberate defense-impairment step. Pair with PowerShell operational and registry-modification
+    telemetry for the ExecutionPolicy value under HKLM/HKCU PowerShell keys.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1689
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        CommandLine|contains: 'Set-ExecutionPolicy'
+        CommandLine|contains:
+            - 'Bypass'
+            - 'Unrestricted'
+    selection_flag:
+        CommandLine|contains|all:
+            - '-ExecutionPolicy'
+            - 'Bypass'
+    condition: selection or selection_flag
+falsepositives:
+    - Developers and administrators legitimately relaxing execution policy for signed automation -
+      baseline expected hosts/accounts; the actor pattern co-occurs with ISE launch over RDP and
+      catbox.moe downloads
+level: medium

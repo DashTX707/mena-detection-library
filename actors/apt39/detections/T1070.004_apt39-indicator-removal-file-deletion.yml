@@ -1,0 +1,40 @@
+title: APT39 Indicator Removal - Tool and Payload File Deletion
+id: a6540568-e3d4-4ff4-92f8-486dc2206bb7
+status: experimental
+description: |
+    Detects APT39 / Chafer anti-forensic file deletion: removal of tools, logs, and payload files
+    after use to erase artifacts. Keys on forced/recursive deletion via cmd del, PowerShell
+    Remove-Item, and secure-delete utilities (sdelete) targeting user-writable staging paths. Noisy in
+    isolation, so highest value when correlated with a prior payload write/execution on the same host
+    within a short window.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_del:
+        Image|endswith:
+            - '\cmd.exe'
+        CommandLine|contains|all:
+            - 'del '
+            - ' /f'
+    selection_sdelete:
+        Image|endswith: '\sdelete.exe'
+        CommandLine|contains: ' -'
+    selection_ps:
+        CommandLine|contains|all:
+            - 'Remove-Item'
+            - ' -Force'
+    condition: (selection_del or selection_sdelete or selection_ps)
+falsepositives:
+    - Legitimate cleanup scripts, installers, and admin maintenance that delete temporary files -
+      baseline expected cleanup activity and correlate with prior suspicious writes
+level: low

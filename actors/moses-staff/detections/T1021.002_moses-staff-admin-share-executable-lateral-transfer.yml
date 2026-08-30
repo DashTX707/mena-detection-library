@@ -1,0 +1,43 @@
+title: Moses Staff Admin-Share Executable Write and Lateral Tool Transfer of DCSrv
+id: bbdcf150-4a14-471e-9a91-d8db25efb565
+status: experimental
+description: |
+    Detects the Moses Staff PyDCrypt loader transferring the DCSrv payload to remote hosts over SMB
+    and Windows admin shares (ADMIN$ / IPC$ / C$) before executing it via PsExec (T1021.002 /
+    T1570). Keys on file-share access events (Security Event ID 5140/5145) where an executable
+    (.exe / .dll / .sys) is written to an administrative share, which is the copy step preceding
+    remote service creation. Correlate with a following 7045 PSEXESVC / DCUMSrv service-creation
+    event on the same target within a short window. Requires object-access / detailed file-share
+    auditing (EID 5140/5145).
+references:
+    - https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.002
+    - attack.t1570
+    - mena-detection-library.moses-staff
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_eid:
+        EventID:
+            - 5140
+            - 5145
+    selection_adminshare:
+        ShareName|contains:
+            - 'ADMIN$'
+            - 'C$'
+    selection_exe:
+        RelativeTargetName|endswith:
+            - '.exe'
+            - '.dll'
+            - '.sys'
+    condition: selection_eid and selection_adminshare and selection_exe
+falsepositives:
+    - Legitimate remote software deployment and administration writing executables to admin shares -
+      baseline the expected management/deployment servers and service accounts; malicious use is
+      distinguished by fan-out to many hosts and a paired remote service creation
+level: medium

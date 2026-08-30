@@ -1,0 +1,49 @@
+title: HEXANE Network Configuration and Connection Discovery
+id: 070c920a-0d3d-492d-9b24-d6f19d4f0774
+status: experimental
+description: |
+    Detects network reconnaissance run by HEXANE / Lyceum and its DanBot implant (T1016 system
+    network configuration, T1016.001 internet connection discovery, T1018 remote system discovery,
+    T1049 system network connections discovery). Keys on the native commands used to map the network
+    and confirm C2 reachability before DNS-tunneling C2 is established: ipconfig, netstat, net view,
+    ping/tracert to well-known connectivity hosts, and nslookup. Individually noisy; fidelity comes
+    from clustering under a suspicious parent. Requires process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G1001/
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1016
+    - attack.t1016.001
+    - attack.t1018
+    - attack.t1049
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tools:
+        Image|endswith:
+            - '\ipconfig.exe'
+            - '\netstat.exe'
+            - '\nslookup.exe'
+            - '\tracert.exe'
+            - '\route.exe'
+            - '\arp.exe'
+    selection_cmds:
+        CommandLine|contains:
+            - 'ipconfig /all'
+            - 'netstat -'
+            - 'net view'
+            - 'nltest /dclist'
+            - 'ping google'
+            - 'ping 8.8.8.8'
+            - 'Test-Connection'
+            - 'Test-NetConnection'
+    condition: selection_tools or selection_cmds
+falsepositives:
+    - Network administration and troubleshooting - baseline expected admin/helpdesk hosts
+    - Connectivity checks by legitimate agents - allowlist known monitoring processes
+level: low

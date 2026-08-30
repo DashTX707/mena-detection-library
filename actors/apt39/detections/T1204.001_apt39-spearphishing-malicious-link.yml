@@ -1,0 +1,46 @@
+title: APT39 Spearphishing Link - Malicious URL Click to Credential/Malware Page
+id: 7535c7cc-18c3-4ae6-b8ec-e4c41b3757df
+status: experimental
+description: |
+    Detects APT39 / Chafer spear-phishing link activity: a user's browser or email client navigating
+    to a newly seen external URL that then delivers a payload, evidenced by a browser/email-client
+    process spawning a download-handler or the payload being written from a browser process. Keys on
+    web-proxy requests to low-reputation/first-seen domains referred from webmail, and on browser
+    processes spawning script hosts / archive handlers. APT39 relies on targets clicking malicious links
+    for both delivery and credential harvesting; endpoint signal is indirect so pair with proxy/URL-gateway
+    telemetry.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.initial-access
+    - attack.t1204.001
+    - attack.t1566.002
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\chrome.exe'
+            - '\msedge.exe'
+            - '\firefox.exe'
+            - '\iexplore.exe'
+            - '\outlook.exe'
+    selection_child:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\powershell.exe'
+            - '\cmd.exe'
+            - '\hh.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Legitimate web applications or click-to-run helpers that launch script hosts - allowlist known
+      internal apps and browser helper workflows
+level: medium

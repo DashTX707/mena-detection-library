@@ -1,0 +1,47 @@
+title: HEXANE Registry Run Key Autostart Persistence
+id: fa2ec36f-6c49-41fc-9697-2300bd0d85e4
+status: experimental
+description: |
+    Detects Registry Run-key autostart persistence used by HEXANE / Lyceum for its DanBot/DanDrop
+    components (T1547.001). Keys on writes to the Run / RunOnce keys (HKLM and HKCU) whose value
+    points at a command interpreter, script host, or a binary in a user-writable path - the tell of
+    an implant persistence entry rather than a legitimate signed-software autostart. Requires
+    registry-set auditing (Sysmon EID 13).
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.hexane
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+            - '\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run'
+    selection_value:
+        Details|contains:
+            - 'powershell'
+            - 'pwsh'
+            - 'cmd.exe'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - 'regsvr32'
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection_key and selection_value
+falsepositives:
+    - Software installers writing legitimate autostart entries that invoke helper scripts - baseline
+      known value names and signed publishers
+    - Admin automation persisted via Run keys - scope to values that launch from user-writable paths
+level: medium

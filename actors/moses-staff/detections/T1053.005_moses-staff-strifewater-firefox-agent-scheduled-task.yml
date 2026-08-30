@@ -1,0 +1,41 @@
+title: Moses Staff StrifeWater RAT Persistence - Spoofed Firefox Browser-Agent Scheduled Task
+id: 82d5984f-f777-479e-913d-05a4ebbc5177
+status: experimental
+description: |
+    Detects the Moses Staff StrifeWater RAT persistence mechanism: creation of a scheduled task
+    disguised with a legitimate-looking Mozilla Firefox browser-agent name (observed pattern
+    '_Mozilla\Firefox Default Browser Agent <hex>_') that survives reboot and relaunches the RAT,
+    which masquerades as calc.exe (T1053.005). Keys on scheduled-task creation (Event ID 4698) or
+    schtasks.exe command lines whose task name imitates the Firefox default-browser-agent task -
+    a strong anomaly because the genuine Firefox task lives under \Mozilla\ with a stable GUID and
+    points at the Firefox default-browser-agent binary, not a user-writable path. Requires
+    task-scheduler operational logging (EID 4698) or process-creation telemetry.
+references:
+    - https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.moses-staff
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_taskname:
+        CommandLine|contains:
+            - 'Firefox Default Browser Agent'
+    selection_target:
+        CommandLine|contains:
+            - '\Users\Public\'
+            - '\AppData\'
+            - 'calc.exe'
+    condition: selection_schtasks and selection_taskname and selection_target
+falsepositives:
+    - The genuine Mozilla-installed Firefox Default Browser Agent task - it is registered under the
+      \Mozilla\ path pointing at the real default-browser-agent.exe in Program Files, not a
+      user-writable directory or calc.exe; allowlist that exact legitimate command line
+level: high

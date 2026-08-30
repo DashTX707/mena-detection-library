@@ -1,0 +1,36 @@
+title: APT39 Web-Protocol C2 Beaconing (Remexi / Web-Shell Interaction)
+id: 8921de89-1f7b-414e-af67-6067ac7f1a7b
+status: experimental
+description: |
+    Detects APT39 / Chafer HTTP(S) command-and-control, used by backdoors such as Remexi and for
+    interactive web-shell control. Keys on web-proxy requests exhibiting beacon characteristics -
+    non-browser or suspicious user agents, requests to newly seen/low-reputation hosts, and repetitive
+    fixed-interval POST/GET to a small set of URIs. Blends with normal web traffic, so operate as a
+    per-host beacon/regularity analytic over proxy logs and correlate with endpoint C2 processes.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.apt39
+logsource:
+    category: proxy
+detection:
+    selection_ua:
+        c-useragent|contains:
+            - 'python-requests'
+            - 'curl/'
+            - 'WinHttp'
+            - 'Mozilla/4.0 (compatible; MSIE'
+    selection_method:
+        cs-method:
+            - 'POST'
+            - 'GET'
+    condition: selection_ua and selection_method
+falsepositives:
+    - Legitimate automation, updaters, and API clients that emit non-browser user agents - baseline
+      expected clients and destinations, then alert on new/low-reputation hosts with beacon regularity
+level: medium

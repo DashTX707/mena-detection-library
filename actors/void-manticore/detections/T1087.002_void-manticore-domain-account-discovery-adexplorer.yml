@@ -1,0 +1,42 @@
+title: Void Manticore Domain Account Discovery via net /domain and SysInternals AD Explorer
+id: 1aa05dea-c1ab-42b4-aeba-435adda2a491
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) domain account and directory enumeration performed through the
+    Karma Shell: 'net user <username> /domain' queries and collection of broader Active Directory data
+    with SysInternals AD Explorer on compromised hosts (T1087.002 Account Discovery: Domain Accounts).
+    Keys on net.exe/net1.exe with the /domain modifier for user or group queries, and on execution of
+    AD Explorer (ADExplorer.exe / ADExplorer64.exe) which performs characteristic bulk LDAP directory
+    reads. Highest fidelity when parented by a web-server/web-shell process or run on a server that does
+    not normally perform directory administration. Requires process-creation telemetry with command line
+    (Sysmon EID 1 / Security 4688).
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1087.002
+    - mena-detection-library.void-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_net:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains|all:
+            - 'user'
+            - '/domain'
+    selection_adexplorer:
+        Image|endswith:
+            - '\ADExplorer.exe'
+            - '\ADExplorer64.exe'
+        OriginalFileName: 'AdExp'
+    condition: selection_net or selection_adexplorer
+falsepositives:
+    - Helpdesk/IT administrators running net user /domain during legitimate account troubleshooting -
+      baseline expected admin hosts/accounts and scope alerting to servers and web-worker lineage
+    - Authorized use of AD Explorer for directory audits - allowlist the specific admin workstations
+level: medium

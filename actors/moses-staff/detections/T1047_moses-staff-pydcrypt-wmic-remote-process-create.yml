@@ -1,0 +1,36 @@
+title: Moses Staff PyDCrypt WMIC Remote Process Creation
+id: 6b84f1ed-d680-417c-9a4e-f2ca2e6c6a4b
+status: experimental
+description: |
+    Detects the Moses Staff PyDCrypt loader using WMIC to remotely create processes on peer hosts
+    and deploy the DCSrv encryptor with compromised administrator credentials (T1047). Keys on
+    wmic.exe invoked with a remote node target and 'process call create' - the canonical
+    WMI remote-execution pattern - especially when combined with explicit alternate credentials
+    (/user /password). Remote WMIC process creation is used by administrators too, so best operated
+    with baselining of management source hosts and a burst of many distinct target nodes in a short
+    window. Requires process-creation telemetry (Sysmon EID 1 / Security 4688).
+references:
+    - https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1047
+    - mena-detection-library.moses-staff
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_wmic:
+        Image|endswith: '\wmic.exe'
+        CommandLine|contains: 'process call create'
+    selection_remote:
+        CommandLine|contains:
+            - '/node:'
+            - '-node:'
+    condition: selection_wmic and selection_remote
+falsepositives:
+    - Legitimate remote administration and software deployment via WMIC - baseline the expected
+      management hosts and operator accounts; alert with higher confidence when the same source
+      fans out to many distinct nodes or supplies explicit alternate credentials
+level: medium

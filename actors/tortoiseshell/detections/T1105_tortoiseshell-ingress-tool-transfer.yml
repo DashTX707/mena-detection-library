@@ -1,0 +1,44 @@
+title: Tortoiseshell Ingress Tool Transfer via Certutil / PowerShell Download
+id: 3e62a31d-9084-4a9b-8d89-3a4335ea1ad5
+status: experimental
+description: |
+    Detects ingress tool transfer (T1105) by Tortoiseshell / Imperial Kitten - Backdoor.Syskit is a
+    downloader-backdoor, and certutil / PowerShell were used to pull additional tools and payloads onto
+    compromised hosts. Keys on certutil -urlcache / -f remote downloads and PowerShell/bitsadmin download
+    invocations that write to disk. Requires process-creation logging with command line.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.tortoiseshell
+detection:
+    selection_certutil:
+        Image|endswith: '\certutil.exe'
+        CommandLine|contains:
+            - '-urlcache'
+            - '-url '
+            - '-f http'
+    selection_ps_dl:
+        CommandLine|contains:
+            - 'DownloadFile'
+            - 'DownloadString'
+            - 'Invoke-WebRequest'
+            - 'Start-BitsTransfer'
+            - 'wget '
+            - 'curl '
+    selection_bits:
+        Image|endswith: '\bitsadmin.exe'
+        CommandLine|contains:
+            - '/transfer'
+            - '/download'
+    condition: selection_certutil or selection_ps_dl or selection_bits
+logsource:
+    category: process_creation
+    product: windows
+falsepositives:
+    - Admin scripts and package managers downloading files - baseline expected automation hosts and sources
+    - certutil used for legitimate certificate retrieval - scope to -urlcache fetching non-certificate URLs
+level: medium

@@ -1,0 +1,35 @@
+title: Moses Staff StrifeWater RAT Command Execution - cmd.exe Spawned by Masqueraded calc.exe
+id: b42bc065-3686-4205-8b7f-d6069d170c1c
+status: experimental
+description: |
+    Detects the Moses Staff StrifeWater RAT executing operator commands through the Windows command
+    shell (T1059.003). StrifeWater masquerades as the Windows calculator (calc.exe) and provides
+    cmd.exe-based command execution, so a strong signal is calc.exe acting as the parent of cmd.exe
+    - behaviour the genuine calculator never exhibits - or a calc.exe process running from a
+    non-standard path (outside System32 / WinSxS) spawning a shell. Keys on that anomalous
+    parent-child relationship. Requires process-creation telemetry (Sysmon EID 1 / Security 4688).
+references:
+    - https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.moses-staff
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\calc.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - The genuine calc.exe / Calculator app does not spawn a command shell; a match is inherently
+      anomalous. Rare third-party tools also named calc.exe should be baselined and allowlisted by
+      full path and signer
+level: high

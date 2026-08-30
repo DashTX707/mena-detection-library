@@ -1,0 +1,46 @@
+title: Moses Staff IIS ASPX Web Shell - w3wp.exe Spawning Command Interpreter
+id: b1d8fbf1-a604-4cc6-ab82-b8db249a6404
+status: experimental
+description: |
+    Detects the Moses Staff post-exploitation web-shell behaviour: after ProxyShell/ProxyLogon
+    exploitation the actor drops ASPX web shells (e.g. IISpool.aspx under
+    C:\inetpub\wwwroot\aspnet_client\system_web\) onto compromised IIS servers and proxies
+    follow-on commands through them (T1505.003). Keys on the IIS worker process w3wp.exe (or the
+    classic-pipeline aspnet_wp.exe) spawning a command interpreter or reconnaissance/administration
+    binary - a strong, high-fidelity signal because a healthy IIS worker rarely spawns cmd.exe,
+    powershell.exe or system enumeration tools. Requires process-creation telemetry
+    (Sysmon EID 1 / Security 4688).
+references:
+    - https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.moses-staff
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\aspnet_wp.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\whoami.exe'
+            - '\hostname.exe'
+            - '\ipconfig.exe'
+            - '\systeminfo.exe'
+            - '\nltest.exe'
+            - '\wmic.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Application deployment or diagnostic scripts legitimately launched by an IIS-hosted app -
+      baseline the specific web applications that shell out and allowlist their expected children
+level: high

@@ -1,0 +1,50 @@
+title: Tortoiseshell User Execution of Recruitment Lure - Office/Archive Spawning Payload
+id: 9e94969e-43c8-43cf-86f7-d4924412d01d
+status: experimental
+description: |
+    Detects user execution of Tortoiseshell / Imperial Kitten recruitment-themed lures (T1204.002 Malicious
+    File, T1204.001 Malicious Link). The actor relied on targets clicking social-media/recruitment links
+    and running fake job-application installers / weaponized documents to launch custom .NET implants. Keys
+    on Office/PDF/archive parents spawning a script interpreter or LOLBin child - the core user-execution
+    behaviour. The link variant (T1204.001) is best corroborated at the proxy/URL gateway; this endpoint
+    rule catches the post-click detonation. Requires process-creation logging with parent image.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1204.001
+    - attack.t1204.002
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+            - '\acrobat.exe'
+            - '\acrord32.exe'
+            - '\7z.exe'
+            - '\7zFM.exe'
+            - '\winrar.exe'
+    selection_child:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Document workflows with legitimate macro-driven automation - baseline expected macro-enabled
+      templates and publishers
+    - Archive tools launching signed installers - correlate with subsequent network/persistence activity
+level: high

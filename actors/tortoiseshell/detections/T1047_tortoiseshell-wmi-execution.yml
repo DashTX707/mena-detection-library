@@ -1,0 +1,41 @@
+title: Tortoiseshell WMI Process Execution and Remote Command
+id: cb93dd38-b9f0-4799-8fc1-30e68e85c184
+status: experimental
+description: |
+    Detects Windows Management Instrumentation execution (T1047) used by Tortoiseshell / Imperial Kitten for
+    running commands during hands-on-keyboard activity. Keys on wmic.exe process-call create (local or
+    /node: remote) and on WmiPrvSE.exe spawning command interpreters / script hosts - the tell of WMI-based
+    execution rather than benign inventory queries. Requires process-creation logging with parent image.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1047
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_wmic:
+        Image|endswith: '\wmic.exe'
+        CommandLine|contains:
+            - 'process call create'
+            - '/node:'
+    selection_wmiprov:
+        ParentImage|endswith: '\WmiPrvSE.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+    condition: selection_wmic or selection_wmiprov
+falsepositives:
+    - Legitimate remote administration and software inventory via WMI/wmic - baseline expected admin hosts
+      and management servers
+    - Configuration-management agents that use WMI to invoke scripts - allowlist known tooling
+level: medium

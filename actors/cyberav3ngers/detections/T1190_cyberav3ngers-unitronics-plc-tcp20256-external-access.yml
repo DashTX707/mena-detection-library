@@ -1,0 +1,45 @@
+title: CyberAv3ngers External Access to Internet-Exposed Unitronics PLC on TCP 20256/20257
+id: f098a761-df2a-470e-9d1c-3145f40c63ab
+status: experimental
+description: |
+    Detects inbound connections from an external/internet source to a Unitronics Vision-series PLC/HMI
+    on the default remote-programming port TCP 20256 (or the actor-changed 20257). This is the primary
+    detectable initial-access and external-remote-service surface for CyberAv3ngers (IRGC-CEC): the
+    actors reached internet-exposed Unitronics PLCs directly over 20256 to reprogram OT devices, and on
+    compromised devices moved the port to 20257 to lock out operators. OT programming ports should never
+    be reachable from the internet; any inbound flow to 20256/20257 crossing the network boundary is a
+    strong signal. Operated on a fronting firewall / OT-boundary sensor. Covers T1190 (exploit
+    public-facing application) and T1133 (external remote services). Tune src_external to your external
+    zone / RFC1918-negation and allowlist any sanctioned remote-engineering jump host.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a
+    - https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1190
+    - attack.t1133
+    - mena-detection-library.cyberav3ngers
+logsource:
+    category: firewall
+detection:
+    selection:
+        dst_port:
+            - 20256
+            - 20257
+        action:
+            - allow
+            - allowed
+            - accept
+            - permit
+    filter_internal_src:
+        src_ip|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: selection and not filter_internal_src
+falsepositives:
+    - Sanctioned remote-engineering / integrator access to Unitronics devices from a known jump host - allowlist the specific source IP
+    - Internet-wide scanners (Shodan/Censys) probing 20256 - these are still worth reviewing as exposure findings
+level: high

@@ -1,0 +1,30 @@
+title: Tortoiseshell Backdoor.Syskit Policy Registry Value Modification
+id: 571b614b-38e8-45dd-ae6c-ceb5bdb376b9
+status: experimental
+description: |
+    Detects the specific registry modifications (T1112) made by Tortoiseshell Backdoor.Syskit, which writes
+    values Enablevmd and Sendvmd under HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System during
+    operation. Keys tightly on these actor-specific policy value names to keep false positives low. Tagged
+    under stealth (defense-evasion) per environment convention. Requires registry-set auditing (Sysmon EID
+    13).
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1112
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection:
+        TargetObject|contains:
+            - '\CurrentVersion\Policies\System\Enablevmd'
+            - '\CurrentVersion\Policies\System\Sendvmd'
+    condition: selection
+falsepositives:
+    - Extremely unlikely - these value names are actor-specific; investigate any hit as a likely Syskit
+      infection
+level: high

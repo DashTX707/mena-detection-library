@@ -1,0 +1,41 @@
+title: APT39 Autostart Persistence via Run Keys, Startup Folder and Shortcut Modification
+id: c86c7feb-95a7-4089-bbea-2c28f7b67bd0
+status: experimental
+description: |
+    Detects APT39 / Chafer boot/logon autostart persistence: writes to Registry Run keys, drops into
+    the Startup folder, and creation/modification of malicious shortcut (.lnk) files that point at
+    payloads. Keys on reg.exe adding values under Run/RunOnce and on command lines that reference the
+    Startup path or write .lnk files pointing at script hosts / user-writable payloads. APT39 uses these
+    Autoruns-class mechanisms to auto-execute malware at logon.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - attack.t1547.009
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_runkey:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains|all:
+            - ' add '
+            - '\CurrentVersion\Run'
+    selection_startup:
+        CommandLine|contains: '\Start Menu\Programs\Startup\'
+    selection_lnk:
+        CommandLine|contains:
+            - '.lnk'
+        CommandLine|contains|all:
+            - 'copy'
+            - 'Startup'
+    condition: selection_runkey or selection_startup or selection_lnk
+falsepositives:
+    - Legitimate software installers that register Run keys or Startup shortcuts - allowlist known
+      installers, signed binaries, and expected autostart entries
+level: high

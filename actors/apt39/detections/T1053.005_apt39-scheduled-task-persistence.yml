@@ -1,0 +1,41 @@
+title: APT39 Scheduled Task Creation for Persistence and Payload Execution
+id: a10fb36a-9c94-4839-80cf-fad8c11569fd
+status: experimental
+description: |
+    Detects APT39 / Chafer persistence via scheduled tasks created with schtasks.exe. Keys on
+    schtasks /create actions, especially where the task action invokes a script host, LOLBin, or a
+    binary from a user-writable path (Temp, AppData, ProgramData, Public). APT39 creates scheduled
+    tasks to maintain persistence and execute payloads on compromised hosts; task creation is logged
+    (Event ID 4698 / Task Scheduler operational) and is highly detectable.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_susp:
+        CommandLine|contains:
+            - '\Users\Public\'
+            - '\AppData\'
+            - '\Temp\'
+            - '\ProgramData\'
+            - 'powershell'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'certutil'
+    condition: selection and selection_susp
+falsepositives:
+    - Legitimate software and IT tooling that register scheduled tasks during install/update -
+      allowlist known installers, task names, and signed action binaries
+level: medium

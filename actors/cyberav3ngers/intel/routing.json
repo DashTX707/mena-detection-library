@@ -1,0 +1,133 @@
+{
+  "actor": "CyberAv3ngers",
+  "provenance": "Lane split authored by the Stage-2 decision-agent (read-only; returns JSON in reply) and persisted by the orchestrator as the agent's returned detect-vs-hunt partition. Detection = seed complement of the agent's hunt set; validated to cover the Stage-1 seed exactly with no overlap/dup, and det-count reconciled against the agent's summary. All ids verified present in the CI's bundled ATT&CK dataset. Per-technique rationale shows the Stage-1 detection-feasibility basis.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "high — internet-exposed PLC/HMI on TCP 20256 is inventoriable via external attack-surface scanning (Shodan/Censys) and edge netflow; inbound connections to 20256 from external hosts are a strong, monitorable signal"
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "rationale": "medium — external connections to OT remote-management ports are detectable at the network boundary, but legitimate remote engineering access can blend in without an allowlist"
+    },
+    {
+      "technique_id": "T1078.001",
+      "technique_name": "Valid Accounts: Default Accounts",
+      "tactic": "initial-access",
+      "rationale": "high — successful logon to a PLC/HMI from an external source, and continued presence of default credentials, are directly detectable via device auth logs and credential-audit scans; strong hardening/detection surface"
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "rationale": "high — repeated/sustained login attempts to a PLC on TCP 20256 from external hosts are detectable via a fronting firewall/gateway or IDS; CISA explicitly recommends monitoring for this brute-force pattern"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "rationale": "medium — deletion of the implant binary, init script and logs is detectable as a file-delete burst on gateways with EDR/auditd, but anti-forensic self-wipe hinders post-hoc triage on embedded devices"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — horizontal scanning from an OT device produces anomalous connection fan-out detectable via netflow/east-west monitoring, though many OT networks lack such sensors"
+    },
+    {
+      "technique_id": "T1071",
+      "technique_name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "rationale": "medium — MQTT egress from an OT/IoT device to an external broker on 8883 is detectable via netflow/protocol analytics, especially where MQTT to internet destinations is not expected; blends with legitimate IoT where MQTT is normal"
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "rationale": "medium — an OT/IoT device making outbound DoH (HTTPS to 1.1.1.1 / known DoH endpoints) is anomalous and monitorable at the egress boundary; blocking/inspecting DoH from OT segments is a practical detection and control"
+    },
+    {
+      "technique_id": "T1565.001",
+      "technique_name": "Data Manipulation: Stored Data Manipulation",
+      "tactic": "impact",
+      "rationale": "medium — unauthorized ladder-logic download and program/version change is detectable via OT asset-management config-change monitoring and PLC operating-mode/program-change events, but requires OT-specific instrumentation"
+    },
+    {
+      "technique_id": "T1531",
+      "technique_name": "Account Access Removal",
+      "tactic": "impact",
+      "rationale": "medium — device rename and newly-enabled upload password protection are detectable as configuration changes via OT asset monitoring, and manifest operationally as sudden loss of remote access"
+    },
+    {
+      "technique_id": "T1499",
+      "technique_name": "Endpoint Denial of Service",
+      "tactic": "impact",
+      "rationale": "medium — the default-port change and disabled upload/download are detectable via OT config-change monitoring and by connection failures on the expected port; CISA recommends monitoring standard protocols appearing on non-standard ports"
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "rationale": "high — the defacement is directly observable to operators and, where HMI/screen monitoring exists, an unexpected splash-page change is an immediate high-fidelity indicator; the message text is a durable behavioral signature of this actor"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — adversary capability development occurs off-victim and is not observable in defender telemetry; value is strategic (sample analysis / YARA), not host detection"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain acquisition is off-victim; hunt candidate via newly-registered-domain and passive-DNS enrichment of the C2 domain across egress logs"
+    },
+    {
+      "technique_id": "T1059.004",
+      "technique_name": "Command and Scripting Interpreter: Unix Shell",
+      "tactic": "execution",
+      "rationale": "medium — unexpected shell command execution spawned by a non-shell IoT service binary is detectable on Linux endpoints with auditd/EDR, but most embedded OT devices lack such telemetry (hunt on gateways that do)"
+    },
+    {
+      "technique_id": "T1037.004",
+      "technique_name": "Boot or Logon Initialization Scripts: RC Scripts",
+      "tactic": "persistence",
+      "rationale": "medium — creation/modification of an rc3.d init script and a persistent watchdog process is detectable via file-integrity monitoring on managed Linux gateways, but not on closed embedded PLC/HMI firmware"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "rationale": "low — legitimate-looking file names and paths defeat name-based rules; hunt candidate via known-bad path/name (/etc/rc3.d/S93InitSystemd.sh, /usr/bin/iocontrol) and file hashing on gateways with visibility"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "low — encrypted-at-rest config is opaque to log-based detection; value is in sample/entropy analysis, not host telemetry"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — in-memory runtime decode leaves little observable trace on constrained OT devices; hunt candidate via dynamic/sandbox analysis of recovered samples"
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "low — TLS conceals payload content; detection relies on metadata (destination, JA3/SNI, port 8883 to unexpected external brokers) rather than inspection"
+    }
+  ],
+  "summary": {
+    "total": 20,
+    "detection": 12,
+    "hunt": 8
+  }
+}

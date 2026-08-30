@@ -1,0 +1,49 @@
+title: Pioneer Kitten Domain Account and Trust Discovery
+id: 19136cca-b792-4107-a9d8-3a1ef56a28a5
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten enumeration of domain accounts and trust relationships
+    (T1482 Domain Trust Discovery, T1087.002 Account Discovery: Domain Account). The actor exfiltrates
+    account usernames from the domain controller and gathers network/user-account information for
+    further exploitation and access brokering. Keys on the standard discovery command lines: net user
+    /domain, net group "domain admins" /domain, nltest /domain_trusts and /dclist, and dsquery/LDAP
+    enumeration. Highest value when several of these fire in a tight process-lineage burst from one
+    host/user.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1482
+    - attack.t1087.002
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_net:
+        CommandLine|contains:
+            - 'net user /domain'
+            - 'net group "domain admins"'
+            - 'net group /domain'
+            - 'net accounts /domain'
+    selection_nltest:
+        Image|endswith: '\nltest.exe'
+        CommandLine|contains:
+            - '/domain_trusts'
+            - '/dclist'
+            - '/trusted_domains'
+    selection_dsquery:
+        Image|endswith:
+            - '\dsquery.exe'
+            - '\dsget.exe'
+        CommandLine|contains:
+            - 'trustedDomain'
+            - 'user'
+    condition: 1 of selection_*
+falsepositives:
+    - Administrative scripts and directory audits performing the same enumeration - baseline expected
+      admin hosts/accounts; the actor pattern is a burst from a freshly compromised host
+level: medium

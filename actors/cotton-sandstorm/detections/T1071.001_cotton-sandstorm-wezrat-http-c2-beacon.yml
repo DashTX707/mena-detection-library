@@ -1,0 +1,41 @@
+title: Cotton Sandstorm WezRat RAT HTTP C2 Beaconing
+id: e0761d9a-4fdd-4d5c-b091-7e27f8e88e05
+status: experimental
+description: |
+    Flagship network detection for the Cotton Sandstorm / Emennet Pasargad (ASA) WezRat remote access
+    trojan command-and-control channel. WezRat ('bd' / bd.exe / First.exe) beacons over HTTP web
+    protocols to check in for tasking and return collected host data (T1071.001), providing hands-off
+    remote control of infected hosts (T1219, Remote Access Tools). Keys on the known WezRat C2 request
+    paths /wez/insert.php and /wez/api.php and the staging/C2 hosts onlinelive[.]info,
+    connect.il-cert[.]net and il-cert[.]net observed in proxy / web-gateway and DNS telemetry. The URI
+    path pattern is the durable channel artifact; the domains are supplementary IOCs that decay. Any
+    match is high-fidelity because these paths and hosts have no legitimate business use. Requires
+    outbound proxy / web-gateway logging (URL + host) or DNS query logging.
+references:
+    - https://www.ic3.gov/CSA/2024/241030.pdf
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-290a
+    - https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1219
+    - mena-detection-library.cotton-sandstorm
+logsource:
+    category: proxy
+detection:
+    selection_path:
+        cs-uri-stem|contains:
+            - '/wez/insert.php'
+            - '/wez/api.php'
+    selection_host:
+        cs-host:
+            - 'onlinelive.info'
+            - 'connect.il-cert.net'
+            - 'il-cert.net'
+    condition: selection_path or selection_host
+falsepositives:
+    - Very unlikely - the C2 paths and hosts are actor-specific; occasional benign hits would be
+      threat-intel scanners or sandboxes replaying the IOC
+level: high

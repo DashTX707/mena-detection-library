@@ -1,0 +1,217 @@
+{
+  "actor": "Homeland Justice",
+  "provenance": "Lane split derived by the orchestrator applying the Stage-2 decision-agent's documented routing rule (detect-vs-hunt by detection feasibility: low=hunt, medium/high=detect) because the decision-agent run was interrupted by a session rate limit. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "medium — CVE-2019-0604 exploitation is detectable via SharePoint/IIS request patterns, WAF/IDS signatures, and vulnerable-version telemetry, though n-day exploitation of an exposed server may precede monitoring"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "medium — new .aspx files in web-root paths and IIS worker (w3wp.exe) spawning child processes are strong web-shell signals, though a long-dormant shell may evade point-in-time review"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "medium — scheduled-task creation (Event ID 4698 / Task Scheduler operational log) referencing unusual binaries or user-writable paths is detectable"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "medium — new startup/Run-key entries or Startup-folder scripts pointing at binaries in ProgramData are detectable via autostart and registry-write telemetry"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — batch-driven cmd.exe issuing vssadmin/taskkill/reg-add commands in quick succession is a detectable destructive-staging pattern via process-command-line telemetry"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "medium — PowerShell script-block logging (4104) and AMSI telemetry detect follow-on command execution, though usage is easily blended with admin activity"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — Base64-heavy .aspx content and large encoded blobs in web files are detectable via web-content inspection and entropy analysis"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — runtime decode-and-load behavior (Assembly.Load of decoded bytes) is detectable via .NET/CLR and script-block telemetry"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "medium — Defender tamper events, service/registry changes disabling real-time protection, and execution of a known disable_defender binary are detectable via EDR tamper-protection and Defender operational logs"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "rationale": "medium — scripted registry writes to the Wallpaper value followed by a forced desktop refresh across many hosts is an anomalous, detectable pattern"
+    },
+    {
+      "technique_id": "T1003",
+      "technique_name": "OS Credential Dumping",
+      "tactic": "credential-access",
+      "rationale": "medium — LSASS access, SAM/registry-hive dumping, and credential-theft tooling are detectable via process-access (Sysmon EID 10) and command-line telemetry"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — internal horizontal port-scan connection fan-out and known scanner-binary execution are detectable, though scan tools are easily renamed"
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — host-enumeration bursts across a subnet are detectable but blend with legitimate administration"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — RDP from atypical internal hosts (e.g. a print server originating outbound RDP) and lateral-RDP graph anomalies are detectable via logon (4624 type 10) analytics"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "rationale": "medium — payload copies to ADMIN$/C$ shares followed by remote execution across many hosts are detectable via SMB write and remote-create telemetry"
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "rationale": "medium — executable/script copies between internal hosts shortly before execution are detectable via file-write and network-share telemetry"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "medium — installation/load of the EldoS RawDisk driver (rwdsk.sys) and new kernel-service creation (Event ID 7045 / Sysmon driver-load EID 6) are detectable, and the driver hash is a known IOC"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — POST requests to an unusual .aspx endpoint followed by the web server initiating outbound sockets to arbitrary IP:port is a detectable web-shell C2 pattern"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — the web server or a beaconing host writing new executables to disk shortly after inbound C2 is detectable via network-to-file-create correlation"
+    },
+    {
+      "technique_id": "T1489",
+      "technique_name": "Service Stop",
+      "tactic": "impact",
+      "rationale": "medium — a scripted taskkill /f loop against a broad process list immediately before mass file changes is a high-value, detectable ransomware/wiper precursor"
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "rationale": "high — vssadmin delete shadows /all /quiet is a discrete, high-fidelity, well-covered destructive precursor and one of the most reliable early-warning signals"
+    },
+    {
+      "technique_id": "T1561.001",
+      "technique_name": "Disk Wipe: Disk Content Wipe",
+      "tactic": "impact",
+      "rationale": "medium — a user-mode process acquiring a raw \\\\.\\PhysicalDrive handle via the EldoS driver and issuing large sequential writes is a rare, high-fidelity destructive signal via disk-I/O/raw-handle telemetry"
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "rationale": "medium — raw writes to the boot sector / first physical sectors via the RawDisk driver are a rare, high-fidelity destructive signal, though concurrent with the impact"
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "rationale": "medium — scripted mass wallpaper/registry changes to a dropped image across many hosts is a detectable, anomalous internal-defacement pattern"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim persona and account creation are not visible in defender host/network logs; hunt candidate via external monitoring of leak sites/Telegram for early breach disclosure of owned data"
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "rationale": "low — authenticated remote access with valid credentials blends with legitimate use; hunt candidate via anomalous source-geo/ASN, off-hours logon, and new-account RDP/VPN correlation"
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "rationale": "low — path/name masquerading evades name-based rules; hunt candidate via unsigned/unknown executables in ProgramData\\Microsoft paths and hash reputation"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "low — file enumeration is ubiquitous and low-signal on its own; hunt candidate only in correlation with the subsequent encrypt/wipe burst"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — bulk local file access is high-volume normal activity; hunt candidate via large-scale read/stage sequences preceding exfiltration"
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "rationale": "low — archiving utilities are common admin tools; hunt candidate via large archive creation over staged directories preceding outbound transfer"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "low — exfil folded into web-shell C2 sockets blends with server traffic; hunt candidate via anomalous large outbound transfers from a web/SharePoint server"
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "rationale": "low — by the time high-rate encryption is observable the impact is occurring; hunt/detect the precursors (vssadmin, taskkill, Defender disable, web-shell). File-entropy/canary analytics can catch it mid-run but recovery may already be lost"
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "rationale": "low — mass raw-disk destruction is concurrent with impact; hunt/detect via the precursor driver load (rwdsk.sys) and raw-device handle acquisition rather than the wipe itself"
+    },
+    {
+      "technique_id": "T1491.002",
+      "technique_name": "Defacement: External Defacement",
+      "tactic": "impact",
+      "rationale": "low — external leak/messaging occurs off-victim; hunt candidate via external/brand and leak-site monitoring for early disclosure of owned data"
+    }
+  ],
+  "summary": {
+    "total": 34,
+    "detection": 24,
+    "hunt": 10
+  }
+}

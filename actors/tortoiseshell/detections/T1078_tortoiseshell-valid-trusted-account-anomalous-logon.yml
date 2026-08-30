@@ -1,0 +1,47 @@
+title: Tortoiseshell Valid / Trusted-Relationship Account Anomalous Remote Logon
+id: a8f02c2e-48bb-41c1-ba71-59508a92a99d
+status: experimental
+description: |
+    Detects the valid-account and trusted-relationship initial-access/privilege-escalation tradecraft of
+    Tortoiseshell / Imperial Kitten (T1078 Valid Accounts, T1078.002 Domain Accounts, T1199 Trusted
+    Relationship). In the 2018-2019 Saudi IT-provider supply-chain campaign the actor abused the trusted
+    access held by compromised managed-service providers and used stolen/legitimate credentials - including
+    domain-admin obtained on at least two networks - to reach and move through downstream customer estates.
+    Keys on network/remote-interactive logons (EventID 4624 LogonType 3 and 10) that should be baselined
+    against expected provider/remote-management source hosts and privileged-account usage windows. Best
+    operated as a per-account/per-source anomaly analytic (new host, new time, provider account). Requires
+    Windows Security authentication logs with source-workstation/IP fields.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.privilege-escalation
+    - attack.t1078
+    - attack.t1078.002
+    - attack.t1199
+    - mena-detection-library.tortoiseshell
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType:
+            - 3
+            - 10
+    filter_machine:
+        TargetUserName|endswith: '$'
+    filter_local:
+        TargetUserName:
+            - 'ANONYMOUS LOGON'
+            - 'SYSTEM'
+    condition: selection and not 1 of filter_*
+falsepositives:
+    - Legitimate managed-service-provider / remote-management logons - baseline expected provider accounts,
+      source hosts and jump servers, then alert only on new source/time or off-hours privileged use
+    - Routine domain administration and interactive RDP by IT staff - scope to anomalous account+source
+      pairs and privileged group membership
+level: medium

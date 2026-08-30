@@ -1,0 +1,52 @@
+title: Tortoiseshell Indicator Removal - Tool and Payload File Deletion
+id: 6b66158d-0cce-473a-8567-2b5d9e2511be
+status: experimental
+description: |
+    Detects indicator removal via file deletion (T1070.004) used by Tortoiseshell / Imperial Kitten to
+    delete staged tools and payload artefacts after use. Keys on command-line self-deletion patterns
+    (cmd /c del, del /f /q of an executable in a temp/user-writable path, PowerShell Remove-Item) targeting
+    the actor's staging locations. Best correlated with prior payload-write telemetry to reduce noise.
+    Tagged under stealth (defense-evasion) per environment convention. Requires process-creation logging
+    (or file-delete EDR telemetry).
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_del:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        CommandLine|contains:
+            - 'del '
+            - 'del/'
+            - 'erase '
+            - 'Remove-Item'
+    selection_target:
+        CommandLine|contains:
+            - '.exe'
+            - '.dll'
+            - '.ps1'
+            - '.vbs'
+            - '.hta'
+    selection_path:
+        CommandLine|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    condition: selection_del and selection_target and selection_path
+falsepositives:
+    - Installers and build scripts cleaning up temp artefacts - baseline expected cleanup routines and
+      signed tooling
+    - Admin housekeeping scripts deleting temp files - scope to deletion of executable/script payloads
+level: medium

@@ -1,0 +1,43 @@
+title: Tortoiseshell Certutil / Base64 Decode of Obfuscated Staged Payload
+id: 5e36772d-650b-451c-ad95-95759ec01073
+status: experimental
+description: |
+    Detects runtime deobfuscation/decoding of staged payloads (T1140) by Tortoiseshell / Imperial Kitten,
+    including the Symantec-observed use of certutil to decode encoded files - the artefact class of
+    obfuscated/encrypted-and-encoded payloads (T1027 Obfuscated Files, T1027.013 Encrypted/Encoded File).
+    Keys on certutil -decode/-decodehex and PowerShell FromBase64String/GzipStream decode routines. Tagged
+    under stealth (defense-evasion) per environment convention. Requires process-creation and/or script
+    block logging with command line.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1140
+    - attack.t1027
+    - attack.t1027.013
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_certutil:
+        Image|endswith: '\certutil.exe'
+        CommandLine|contains:
+            - '-decode'
+            - '-decodehex'
+    selection_ps_decode:
+        CommandLine|contains|all:
+            - 'FromBase64String'
+            - 'IO.File'
+    selection_ps_gzip:
+        CommandLine|contains:
+            - 'GzipStream'
+            - 'DeflateStream'
+    condition: selection_certutil or selection_ps_decode or selection_ps_gzip
+falsepositives:
+    - Administrative use of certutil for certificate encoding/decoding - baseline expected admin certutil
+      usage and scope out .cer/.crt operations
+    - Developer scripts using base64/gzip decoding - allowlist known build tooling
+level: medium

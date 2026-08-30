@@ -1,0 +1,36 @@
+title: HEXANE Anomalous Internal RDP Lateral Movement
+id: cb994527-fd46-4dc4-b37d-b11345998f21
+status: experimental
+description: |
+    Detects HEXANE / Lyceum lateral movement over the Remote Desktop Protocol within compromised
+    networks (T1021.001). Keys on interactive RemoteInteractive logons (logon type 10) recorded in
+    Windows Security Event 4624 with a RDP/TermService logon process - the successful inbound RDP
+    session. Best operated as an anomaly analytic over source/destination host pairs and off-hours
+    activity, cross-referenced with the compromised accounts identified by the spray/valid-account
+    analytics. Requires Windows Security authentication logging (EID 4624).
+references:
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.hexane
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    filter_local:
+        IpAddress:
+            - '-'
+            - '127.0.0.1'
+            - '::1'
+    condition: selection and not filter_local
+falsepositives:
+    - Legitimate remote administration and helpdesk RDP - baseline expected admin source hosts and
+      jump servers
+    - VDI / remote-work RDP gateways - allowlist known broker addresses
+level: medium

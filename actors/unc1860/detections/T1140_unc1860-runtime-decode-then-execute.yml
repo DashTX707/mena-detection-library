@@ -1,0 +1,49 @@
+title: Runtime Decode/Decrypt of Payload Before Execution (UNC1860 OATBOAT/SASHEYAWAY)
+id: 96f92789-43c4-436c-8f5f-9f3c6758a6f5
+status: experimental
+description: |
+    Detects the deobfuscate-then-execute step used by UNC1860 loaders. OATBOAT and the SASHEYAWAY dropper
+    reverse their own encoding at runtime - decoding/decrypting CRYPTOSLAY/OBFUSLAY-protected shellcode and
+    implant payloads (FACEFACE, SPARKLOAD) before executing them in memory (T1140). While the bespoke loaders
+    leave little host telemetry, the surrounding hands-on activity commonly stages a decode through native
+    utilities on the server. Keys on process-creation of decode/decompression tooling with tell-tale
+    arguments: certutil -decode / -decodehex, PowerShell FromBase64String piped into GzipStream/DeflateStream
+    or Invoke-Expression, and base64-blob command lines on a server host where such transforms are abnormal.
+    Best paired with AMSI / .NET in-memory content inspection to catch the decoded stage directly.
+references:
+    - https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html
+    - https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1140
+    - mena-detection-library.unc1860
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_certutil:
+        Image|endswith: '\certutil.exe'
+        CommandLine|contains:
+            - '-decode'
+            - '/decode'
+            - 'decodehex'
+    selection_ps_decode:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        CommandLine|contains|all:
+            - 'FromBase64String'
+        CommandLine|contains:
+            - 'GzipStream'
+            - 'DeflateStream'
+            - 'MemoryStream'
+            - 'Invoke-Expression'
+            - 'IEX'
+    condition: selection_certutil or selection_ps_decode
+falsepositives:
+    - Administrators/developers using certutil -decode or PowerShell base64 helpers for legitimate encoding
+      tasks - baseline expected operator hosts and accounts
+    - Software installers that unpack compressed payloads via PowerShell - allowlist known deployment scripts
+level: medium

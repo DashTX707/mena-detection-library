@@ -1,0 +1,49 @@
+title: Tortoiseshell VBScript Execution via WScript/CScript from Office or Archive
+id: 8eb48faa-f634-41bf-80ca-45b8fb25e8d0
+status: experimental
+description: |
+    Detects VBScript-based droppers (T1059.005) in Tortoiseshell / Imperial Kitten social-engineering
+    delivery chains. Keys on wscript.exe / cscript.exe executing a .vbs/.vbe/.wsf, especially when spawned
+    by an Office application, an archive/extraction tool, or a browser - the tell of a lure document or
+    downloaded archive detonating script. Requires process-creation logging with parent image and command
+    line.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_host:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+    selection_script:
+        CommandLine|contains:
+            - '.vbs'
+            - '.vbe'
+            - '.wsf'
+            - '.js'
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+            - '\7z.exe'
+            - '\7zFM.exe'
+            - '\winrar.exe'
+            - '\explorer.exe'
+            - '\chrome.exe'
+            - '\msedge.exe'
+    condition: selection_host and (selection_script or selection_parent)
+falsepositives:
+    - Legitimate enterprise logon/maintenance VBScripts run by wscript/cscript - baseline known script
+      paths and publishers
+    - Line-of-business apps that ship .vbs helpers - allowlist expected script names
+level: high

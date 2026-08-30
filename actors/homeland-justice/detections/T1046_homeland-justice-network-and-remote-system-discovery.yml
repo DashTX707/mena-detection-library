@@ -1,0 +1,53 @@
+title: Homeland Justice Network Service and Remote System Discovery
+id: 5e51c16b-51e5-4a89-944f-444c2f1b4462
+status: experimental
+description: |
+    Detects internal reconnaissance used by Homeland Justice / Storm-0842 (Iran/MOIS) ahead of
+    lateral movement and the destructive stage in the Albanian government intrusion. Microsoft
+    reported network scanning (e.g. Advanced Port Scanner) to enumerate reachable hosts and
+    services (T1046) and host enumeration across the network to identify the print, database,
+    and file servers targeted for encryption/wiping (T1018). Keys on execution of known
+    scanner binaries and on native host-enumeration commands (net view / nltest domain-trust
+    and DC enumeration / ping sweeps / arp). Scan tools are easily renamed, so pair the
+    named-binary branch with the native-command branch and correlate with the lateral-movement
+    rules. Requires process-creation telemetry (Sysmon EID 1 / Security 4688) with command line.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1046
+    - attack.t1018
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_scanner:
+        Image|endswith:
+            - '\advanced_port_scanner.exe'
+            - '\advanced_ip_scanner.exe'
+            - '\PortScan.exe'
+            - '\nmap.exe'
+            - '\masscan.exe'
+    selection_native_disc:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+            - '\nltest.exe'
+            - '\arp.exe'
+    selection_disc_args:
+        CommandLine|contains:
+            - ' view'
+            - '/domain_trusts'
+            - '/dclist'
+            - ' group "domain computers"'
+            - '-a'
+    condition: selection_scanner or (selection_native_disc and selection_disc_args)
+falsepositives:
+    - IT asset-inventory and vulnerability scanners that legitimately sweep the network -
+      allowlist authorized scanning hosts and windows
+    - Routine administrative net view / nltest usage - baseline expected admin hosts and treat
+      bursts across many targets as the anomalous signal
+level: medium

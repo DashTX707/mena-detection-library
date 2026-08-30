@@ -1,0 +1,40 @@
+title: Pioneer Kitten DLL Side-Loading via contig.exe and Renamed dllhost.ext
+id: 4f08ed85-436b-4d82-9208-384966977773
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten DLL side-loading (T1574.001 Hijack Execution Flow: DLL) and
+    the associated masquerading (T1036.005 Match Legitimate Resource Name or Location). The signed
+    SysInternals binary contig.exe - frequently renamed to dllhost.ext to blend in - is abused to load
+    a malicious version.dll payload from the Windows Downloads directory, driven by the
+    SpaceAgentTaskMgrSHR scheduled task. Keys on process execution of contig.exe / dllhost.ext from a
+    Downloads path and on module-load of an unsigned version.dll from a user-writable location. The
+    signature-vs-name mismatch (a Microsoft-signed tool renamed to a .ext binary) and the non-standard
+    load path are the durable signals. Sysmon EID 7 image-load telemetry strengthens this materially
+    (verify image-load logging is enabled).
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1574.001
+    - attack.t1036.005
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_renamed:
+        Image|endswith: '\dllhost.ext'
+    selection_contig_downloads:
+        OriginalFileName: 'Contig.exe'
+        Image|contains: '\Downloads\'
+    selection_versiondll:
+        CommandLine|contains: 'version.dll'
+        Image|contains: '\Downloads\'
+    condition: 1 of selection_*
+falsepositives:
+    - Legitimate use of SysInternals contig.exe for defragmentation is rare and normally runs from an
+      admin tools path, not Downloads, and is never renamed to a .ext extension
+level: high

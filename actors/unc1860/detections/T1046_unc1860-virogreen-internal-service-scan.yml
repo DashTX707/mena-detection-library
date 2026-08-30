@@ -1,0 +1,46 @@
+title: Internal Network Service Discovery / Scanning Burst from a Server (UNC1860 VIROGREEN)
+id: 69438957-d8e3-4347-b4fa-cb461eb008f3
+status: experimental
+description: |
+    Detects the reconnaissance stage of UNC1860's VIROGREEN framework, which includes vulnerability-scanning
+    functionality used to identify exploitable services (SharePoint / CVE-2019-0604) on reachable hosts prior
+    to exploitation and implant deployment (T1046). Keys on outbound-initiated network connections (Sysmon EID
+    3 / network_connection telemetry) from a host to service-discovery and web/management ports. A single web
+    or edge server that should be receiving - not initiating - connections fanning out to many internal
+    destinations on these ports over a short window is the scanning tell. This is inherently a threshold /
+    network-flow analytic: operate it as a per-source fan-out count (distinct destination IPs per source over
+    a few minutes) rather than alerting on any single connection, and baseline legitimate scanners/monitors.
+references:
+    - https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1046
+    - mena-detection-library.unc1860
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort:
+            - 80
+            - 443
+            - 445
+            - 135
+            - 139
+            - 5985
+            - 5986
+            - 8080
+    filter_local:
+        DestinationIp|startswith:
+            - '127.'
+            - '::1'
+    condition: selection and not filter_local
+falsepositives:
+    - Legitimate vulnerability scanners, monitoring agents, and management servers that poll many hosts -
+      baseline and allowlist those source hosts; operate as a fan-out threshold analytic, not per-connection
+    - Web servers making normal outbound calls to a small set of known back-end services - scope to unusual
+      source hosts and high distinct-destination counts
+level: medium

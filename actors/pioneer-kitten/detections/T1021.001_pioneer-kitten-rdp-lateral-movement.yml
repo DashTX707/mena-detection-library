@@ -1,0 +1,33 @@
+title: Pioneer Kitten RDP Lateral Movement
+id: 86616e3e-2be9-4c8e-aa3e-21ff5e0d2cfa
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten lateral movement via Remote Desktop Protocol (T1021.001 Remote
+    Services: Remote Desktop Protocol). The actor uses a compromised administrator account to initiate
+    RDP sessions to other servers on the network - for example, to launch PowerShell ISE remotely. Keys
+    on interactive remote logon events (Event ID 4624 LogonType 10) landing on servers/DCs. RDP is
+    common for legitimate administration, so operate with internal-RDP fanout / new-source baselining
+    and correlate the RDP session with follow-on ISE / catbox.moe / tunneling activity on the target.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+        AuthenticationPackageName: 'Negotiate'
+    condition: selection
+falsepositives:
+    - Legitimate administrative RDP is frequent - enrich with source-host baselining and correlate with
+      suspicious follow-on activity; deploy as a Risk-Based-Alerting contribution rather than a
+      standalone alert
+level: low

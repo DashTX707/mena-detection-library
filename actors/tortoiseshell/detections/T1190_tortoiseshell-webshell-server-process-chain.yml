@@ -1,0 +1,49 @@
+title: Tortoiseshell Public-Facing Application Exploitation - Web/DB Server Spawning Shell
+id: 8e1103eb-ef8d-43b5-abf5-a3a72449de64
+status: experimental
+description: |
+    Detects exploitation of public-facing applications (T1190) as used in some IMPERIAL KITTEN intrusions,
+    where SQL injection against internet-facing web apps yielded initial access. Keys on the classic
+    web/DB-tier-to-shell process chain: a web server or database service process (w3wp.exe, httpd.exe,
+    nginx.exe, php-cgi.exe, tomcat, sqlservr.exe) spawning a command interpreter or discovery LOLBin - the
+    behavioural tell of a web shell or injected command, robust to the specific exploit used. Requires
+    process-creation logging on web/application/database servers.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1190
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\httpd.exe'
+            - '\nginx.exe'
+            - '\php-cgi.exe'
+            - '\tomcat.exe'
+            - '\tomcat9.exe'
+            - '\sqlservr.exe'
+            - '\java.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\whoami.exe'
+            - '\systeminfo.exe'
+            - '\ipconfig.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Application deployment/maintenance scripts legitimately invoked by the app-pool identity - baseline
+      expected admin automation and scope to interactive discovery commands
+    - Monitoring/health-check tooling that shells out - allowlist known agents on the server tier
+level: high

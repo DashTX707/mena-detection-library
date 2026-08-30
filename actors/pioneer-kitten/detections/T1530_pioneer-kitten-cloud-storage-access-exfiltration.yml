@@ -1,0 +1,40 @@
+title: Pioneer Kitten Compromised Cloud Account Access and Cross-Tenant Exfiltration
+id: 7d146743-7d78-45ae-bb4a-ba8daaa6c5e6
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten abuse of compromised cloud resources and accounts (T1530 Data
+    from Cloud Storage, T1567.002 Exfiltration Over Web Service: Exfiltration to Cloud Storage). The
+    actor leverages victim cloud-computing resources to conduct further operations and uses compromised
+    cloud service accounts to transmit / exfiltrate data stolen from OTHER compromised organizations,
+    relaying cross-tenant through victim cloud infrastructure. Keys on cloud audit-log events for
+    storage object enumeration/download and data egress by principals showing anomalous location or
+    cross-tenant movement. Requires cloud-native audit logging (this Sigma models the AWS CloudTrail
+    S3 access shape; adapt to Azure Storage / GCS as appropriate).
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.exfiltration
+    - attack.t1530
+    - attack.t1567.002
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: aws
+    service: cloudtrail
+detection:
+    selection:
+        eventSource: 's3.amazonaws.com'
+        eventName:
+            - 'GetObject'
+            - 'ListObjects'
+            - 'ListBucket'
+            - 'CopyObject'
+    condition: selection
+falsepositives:
+    - Normal application and backup access to cloud storage is high-volume - this rule must be enriched
+      with anomalous-principal / new-location / cross-tenant-egress baselining before alerting; deploy
+      as a Risk-Based-Alerting contribution
+level: low

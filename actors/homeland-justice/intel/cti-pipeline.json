@@ -1,0 +1,602 @@
+{
+  "report_title": "Homeland Justice / Storm-0842 (DEV-0842) Actor Intelligence Pack \u2014 Stage-1 CTI Extraction",
+  "source": "CISA/FBI Joint Cybersecurity Advisory AA22-264A 'Iranian State Actors Conduct Cyber Operations Against the Government of Albania', 2022-09-23 (https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a); Microsoft Threat Intelligence (MSTIC/DART) 'Microsoft investigates Iranian attacks against the Albanian government', 2022-09-08 (https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/); Mandiant 'ROADSWEEP Ransomware and CHIMNEYSWEEP Backdoor Deployed in Albania' reporting; Check Point Research 'Bad Karma, No Justice: Void Manticore Destructive Activities in Israel', 2024-05 (Void Manticore / Storm-0842 / Homeland Justice-Karma linkage). Behavioral chain (initial access via SharePoint CVE-2019-0604, ~14-month dwell, ROADSWEEP ransomware + No-Justice/NACL wiper deployment, defacement and leak via Telegram persona) is taken directly from AA22-264A; hashes and the CVE reproduced verbatim from the AA22-264A IOC tables.",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Homeland Justice",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Homeland Justice",
+      "Storm-0842",
+      "DEV-0842",
+      "Karma (leak persona)",
+      "HomeLand Justice"
+    ],
+    "related_clusters": [
+      "Void Manticore (Check Point)",
+      "Karma cluster",
+      "Scarred Manticore / Storm-0861 (adjacent MOIS-linked access-enabling cluster reported alongside)",
+      "MuddyWater / Mango Sandstorm (MOIS ecosystem)"
+    ],
+    "attribution": "Iran-nexus destructive and hack-and-leak operation publicly assessed by CISA/FBI and Microsoft to be conducted by Iranian state cyber actors sponsored by the Ministry of Intelligence and Security (MOIS). 'Homeland Justice' is the public-facing persona (Telegram channel and leak website) used to claim, message, and leak stolen data following destructive intrusions. Microsoft tracks the destructive-operations actor as Storm-0842 (formerly DEV-0842); Check Point associates the Homeland Justice/Karma persona with the Void Manticore cluster. Attribution is a convergence of independent government and vendor reporting on the same July\u2013September 2022 Albanian government intrusion; the specific tasking unit within MOIS is asserted at the ministry level, not a single named subordinate group. No MITRE ATT&CK G-id has been assigned.",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "Israel"
+    ],
+    "targeted_regions_global": [
+      "Albania"
+    ],
+    "targeted_sectors": [
+      "Government (national / public administration)",
+      "Public services and critical government IT systems",
+      "Israel-linked private-sector and organizational targets"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Destructive attack on the Government of Albania (ROADSWEEP + No-Justice wiper)",
+        "date": "Initial access ~May 2021; destructive attack July 15, 2022; follow-on Sept 2022",
+        "summary": "The actor gained initial access ~14 months prior by exploiting an internet-facing Microsoft SharePoint server (CVE-2019-0604), then maintained long dwell using .aspx web shells (ClientBin.aspx / App_Web_bckwssht.dll), RDP/VPN with compromised accounts, credential theft and lateral movement. In July 2022 it deployed the ROADSWEEP ransomware (GoXml.exe) launched via win.bat, changed desktop wallpaper with a Homeland Justice message, disabled Windows Defender (disable_defender.exe), deleted volume shadow copies (vssadmin), terminated processes (bb.bat taskkill loop), and separately wiped raw disks using cl.exe with the EldoS rwdsk.sys driver (a ZEROCLEARE-variant 'No-Justice'/NACL wiper). Stolen data was subsequently leaked and the intrusion publicized through the Homeland Justice Telegram persona and leak site. Follow-on activity against Albanian government systems continued in September 2022.",
+        "source_url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      },
+      {
+        "name": "Void Manticore / Homeland Justice-Karma destructive activity against Israel-linked targets",
+        "date": "2022 to 2024",
+        "summary": "Check Point ties the Homeland Justice persona and the Karma leak brand to Void Manticore, a MOIS-linked destructive cluster conducting hack-and-leak and wiping operations against Israeli targets, sometimes handed access from a separate initial-access group (Scarred Manticore). Operations follow the same theft-then-destroy-then-publicize pattern, using custom wipers (BiBi wiper family in the Israel context), manual disk/partition corruption, and public leak personas for psychological impact.",
+        "source_url": "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Homeland Justice",
+    "Storm-0842",
+    "DEV-0842",
+    "Void Manticore",
+    "Karma"
+  ],
+  "targeted_regions": [
+    "Albania",
+    "Israel"
+  ],
+  "targeted_sectors": [
+    "Government",
+    "Public administration / critical government IT",
+    "Israel-linked organizations"
+  ],
+  "malware": [
+    "ROADSWEEP (GoXml.exe) \u2014 ransomware / encryption component",
+    "CHIMNEYSWEEP \u2014 backdoor (Mandiant naming; MOIS toolset)",
+    "No-Justice / NACL (cl.exe) \u2014 ZEROCLEARE-variant raw-disk wiper",
+    "ClientBin.aspx \u2014 .aspx web shell",
+    "App_Web_bckwssht.dll \u2014 Base64-decoded .NET web-shell payload",
+    "disable_defender.exe \u2014 Windows Defender disabling utility",
+    "win.bat / bb.bat \u2014 batch launchers / process-kill scripts",
+    "BiBi wiper (Void Manticore / Israel context)"
+  ],
+  "tooling_observed": [
+    "GoXml.exe (ROADSWEEP)",
+    "cl.exe (No-Justice wiper)",
+    "rwdsk.sys (EldoS RawDisk legitimate commercial driver, abused for raw disk access)",
+    "mellona.exe",
+    "ClientBin.aspx web shell",
+    "disable_defender.exe",
+    "win.bat",
+    "bb.bat",
+    "vssadmin.exe",
+    "taskkill",
+    "RUNDLL32.EXE (user32.dll UpdatePerUserSystemParameters for wallpaper refresh)",
+    "RDP",
+    "VPN (compromised accounts)",
+    "Advanced Port Scanner (Microsoft-reported)",
+    "Mimikatz / credential dumping (Microsoft-reported)",
+    "Plink / Ngrok-style tunneling (Microsoft-reported)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "The actor operates the 'Homeland Justice' public persona \u2014 a Telegram channel and leak website \u2014 established to claim responsibility, message victims, and publish stolen Albanian government data. The Karma brand is used analogously in the Israel-context Void Manticore operations.",
+      "observed_tooling": [
+        "Homeland Justice Telegram persona",
+        "Homeland Justice leak website"
+      ],
+      "detection_feasibility": "low \u2014 off-victim persona and account creation are not visible in defender host/network logs; hunt candidate via external monitoring of leak sites/Telegram for early breach disclosure of owned data",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a",
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Initial access ~14 months before the destructive attack was obtained by exploiting an internet-facing Microsoft SharePoint server via CVE-2019-0604, a .NET deserialization RCE in SharePoint.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium \u2014 CVE-2019-0604 exploitation is detectable via SharePoint/IIS request patterns, WAF/IDS signatures, and vulnerable-version telemetry, though n-day exploitation of an exposed server may precede monitoring",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "procedure_description": "Over the ~14-month dwell the actor repeatedly re-entered the environment using RDP and VPN access with compromised accounts, including logging in to a victim print server over RDP to stage the encryption component.",
+      "observed_tooling": [
+        "RDP",
+        "VPN"
+      ],
+      "detection_feasibility": "low \u2014 authenticated remote access with valid credentials blends with legitimate use; hunt candidate via anomalous source-geo/ASN, off-hours logon, and new-account RDP/VPN correlation",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "The actor deployed .aspx web shells \u2014 ClientBin.aspx, which contains a Base64-encoded .NET executable (App_Web_bckwssht.dll) it decodes and loads \u2014 on the compromised SharePoint/IIS server to maintain access and proxy follow-on commands.",
+      "observed_tooling": [
+        "ClientBin.aspx",
+        "App_Web_bckwssht.dll"
+      ],
+      "detection_feasibility": "medium \u2014 new .aspx files in web-root paths and IIS worker (w3wp.exe) spawning child processes are strong web-shell signals, though a long-dormant shell may evade point-in-time review",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "The CHIMNEYSWEEP backdoor and follow-on tooling in the MOIS toolset establish persistence via scheduled tasks; Microsoft reporting on the Albania intrusion notes scheduled-task-based execution for maintaining foothold.",
+      "observed_tooling": [
+        "CHIMNEYSWEEP"
+      ],
+      "detection_feasibility": "medium \u2014 scheduled-task creation (Event ID 4698 / Task Scheduler operational log) referencing unusual binaries or user-writable paths is detectable",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/"
+      ]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "win.bat was configured to launch the ROADSWEEP payload GoXml.exe (from C:\\ProgramData\\Microsoft\\Windows\\GoXml.exe) at system startup, ensuring the destructive component ran on boot.",
+      "observed_tooling": [
+        "win.bat",
+        "GoXml.exe"
+      ],
+      "detection_feasibility": "medium \u2014 new startup/Run-key entries or Startup-folder scripts pointing at binaries in ProgramData are detectable via autostart and registry-write telemetry",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "The actor used batch scripts executed via cmd.exe \u2014 win.bat (#1 to run the malware, #2 to set the wallpaper) and bb.bat (a taskkill loop terminating a hardcoded process list) \u2014 to orchestrate the destructive stage.",
+      "observed_tooling": [
+        "win.bat",
+        "bb.bat",
+        "cmd.exe"
+      ],
+      "detection_feasibility": "medium \u2014 batch-driven cmd.exe issuing vssadmin/taskkill/reg-add commands in quick succession is a detectable destructive-staging pattern via process-command-line telemetry",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "Microsoft observed the actor using PowerShell and remote-execution tooling during the intrusion to run commands and move tooling across the Albanian government network.",
+      "observed_tooling": [
+        "PowerShell"
+      ],
+      "detection_feasibility": "medium \u2014 PowerShell script-block logging (4104) and AMSI telemetry detect follow-on command execution, though usage is easily blended with admin activity",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/"
+      ]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "The ClientBin.aspx web shell embeds a Base64-encoded .NET executable (App_Web_bckwssht.dll) which it decodes at runtime; the DLL in turn extracts a secondary Base64-encoded 'EncryptionDLL' (Base64.dll) loaded via Assembly.Load \u2014 layered encoding to hide the payload from static inspection.",
+      "observed_tooling": [
+        "ClientBin.aspx",
+        "App_Web_bckwssht.dll"
+      ],
+      "detection_feasibility": "medium \u2014 Base64-heavy .aspx content and large encoded blobs in web files are detectable via web-content inspection and entropy analysis",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The web shell decodes its Base64-encoded .NET payload and dynamically loads it, and further decodes a secondary Base64 EncryptionDLL at runtime via Assembly.Load \u2014 runtime deobfuscation to defeat static detection.",
+      "observed_tooling": [
+        "App_Web_bckwssht.dll"
+      ],
+      "detection_feasibility": "medium \u2014 runtime decode-and-load behavior (Assembly.Load of decoded bytes) is detectable via .NET/CLR and script-block telemetry",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "procedure_description": "The ROADSWEEP payload was staged as GoXml.exe under C:\\ProgramData\\Microsoft\\Windows\\, placing the destructive binary in a Microsoft-looking directory path to blend with legitimate system content.",
+      "observed_tooling": [
+        "GoXml.exe"
+      ],
+      "detection_feasibility": "low \u2014 path/name masquerading evades name-based rules; hunt candidate via unsigned/unknown executables in ProgramData\\Microsoft paths and hash reputation",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Impair Defenses: Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "The actor ran disable_defender.exe, a PE that elevates and disables Windows Defender (manipulating Defender/SmartScreen via smartscreen.exe context) to clear the way for the ransomware and wiper without AV interference.",
+      "observed_tooling": [
+        "disable_defender.exe"
+      ],
+      "detection_feasibility": "medium \u2014 Defender tamper events, service/registry changes disabling real-time protection, and execution of a known disable_defender binary are detectable via EDR tamper-protection and Defender operational logs",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "win.bat (#2) writes the HKCU\\Control Panel\\Desktop\\Wallpaper registry value to point at a Homeland Justice message image (goxml.jpg) and forces a per-user parameter refresh via RUNDLL32 user32.dll,UpdatePerUserSystemParameters.",
+      "observed_tooling": [
+        "win.bat",
+        "RUNDLL32.EXE"
+      ],
+      "detection_feasibility": "medium \u2014 scripted registry writes to the Wallpaper value followed by a forced desktop refresh across many hosts is an anomalous, detectable pattern",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1003",
+      "technique_name": "OS Credential Dumping",
+      "tactic": "credential-access",
+      "procedure_description": "Microsoft observed credential theft during the intrusion, enabling the actor to obtain and reuse valid accounts for RDP/VPN access and lateral movement across the Albanian government network over the long dwell time.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium \u2014 LSASS access, SAM/registry-hive dumping, and credential-theft tooling are detectable via process-access (Sysmon EID 10) and command-line telemetry",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/"
+      ]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Microsoft reporting notes network scanning during the intrusion (e.g. Advanced Port Scanner) to enumerate reachable hosts and services ahead of lateral movement and the destructive stage.",
+      "observed_tooling": [
+        "Advanced Port Scanner"
+      ],
+      "detection_feasibility": "medium \u2014 internal horizontal port-scan connection fan-out and known scanner-binary execution are detectable, though scan tools are easily renamed",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/"
+      ]
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The actor enumerated remote hosts across the government network to identify servers (print server, database and file servers) targeted for encryption and wiping during the long pre-attack dwell.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium \u2014 host-enumeration bursts across a subnet are detectable but blend with legitimate administration",
+      "sources": [
+        "https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/"
+      ]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The ROADSWEEP encryption component enumerates files and directories on target hosts to select content for encryption, and the wiper enumerates volumes/files for destruction.",
+      "observed_tooling": [
+        "GoXml.exe",
+        "cl.exe"
+      ],
+      "detection_feasibility": "low \u2014 file enumeration is ubiquitous and low-signal on its own; hunt candidate only in correlation with the subsequent encrypt/wipe burst",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "For the encryption stage the actor logged in to a victim organization print server via RDP and used it as a distribution point, and used RDP with compromised accounts to move laterally to targeted servers.",
+      "observed_tooling": [
+        "RDP"
+      ],
+      "detection_feasibility": "medium \u2014 RDP from atypical internal hosts (e.g. a print server originating outbound RDP) and lateral-RDP graph anomalies are detectable via logon (4624 type 10) analytics",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "procedure_description": "The actor staged and distributed the destructive payloads to multiple hosts from a central server (using the print server as a distribution point), consistent with SMB/admin-share-based spreading of GoXml.exe and the batch scripts before mass execution.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium \u2014 payload copies to ADMIN$/C$ shares followed by remote execution across many hosts are detectable via SMB write and remote-create telemetry",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "procedure_description": "The actor transferred the destructive tooling (GoXml.exe, cl.exe, win.bat, bb.bat, disable_defender.exe) from the compromised distribution host to target machines across the network prior to detonating the encryption and wipe.",
+      "observed_tooling": [
+        "GoXml.exe",
+        "cl.exe",
+        "win.bat"
+      ],
+      "detection_feasibility": "medium \u2014 executable/script copies between internal hosts shortly before execution are detectable via file-write and network-share telemetry",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "The No-Justice wiper (cl.exe) loads rwdsk.sys, a legitimate EldoS Corporation RawDisk commercial driver, installed/loaded as a kernel service to obtain raw block-level access to the hard drive for wiping (bring-your-own-vulnerable/abusable-driver).",
+      "observed_tooling": [
+        "cl.exe",
+        "rwdsk.sys"
+      ],
+      "detection_feasibility": "medium \u2014 installation/load of the EldoS RawDisk driver (rwdsk.sys) and new kernel-service creation (Event ID 7045 / Sysmon driver-load EID 6) are detectable, and the driver hash is a known IOC",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Prior to the destructive stage the actor collected sensitive Albanian government data from compromised systems, which was later leaked publicly through the Homeland Justice persona as part of the hack-and-leak operation.",
+      "observed_tooling": [],
+      "detection_feasibility": "low \u2014 bulk local file access is high-volume normal activity; hunt candidate via large-scale read/stage sequences preceding exfiltration",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "procedure_description": "Stolen government data was aggregated and archived for staged public release across successive Homeland Justice Telegram/leak-site postings, consistent with archiving collected data prior to exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low \u2014 archiving utilities are common admin tools; hunt candidate via large archive creation over staged directories preceding outbound transfer",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a",
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "The ClientBin.aspx / App_Web_bckwssht.dll web shell accepts HTTP POST requests carrying a Base64-encoded IP and port and opens a second socket to the supplied address \u2014 a web-protocol-fronted command-and-control / relay channel.",
+      "observed_tooling": [
+        "ClientBin.aspx",
+        "App_Web_bckwssht.dll"
+      ],
+      "detection_feasibility": "medium \u2014 POST requests to an unusual .aspx endpoint followed by the web server initiating outbound sockets to arbitrary IP:port is a detectable web-shell C2 pattern",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Follow-on tooling and destructive payloads were brought into the environment over the long dwell via the web shell and remote-access channels for staging before the July 2022 attack.",
+      "observed_tooling": [
+        "ClientBin.aspx"
+      ],
+      "detection_feasibility": "medium \u2014 the web server or a beaconing host writing new executables to disk shortly after inbound C2 is detectable via network-to-file-create correlation",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "The web shell's socket-relay capability (open a second socket to an attacker-supplied IP:port) provided a channel to move stolen government data out of the environment for later publication via the Homeland Justice persona.",
+      "observed_tooling": [
+        "App_Web_bckwssht.dll"
+      ],
+      "detection_feasibility": "low \u2014 exfil folded into web-shell C2 sockets blends with server traffic; hunt candidate via anomalous large outbound transfers from a web/SharePoint server",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1489",
+      "technique_name": "Service Stop",
+      "tactic": "impact",
+      "procedure_description": "Before encryption, bb.bat runs a taskkill loop (@for %C in (%PrcLst%) do @taskkill /f /im \"%C.exe\") to force-terminate a hardcoded list of processes \u2014 unlocking database/application files so the ROADSWEEP encryptor can access and encrypt them.",
+      "observed_tooling": [
+        "bb.bat",
+        "taskkill"
+      ],
+      "detection_feasibility": "medium \u2014 a scripted taskkill /f loop against a broad process list immediately before mass file changes is a high-value, detectable ransomware/wiper precursor",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "procedure_description": "The destructive script executes @vssadmin.exe delete shadows /all /quiet to delete all Volume Shadow Copies, preventing restoration before the ransomware/wiper renders systems unrecoverable.",
+      "observed_tooling": [
+        "vssadmin.exe"
+      ],
+      "detection_feasibility": "high \u2014 vssadmin delete shadows /all /quiet is a discrete, high-fidelity, well-covered destructive precursor and one of the most reliable early-warning signals",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "procedure_description": "The ROADSWEEP ransomware (GoXml.exe), launched by win.bat with the arguments '1 2 3 4 5 6 7', encrypts files on targeted hosts and drops a ransom/message note as part of the destructive operation against the Albanian government.",
+      "observed_tooling": [
+        "GoXml.exe"
+      ],
+      "detection_feasibility": "low \u2014 by the time high-rate encryption is observable the impact is occurring; hunt/detect the precursors (vssadmin, taskkill, Defender disable, web-shell). File-entropy/canary analytics can catch it mid-run but recovery may already be lost",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "procedure_description": "Separately from the encryption, the actor deployed cl.exe (the 'No-Justice' / NACL wiper, a ZEROCLEARE variant) which uses the EldoS rwdsk.sys driver to obtain raw disk access and destroy data, rendering victim systems unusable.",
+      "observed_tooling": [
+        "cl.exe",
+        "rwdsk.sys"
+      ],
+      "detection_feasibility": "low \u2014 mass raw-disk destruction is concurrent with impact; hunt/detect via the precursor driver load (rwdsk.sys) and raw-device handle acquisition rather than the wipe itself",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1561.001",
+      "technique_name": "Disk Wipe: Disk Content Wipe",
+      "tactic": "impact",
+      "procedure_description": "cl.exe is part of a disk-wiper utility that provides raw access to the hard drive (via the EldoS RawDisk driver) for the express purpose of overwriting/wiping data content on the physical disk.",
+      "observed_tooling": [
+        "cl.exe",
+        "rwdsk.sys"
+      ],
+      "detection_feasibility": "medium \u2014 a user-mode process acquiring a raw \\\\.\\PhysicalDrive handle via the EldoS driver and issuing large sequential writes is a rare, high-fidelity destructive signal via disk-I/O/raw-handle telemetry",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "procedure_description": "As a ZEROCLEARE-lineage wiper, the No-Justice tooling corrupts disk structures (boot sector / partition data) through raw disk access to prevent the system from booting, in addition to destroying file content.",
+      "observed_tooling": [
+        "cl.exe",
+        "rwdsk.sys"
+      ],
+      "detection_feasibility": "medium \u2014 raw writes to the boot sector / first physical sectors via the RawDisk driver are a rare, high-fidelity destructive signal, though concurrent with the impact",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "procedure_description": "win.bat (#2) sets the desktop wallpaper on victim hosts to a Homeland Justice message image (goxml.jpg), an internal defacement delivering the actor's political messaging directly on compromised endpoints.",
+      "observed_tooling": [
+        "win.bat",
+        "goxml.jpg"
+      ],
+      "detection_feasibility": "medium \u2014 scripted mass wallpaper/registry changes to a dropped image across many hosts is a detectable, anomalous internal-defacement pattern",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a"
+      ]
+    },
+    {
+      "technique_id": "T1491.002",
+      "technique_name": "Defacement: External Defacement",
+      "tactic": "impact",
+      "procedure_description": "Following the destruction, the actor publicized the intrusion and leaked stolen Albanian government data through the external Homeland Justice Telegram channel and leak website, using public messaging/defacement for psychological and political impact.",
+      "observed_tooling": [
+        "Homeland Justice Telegram persona",
+        "Homeland Justice leak website"
+      ],
+      "detection_feasibility": "low \u2014 external leak/messaging occurs off-victim; hunt candidate via external/brand and leak-site monitoring for early disclosure of owned data",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a",
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "SharePoint/IIS request patterns consistent with CVE-2019-0604 (.NET deserialization RCE) against an internet-facing SharePoint server, followed by new .aspx files (ClientBin.aspx) in the web root",
+    "Base64-heavy .aspx web shell content that decodes and Assembly.Load's an embedded .NET DLL (App_Web_bckwssht.dll / Base64.dll), and the web server opening outbound sockets to an attacker-supplied IP:port after a POST",
+    "Execution of disable_defender.exe or Defender tamper events disabling real-time protection immediately before mass file activity",
+    "@vssadmin.exe delete shadows /all /quiet \u2014 shadow-copy deletion (high-fidelity wiper/ransomware precursor)",
+    "bb.bat-style scripted taskkill /f /im loop terminating a broad hardcoded process list right before file encryption",
+    "win.bat launching GoXml.exe from C:\\ProgramData\\Microsoft\\Windows\\ at startup, plus a Wallpaper registry write to goxml.jpg followed by RUNDLL32 user32.dll,UpdatePerUserSystemParameters across many hosts",
+    "Load/installation of the EldoS RawDisk driver rwdsk.sys and a user-mode process (cl.exe) acquiring a raw \\\\.\\PhysicalDrive handle for block-level writes \u2014 No-Justice/ZEROCLEARE wipe",
+    "RDP originating from an internal print/file server used as a payload distribution point, and lateral payload copies (GoXml.exe/cl.exe/win.bat) to multiple hosts before synchronized detonation",
+    "Long-dwell reuse of compromised accounts over RDP/VPN with anomalous source geo/ASN across a ~14-month window",
+    "External monitoring: appearance of organizational data or claims on the Homeland Justice / Karma Telegram channel or leak site (post-impact confirmation and, for peers, early-warning)"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [],
+    "emails": [],
+    "hashes": [
+      "f116acc6508843f59e59fb5a8d643370dce82f492a217764521f46a856cc4cb5",
+      "bad65769c0b416bb16a82b5be11f1d4788239f8b2ba77ae57948b53a69e230a6",
+      "ec4cd040fd14bff86f6f6e7ba357e5bcf150c455532800edf97782836e97f6d2",
+      "63dd02c371e84323c4fd9a161a75e0f525423219e8a6ec1b95dd9eda182af2c9",
+      "e1204ebbd8f15dbf5f2e41dddc5337e3182fc4daf75b05acc948b8b965480ca0",
+      "3c9dc8ada56adf9cebfc501a2d3946680dcb0534a137e2e27a7fcb5994cd9de6",
+      "7ad64b64e0a4e510be42ba631868bbda8779139dc0daad9395ab048306cc83c5",
+      "cad2bc224108142b5aa19d787c19df236b0d12c779273d05f9b0298a63dc1fe5",
+      "45bf0057b3121c6e444b316afafdd802d16083282d1cbfde3cdbf2a9d0915ace",
+      "0f75d40308887aebba0d5b0d2671305b73c9431902f86e672380a6dc6ab97d07",
+      "8f766dea3afd410ebcd5df5994a3c571",
+      "1635e1acd72809479e21b0ac5497a79b",
+      "18e01dee14167c1cf8a58b6a648ee049",
+      "0738242a521bdfe1f3ecc173f1726aa1",
+      "7b71764236f244ae971742ee1bc6b098",
+      "58d51c1152817ca3dec77f2eee52cbef",
+      "8f6e7653807ebb57ecc549cef991d505",
+      "e233f2cdc91faafe1467d9e52f166213",
+      "a9fa6cfdba41c57d8094545e9b56db36",
+      "e9b6ecbf0783fa9d6981bba76d949c94",
+      "dae02f32a21e03ce65412f6e56942daa",
+      "60afb1e62ac61424a542b8c7b4d2cf01",
+      "bbe983dba3bf319621b447618548b740",
+      "5b2ce9270beea5915ec9adbcd0dbb070",
+      "78562ba0069d4235f28efd01e3f32a82",
+      "59a85e8ec23ef5b5c215cd5c8e5bc2ab",
+      "74a6ef9e7b49c71341e439022f643c8e",
+      "81e123351eb80e605ad73268a5653ff3",
+      "a9fa6cfdba41c57d8094545e9b56db36"
+    ],
+    "cves": [
+      "CVE-2019-0604"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Actor has NO MITRE ATT&CK G-id; mitre_id left empty per schema. 'Homeland Justice' is the persona/leak brand for an MOIS-sponsored destructive operation Microsoft tracks as Storm-0842/DEV-0842 and Check Point associates with the Void Manticore / Karma cluster. The behavioral chain and all IOCs are drawn from CISA/FBI AA22-264A (fetched via browser-UA curl after an initial 403), enriched with Microsoft MSTIC and Check Point reporting for named tooling (CHIMNEYSWEEP backdoor, PowerShell, credential dumping, port scanning) that AA22-264A does not itself hash. FRAMEWORK-VERSION CONVENTIONS honored for this environment's bundled dataset: Impair-Defenses = T1685 under tactic 'defense-impairment' (NOT legacy T1562.*); defense-evasion tactic slug = 'stealth' (used for T1027.013, T1140, T1036, T1112); encrypted/encoded file = T1027.013. Every technique_id was verified present in this env's sigma.data.mitre_attack.mitre_attack_techniques before inclusion; no invalid IDs were emitted (none dropped). 33 techniques across 11 tactics. IMPACT is the payload cluster (8 techniques): T1489 Service Stop (bb.bat taskkill), T1490 Inhibit System Recovery (vssadmin delete shadows /all /quiet), T1486 Data Encrypted for Impact (ROADSWEEP GoXml.exe), T1485 Data Destruction (cl.exe No-Justice wiper), T1561.001 Disk Content Wipe + T1561.002 Disk Structure Wipe (EldoS rwdsk.sys raw-disk / ZEROCLEARE lineage), T1491.001 Internal Defacement (wallpaper), T1491.002 External Defacement (Telegram/leak site). DETECTION-vs-HUNT: the highest-value early-warning DETECTIONS fire before/at destruction \u2014 T1490 (vssadmin), T1685 (Defender disable), T1489 (taskkill loop), T1505.003 (web shell), T1543.003 (rwdsk.sys driver load) \u2014 these define the practical containment window. The encrypt/wipe acts themselves (T1486/T1485/T1561.*) are marked LOW/route-to-hunt because by the time they are observable, impact is occurring; the off-victim persona/leak activity (T1585.001, T1491.002, T1005/T1560/T1041 exfil) is HUNT via external monitoring. IOCs are verbatim from the AA22-264A IOC tables: CVE-2019-0604 (SharePoint initial access), 10 SHA-256 and 19 MD5 file hashes covering GoXml.exe (ROADSWEEP), cl.exe (No-Justice wiper) + rwdsk.sys, ClientBin.aspx / App_Web_bckwssht.dll web shell, disable_defender.exe, win.bat/bb.bat, and goxml.jpg. No malicious IPs, domains, or emails were published in AA22-264A (the only IP-like token in the page was the '1.0.0.0' assembly version string and CISA's own contact address \u2014 both excluded, not fabricated), so those arrays are intentionally empty. No verbatim YARA rule appeared in the fetched source, so yara_rules is empty (never authored from scratch). IOCs (esp. hashes) expire fast; the TTPs and detection_signals are the durable pipeline value."
+}

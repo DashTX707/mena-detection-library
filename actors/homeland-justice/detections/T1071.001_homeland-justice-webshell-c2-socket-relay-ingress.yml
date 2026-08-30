@@ -1,0 +1,48 @@
+title: Homeland Justice Web Shell Outbound Socket Relay and Ingress Tool Transfer
+id: 6219b0d7-8f05-480a-95a6-cc549800ccc0
+status: experimental
+description: |
+    Detects the command-and-control behavior of the Homeland Justice / Storm-0842 (Iran/MOIS)
+    .aspx web shell: after receiving an HTTP POST carrying a Base64-encoded IP and port, the
+    App_Web_bckwssht.dll shell opens a second outbound socket to the attacker-supplied
+    address, using web protocols as a control/relay channel (T1071.001) and pulling follow-on
+    tooling into the environment (T1105). The high-fidelity signal is the IIS worker process
+    (w3wp.exe) - which should almost never initiate arbitrary outbound TCP - making a network
+    connection to a non-standard destination, optionally followed by that process writing a
+    new executable to disk. Requires network-connection telemetry (Sysmon EID 3) and,
+    ideally, file-create correlation on the SharePoint/IIS server.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+    - https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1105
+    - mena-detection-library.homeland-justice
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_iis_outbound:
+        Image|endswith: '\w3wp.exe'
+        Initiated: 'true'
+    filter_local:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+            - '127.0.0.0/8'
+    filter_web_ports:
+        DestinationPort:
+            - 80
+            - 443
+    condition: selection_iis_outbound and not (filter_local or filter_web_ports)
+falsepositives:
+    - SharePoint server-side integrations, Office Online, search crawlers, or update checks
+      that legitimately open outbound connections - baseline the destinations/ports the IIS
+      worker normally contacts and allowlist them
+    - Proxy or gateway egress on shared ports - tune DestinationPort/DestinationIp to the
+      environment's known-good SharePoint egress profile
+level: high

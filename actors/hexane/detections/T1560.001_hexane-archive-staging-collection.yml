@@ -1,0 +1,50 @@
+title: HEXANE Data Staging - Archive Creation Prior to Exfiltration
+id: 0984d48b-4ad3-4061-b81f-2e3eb8ac7260
+status: experimental
+description: |
+    Detects HEXANE / Lyceum staging of collected data prior to exfiltration (T1560 archive collected
+    data, T1560.001 archive via utility): a command-line archive utility (7-Zip, WinRAR, WinZip) or a
+    PowerShell Compress-Archive call creating a compressed - often password-protected or split -
+    archive in a staging directory. Keys on the archive tool's add-with-password / compression command
+    line (7z/rar a -p, -hp, -v switches) and Compress-Archive against user-writable staging paths.
+    Requires process-creation logging with command lines.
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1560
+    - attack.t1560.001
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith:
+              - '\7z.exe'
+              - '\7za.exe'
+              - '\rar.exe'
+              - '\winrar.exe'
+              - '\winzip.exe'
+              - '\winzip64.exe'
+        - OriginalFileName:
+              - '7z.exe'
+              - 'Rar.exe'
+        - CommandLine|contains: 'Compress-Archive'
+    selection_action:
+        CommandLine|contains:
+            - ' a '
+            - ' -p'
+            - ' -hp'
+            - ' -v'
+            - '-mhe'
+            - '-DestinationPath'
+    condition: selection_tool and selection_action
+falsepositives:
+    - Legitimate backup, packaging or software-build jobs creating archives - baseline expected
+      automation hosts and output paths
+    - Admin/helpdesk compressing logs or data for transfer - allowlist known operators
+level: medium

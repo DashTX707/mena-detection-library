@@ -1,0 +1,44 @@
+title: Homeland Justice Scheduled Task Persistence from User-Writable Path
+id: 82cf3e72-d850-4e2d-9fe7-1edce11bbabc
+status: experimental
+description: |
+    Detects scheduled-task persistence used by Homeland Justice / Storm-0842 (Iran/MOIS) and
+    the CHIMNEYSWEEP backdoor in the MOIS toolset during the Albanian government intrusion
+    (T1053.005). Keys on schtasks.exe creating a task whose action references a binary or
+    script in a user-writable staging path (ProgramData, Users, AppData, Temp, PerfLogs) - the
+    directories the actor used to stage GoXml.exe and follow-on tooling. Because scheduled-task
+    creation is common in admin environments, the discriminator is the combination of task
+    creation with an executable rooted in a non-standard, user-writable location. Complement
+    with Security Event ID 4698 / the Task Scheduler operational log. Requires process-creation
+    telemetry (Sysmon EID 1 / Security 4688) with command-line capture.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+    - https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_path:
+        CommandLine|contains:
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\AppData\'
+            - '\Windows\Temp\'
+            - '\PerfLogs\'
+            - '\Temp\'
+    condition: selection_schtasks and selection_path
+falsepositives:
+    - Legitimate software installers and management agents that register scheduled tasks
+      pointing at ProgramData - allowlist known-good vendors, task names, and image paths
+    - Admin automation staged from a shared/Temp path during maintenance - scope to
+      non-approved staging locations and correlate with the destructive precursor rules
+level: medium

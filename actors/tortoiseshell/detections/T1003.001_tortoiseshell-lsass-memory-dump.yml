@@ -1,0 +1,41 @@
+title: Tortoiseshell LSASS Memory Dump via ProcDump / Direct Access
+id: 58f997ec-33a3-4527-8279-12ff57089418
+status: experimental
+description: |
+    Detects LSASS memory dumping (T1003.001) used by Tortoiseshell / Imperial Kitten with ProcDump and
+    Mimikatz-style tooling for credential theft. Keys on cross-process access (Sysmon EID 10) to lsass.exe
+    requesting masks that combine PROCESS_VM_READ (0x0010) with query rights - the classic 0x1010 / 0x1410 /
+    0x1438 masks used to read LSASS memory - from a non-allowlisted source process. The access mask is an
+    implementation-core (L4) observable robust to tool renaming. Requires Sysmon EID 10 (ProcessAccess) -
+    without it this rule will not populate (visibility gap).
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_access
+    product: windows
+detection:
+    selection:
+        TargetImage|endswith: '\lsass.exe'
+        GrantedAccess:
+            - '0x1010'
+            - '0x1410'
+            - '0x1438'
+            - '0x143a'
+            - '0x1fffff'
+    filter_known:
+        SourceImage|endswith:
+            - '\wininit.exe'
+            - '\MsMpEng.exe'
+            - '\csrss.exe'
+            - '\services.exe'
+    condition: selection and not filter_known
+falsepositives:
+    - EDR/AV and legitimate memory-inspection tools that open LSASS - baseline the SourceImage set
+    - Backup/diagnostic tools requesting broad masks - tune the allowlist to your environment
+level: high

@@ -1,0 +1,43 @@
+title: Pioneer Kitten Data Collection and Archiving via Utility
+id: e9ef5561-0551-46ea-b825-be603d50106b
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten collection and staging of data prior to exfiltration (T1560.001
+    Archive Collected Data: Archive via Utility, T1005 Data from Local System). The actor collects
+    sensitive files from local systems and archives them with utilities such as 7-Zip and WinRAR,
+    frequently with a password and high compression, before egress. Keys on archive-utility process
+    execution with add/compress command lines and password flags. Large or password-protected archives
+    created shortly before an outbound transfer are the actor pattern; correlate with subsequent
+    catbox.moe / cloud egress.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1560.001
+    - attack.t1005
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith:
+            - '\7z.exe'
+            - '\7za.exe'
+            - '\rar.exe'
+            - '\winrar.exe'
+            - '\WinRAR.exe'
+    selection_cmd:
+        CommandLine|contains:
+            - ' a '
+            - ' -hp'
+            - ' -p'
+            - ' -m5'
+    condition: selection_img and selection_cmd
+falsepositives:
+    - Legitimate use of 7-Zip/WinRAR for backups and packaging - baseline expected archiving hosts;
+      password-protected archives of sensitive directories immediately before egress are the signal
+level: medium

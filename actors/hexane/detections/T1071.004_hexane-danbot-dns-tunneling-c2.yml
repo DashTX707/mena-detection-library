@@ -1,0 +1,45 @@
+title: HEXANE DanBot DNS-Tunneling C2 and Exfiltration
+id: 2c5823de-9628-4a0d-8ed7-028472739d84
+status: experimental
+description: |
+    Flagship HEXANE / Lyceum detection: DanBot's signature DNS-tunneling command-and-control and data
+    exfiltration (T1071.004 DNS application-layer protocol, T1572 protocol tunneling, T1041
+    exfiltration over C2 channel, T1132.001 standard encoding of tunneled data). DanBot embeds
+    commands and base32/base64-encoded exfiltrated data inside long, high-entropy subdomain labels of
+    queries to attacker-controlled name servers, and abuses TXT/A/NULL records for the return channel.
+    Keys on DNS queries with abnormally long QNAMEs, many labels, encoded-looking subdomains, high TXT
+    volume to a single second-level domain, and queries to non-corporate-resolver destinations. Best
+    operated as an aggregation analytic (query count / distinct-subdomain count / total bytes per
+    parent domain over a short window). Requires DNS query logging (Sysmon EID 22, firewall DNS, or
+    resolver logs).
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.004
+    - attack.t1572
+    - attack.t1041
+    - attack.t1132.001
+    - mena-detection-library.hexane
+logsource:
+    category: dns
+detection:
+    selection_longlabel:
+        query|re: '([a-zA-Z0-9+/=_-]{30,})\.'
+    selection_txt:
+        QueryType:
+            - 'TXT'
+            - 'NULL'
+            - 'CNAME'
+    selection_encoded:
+        query|re: '(?:[a-z2-7]{16,}|[A-Za-z0-9+/]{24,})'
+    condition: selection_longlabel and (selection_txt or selection_encoded)
+falsepositives:
+    - Legitimate services that encode data in DNS (some CDNs, antivirus/telemetry lookups, cloud
+      security products) - baseline and allowlist their parent domains and resolver destinations
+    - Long DKIM/verification TXT lookups - scope out known mail-security domains
+level: high

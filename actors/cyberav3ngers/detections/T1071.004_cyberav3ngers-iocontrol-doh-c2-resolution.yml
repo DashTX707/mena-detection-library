@@ -1,0 +1,36 @@
+title: CyberAv3ngers IOCONTROL DNS-over-HTTPS C2 Hostname Resolution from OT Device
+id: 3d277f6e-0a7e-4e71-858e-b08701e299bf
+status: experimental
+description: |
+    Detects an OT/IoT device issuing outbound DNS-over-HTTPS (DoH) - HTTPS requests to Cloudflare 1.1.1.1 /
+    1.0.0.1 or other known DoH endpoints, typically with an 'application/dns-json' accept header - instead of
+    using its local resolver. Before connecting to C2, the IOCONTROL (OrpaCrypt) malware used by
+    CyberAv3ngers (IRGC-CEC) resolves its C2 hostname (uuokhhfsdlk.tylarion867mino.com) via Cloudflare DoH to
+    evade DNS monitoring; the DoH response returned C2 IP 159.100.6.69. An embedded OT/IoT endpoint speaking
+    DoH is anomalous - such devices should resolve via the local resolver only. Covers T1071.004 (application
+    layer protocol: DNS). Deploy on the OT-egress boundary; scope the source to OT/IoT subnets. Blocking DoH
+    egress from OT segments is also a practical control.
+references:
+    - https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.004
+    - mena-detection-library.cyberav3ngers
+logsource:
+    category: firewall
+detection:
+    selection:
+        dst_port: 443
+        dst_ip:
+            - '1.1.1.1'
+            - '1.0.0.1'
+            - '8.8.8.8'
+            - '8.8.4.4'
+            - '9.9.9.9'
+    condition: selection
+falsepositives:
+    - A device or application legitimately configured to use a public DoH resolver - allowlist that specific source/app; OT/IoT sources should not appear here
+    - Health-check or captive-portal probes to 1.1.1.1 - baseline expected probers
+level: high

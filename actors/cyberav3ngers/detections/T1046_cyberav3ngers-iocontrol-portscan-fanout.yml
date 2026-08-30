@@ -1,0 +1,37 @@
+title: CyberAv3ngers IOCONTROL Port-Scan Fan-Out from Compromised OT Device
+id: 9d179fe4-2b6c-4b76-b6f5-c8a2c337ff89
+status: experimental
+description: |
+    Detects anomalous horizontal connection fan-out originating from a single OT/IoT device to many distinct
+    internal destinations on a target port within a short window - the behavior of the IOCONTROL (OrpaCrypt)
+    'Port scan' module used by CyberAv3ngers (IRGC-CEC), which sweeps a start-IP to end-IP range on a given
+    port and publishes reachable services back to C2 to enumerate additional devices from the compromised
+    foothold. Covers T1046 (network service discovery). An embedded OT device should talk to a small, fixed
+    set of peers, so a sudden fan-out to dozens of hosts is a strong east-west signal. Deploy on an east-west
+    netflow / OT-segmentation sensor and correlate distinct destination IPs per source; the selection isolates
+    candidate OT-source flows for that aggregation. Requires east-west visibility inside the OT segment.
+references:
+    - https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1046
+    - mena-detection-library.cyberav3ngers
+logsource:
+    category: firewall
+detection:
+    selection:
+        src_ip|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    filter_broadcast:
+        dst_ip|cidr:
+            - '224.0.0.0/4'
+            - '255.255.255.255/32'
+    condition: selection and not filter_broadcast
+falsepositives:
+    - Legitimate vulnerability scanners, asset-discovery tools or network-management stations sweeping the OT segment - allowlist their source IPs
+    - Backup or monitoring hosts that legitimately fan out to many devices - baseline and exclude
+level: medium

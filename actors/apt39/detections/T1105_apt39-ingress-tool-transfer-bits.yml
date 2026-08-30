@@ -1,0 +1,46 @@
+title: APT39 Ingress Tool Transfer via certutil / BITSAdmin and BITS Jobs
+id: e63b94aa-eafc-458a-99f6-c38be50ebc39
+status: experimental
+description: |
+    Detects APT39 / Chafer download of additional tools and payloads onto compromised hosts using
+    living-off-the-land transfer utilities. Keys on certutil -urlcache/-f remote fetches and
+    bitsadmin/PowerShell BITS transfer jobs used to stage files while evading detection. APT39 uses
+    certutil and BITS both to download payloads (Ingress Tool Transfer) and to run BITS jobs as a
+    stealth transfer mechanism. Correlate with unexpected inbound file writes to user-writable paths.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.cisa.gov/news-events/analysis-reports/ar20-259a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.stealth
+    - attack.t1105
+    - attack.t1197
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_certutil:
+        Image|endswith: '\certutil.exe'
+        CommandLine|contains:
+            - 'urlcache'
+            - 'verifyctl'
+            - '-split'
+    selection_bits:
+        Image|endswith: '\bitsadmin.exe'
+        CommandLine|contains:
+            - '/transfer'
+            - '/create'
+            - '/addfile'
+    selection_psbits:
+        CommandLine|contains:
+            - 'Start-BitsTransfer'
+            - 'Import-Module BitsTransfer'
+    condition: selection_certutil or selection_bits or selection_psbits
+falsepositives:
+    - Legitimate software updaters and admin scripts that use BITS for downloads - allowlist known
+      update sources and hosts
+    - certutil used for genuine certificate operations without a remote URL
+level: high

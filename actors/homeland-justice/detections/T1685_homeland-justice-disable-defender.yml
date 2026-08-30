@@ -1,0 +1,50 @@
+title: Homeland Justice Windows Defender Disable Prior to Destructive Payload
+id: ac8ef9e5-c7cd-462c-87a1-1db1cc365b80
+status: experimental
+description: |
+    Detects the defense-impairment step Homeland Justice / Storm-0842 (Iran/MOIS) performed
+    before deploying the ROADSWEEP ransomware and No-Justice wiper against the Albanian
+    government: running disable_defender.exe, a PE that elevates and disables Windows Defender
+    to clear the way for the destructive payloads without AV interference (T1685 - Impair
+    Defenses: Disable or Modify Tools). Keys on the named binary and on the observable side
+    effects of tampering with Defender - command-line disabling of real-time protection and
+    registry writes to the Defender policy keys that turn off DisableRealtimeMonitoring /
+    DisableAntiSpyware / tamper protection. Because a signed disable_defender variant may be
+    renamed, the registry/command-line branches provide durable coverage beyond the filename.
+    Requires process-creation and registry-set telemetry (Sysmon EID 1 / EID 13), plus Defender
+    operational and EDR tamper-protection logs.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_named:
+        Image|endswith: '\disable_defender.exe'
+    selection_setmp:
+        CommandLine|contains:
+            - 'Set-MpPreference -DisableRealtimeMonitoring $true'
+            - 'DisableRealtimeMonitoring 1'
+            - 'DisableAntiSpyware 1'
+            - 'DisableBehaviorMonitoring 1'
+            - 'DisableIOAVProtection 1'
+            - 'DisableScriptScanning 1'
+            - 'MpPreference -DisableRealtimeMonitoring'
+    selection_reg:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains|all:
+            - 'Windows Defender'
+            - 'add'
+    condition: selection_named or selection_setmp or selection_reg
+falsepositives:
+    - Endpoint tooling migrations that legitimately disable Defender when a third-party AV is
+      installed - allowlist the approved AV-switchover process and change window
+    - Test/lab imaging that toggles Defender policies - scope to production hosts and correlate
+      with the destructive-precursor rules
+level: high

@@ -1,0 +1,32 @@
+title: Moses Staff StrifeWater RAT HTTP C2 Beacon - /RVP/index*.php
+id: 13a385da-cb05-43e1-9ad9-5e9275f9527f
+status: experimental
+description: |
+    Detects the Moses Staff StrifeWater RAT command-and-control channel (T1071.001). StrifeWater
+    beacons over HTTP (port 80) to techzenspace[.]com / 87.120.8[.]210 using recurring URIs such as
+    /RVP/index8.php and /RVP/index3.php with a fixed ~20-22 second interval and XOR-obfuscated
+    payloads. Keys on the distinctive /RVP/index*.php URI pattern and the known C2 host indicators
+    in proxy / web-request telemetry; the regular fixed-interval cadence to a low-reputation
+    destination is a supporting beacon signal. Requires proxy / web-gateway or network HTTP logs.
+references:
+    - https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.moses-staff
+logsource:
+    category: proxy
+detection:
+    selection_uri:
+        cs-uri-stem|re: '/RVP/index[0-9]+\.php'
+    selection_host:
+        cs-host:
+            - 'techzenspace.com'
+            - '87.120.8.210'
+    condition: selection_uri or selection_host
+falsepositives:
+    - A legitimate application that happens to request a /RVP/index<n>.php path is unlikely;
+      validate the destination reputation. Allowlist any internal app confirmed to use such a path
+level: high

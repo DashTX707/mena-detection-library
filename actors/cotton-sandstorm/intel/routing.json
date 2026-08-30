@@ -1,0 +1,193 @@
+{
+  "actor": "Cotton Sandstorm (Emennet Pasargad, G1009)",
+  "provenance": "Lane split authored by the Stage-2 decision-agent (read-only; returns JSON in reply) and persisted by the orchestrator as the agent's returned detect-vs-hunt partition. Detection = seed complement of the agent's hunt set; validated to cover the Stage-1 seed exactly with no overlap/dup, and det-count reconciled against the agent's summary. All ids verified present in the CI's bundled ATT&CK dataset. Per-technique rationale shows the Stage-1 detection-feasibility basis.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1595.001",
+      "technique_name": "Active Scanning: Scanning IP Blocks",
+      "tactic": "reconnaissance",
+      "rationale": "medium — mass port scanning (esp. RTSP/554 sweeps) against internet-facing assets is observable via perimeter/IDS, netflow and honeypot telemetry, though source IPs are VPN-fronted and attribution is hard"
+    },
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "rationale": "medium — web-app vulnerability scanning generates distinctive request patterns detectable via WAF/IDS and web-server log analysis"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "medium — the tools are legitimate, but their on-target use (SQLMap injection strings, Acunetix/Burp scan signatures) is detectable via WAF/IDS and web-log analytics"
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "medium — SQL-injection and web-exploitation attempts are detectable via WAF/IPS signatures, anomalous web-server child-process spawns, and web-application logging; this is a primary DETECTION surface for the actor"
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "rationale": "medium — anomalous logins to streaming/display/admin panels from VPN ASNs and impossible-travel analytics can surface valid-account abuse, though it can resemble legitimate use"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — msiexec spawning an unexpected child executable (bd.exe) and MSI package integrity/signing anomalies are detectable via process-creation and EDR telemetry"
+    },
+    {
+      "technique_id": "T1110.001",
+      "technique_name": "Brute Force: Password Guessing",
+      "tactic": "credential-access",
+      "rationale": "medium — repeated authentication failures across accounts/services are detectable via authentication-log analytics and lockout monitoring"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP beaconing to the known WezRat C2 paths/domains and periodic web callbacks are detectable via network/proxy logging, DNS monitoring and IOC matching"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — post-install downloads of executable content and new-binary drops correlated with process lineage are detectable via EDR and proxy telemetry"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "rationale": "medium — RAT beaconing, command-line-launched implant behavior and the known WezRat hashes/C2 give a workable detection surface via EDR and network IOCs"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — host-enumeration API/command patterns from a freshly-spawned implant are detectable via EDR behavioral analytics, though individually low-signal"
+    },
+    {
+      "technique_id": "T1491.002",
+      "technique_name": "Defacement: External Defacement",
+      "tactic": "impact",
+      "rationale": "medium — external defacement/content-injection is detectable via file-integrity monitoring, 'known-good' content baselining and external brand/surface monitoring; a DETECTION surface for the influence payoff"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1596",
+      "technique_name": "Search Open Technical Databases",
+      "tactic": "reconnaissance",
+      "rationale": "low — third-party database queries occur entirely off-victim and leave no defender-side telemetry; a HUNT/attack-surface-awareness item (know what of yours is indexed in Shodan) rather than a log detection"
+    },
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "rationale": "low — off-victim OSINT against public/commercial data sources; not observable in defender telemetry"
+    },
+    {
+      "technique_id": "T1589.002",
+      "technique_name": "Gather Victim Identity Information: Email Addresses",
+      "tactic": "reconnaissance",
+      "rationale": "low — email-address enumeration is off-victim; a threat-intel/hunt awareness item"
+    },
+    {
+      "technique_id": "T1589.003",
+      "technique_name": "Gather Victim Identity Information: Employee Names",
+      "tactic": "reconnaissance",
+      "rationale": "low — social-media reconnaissance is off-victim; not detectable in enterprise telemetry"
+    },
+    {
+      "technique_id": "T1591.001",
+      "technique_name": "Gather Victim Org Information: Determine Physical Locations",
+      "tactic": "reconnaissance",
+      "rationale": "low — off-victim geolocation reconnaissance; not detectable in defender telemetry"
+    },
+    {
+      "technique_id": "T1590.001",
+      "technique_name": "Gather Victim Network Information: Domain Properties",
+      "tactic": "reconnaissance",
+      "rationale": "low — passive subdomain enumeration via third-party services is off-victim; hunt via attack-surface monitoring of your own exposed subdomains"
+    },
+    {
+      "technique_id": "T1650",
+      "technique_name": "Acquire Access",
+      "tactic": "resource-development",
+      "rationale": "low — acquisition of leaked data is off-victim; the downstream credential reuse is where detection becomes feasible (authentication anomaly monitoring)"
+    },
+    {
+      "technique_id": "T1583",
+      "technique_name": "Acquire Infrastructure",
+      "tactic": "resource-development",
+      "rationale": "low — infrastructure acquisition is off-victim; a HUNT/attribution surface via reseller pivots and VPN-node reputation, and the advisory notes VPN nodes are shared so are not exclusive indicators"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration is off-victim; a HUNT signal via newly-registered/lookalike-domain feeds and persona-domain clustering"
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim service acquisition; a hunt/attribution artifact rather than a host or log detection"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — persona creation is entirely off-victim; a HUNT/attribution artifact (persona-network mapping, avatar/handle reuse, cross-platform linkage), not a host or log detection"
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — account creation is off-victim; only the inbound intimidation messages themselves are observable, on the recipient side"
+    },
+    {
+      "technique_id": "T1587.004",
+      "technique_name": "Develop Capabilities: Exploits",
+      "tactic": "resource-development",
+      "rationale": "low — exploit development is off-victim; downstream exploitation attempts are the detection surface"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — staging on attacker infrastructure is off-victim; the resulting client callbacks (T1071.001) are the detection surface"
+    },
+    {
+      "technique_id": "T1110.002",
+      "technique_name": "Brute Force: Password Cracking",
+      "tactic": "credential-access",
+      "rationale": "low — offline hash cracking occurs entirely on attacker/third-party resources with no victim-side telemetry; a hunt/awareness item"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — obfuscation defeats static signatures; hunt via entropy analysis, the published WezRat detection content, and behavioral (decode-then-beacon) analytics"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "rationale": "low — name/location masquerade defeats name-based trust; a HUNT via signer/metadata mismatch, MSI-behavior anomaly and lookalike-domain analysis"
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "rationale": "low — exfiltration to web services can blend with normal outbound web traffic; hunt via large/anomalous outbound transfers to newly-seen destinations and DLP, though the leak itself often surfaces externally first"
+    }
+  ],
+  "summary": {
+    "total": 30,
+    "detection": 12,
+    "hunt": 18
+  }
+}

@@ -1,0 +1,36 @@
+title: Pioneer Kitten Local Account Creation with Actor-Specific Names
+id: 3ad9eb11-cb3d-4866-a44d-948ef243ed3a
+status: experimental
+description: |
+    Detects creation of local accounts using the specific names Pioneer Kitten / Fox Kitten has used
+    for persistence on victim networks (T1136.001 Create Account: Local Account). Observed names
+    masquerade as service or admin accounts: sqladmin$, adfsservice, IIS_Admin, iis-admin, and the
+    unusual "John McCain". Keys on Windows Security account-creation events (Event ID 4720) where the
+    new Sam account name matches this actor watchlist. High-fidelity, actor-specific: legitimate
+    provisioning rarely creates these exact names, and none of them are default built-in accounts.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1136.001
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4720
+        TargetUserName:
+            - 'sqladmin$'
+            - 'adfsservice'
+            - 'IIS_Admin'
+            - 'iis-admin'
+            - 'John McCain'
+    condition: selection
+falsepositives:
+    - Rare legitimate service accounts that happen to share one of these names - verify the creating
+      account, host and time against expected provisioning activity
+level: high

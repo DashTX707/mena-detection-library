@@ -1,0 +1,589 @@
+{
+  "report_title": "Pioneer Kitten / Fox Kitten (UNC757 / Parisite / RUBIDIUM / Lemon Sandstorm / \"Br0k3r\"/\"xplfinder\") Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "CISA/FBI/DC3 Joint Cybersecurity Advisory AA24-241A 'Iran-based Cyber Actors Enabling Ransomware Attacks on US Organizations' (2024-08-28, https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a); MITRE ATT&CK Group Fox Kitten G0117 (https://attack.mitre.org/groups/G0117/); CrowdStrike 'PIONEER KITTEN' adversary profile; ClearSky 'Fox Kitten Campaign' (2020)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Pioneer Kitten",
+    "mitre_id": "",
+    "mitre_canonical_name": "Fox Kitten",
+    "aliases": [
+      "Fox Kitten",
+      "UNC757",
+      "Parisite",
+      "RUBIDIUM",
+      "Lemon Sandstorm",
+      "Br0k3r",
+      "xplfinder"
+    ],
+    "related_clusters": [
+      "Pay2Key (information operation / hack-and-leak persona, S0556)",
+      "Danesh Novin Sahand (Iranian cover company, ID 14007585836)",
+      "Ransomware affiliates: NoEscape, RansomHouse, ALPHV/BlackCat"
+    ],
+    "attribution": "Iran-nexus, assessed by the FBI to be a cyber actor operating with Iranian state sponsorship (Government of Iran). The group uses the Iranian company name Danesh Novin Sahand (ID 14007585836) likely as a cover IT entity. The FBI assesses a significant percentage of the group's US-focused activity is an initial-access-broker operation to enable ransomware in collaboration with affiliates (NoEscape, RansomHouse, ALPHV/BlackCat) in exchange for a percentage of ransom payments, and — separately — the group conducts computer-network-exploitation and data theft in support of the GOI against targets of Iranian state interest (US defense, Israel, Azerbaijan, UAE). The FBI assesses the ransomware activity is likely NOT sanctioned by the GOI.",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "United Arab Emirates",
+      "Israel",
+      "Azerbaijan"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Worldwide (offers domain admin access to numerous networks worldwide)"
+    ],
+    "targeted_sectors": [
+      "Education",
+      "Finance / financial institutions",
+      "Healthcare",
+      "Defense",
+      "Local / municipal government",
+      "Critical infrastructure"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Initial-access-broker / ransomware-enabling operations (Br0k3r / xplfinder)",
+        "date": "2017 to 2024 (as recently as August 2024)",
+        "summary": "High-volume network-intrusion campaign against US schools, municipal governments, financial institutions and healthcare facilities. Initial access via exploitation of internet-facing edge appliances (Citrix NetScaler CVE-2019-19781 / CVE-2023-3519, F5 BIG-IP CVE-2022-1388, Pulse Secure/Ivanti CVE-2024-21887, PAN-OS GlobalProtect CVE-2024-3400, Check Point Security Gateway CVE-2024-24919), using Shodan for target discovery. Actors deploy webshells, harvest credentials, create accounts, establish persistence via scheduled tasks/DLL side-loading, then sell full-domain-control/domain-admin access on cyber marketplaces and collaborate directly with ransomware affiliates (NoEscape, RansomHouse, ALPHV/BlackCat).",
+        "source_url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"
+      },
+      {
+        "name": "Pay2Key",
+        "date": "Late 2020",
+        "summary": "Hack-and-leak information operation assessed by the FBI to be aimed at undermining the security of Israel-based cyber infrastructure (not primarily for ransom). The actors operated a .onion (Tor) leak site hosted on cloud infrastructure registered to a previously compromised victim organization, publicized compromises on social media, tagged victim/media accounts, and leaked victim data.",
+        "source_url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"
+      },
+      {
+        "name": "Fox Kitten Campaign (ClearSky, 2020)",
+        "date": "2019 to 2020",
+        "summary": "Exploitation of VPN/edge appliances (Pulse Secure CVE-2019-11510, Citrix, Fortinet, PAN-OS) to breach and persist in organizations across IT, telecom, oil & gas, aviation, government and security sectors, deploying webshells, tunneling tools and open-source utilities for lateral movement and long-term access.",
+        "source_url": "https://attack.mitre.org/groups/G0117/"
+      }
+    ]
+  },
+  "threat_actors": ["Pioneer Kitten", "Fox Kitten", "UNC757", "Parisite", "RUBIDIUM", "Lemon Sandstorm", "Br0k3r", "xplfinder"],
+  "targeted_regions": ["United States", "United Arab Emirates", "Israel", "Azerbaijan", "Worldwide"],
+  "targeted_sectors": ["Education", "Finance", "Healthcare", "Defense", "Local government", "Critical infrastructure"],
+  "malware": [
+    "version.dll (backdoor)",
+    "Pay2Key (ransomware / information-operation tooling, S0556)"
+  ],
+  "tooling_observed": [
+    "Shodan",
+    "webshells (netscaler.php, ctxHeaderLogon.php, ui_style.php, sanpdebug.php)",
+    "Meshcentral",
+    "AnyDesk",
+    "Ligolo / ligolo-ng",
+    "ngrok",
+    "PowerShell / PowerShell ISE / PowerShell Web Access",
+    "contig.exe (SysInternals, side-loading host; renamed dllhost.ext)",
+    "files.catbox.moe (file hosting)",
+    "Mimikatz",
+    "Plink / PsExec (Fox Kitten historic tooling)",
+    "7-Zip / WinRAR (archiving)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1596",
+      "technique_name": "Search Open Technical Databases",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors use the Shodan search engine (Shodan.io) to identify and enumerate internet infrastructure hosting devices vulnerable to particular CVEs (edge/VPN appliances).",
+      "observed_tooling": ["Shodan"],
+      "detection_feasibility": "low — third-party database queries occur off-victim and are not endpoint-observable; hunt/intel candidate via external attack-surface and exposure monitoring",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors conduct mass scanning of IP addresses hosting Palo Alto Networks PAN-OS/GlobalProtect VPN devices (probing for CVE-2024-3400, as of April 2024) and scan IPs hosting Check Point Security Gateways (probing for CVE-2024-24919, as of July 2024).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — inbound vulnerability scanning/probing against internet-facing appliances is observable at the perimeter via firewall/IDS/WAF and edge-appliance access logs, but attribution to this actor is weak without corroborating infrastructure",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Signature behavior and primary initial-access vector: exploitation of public-facing networking/VPN/edge devices — Citrix NetScaler (CVE-2019-19781, CVE-2023-3519), F5 BIG-IP (CVE-2022-1388), Pulse Secure/Ivanti Connect Secure (CVE-2024-21887), PAN-OS GlobalProtect firewalls (CVE-2024-3400), and Check Point Security Gateways (CVE-2024-24919).",
+      "observed_tooling": [],
+      "detection_feasibility": "high — exploitation of these specific CVEs on edge appliances is the strongest detection surface: appliance/WAF logs, exploit signatures, anomalous requests to vulnerable endpoints, post-exploit process/file activity on the appliance, and patch-state/version monitoring all apply",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "procedure_description": "Actors create the directory /xui/common/images/ on targeted IP addresses and abuse remote external services on internet-facing assets (VPN/Citrix) to gain and maintain access.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — new/unexpected directories and files on edge appliances and anomalous remote-service authentication (impossible travel, new device, off-hours VPN logon) are detectable via appliance file-integrity monitoring and identity/authentication analytics",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "Actors deploy webshells on compromised Citrix NetScaler devices to capture login credentials (appended to a file named netscaler.1 in the webshell directory) and maintain access. Observed directories/files: /var/vpn/themes/imgs/ (netscaler.1, netscaler.php, ctxHeaderLogon.php); and, redeployed immediately after victims patch, /netscaler/logon/LogonPoint/uiareas/ui_style.php and /netscaler/logon/sanpdebug.php. Also place the malicious backdoor version.dll in C:\\Windows\\ADFS\\.",
+      "observed_tooling": ["webshells (netscaler.php, ctxHeaderLogon.php, ui_style.php, sanpdebug.php)", "version.dll (backdoor)"],
+      "detection_feasibility": "high — file-integrity monitoring on NetScaler/edge web roots for the named webshell files and directories, appliance process anomalies, and re-appearance of webshells shortly after patching are high-fidelity, actor-specific detection opportunities",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1056",
+      "technique_name": "Input Capture",
+      "tactic": "credential-access",
+      "procedure_description": "Actors capture login credentials on compromised NetScaler devices via a deployed webshell, appending captured credentials to a file named netscaler.1 in the same directory as the webshell.",
+      "observed_tooling": ["webshells (netscaler.php, ctxHeaderLogon.php, ui_style.php, sanpdebug.php)"],
+      "detection_feasibility": "medium — creation/growth of a netscaler.1 (or similar) credential-capture file adjacent to a webshell on the appliance is detectable via file-integrity monitoring, but requires appliance-level visibility",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "tactic": "persistence",
+      "procedure_description": "Actors create local accounts on victim networks. Observed account names include \"sqladmin$\", \"adfsservice\", \"IIS_Admin\", \"iis-admin\", and \"John McCain\".",
+      "observed_tooling": [],
+      "detection_feasibility": "high — creation of accounts with these specific/masquerading names is directly observable via account-creation logging (Event ID 4720) and makes strong actor-specific watchlist detections",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactic": "persistence",
+      "procedure_description": "Actors request exemptions to the victim's zero-trust application and security policies for tools they intend to deploy on the network.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — policy-exemption requests are largely a social/process action outside standard endpoint telemetry; hunt candidate via review of security-exemption/allowlisting change tickets",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "Actors create the malicious scheduled task SpaceAgentTaskMgrSHR in the Windows/Spaceport/ task folder; the task uses DLL side-loading against the signed Microsoft SysInternals executable contig.exe (which may be renamed dllhost.ext) to load a payload from version.dll, observed executed from the Windows Downloads directory. A second scheduled task is used to load malware through installed backdoors.",
+      "observed_tooling": ["contig.exe (SysInternals, side-loading host; renamed dllhost.ext)", "version.dll (backdoor)"],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); the specific task name SpaceAgentTaskMgrSHR and the Windows/Spaceport/ folder are actor-specific, high-fidelity detections",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "stealth",
+      "procedure_description": "Actors use DLL side-loading: the signed SysInternals executable contig.exe (may be renamed dllhost.ext) is abused to load a malicious version.dll payload, launched from the Windows Downloads directory via the SpaceAgentTaskMgrSHR scheduled task.",
+      "observed_tooling": ["contig.exe (SysInternals, side-loading host; renamed dllhost.ext)", "version.dll (backdoor)"],
+      "detection_feasibility": "high — a signed Microsoft binary loading an unsigned version.dll from an unusual path (Windows Downloads), and contig.exe renamed to dllhost.ext, are detectable via module-load (Sysmon EID 7) and signature-mismatch telemetry",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1505",
+      "technique_name": "Server Software Component",
+      "tactic": "persistence",
+      "procedure_description": "For persistence during detection/mitigation, actors create a daily Windows service task named with a random eight-character string and attempt to load a similarly named DLL from C:\\Windows\\system32\\drivers\\ (e.g., a service named \"test\" loading C:\\WINDOWS\\system32\\drivers\\test.sys).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — new service creation (Event ID 7045) loading a driver .sys from system32\\drivers, especially with random 8-character names created daily, is detectable via service-install and driver-load telemetry but needs baselining to reduce noise",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1078.003",
+      "technique_name": "Valid Accounts: Local Accounts",
+      "tactic": "privilege-escalation",
+      "procedure_description": "Actors repurpose compromised credentials harvested from exploited networking devices (e.g., Citrix NetScaler) to log into other applications such as Citrix XenDesktop.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — reuse of appliance-harvested local credentials against internal applications is detectable via anomalous authentication analytics (new source, credential seen first on an edge device), but blends with legitimate use",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "privilege-escalation",
+      "procedure_description": "Actors repurpose administrative credentials of network administrators to log into domain controllers and other infrastructure on victim networks.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous domain-admin logons to DCs (new host, off-hours, impossible travel) are detectable via identity/authentication analytics, but admin-credential reuse blends with legitimate administration",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "Actors use administrator credentials to disable antivirus and security software, and attempt to enter security-exemption tickets to the network security device or contractor to get their tools allowlisted.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — stopping/disabling AV/EDR services and tampering with security-tool configuration is detectable via EDR tamper-protection alerts, service-stop events, and security-product health/heartbeat monitoring",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1689",
+      "technique_name": "Downgrade Attack",
+      "tactic": "defense-impairment",
+      "procedure_description": "Actors lower PowerShell policies to a less secure level to enable execution of their scripts.",
+      "observed_tooling": ["PowerShell / PowerShell ISE / PowerShell Web Access"],
+      "detection_feasibility": "high — changes to PowerShell execution policy / language mode and downgrade of logging are detectable via registry-modification and PowerShell operational telemetry",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "Actors use a compromised admin account to start Microsoft Windows PowerShell ISE and run Invoke-WebRequest with a URI including files.catbox.moe (free file-hosting used as a repository); they also enable servers to use Windows PowerShell Web Access.",
+      "observed_tooling": ["PowerShell / PowerShell ISE / PowerShell Web Access", "files.catbox.moe (file hosting)"],
+      "detection_feasibility": "high — PowerShell script-block/module logging captures Invoke-WebRequest to catbox.moe and enabling of PowerShell Web Access; suspicious PowerShell ISE launch over RDP adds context",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors use PowerShell Invoke-WebRequest to the free online file-hosting site files.catbox.moe as a repository/hosting mechanism to transfer tooling to compromised hosts.",
+      "observed_tooling": ["PowerShell / PowerShell ISE / PowerShell Web Access", "files.catbox.moe (file hosting)"],
+      "detection_feasibility": "high — outbound requests to files.catbox.moe and inbound file writes following PowerShell downloads are detectable via proxy/DNS and process+file telemetry; catbox.moe is an explicit hunt/detect IOC in the advisory",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1012",
+      "technique_name": "Query Registry",
+      "tactic": "discovery",
+      "procedure_description": "Actors export system registry hives and network firewall configurations on compromised servers.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — registry-hive export (reg save / reg export) and firewall-config dumps are detectable via command-line and file-write telemetry, but require correlation to distinguish from admin activity",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1482",
+      "technique_name": "Domain Trust Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors exfiltrate account usernames from the victim domain controller and access configuration files and logs to gather network and user-account information for further exploitation.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — bulk enumeration of DC account/user data and trust information is detectable via directory-service query and object-access auditing, but is subtle and needs baselining",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Software",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors deploy Meshcentral to connect with compromised servers for remote access, and install AnyDesk as a backup access method.",
+      "observed_tooling": ["Meshcentral", "AnyDesk"],
+      "detection_feasibility": "high — unsanctioned RMM tools (Meshcentral, AnyDesk) are detectable via process/known-binary signatures, installation events, and outbound connections to their service endpoints",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors use the open-source tunneling tool Ligolo (ligolo / ligolo-ng) and deploy ngrok (ngrok.io) to create outbound connections to a random subdomain.",
+      "observed_tooling": ["Ligolo / ligolo-ng", "ngrok"],
+      "detection_feasibility": "high — Ligolo and ngrok processes plus outbound connections to *.ngrok.io (random subdomains) are detectable via process execution and network/DNS telemetry; ngrok.io and catbox.moe are explicitly called out for hunting in the advisory",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1657",
+      "technique_name": "Financial Theft",
+      "tactic": "impact",
+      "procedure_description": "Actors collaborate with ransomware affiliates (NoEscape, RansomHouse, ALPHV/BlackCat) — providing network access, helping lock victim networks, and strategizing on extortion — in exchange for a percentage of ransom payments. They also monetize access by selling full domain control and domain-admin credentials on cyber marketplaces.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the access-brokering, ransom negotiation and financial-theft coordination occur off-victim on criminal marketplaces/messaging; intel/hunt candidate (the on-network ransomware deployment that follows is where host detection lands)",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1530",
+      "technique_name": "Data from Cloud Storage",
+      "tactic": "collection",
+      "procedure_description": "Actors leverage compromised cloud-computing resources of victim organizations to conduct further operations, and have used compromised cloud service accounts to transmit data stolen from other compromised organizations.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous access to and egress from cloud storage/accounts is detectable via cloud audit logs (unusual principals, new locations, cross-tenant data movement), but requires cloud-native logging",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
+      "tactic": "exfiltration",
+      "procedure_description": "Actors use compromised victim cloud-service accounts to transmit/exfiltrate data stolen from other compromised organizations, using victim cloud infrastructure as a relay.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — large or unusual outbound transfers to cloud-storage services and cross-organization data flows through compromised cloud accounts are detectable via cloud audit/DLP telemetry",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "Actors operated a Pay2Key .onion (Tor) leak site hosted on cloud infrastructure registered to a previously compromised victim organization, and abuse third-party web services (catbox.moe, ngrok, cloud provider accounts) for hosting and relaying.",
+      "observed_tooling": ["files.catbox.moe (file hosting)", "ngrok"],
+      "detection_feasibility": "low — adversary infrastructure acquisition (including staging leak sites on compromised cloud) is off-victim; intel/hunt candidate via infrastructure tracking and abuse of victim cloud tenancy",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "During the Pay2Key information operation, actors publicized compromises on social media, tagging accounts of victim and media organizations to amplify the hack-and-leak narrative.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — actor-controlled social-media accounts are off-victim; intel/brand-monitoring candidate",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1036.004",
+      "technique_name": "Masquerading: Masquerade Task or Service",
+      "tactic": "stealth",
+      "procedure_description": "Actors name malicious scheduled tasks/services to blend in — e.g. the scheduled task SpaceAgentTaskMgrSHR in a Windows/Spaceport/ folder and daily random-eight-character Windows service tasks loading a matching .sys driver.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — task/service names that mimic legitimate agents, and daily-created randomly named services, are detectable via task/service-creation auditing with name-pattern baselining",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Actors rename the SysInternals contig.exe to dllhost.ext to masquerade as a legitimate binary, and create accounts with legitimate-looking names (e.g. IIS_Admin, adfsservice, sqladmin$) to blend in.",
+      "observed_tooling": ["contig.exe (SysInternals, side-loading host; renamed dllhost.ext)"],
+      "detection_feasibility": "medium — legitimate-looking names in unusual locations and signed binaries renamed to odd extensions (dllhost.ext) are detectable via name/path/hash baselining and signature-vs-name mismatch",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "Actors obtain and operationalize publicly available tools including Ligolo/ligolo-ng, ngrok, Meshcentral, AnyDesk, and (historically) Mimikatz and Plink.",
+      "observed_tooling": ["Ligolo / ligolo-ng", "ngrok", "Meshcentral", "AnyDesk", "Mimikatz", "Plink / PsExec (Fox Kitten historic tooling)"],
+      "detection_feasibility": "low — tool acquisition itself is off-endpoint; the downstream use of each tool is where detection lands — this entry is an intel/hunt candidate",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a", "https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "Fox Kitten has used credential-dumping tooling including Mimikatz to steal credentials from compromised hosts to enable lateral movement and privilege escalation.",
+      "observed_tooling": ["Mimikatz"],
+      "detection_feasibility": "high — process access to lsass.exe and Mimikatz signatures are highly observable via EDR process-access and image-load telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1003.003",
+      "technique_name": "OS Credential Dumping: NTDS",
+      "tactic": "credential-access",
+      "procedure_description": "Fox Kitten has targeted domain-controller credential stores (NTDS.dit) to obtain domain credentials at scale for the domain-admin access they subsequently sell/broker.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — NTDS.dit extraction (ntdsutil, volume-shadow copy, or direct file access on a DC) is detectable via process command-line, VSS creation, and DC file-access auditing",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1552.001",
+      "technique_name": "Unsecured Credentials: Credentials In Files",
+      "tactic": "credential-access",
+      "procedure_description": "Fox Kitten has searched for and harvested credentials stored in files on compromised systems (including credentials captured to files via edge-appliance webshells).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — reading credential-bearing files leaves little discrete signal; hunt candidate via file-access telemetry and honeytoken files",
+      "sources": ["https://attack.mitre.org/groups/G0117/", "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "procedure_description": "Fox Kitten has used brute-force techniques to obtain credentials against exposed services.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — authentication-failure spikes (Event ID 4625), lockouts and password-spray patterns are detectable via authentication analytics",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Fox Kitten scans internal networks to identify services and hosts for lateral movement after gaining a foothold via an exploited edge appliance.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — internal scanning bursts are detectable via connection-fanout/east-west network analytics and known-scanner process signatures",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Fox Kitten enumerates remote hosts on the internal network to plan lateral movement toward domain controllers and high-value systems.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — host-enumeration commands (net view, ping sweeps, nltest) are detectable in command-line logs but common; value comes from recon-burst/process-lineage correlation",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Fox Kitten enumerates files and directories on compromised systems to locate configuration files, credentials and data of interest.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — file/directory enumeration is common and noisy; meaningful mainly in a tight recon-burst process-lineage window",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "procedure_description": "Fox Kitten enumerates domain accounts (and exfiltrates account usernames from the domain controller) to identify targets for credential theft and access brokering.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — domain account enumeration (net user /domain, LDAP queries) is directly observable in command-line and directory-service query logging",
+      "sources": ["https://attack.mitre.org/groups/G0117/", "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "Actors use a compromised administrator account to initiate remote desktop sessions to other servers on the network (e.g. to launch PowerShell ISE), and Fox Kitten uses RDP for lateral movement.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — RDP lateral movement is detectable via Type-10 logons (4624) and internal-RDP fanout analytics, but blends with legitimate admin RDP",
+      "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a", "https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "procedure_description": "Fox Kitten moves laterally using SMB/Windows admin shares (including PsExec-style remote execution) after harvesting credentials.",
+      "observed_tooling": ["Plink / PsExec (Fox Kitten historic tooling)"],
+      "detection_feasibility": "medium — admin-share access (ADMIN$/C$) and remote service creation via SMB are detectable via 5140/4624 Type-3 logons and remote service-install events",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "tactic": "lateral-movement",
+      "procedure_description": "Fox Kitten uses SSH (and SSH-tunneling utilities such as Plink) to access and pivot between compromised systems.",
+      "observed_tooling": ["Plink / PsExec (Fox Kitten historic tooling)"],
+      "detection_feasibility": "medium — SSH client execution and outbound SSH from unusual internal hosts are detectable via process and network telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1210",
+      "technique_name": "Exploitation of Remote Services",
+      "tactic": "lateral-movement",
+      "procedure_description": "Fox Kitten exploits vulnerabilities in internal remote services to move laterally within compromised environments.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — internal exploitation is detectable via service crash/anomaly telemetry and IDS on east-west traffic, but requires internal instrumentation",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1550.002",
+      "technique_name": "Use Alternate Authentication Material: Pass the Hash",
+      "tactic": "lateral-movement",
+      "procedure_description": "Fox Kitten reuses harvested credential material (including hashes) to authenticate to additional systems.",
+      "observed_tooling": ["Mimikatz"],
+      "detection_feasibility": "medium — pass-the-hash is detectable via NTLM logon anomalies (Type-3, seclogo) and mismatched logon/credential-source analytics, but is subtle",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "Fox Kitten uses proxying/tunneling utilities (including ngrok and open-source tunnelers) to relay C2 and obscure the true source of connections.",
+      "observed_tooling": ["ngrok", "Ligolo / ligolo-ng"],
+      "detection_feasibility": "medium — proxy/tunnel utilities are detectable via process execution and outbound connections to tunneling-service endpoints, but generic proxying blends with normal traffic",
+      "sources": ["https://attack.mitre.org/groups/G0117/", "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1102",
+      "technique_name": "Web Service",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors abuse legitimate web services (e.g. files.catbox.moe file hosting, cloud provider accounts) for hosting, C2 relay and data movement.",
+      "observed_tooling": ["files.catbox.moe (file hosting)"],
+      "detection_feasibility": "medium — use of legitimate web services for C2 blends with normal traffic; detectable when specific services (catbox.moe) are baselined/blocklisted and correlated with process activity",
+      "sources": ["https://attack.mitre.org/groups/G0117/", "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "Fox Kitten archives collected data with utilities (e.g. 7-Zip/WinRAR) prior to exfiltration.",
+      "observed_tooling": ["7-Zip / WinRAR (archiving)"],
+      "detection_feasibility": "medium — archive-utility execution (7z/rar/winrar) with large or password-protected outputs preceding egress is detectable via process command-line and file-write telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Fox Kitten collects sensitive data and files from local systems on compromised hosts (in support of both access-brokering and GOI-aligned data theft).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — local data collection is common; suspicious mainly via staging patterns and process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1039",
+      "technique_name": "Data from Network Shared Drive",
+      "tactic": "collection",
+      "procedure_description": "Fox Kitten collects data from network shared drives on victim networks.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — reads from network shares are high-volume and largely legitimate; better as a hunt over file-server access auditing",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1546.008",
+      "technique_name": "Event Triggered Execution: Accessibility Features",
+      "tactic": "persistence",
+      "procedure_description": "Fox Kitten has abused Windows accessibility features (e.g. sticky keys) for persistence and privileged execution.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — replacement of or debugger hijack on accessibility binaries (sethc.exe, utilman.exe) and their Image File Execution Options keys is a rare, high-fidelity registry/file detection",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "procedure_description": "Fox Kitten obfuscates commands and scripts to hinder analysis and detection.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — heavily obfuscated/encoded command lines are detectable via entropy and encoding heuristics on process command-line and script-block logs",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Fox Kitten encodes/encrypts files and payloads to evade static detection.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — high-entropy/encoded payloads are detectable via file-entropy analytics but require dedicated scanning",
+      "sources": ["https://attack.mitre.org/groups/G0117/"]
+    }
+  ],
+  "detection_signals": [
+    "Exploitation attempts and post-exploit activity on internet-facing Citrix NetScaler (CVE-2019-19781, CVE-2023-3519), F5 BIG-IP (CVE-2022-1388), Pulse/Ivanti (CVE-2024-21887), PAN-OS GlobalProtect (CVE-2024-3400), and Check Point Security Gateway (CVE-2024-24919) — appliance/WAF logs, exploit signatures, version/patch-state monitoring",
+    "New/unexpected files or directories on NetScaler/edge appliances: /var/vpn/themes/imgs/ (netscaler.1, netscaler.php, ctxHeaderLogon.php), /netscaler/logon/LogonPoint/uiareas/ui_style.php, /netscaler/logon/sanpdebug.php, and /xui/common/images/ — plus webshells re-appearing shortly after patching",
+    "Growth of a credential-capture file named netscaler.1 adjacent to a webshell on a NetScaler device",
+    "Creation of accounts named sqladmin$, adfsservice, IIS_Admin, iis-admin, or 'John McCain' (Event ID 4720) — actor watchlist",
+    "Scheduled task SpaceAgentTaskMgrSHR in the Windows\\Spaceport\\ task folder (Event ID 4698); daily creation of Windows service tasks with random 8-character names loading a matching .sys from C:\\Windows\\system32\\drivers\\ (Event ID 7045)",
+    "DLL side-loading: signed SysInternals contig.exe (or renamed dllhost.ext) loading an unsigned version.dll from the Windows Downloads directory; version.dll backdoor in C:\\Windows\\ADFS\\",
+    "PowerShell Invoke-WebRequest to files.catbox.moe; enabling of Windows PowerShell Web Access; PowerShell execution-policy downgrade; PowerShell ISE launched over an RDP session",
+    "ngrok processes and outbound connections to *.ngrok.io (random subdomains); Ligolo/ligolo-ng tunneling; Meshcentral and AnyDesk RMM installation and outbound connections",
+    "AV/EDR being disabled or security-tool tamper events using administrator credentials; security-exemption/allowlisting change tickets requested for unknown tools",
+    "Export of registry hives and firewall configuration on servers; bulk enumeration/exfiltration of usernames from domain controllers",
+    "Outbound web requests to files.catbox[.]moe and ***.ngrok[.]io (explicitly recommended hunt in AA24-241A)",
+    "Traffic to/from the advisory IPs (Table 10 recent: 138.68.90.19, 167.99.202.130, 78.141.238.182, 51.16.51.81, 51.20.138.134, 134.209.30.220, 13.53.124.246) and domains api.gupdate.net, githubapp.net",
+    "Use of compromised cloud service accounts to relay/exfiltrate data belonging to other organizations (cross-tenant data movement in cloud audit logs)"
+  ],
+  "iocs": {
+    "ips": [
+      "138.68.90.19",
+      "167.99.202.130",
+      "78.141.238.182",
+      "51.16.51.81",
+      "51.20.138.134",
+      "134.209.30.220",
+      "13.53.124.246",
+      "18.134.0.66",
+      "193.149.190.248",
+      "45.76.65.42",
+      "206.71.148.78",
+      "193.149.187.41"
+    ],
+    "domains": [
+      "api.gupdate.net",
+      "githubapp.net",
+      "login.forticloud.online",
+      "fortigate.forticloud.online",
+      "cloud.sophos.one",
+      "files.catbox.moe",
+      "ngrok.io"
+    ],
+    "emails": [],
+    "hashes": [],
+    "cves": [
+      "CVE-2019-19781",
+      "CVE-2023-3519",
+      "CVE-2022-1388",
+      "CVE-2024-21887",
+      "CVE-2024-3400",
+      "CVE-2024-24919"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Primary source is the FBI/CISA/DC3 joint advisory AA24-241A (2024-08-28), a high-confidence government report with concrete IOCs and MITRE mappings; enriched with MITRE ATT&CK Fox Kitten G0117 and ClearSky/CrowdStrike reporting for well-documented lateral-movement/credential/collection behaviors not detailed in the advisory. Attribution to an Iran-nexus, state-sponsored initial-access broker (using cover company Danesh Novin Sahand) is high-confidence per the FBI. actor.mitre_id intentionally left empty per tasking (the MITRE group id G0117 for Fox Kitten is cited only as a source, not as the actor id). ATT&CK version note: AA24-241A maps to ATT&CK v15.1 IDs; several were normalized to THIS environment's bundled (reorganized) dataset — advisory T1562.001 (Disable/Modify Tools) -> T1685 (tactic 'defense-impairment'); advisory T1562.010 (Downgrade Attack) -> T1689 (tactic 'defense-impairment'); DLL side-loading (advisory contig.exe/version.dll, ATT&CK v15 T1574.002) -> T1574.001 'DLL' as T1574.002 is not present in this env; advisory scheduled-task T1053 -> T1053.005; defense-evasion techniques use the env tactic slug 'stealth' and encrypted/encoded file uses T1027.013 per env conventions. Every technique_id was validated against the environment's bundled ATT&CK dataset (sigma.data.mitre_attack) before inclusion — zero invalid IDs. STRONGEST DETECTION SURFACE (detection-candidate, high feasibility): T1190 edge-appliance CVE exploitation, T1505.003 named webshells on NetScaler, T1136.001 actor-specific account names, T1053.005 SpaceAgentTaskMgrSHR, T1574.001 contig.exe->version.dll side-load, T1059.001/T1105 catbox.moe, T1219 Meshcentral/AnyDesk, T1572 ngrok/Ligolo, T1685 AV disable, T1689 PowerShell downgrade, T1003.001/T1003.003 credential dumping, T1546.008 accessibility persistence. HUNT-leaning (low feasibility, off-victim): T1596 Shodan, T1098 policy-exemption requests, T1657 ransomware/access-brokering, T1583.006/T1585.001 infrastructure & social-media, T1588.002 tooling, T1552.001 creds-in-files, T1039 network-share collection. IOCs are taken verbatim from AA24-241A: Table 10 (recent) and Table 11 (historical) IP/domain indicators, plus the CVEs and the explicit hunt indicators files.catbox.moe and *.ngrok.io; defanged brackets removed for raw machine-readable values. No file hashes are provided because the advisory HTML body did not enumerate sample hashes (its STIX/XML IOC package should be ingested directly if hashes are required). The 14 bitcoin addresses and TOX identifiers in the advisory (e.g. Br0k3r/xplfinder TOX keys, bc1q... wallets) are actor/financial identifiers rather than network/host IOCs and are intentionally not placed in the iocs object; they are available in AA24-241A Appendix A for financial-intel/attribution use."
+}

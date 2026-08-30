@@ -1,0 +1,42 @@
+title: Kernel Driver / Service Registration for Persistence - TOFUDRV/TEMPLEDROP (UNC1860)
+id: 3028626d-ae96-4b9b-aedb-869158f191b7
+status: experimental
+description: |
+    Detects UNC1860 installing its kernel drivers and implants as system services/drivers to survive reboot
+    on compromised servers, including registration of TOFUDRV and the repurposed Sheed-AV filter driver
+    TEMPLEDROP as loaded system components (T1543.003). Keys on the Service Control Manager writing a new
+    service (Windows System log Event ID 7045) whose image is a kernel driver (.sys), whose start type is
+    boot/system/auto, or whose binary path resolves to a user-writable location - abnormal for a legitimate
+    signed driver installed through a vendor package. Corroborate with driver-load telemetry (Sysmon EID 6)
+    and service-config-change events (Event ID 7040) for the same service name.
+references:
+    - https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html
+    - https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.unc1860
+logsource:
+    product: windows
+    service: system
+detection:
+    selection:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_driver:
+        ServiceType|contains: 'kernel'
+    selection_path:
+        ImagePath|contains:
+            - '\Temp\'
+            - '\ProgramData\'
+            - '\Users\'
+            - '\PerfLogs\'
+            - '\Windows\Temp\'
+    condition: selection and (selection_driver or selection_path)
+falsepositives:
+    - Legitimate driver/software installs registering a kernel service (baseline expected driver packages and
+      publishers; scope to production change windows)
+    - Endpoint agents and management tooling that deploy drivers - allowlist known service names/paths
+level: high

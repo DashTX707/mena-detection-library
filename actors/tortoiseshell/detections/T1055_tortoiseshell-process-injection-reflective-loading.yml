@@ -1,0 +1,45 @@
+title: Tortoiseshell Process Injection and Reflective .NET Code Loading
+id: 956f51d4-86ce-4bde-ab12-a21bbca54d73
+status: experimental
+description: |
+    Detects the in-memory execution tradecraft of Tortoiseshell / Imperial Kitten custom .NET implants:
+    process injection into legitimate processes (T1055) and reflective code loading of .NET payloads
+    (T1620) to avoid writing full payloads to disk. Keys on cross-process CreateRemoteThread / injection
+    (Sysmon EID 8) into common host processes, and on suspicious source images performing remote-thread
+    creation. Tagged under stealth (defense-evasion) per environment convention. Requires Sysmon EID 8
+    (CreateRemoteThread) or EDR injection telemetry - without it this rule will not populate (visibility
+    gap); reflective .NET loading additionally needs CLR/AMSI-ETW instrumentation.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1055
+    - attack.t1620
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: create_remote_thread
+    product: windows
+detection:
+    selection_target:
+        TargetImage|endswith:
+            - '\explorer.exe'
+            - '\svchost.exe'
+            - '\rundll32.exe'
+            - '\dllhost.exe'
+            - '\werfault.exe'
+            - '\notepad.exe'
+            - '\RuntimeBroker.exe'
+    filter_known:
+        SourceImage|endswith:
+            - '\MsMpEng.exe'
+            - '\services.exe'
+            - '\wininit.exe'
+            - '\csrss.exe'
+    condition: selection_target and not filter_known
+falsepositives:
+    - Legitimate injectors (some AV/EDR, accessibility and debugging tools) create remote threads - baseline
+      the expected SourceImage set
+    - .NET runtime/JIT activity in developer environments - scope to unsigned or user-writable source images
+level: medium

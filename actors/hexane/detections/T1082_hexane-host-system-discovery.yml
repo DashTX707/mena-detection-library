@@ -1,0 +1,51 @@
+title: HEXANE Host and System Discovery Command Execution
+id: 0e207e3c-a3da-4f4a-ab09-e69d17d81170
+status: experimental
+description: |
+    Detects host/system reconnaissance commands run by HEXANE / Lyceum and its DanBot implant after
+    initial access (T1082 system information, T1083 file and directory, T1033 system owner/user,
+    T1057 process, T1518 software discovery). Keys on the native LOLBins used for this enumeration
+    (systeminfo, whoami, tasklist, dir/tree, reg query for installed software). Individually common;
+    the fidelity comes from several firing in tight succession under a single suspicious parent (an
+    Office child, script host, or DanBot process). Requires process-creation logging with command
+    lines; best operated with per-host aggregation.
+references:
+    - https://attack.mitre.org/groups/G1001/
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1082
+    - attack.t1083
+    - attack.t1033
+    - attack.t1057
+    - attack.t1518
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_sysinfo:
+        Image|endswith:
+            - '\systeminfo.exe'
+            - '\whoami.exe'
+            - '\tasklist.exe'
+            - '\hostname.exe'
+    selection_cmds:
+        CommandLine|contains:
+            - 'systeminfo'
+            - 'whoami'
+            - 'tasklist'
+            - 'Get-Process'
+            - 'Get-CimInstance Win32_Product'
+            - 'reg query'
+            - 'dir /s'
+            - 'tree '
+            - 'Get-ChildItem'
+    condition: selection_sysinfo or selection_cmds
+falsepositives:
+    - Administrators and inventory/asset tools enumerating host details - baseline expected admin
+      hosts and management agents
+    - Login scripts collecting system info - allowlist known parents and scheduled runs
+level: low

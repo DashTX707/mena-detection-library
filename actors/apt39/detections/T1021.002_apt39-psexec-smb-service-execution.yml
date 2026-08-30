@@ -1,0 +1,52 @@
+title: APT39 Lateral Movement via PsExec / SMB Admin Shares and Service Execution
+id: 24688943-6c36-4789-b9c1-39d26325a9d8
+status: experimental
+description: |
+    Detects APT39 / Chafer lateral movement and remote execution using PsExec over SMB admin shares
+    (ADMIN$, C$, IPC$) and Windows service creation/execution. Keys on PsExec command-line patterns
+    (-accepteula, \\host with -u/-p), the PSEXESVC service binary, and sc.exe/service-create activity
+    launching binaries from anomalous paths. APT39 uses valid stolen accounts with PsExec to execute
+    payloads across telecom/travel networks; service creation (7045) and remote-share execution are
+    strong detection surfaces.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.execution
+    - attack.t1021.002
+    - attack.t1569.002
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_psexec:
+        CommandLine|contains|all:
+            - '-accepteula'
+            - '\\\\'
+    selection_psexecimg:
+        Image|endswith:
+            - '\psexec.exe'
+            - '\psexesvc.exe'
+            - '\paexec.exe'
+    selection_scservice:
+        Image|endswith: '\sc.exe'
+        CommandLine|contains|all:
+            - 'create'
+            - 'binpath'
+    selection_svcpath:
+        ParentImage|endswith: '\services.exe'
+        Image|contains:
+            - '\Users\'
+            - '\Temp\'
+            - '\ProgramData\'
+            - '\PerfLogs\'
+    condition: selection_psexec or selection_psexecimg or selection_scservice or selection_svcpath
+falsepositives:
+    - Legitimate administrative use of PsExec and service management by IT/deployment tooling -
+      allowlist known admin hosts, service accounts, and binary paths
+    - Software installers that create services from temporary paths
+level: high

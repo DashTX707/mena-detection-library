@@ -1,0 +1,35 @@
+title: CyberAv3ngers HMI Defacement Splash Page - down with Israel / CyberAv3ngers Signature
+id: 3aa2ba94-8e29-44c3-85ca-c9e39cd99ab2
+status: experimental
+description: |
+    Detects the signature CyberAv3ngers (IRGC-CEC) HMI defacement (T1491.001 internal defacement): the actors
+    uploaded a splash page to the operator HMI screen reading 'You have been hacked, down with Israel. Every
+    equipment made in Israel is CyberAv3ngers legal target,' overwriting the normal I/O display; on older
+    devices they displayed a text file with the same message. The message text is a durable, high-fidelity
+    behavioral signature of this actor. Where HMI/screen-content monitoring, OT-config-change telemetry or a
+    device file-write log is collected via syslog, this keys on the defacement message strings. Requires
+    HMI-content or OT change monitoring; bare devices surface this only to the operator visually, which is a
+    visibility gap. Map strings to your monitor schema; this is a strong standalone alert when it fires.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1491.001
+    - mena-detection-library.cyberav3ngers
+logsource:
+    product: linux
+    service: syslog
+detection:
+    selection:
+        Message|contains:
+            - 'down with Israel'
+            - 'CyberAv3ngers'
+            - 'You have been hacked'
+            - 'legal target'
+    condition: selection
+falsepositives:
+    - Security-awareness content, IOC feeds or this detection library itself echoing the message string into a log - scope the source to HMI/OT monitors only
+    - Incident documentation referencing the defacement text - exclude ticketing/SOC note sources
+level: high

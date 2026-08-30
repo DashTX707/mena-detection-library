@@ -1,0 +1,33 @@
+title: APT39 Code Signing / Driver Signature Enforcement Policy Modification
+id: a5b5fe1e-343a-4703-8d0e-b7e52ff9a640
+status: experimental
+description: |
+    Detects APT39 / Chafer modification of code-signing and driver-signature-enforcement (DSE) policy
+    to permit unsigned or attacker-controlled code to load. Keys on bcdedit test-signing and
+    nointegritychecks toggles and registry changes to the code-integrity / driver-signing policy. These
+    changes are rare on production systems and are a strong subvert-trust-controls signal preceding
+    unsigned driver/code loading.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1553.006
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_bcdedit:
+        Image|endswith: '\bcdedit.exe'
+        CommandLine|contains:
+            - 'testsigning'
+            - 'nointegritychecks'
+            - 'loadoptions DDISABLE_INTEGRITY_CHECKS'
+    condition: selection_bcdedit
+falsepositives:
+    - Developers/QA enabling test signing on lab machines to load unsigned drivers - restrict to
+      production hosts and allowlist known engineering systems
+level: medium

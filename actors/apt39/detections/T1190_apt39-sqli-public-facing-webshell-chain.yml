@@ -1,0 +1,40 @@
+title: APT39 SQL Injection Against Public-Facing Application (SQLi-to-Web-Shell Chain)
+id: 237669a6-0375-4c8a-9773-7d9d670e401e
+status: experimental
+description: |
+    Detects SQL injection probing/exploitation against public-facing web applications, the signature
+    APT39 / Chafer initial-access vector that typically precedes ANTAK/ASPXSpy web-shell deployment.
+    Keys on classic SQLi tokens and tautologies in the request URI / query string of web-server access
+    logs (UNION SELECT, error-based extraction, stacked queries, xp_cmdshell, information_schema probing,
+    time-based blind sleep/waitfor). Best operated as a per-source-IP burst analytic and correlated with
+    subsequent .aspx file writes in the web root and w3wp.exe shell spawns.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1190
+    - mena-detection-library.apt39
+logsource:
+    category: webserver
+detection:
+    selection_sqli:
+        c-uri|contains:
+            - 'union select'
+            - 'union%20select'
+            - 'information_schema'
+            - 'xp_cmdshell'
+            - 'waitfor delay'
+            - 'waitfor%20delay'
+            - ' or 1=1'
+            - '%20or%201=1'
+            - 'sys.databases'
+            - 'convert(int'
+            - 'cast(('
+    condition: selection_sqli
+falsepositives:
+    - Application security scanners / authorized penetration tests - allowlist testing windows and sources
+    - Legitimate applications that pass SQL-like keywords in parameters (e.g. reporting/search tools)
+level: medium

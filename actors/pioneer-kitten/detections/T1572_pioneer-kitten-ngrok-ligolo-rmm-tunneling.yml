@@ -1,0 +1,55 @@
+title: Pioneer Kitten Tunneling, Proxy and RMM Tooling (ngrok, Ligolo, Meshcentral, AnyDesk)
+id: 56b56c79-9d44-4a30-ac30-3827018adaf4
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten command-and-control tooling: protocol tunneling and proxying
+    (T1572 Protocol Tunneling, T1090 Proxy) via ngrok and the open-source Ligolo / ligolo-ng tunneler,
+    and unsanctioned remote-access software (T1219 Remote Access Software) via Meshcentral and AnyDesk
+    installed as backup access. ngrok.io and catbox.moe are explicitly called out for hunting in
+    AA24-241A. Keys on process execution of these tools and their characteristic command lines.
+    Complement with network/DNS telemetry for outbound connections to *.ngrok.io random subdomains and
+    to Meshcentral/AnyDesk service endpoints.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1572
+    - attack.t1090
+    - attack.t1219
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tunnel_img:
+        Image|endswith:
+            - '\ngrok.exe'
+            - '\ligolo.exe'
+            - '\ligolo-ng.exe'
+            - '\agent.exe'
+            - '\proxy.exe'
+    selection_tunnel_cmd:
+        CommandLine|contains:
+            - 'ngrok.io'
+            - 'ngrok tcp'
+            - 'ngrok http'
+            - 'ligolo'
+            - '-selfcert'
+    selection_rmm_img:
+        Image|endswith:
+            - '\MeshAgent.exe'
+            - '\meshcentral.exe'
+            - '\AnyDesk.exe'
+    selection_rmm_cmd:
+        CommandLine|contains:
+            - 'meshcentral'
+            - 'anydesk --install'
+            - 'anydesk.exe --install'
+    condition: selection_tunnel_cmd or (selection_tunnel_img and selection_tunnel_cmd) or selection_rmm_img or selection_rmm_cmd
+falsepositives:
+    - Sanctioned use of ngrok by developers or AnyDesk/Meshcentral as an approved support tool -
+      allowlist authorized deployments; unsanctioned appearance on servers/DCs is the actor signal
+level: high

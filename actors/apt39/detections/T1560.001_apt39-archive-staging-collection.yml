@@ -1,0 +1,46 @@
+title: APT39 Data Collection and Archive Staging with WinRAR/7-Zip
+id: 389061d3-741d-4451-8b36-5b09184252bb
+status: experimental
+description: |
+    Detects APT39 / Chafer collection and exfil-staging behavior: archiving utilities (WinRAR/rar.exe,
+    7-Zip, tar) invoked to compress collected data - PII, travel/movement records, documents gathered
+    from the local system - into archives written to temp/staging paths prior to exfiltration. Keys on
+    archive-utility command lines with add/compress flags and password-protected archive creation
+    targeting user-writable staging directories. Covers local data collection, local staging, and
+    archive-via-utility as one collection analytic.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1560.001
+    - attack.t1074.001
+    - attack.t1005
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_rar:
+        Image|endswith:
+            - '\rar.exe'
+            - '\winrar.exe'
+            - '\7z.exe'
+            - '\7za.exe'
+        CommandLine|contains:
+            - ' a '
+            - ' -hp'
+            - ' -p'
+    selection_stage:
+        CommandLine|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    condition: selection_rar and selection_stage
+falsepositives:
+    - Legitimate backup and packaging workflows using archivers - allowlist known backup jobs, source
+      paths, and service accounts
+level: medium

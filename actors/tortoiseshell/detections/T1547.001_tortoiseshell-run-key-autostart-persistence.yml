@@ -1,0 +1,45 @@
+title: Tortoiseshell Registry Run Key / Startup Autostart Persistence
+id: f677f5e9-739a-4b22-824f-dd45f5fef902
+status: experimental
+description: |
+    Detects Run-key / startup autostart persistence (T1547.001) used by Tortoiseshell / Imperial Kitten for
+    its implants. Keys on writes to the HKLM/HKCU Run / RunOnce keys whose value invokes a script host,
+    command interpreter, or a binary in a user-writable path - the tell of an implant autostart rather than
+    a signed-software entry. Requires registry-set auditing (Sysmon EID 13).
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+            - '\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run'
+    selection_value:
+        Details|contains:
+            - 'powershell'
+            - 'pwsh'
+            - 'cmd.exe'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - 'regsvr32'
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection_key and selection_value
+falsepositives:
+    - Installers writing legitimate autostart entries that call helper scripts - baseline known value names
+      and signed publishers
+    - Admin automation persisted via Run keys - scope to values launching from user-writable paths
+level: medium

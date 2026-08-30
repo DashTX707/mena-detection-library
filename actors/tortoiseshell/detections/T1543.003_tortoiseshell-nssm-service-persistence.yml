@@ -1,0 +1,41 @@
+title: Tortoiseshell NSSM / Service Creation for Persistence
+id: 314ddab4-4dd4-437f-b560-0ea75282675a
+status: experimental
+description: |
+    Detects Windows service creation for persistence (T1543.003) as used by Tortoiseshell / Imperial Kitten,
+    which installed malware as a service via NSSM (Non-Sucking Service Manager). Keys on nssm.exe install,
+    sc.exe create/config, and service ImagePath values pointing at payloads in temp/user-writable paths.
+    Complements Security EID 7045 / 4697 service-install auditing. Requires process-creation logging with
+    command line (or 7045 System log).
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_nssm:
+        Image|endswith: '\nssm.exe'
+        CommandLine|contains: 'install'
+    selection_sc:
+        Image|endswith: '\sc.exe'
+        CommandLine|contains:
+            - 'create'
+            - 'config'
+    selection_scpath:
+        CommandLine|contains:
+            - 'binPath'
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    condition: selection_nssm or (selection_sc and selection_scpath)
+falsepositives:
+    - Legitimate use of NSSM to host in-house services - baseline authorized service names and binaries
+    - Admins creating services with sc.exe - scope to payloads in user-writable paths and unsigned images
+level: high

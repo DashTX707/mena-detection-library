@@ -1,0 +1,54 @@
+title: Homeland Justice SMB Admin-Share Payload Staging and Lateral Tool Transfer
+id: 611f0c9f-8dea-4c99-a374-788b8b064257
+status: experimental
+description: |
+    Detects the SMB/admin-share spreading and lateral tool transfer Homeland Justice /
+    Storm-0842 (Iran/MOIS) used to distribute the destructive tooling (GoXml.exe, cl.exe,
+    win.bat, bb.bat, disable_defender.exe) from a central distribution host to multiple targets
+    before synchronized detonation in the Albanian government attack (T1021.002 SMB/Windows
+    admin shares; T1570 lateral tool transfer). Keys on two observables: (1) native copy/xcopy
+    to an ADMIN$/C$ UNC admin share carrying an executable or batch payload, and (2)
+    file-creation of the named destructive artifacts via a remote source. Payload copies to
+    admin shares followed by remote execution across many hosts are the detectable pattern.
+    Requires process-creation telemetry (Sysmon EID 1) and, ideally, SMB file-write / EID 5145
+    share-access telemetry.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.002
+    - attack.t1570
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_copy:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\xcopy.exe'
+            - '\robocopy.exe'
+            - '\powershell.exe'
+    selection_adminshare:
+        CommandLine|contains:
+            - 'ADMIN$'
+            - 'C$\'
+            - 'copy \\'
+            - 'Copy-Item \\'
+    selection_payload:
+        CommandLine|contains:
+            - 'GoXml.exe'
+            - '\cl.exe'
+            - 'win.bat'
+            - 'bb.bat'
+            - 'disable_defender.exe'
+            - '.exe'
+            - '.bat'
+    condition: selection_copy and selection_adminshare and selection_payload
+falsepositives:
+    - Legitimate software distribution and admin scripts that push files to ADMIN$/C$ across
+      hosts - allowlist the deployment tooling, source hosts, and service accounts
+    - Backup/robocopy jobs to administrative shares - baseline expected copy sources and paths
+level: high

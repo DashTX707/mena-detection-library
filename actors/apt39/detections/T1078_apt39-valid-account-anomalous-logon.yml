@@ -1,0 +1,33 @@
+title: APT39 Valid-Account Abuse - Anomalous Network Logon with Explicit Credentials
+id: b6fa2acc-7ee4-4367-8f63-3a4796a4b565
+status: experimental
+description: |
+    Detects APT39 / Chafer abuse of stolen valid accounts to access systems and remote services
+    (RDP, VPN, OWA, SMB). Keys on network/remote logons (Event ID 4624 type 3/10) and use of explicit
+    credentials (Event ID 4648) that deviate from an account's baseline - first-seen source host, new
+    geo/time, or impossible travel. Valid-account abuse is central to APT39 tradecraft and blends with
+    legitimate use, so this is best run as an identity-anomaly analytic over baselined authentication.
+    Note: this pack tags T1078 under the stealth (defense-evasion) tactic per environment convention.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1078
+    - mena-detection-library.apt39
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4648
+    filter_machine:
+        TargetUserName|endswith: '$'
+    condition: selection and not filter_machine
+falsepositives:
+    - Legitimate runas / scheduled tasks / service accounts using explicit credentials - baseline
+      expected explicit-credential use per host and account; alert on anomalies (new source, off-hours)
+    - Credential managers and RDP clients that prompt for alternate credentials
+level: medium

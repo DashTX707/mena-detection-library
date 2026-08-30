@@ -1,0 +1,41 @@
+title: Pioneer Kitten Accessibility Feature Hijack for Persistence
+id: 6e759b8c-16ab-46de-84cb-9845e54356ba
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten persistence and privileged execution through abuse of Windows
+    accessibility features (T1546.008 Event Triggered Execution: Accessibility Features). Classic
+    variants replace or set an Image File Execution Options (IFEO) debugger on the accessibility
+    binaries - sethc.exe (sticky keys), utilman.exe, osk.exe, magnify.exe, displayswitch.exe,
+    atbroker.exe - so that pressing the trigger at the logon screen launches cmd.exe/powershell as
+    SYSTEM. Keys on registry-set of a Debugger value under the IFEO key for these binaries. Rare and
+    high-fidelity: legitimate software almost never sets an IFEO debugger on an accessibility binary.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1546.008
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_ifeo:
+        TargetObject|contains: '\Image File Execution Options\'
+        TargetObject|endswith: '\Debugger'
+    selection_binary:
+        TargetObject|contains:
+            - 'sethc.exe'
+            - 'utilman.exe'
+            - 'osk.exe'
+            - 'magnify.exe'
+            - 'displayswitch.exe'
+            - 'atbroker.exe'
+            - 'narrator.exe'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate debugging or accessibility software setting an IFEO debugger is extremely rare -
+      validate the debugger value; cmd.exe/powershell.exe as the debugger is malicious
+level: high

@@ -1,0 +1,42 @@
+title: CyberAv3ngers IOCONTROL MQTT C2 Egress to External Broker on TCP 8883
+id: b83d24a4-f31c-4d1d-9bd2-ea3086a2f209
+status: experimental
+description: |
+    Detects an OT/IoT device (fuel system, IP camera, router, PLC gateway) making an outbound MQTT-over-TLS
+    connection to an external broker on TCP 8883 - the dedicated command-and-control channel of the IOCONTROL
+    (OrpaCrypt) Linux malware used by CyberAv3ngers (IRGC-CEC). IOCONTROL subscribes to a '/push' topic for
+    commands and publishes to '/output', deliberately disguising C2 as ordinary IoT telemetry. Keys on MQTTs
+    egress from an OT segment to an internet destination where MQTT to the internet is not expected. Covers
+    T1071 (application layer protocol); the TLS wrapping (MQTTs) means content is opaque, so detection is on
+    destination/port metadata. Best scoped to OT/IoT source subnets with an internet-destination filter; also
+    correlate against the known C2 159.100.6.69 / tylarion867mino.com. Deploy on an OT-boundary firewall or
+    netflow sensor.
+references:
+    - https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071
+    - mena-detection-library.cyberav3ngers
+logsource:
+    category: firewall
+detection:
+    selection:
+        dst_port: 8883
+        action:
+            - allow
+            - allowed
+            - accept
+            - permit
+    filter_internal_dst:
+        dst_ip|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: selection and not filter_internal_dst
+falsepositives:
+    - Legitimate IoT/telemetry platforms where devices genuinely use MQTTs to a known cloud broker - allowlist the sanctioned broker IPs/domains
+    - Managed IoT fleet management over 8883 - baseline expected external brokers per device class
+level: high

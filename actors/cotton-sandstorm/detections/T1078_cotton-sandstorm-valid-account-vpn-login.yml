@@ -1,0 +1,43 @@
+title: Cotton Sandstorm Valid-Account Access to Admin Panels from Commercial VPN Exit Nodes
+id: 73a1943b-0070-4ec1-a68b-262511fe5ca0
+status: experimental
+description: |
+    Detects successful authentications to sensitive streaming, digital-signage and admin panels that
+    originate from commercial-VPN exit infrastructure, the anonymization pattern Cotton Sandstorm /
+    Emennet Pasargad (ASA) use to abuse valid/compromised credentials for influence delivery - e.g.
+    logging into a US IPTV service to inject 'For-Humanity' messaging and into a French dynamic-display
+    provider to push montages (T1078). ASA routinely fronts access through Private Internet Access,
+    Windscribe, ExpressVPN, Urban VPN and NordVPN. Keys on a successful sign-in whose source ASN/IP
+    resolves to a known consumer-VPN provider - a weak lone signal that becomes high-value when the
+    target is a privileged/broadcast account or when combined with impossible-travel. Requires
+    authentication / sign-in logs enriched with source-IP ASN or a VPN-provider IP feed.
+references:
+    - https://www.ic3.gov/CSA/2024/241030.pdf
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-290a
+    - https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1078
+    - mena-detection-library.cotton-sandstorm
+logsource:
+    category: authentication
+detection:
+    selection_success:
+        action: 'success'
+    selection_vpn:
+        src_asn_org|contains:
+            - 'Private Internet Access'
+            - 'Windscribe'
+            - 'ExpressVPN'
+            - 'Urban VPN'
+            - 'NordVPN'
+            - 'M247'
+            - 'Datacamp'
+    condition: selection_success and selection_vpn
+falsepositives:
+    - Employees or contractors who legitimately use a commercial VPN for remote work - baseline
+      expected users and enforce conditional-access exceptions
+    - Corporate VPN concentrators sharing an ASN with consumer VPN brands
+level: medium

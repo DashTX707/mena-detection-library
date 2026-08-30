@@ -1,0 +1,36 @@
+title: Void Manticore Cl/BiBi Disk Content Wipe via ElRawDisk Driver, RawDisk3 Service and Mass File Overwrite
+id: 01928f53-3fef-4aa1-8ec4-47e7a26272b7
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) disk-content wiping (T1561.001). The Cl Wiper (cl.exe) installs
+    the ElRawDisk driver rwdsk.sys as a service named 'RawDisk3' and issues low-level IOCTLs to overwrite
+    the physical drive with a predefined buffer; the BiBi wipers overwrite target file contents with
+    random data across many threads and rename files to a fixed '.BiBi<1-5>' / '.bb<random>' extension.
+    Keys on the driver-load / service-install signal - loading of an image containing 'rwdsk' or
+    'rawdisk', or creation of a service named 'RawDisk3' - which is the actionable precursor since the
+    overwrite itself is concurrent with impact. Requires driver-load telemetry (Sysmon EID 6) or
+    service-install telemetry (Security EID 7045 / Sysmon EID 1 for sc.exe create).
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+    - https://thehackernews.com/2024/05/iranian-mois-linked-hackers-behind.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1561.001
+    - mena-detection-library.void-manticore
+logsource:
+    category: driver_load
+    product: windows
+detection:
+    selection_driver:
+        ImageLoaded|contains:
+            - 'rwdsk'
+            - 'elrawdisk'
+            - '\rawdisk'
+    condition: selection_driver
+falsepositives:
+    - Legitimate backup / imaging / secure-erase products that ship the ElRawDisk (EldoS) driver -
+      allowlist the specific known-good signed driver hashes and install paths deployed in your estate
+    - Authorized disk-utility tooling loading a RawDisk-family driver - baseline expected drivers
+level: high

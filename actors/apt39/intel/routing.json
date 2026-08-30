@@ -1,0 +1,331 @@
+{
+  "actor": "APT39 (G0087)",
+  "provenance": "Lane split authored by the Stage-2 decision-agent (read-only; returns JSON in reply) and persisted by the orchestrator as the agent's returned detect-vs-hunt partition. Detection = seed complement of the agent's hunt set; validated to cover the Stage-1 seed exactly with no overlap/dup, and det-count reconciled against the agent's summary. All ids verified present in the CI's bundled ATT&CK dataset. Per-technique rationale shows the Stage-1 detection-feasibility basis.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1003",
+      "technique_name": "OS Credential Dumping",
+      "tactic": "credential-access",
+      "rationale": "high — execution of Mimikatz/ProcDump/WCE and process access to credential stores is highly observable in EDR and process-access telemetry"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — process access to lsass.exe (handle open, ProcDump -ma lsass) and Mimikatz signatures are strong, well-covered detections"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — bulk local file collection is common; suspicious mainly via staging/archiving lineage and access to unusual document stores"
+    },
+    {
+      "technique_id": "T1012",
+      "technique_name": "Query Registry",
+      "tactic": "discovery",
+      "rationale": "medium — reg query is common; value comes from watching sensitive keys in a recon-burst/process-lineage context"
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — remote-host enumeration (nbtscan/ping sweeps) is detectable via connection-fanout analytics and known-tool execution signatures"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — RDP lateral movement is detectable via 4624 type-10 logons, internal-RDP fanout, and impossible-travel analytics; a strong detection surface given APT39's reliance on valid-account RDP"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "rationale": "high — SMB admin-share access and PsExec service creation (7045/5145) are strongly detectable in Windows and network telemetry"
+    },
+    {
+      "technique_id": "T1021.004",
+      "technique_name": "Remote Services: SSH",
+      "tactic": "lateral-movement",
+      "rationale": "medium — SSH client execution and outbound SSH from unusual hosts are detectable via process + network telemetry"
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "rationale": "medium — packed binaries are detectable via entropy/section anomalies and packer signatures but require dedicated static scanning"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy/encoded files are detectable via file-entropy analytics but require dedicated scanning"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — whoami is common; value is in process-lineage correlation (spawned by script host / web shell)"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — legit-looking names in non-standard paths are detectable via path/name baselining and signature-vs-name mismatch"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — scanning bursts are detectable via network/connection-fanout analytics and known-tool signatures"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable, especially with script/executable actions"
+    },
+    {
+      "technique_id": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "tactic": "execution",
+      "rationale": "medium — generic parent; value comes from specific interpreter sub-techniques with process-lineage context"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — script-block/module logging and suspicious PowerShell parenting are core, well-covered detections"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high — wscript/cscript executing VBS, especially spawned by Office, is a strong detectable signal"
+    },
+    {
+      "technique_id": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "tactic": "execution",
+      "rationale": "medium — python.exe execution in enterprise contexts is detectable via process telemetry and unusual interpreter presence on non-dev hosts"
+    },
+    {
+      "technique_id": "T1059.010",
+      "technique_name": "Command and Scripting Interpreter: AutoHotKey & AutoIT",
+      "tactic": "execution",
+      "rationale": "medium — AutoIt/AutoHotKey interpreter execution is detectable via process telemetry and is unusual in most enterprise baselines"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "rationale": "medium — file deletion is detectable via file-system audit / EDR delete events but is noisy and needs correlation with prior payload writes"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP(S) C2 is detectable via proxy/beacon analytics and URI/JA3 anomalies but blends with normal web traffic"
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "rationale": "medium — DNS-based C2 is detectable via query-length/entropy/volume analytics and NXDOMAIN patterns, but requires full DNS logging that is frequently under-instrumented"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium — local staging is common; suspicious when tied to archiving utilities writing large archives to temp/staging paths"
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "stealth",
+      "rationale": "medium — valid-account abuse is detectable via anomalous logon analytics (impossible travel, new host/time, first-seen device) but blends with legitimate use; a strong identity-monitoring detection surface for APT39"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — remote downloads via certutil/BITS and unexpected inbound file writes are strongly detectable in process + network telemetry"
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "rationale": "medium — brute force is detectable via authentication-failure spikes (4625) and lockout telemetry"
+    },
+    {
+      "technique_id": "T1135",
+      "technique_name": "Network Share Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — 'net view' / share enumeration is detectable via command-line logging in recon-burst context"
+    },
+    {
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "tactic": "persistence",
+      "rationale": "high — local account creation is logged (Event ID 4720) and is a high-fidelity persistence detection"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "high — 'certutil -decode' and script-based decode routines are directly observable in command-line and script-block logging"
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "medium — SQLi and public-app exploitation are detectable via WAF/web-server logs and anomalous DB-to-webserver process behavior; the SQLi-to-webshell chain is a signature APT39 pattern warranting targeted web-tier monitoring"
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "stealth",
+      "rationale": "medium — BITS jobs are detectable via BITS-Client operational logs and bitsadmin/PowerShell BITS cmdlet command-lines, but require targeted logging"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium — malicious-link clicks are detectable via email/URL-gateway and proxy logs; endpoint signal is indirect"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "high — Office apps spawning script/child processes after macro enablement is a core detectable behavior"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — web shells are detectable via web-server worker processes (w3wp.exe) spawning cmd/powershell, new/modified .aspx files in web roots, and anomalous IIS request patterns; ANTAK/ASPXSpy web-shell use is a signature APT39 tradecraft and a prime detection surface"
+    },
+    {
+      "technique_id": "T1546.010",
+      "technique_name": "Event Triggered Execution: AppInit DLLs",
+      "tactic": "persistence",
+      "rationale": "high — modification of HKLM\\...\\Windows\\AppInit_DLLs is a rare, high-fidelity registry-modification detection"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — Run-key writes and Startup-folder drops are detectable via registry-modification and file-creation telemetry (Autoruns-class monitoring)"
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "rationale": "medium — malicious .lnk creation/modification in startup/user paths is detectable via file-creation telemetry and shortcut-target analysis"
+    },
+    {
+      "technique_id": "T1553.006",
+      "technique_name": "Subvert Trust Controls: Code Signing Policy Modification",
+      "tactic": "stealth",
+      "rationale": "medium — signing-policy/DSE modifications (bcdedit testsigning, registry policy changes) are detectable via command-line and registry telemetry but require targeted rules"
+    },
+    {
+      "technique_id": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "tactic": "credential-access",
+      "rationale": "medium — credential-store access is detectable mainly via known-tool execution signatures and file/vault access telemetry"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "rationale": "medium — archiving-utility execution producing large archives in staging paths is detectable via process + file-creation telemetry"
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — attachment-based spearphishing is detectable via mail sandboxing and macro-content analysis at the gateway"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — link-based spearphishing is detectable via URL rewriting/detonation and proxy telemetry"
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "rationale": "high — service creation/execution (Event ID 7045 / 4697) is strongly detectable, especially with anomalous binary paths"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "low — exfil embedded in the C2 channel blends with beacon traffic; hunt on outbound volume anomalies and long-lived sessions"
+    },
+    {
+      "technique_id": "T1056",
+      "technique_name": "Input Capture",
+      "tactic": "collection",
+      "rationale": "low — input-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "rationale": "low — keystroke-hooking leaves little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "low — file/directory enumeration is ubiquitous; better as a hunt in tight recon-burst lineage context"
+    },
+    {
+      "technique_id": "T1090.001",
+      "technique_name": "Proxy: Internal Proxy",
+      "tactic": "command-and-control",
+      "rationale": "low — internal proxy relays are subtle; hunt on unexpected host-to-host relay patterns and internal listeners"
+    },
+    {
+      "technique_id": "T1090.002",
+      "technique_name": "Proxy: External Proxy",
+      "tactic": "command-and-control",
+      "rationale": "low — external proxy chains are off-victim; hunt on connections to known proxy/anonymization endpoints"
+    },
+    {
+      "technique_id": "T1102.002",
+      "technique_name": "Web Service: Bidirectional Communication",
+      "tactic": "command-and-control",
+      "rationale": "low — legitimate-web-service C2 blends with sanctioned SaaS traffic; hunt on anomalous automation patterns to those services"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low — screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "rationale": "low — clipboard-capture leaves little discrete log signal; behavioral/EDR hunt candidate"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition itself is off-endpoint; downstream use is where detection lands — this entry is a hunt/intel candidate"
+    }
+  ],
+  "summary": {
+    "total": 53,
+    "detection": 43,
+    "hunt": 10
+  }
+}

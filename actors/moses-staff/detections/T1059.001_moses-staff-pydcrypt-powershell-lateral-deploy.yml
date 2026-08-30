@@ -1,0 +1,46 @@
+title: Moses Staff PyDCrypt PowerShell Lateral Payload Deployment
+id: 41f2592a-eefd-4851-bf39-c6b7d0b518d7
+status: experimental
+description: |
+    Detects the Moses Staff PyDCrypt loader spreading the DCSrv payload across the network with
+    PowerShell using previously collected administrator credentials (T1059.001). PyDCrypt is a
+    PyInstaller-packaged Python executable, so a strong signal is a Python/PyInstaller parent
+    (an executable running from a PyInstaller _MEI temp directory, or a python.exe) launching
+    powershell.exe with remote-execution flags (Invoke-Command / -ComputerName, downloads, or
+    encoded payloads). Keys on that anomalous parent-child pair rather than PowerShell alone.
+    Requires process-creation telemetry (Sysmon EID 1 / Security 4688); pairs well with
+    script-block logging (EID 4104).
+references:
+    - https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.moses-staff
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_parent:
+        ParentImage|endswith:
+            - '\python.exe'
+            - '\pythonw.exe'
+            - '\PyDCrypt.exe'
+        ParentCommandLine|contains: '_MEI'
+    selection_remote:
+        CommandLine|contains:
+            - 'Invoke-Command'
+            - '-ComputerName'
+            - 'New-PSSession'
+            - 'Enter-PSSession'
+    condition: selection_ps and (selection_parent or selection_remote)
+falsepositives:
+    - Legitimate PowerShell remoting from administrative Python automation - baseline the expected
+      management hosts, service accounts and target sets; the combination of a PyInstaller _MEI
+      parent driving remoting to many peers is not typical of benign admin tooling
+level: high

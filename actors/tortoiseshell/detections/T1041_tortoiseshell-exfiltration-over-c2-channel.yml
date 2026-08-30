@@ -1,0 +1,47 @@
+title: Tortoiseshell Exfiltration Over C2 Channel to Reported Infrastructure
+id: 873bd3b4-e7a2-4cf8-bb2b-78d5b432a6e8
+status: experimental
+description: |
+    Detects exfiltration of collected credentials and data over the established C2 channel (T1041) by
+    Tortoiseshell / Imperial Kitten implants, including the IMAPLoader mail channel and Syskit web C2. Keys
+    on outbound connections to the Symantec-reported C2 IPs and, more durably, on non-browser processes
+    sending large or anomalous outbound volumes on beaconing sessions - to be correlated with
+    outbound-byte-volume analytics. The IP selectors are low-robustness (L1) supplementary indicators; the
+    volume/behaviour correlation carries the weight (the mail-based variant blends into normal mail flow -
+    see the IMAP hunt). Requires network-connection telemetry with initiating process and byte counts.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_ip:
+        Initiated: 'true'
+        DestinationIp:
+            - '64.235.60.123'
+            - '64.235.39.45'
+    selection_nonbrowser:
+        Initiated: 'true'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\mshta.exe'
+        DestinationPort:
+            - 80
+            - 443
+    condition: selection_ip or selection_nonbrowser
+falsepositives:
+    - Legitimate scripted uploads/backups over the network - baseline expected automation and destinations,
+      then alert on anomalous outbound volume
+    - LOLBins with legitimate outbound telemetry - allowlist known destinations and correlate on byte volume
+level: medium

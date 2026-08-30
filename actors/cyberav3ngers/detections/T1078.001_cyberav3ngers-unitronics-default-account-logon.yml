@@ -1,0 +1,42 @@
+title: CyberAv3ngers Default-Credential Logon to Unitronics PLC/HMI
+id: d9c8a4fa-1456-437b-bcfb-76e733381bed
+status: experimental
+description: |
+    Detects a successful authentication to a Unitronics Vision-series PLC/HMI using the vendor default
+    password ('1111') or no password, the core valid-accounts behavior (T1078.001 Default Accounts) used
+    by CyberAv3ngers (IRGC-CEC) to gain privileged control of internet-exposed OT devices. Where the PLC
+    or a fronting OT-monitoring / syslog collector emits device authentication events, this keys on a
+    successful logon carrying the default/blank account or the default password indicator, especially
+    from an external source. Because embedded PLCs rarely log auth natively, this rule targets managed
+    OT-gateway / IoT-broker syslog and OT-security-monitor auth telemetry; where no such log exists this
+    is a visibility gap to be closed by an OT auth sensor. Field names are generic syslog - map to your
+    collector schema.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1078.001
+    - mena-detection-library.cyberav3ngers
+logsource:
+    product: linux
+    service: syslog
+detection:
+    selection_success:
+        - Message|contains|all:
+              - 'login'
+              - 'success'
+        - Message|contains: 'authentication succeeded'
+    selection_defaultcred:
+        Message|contains:
+            - 'default password'
+            - 'password: 1111'
+            - 'no password'
+            - 'blank password'
+            - 'user: 1111'
+    condition: selection_success and selection_defaultcred
+falsepositives:
+    - Vendor commissioning / factory-test workflows that briefly use the default credential before hardening - allowlist the maintenance window
+    - OT-monitor credential-audit tooling that references the default password string in its own event text
+level: high

@@ -1,0 +1,139 @@
+{
+  "actor": "Void Manticore",
+  "provenance": "Lane split authored by the Stage-2 decision-agent (read-only; returns JSON in reply) and persisted by the orchestrator as the agent's returned detect-vs-hunt partition. Detection = seed complement of the agent's hunt set; validated to cover the Stage-1 seed exactly with no overlap/dup, and det-count reconciled against the agent's summary. All ids verified present in the CI's bundled ATT&CK dataset. Per-technique rationale shows the Stage-1 detection-feasibility basis.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "medium — exploitation of the known CVE-2019-0604 is detectable via IPS/WAF signatures and unpatched-SharePoint version telemetry, and anomalous web-server child processes, though n-day edge exploitation often precedes visibility"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — new web-shell files in web-root paths and an IIS/web worker process spawning cmd.exe are strong, well-covered detection signals"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "high — cmd.exe spawned by a web-server worker process, with these command lines, is a classic web-shell command-execution detection"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — file uploads written by a web-server process to ProgramData followed by archive extraction and execution are detectable via file-create and process-lineage telemetry"
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "rationale": "medium — execution of a signed binary from an unexpected publisher for the environment is detectable via signature-issuer allow-listing and certificate-reputation analytics"
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Accounts",
+      "tactic": "discovery",
+      "rationale": "medium — net /domain enumeration and AD Explorer's characteristic bulk LDAP directory reads are detectable via command-line and LDAP-query volume telemetry, though they overlap with admin activity"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — RDP sourced from an internet-facing web server or tunneled through a web shell is anomalous lateral movement detectable via internal-RDP and tunnel analytics"
+    },
+    {
+      "technique_id": "T1090.001",
+      "technique_name": "Proxy: Internal Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — a web server relaying SOCKS/tunneled internal traffic shows anomalous internal connection fan-out and long-lived sessions from a web-worker process, detectable via network and process-network correlation"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "medium — outbound SSH on port 443 with reverse-tunnel (-R) options from a server is anomalous and detectable via egress protocol/port-mismatch and process-command-line telemetry"
+    },
+    {
+      "technique_id": "T1561.001",
+      "technique_name": "Disk Wipe: Disk Content Wipe",
+      "tactic": "impact",
+      "rationale": "medium — load of the ElRawDisk rwdsk.sys driver / creation of a 'RawDisk3' service, and mass multithreaded file-content overwrite with mass rename to a fixed extension, are detectable via driver-load and file-modification-burst telemetry, though the overwrite is concurrent with impact"
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "rationale": "high — a user-mode process opening a raw \\\\.\\PhysicalDrive handle and issuing IOCTL_DISK_DELETE_DRIVE_LAYOUT / writing to the MBR/GPT is a rare, high-fidelity destructive signal via EDR raw-disk-write analytics"
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "rationale": "high — vssadmin/wmic shadow-copy deletion and bcdedit recovery-disabling are high-fidelity, well-covered wiper/ransomware precursors and among the most reliable early-warning detections"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — persona/account creation on third-party platforms is off-victim and invisible to defender telemetry; hunt candidate via brand-monitoring and leak-site tracking only"
+    },
+    {
+      "technique_id": "T1583",
+      "technique_name": "Acquire Infrastructure",
+      "tactic": "resource-development",
+      "rationale": "low — adversary infrastructure acquisition is not observable in host logs; hunt candidate via inbound-connection ASN/geo anomaly analytics on internet-facing servers"
+    },
+    {
+      "technique_id": "T1078.002",
+      "technique_name": "Valid Accounts: Domain Accounts",
+      "tactic": "initial-access",
+      "rationale": "low — authentication with legitimate Domain Admin credentials blends with normal admin activity; hunt candidate via Domain Admin logon from an unusual host (web server), off-hours use, and new-source correlation"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — in-memory decode of parameters leaves little host telemetry; hunt candidate via static/sample analysis and web-content inspection rather than log-based detection"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — reversed/obfuscated strings defeat naive string signatures; hunt candidate via sample analysis (the reversed command strings themselves are a durable YARA anchor)"
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "rationale": "low — a web shell disguised as an error page evades casual review; hunt candidate via web-content anomaly analysis and comparison of served files against known-good baselines"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "low — ping is ubiquitous and benign in isolation; only meaningful when parented by a web-server/web-shell process, which is the hunt pivot"
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "rationale": "low — hands-on deletion with built-in tools (Explorer, format, SDelete) closely resembles legitimate admin action and is largely a hunt problem; correlate with prior Domain Admin RDP and wiper staging on the same host"
+    },
+    {
+      "technique_id": "T1529",
+      "technique_name": "System Shutdown/Reboot",
+      "tactic": "impact",
+      "rationale": "low — crash/reboot on its own is common; only meaningful as the terminal event of a wipe chain, so it is a correlation hunt against preceding raw-disk-write and recovery-inhibition events"
+    }
+  ],
+  "summary": {
+    "total": 21,
+    "detection": 12,
+    "hunt": 9
+  }
+}

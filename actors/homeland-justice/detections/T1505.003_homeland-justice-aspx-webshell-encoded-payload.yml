@@ -1,0 +1,48 @@
+title: Homeland Justice ClientBin.aspx Web Shell with Base64-Encoded .NET Payload
+id: 0e8ca49e-5f21-4223-acc0-0438fdea1b6d
+status: experimental
+description: |
+    Detects the Homeland Justice / Storm-0842 (Iran/MOIS) .aspx web shell chain deployed on the
+    compromised SharePoint/IIS server in the Albanian government intrusion (T1505.003). The
+    ClientBin.aspx shell embeds a Base64-encoded .NET executable (App_Web_bckwssht.dll) that it
+    decodes at runtime and loads via Assembly.Load, which in turn extracts a secondary Base64
+    'EncryptionDLL' (Base64.dll) - layered encoding to defeat static inspection (T1027.013) and
+    runtime deobfuscate-and-load behavior (T1140). This rule keys on two observables: (1) the
+    IIS worker process w3wp.exe writing a new .aspx/.aspx-backing file to a web-root path, and
+    (2) creation of the named web-shell artifacts. Complement with web-content inspection for
+    long Base64 blobs plus Assembly.Load / FromBase64String inside .aspx files. Requires
+    file-creation telemetry (Sysmon EID 11) on the web server.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+    - https://www.microsoft.com/en-us/security/blog/2022/09/08/microsoft-investigates-iranian-attacks-against-the-albanian-government/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1505.003
+    - attack.t1027.013
+    - attack.t1140
+    - mena-detection-library.homeland-justice
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_iis_write:
+        Image|endswith: '\w3wp.exe'
+        TargetFilename|endswith:
+            - '.aspx'
+            - '.asmx'
+            - '.ashx'
+    selection_named_artifacts:
+        TargetFilename|contains:
+            - '\ClientBin.aspx'
+            - '\App_Web_bckwssht'
+            - 'Base64.dll'
+    condition: selection_iis_write or selection_named_artifacts
+falsepositives:
+    - Legitimate SharePoint/IIS application deployments and hotfixes that write .aspx into the
+      web root - allowlist deployment service accounts and change windows
+    - Auto-generated App_Web_*.dll shadow-copy compilation artifacts under Temporary ASP.NET
+      Files - scope the named-artifact branch to the web root rather than the compilation cache
+level: high

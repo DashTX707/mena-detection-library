@@ -1,0 +1,38 @@
+title: Pioneer Kitten Valid Account Reuse to Domain Controllers and Internal Apps
+id: 842c7d29-d4b9-4f46-a63c-9a1e12b05c41
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten privilege escalation through reuse of valid accounts (T1078.002
+    Valid Accounts: Domain Accounts, T1078.003 Valid Accounts: Local Accounts). The actor repurposes
+    administrative network-admin credentials to log into domain controllers and other infrastructure,
+    and repurposes local credentials harvested from exploited edge appliances (e.g. Citrix NetScaler)
+    to log into internal applications such as Citrix XenDesktop. Keys on privileged Windows logon
+    events (Event ID 4624) with elevated token, network/remote-interactive logon types, from source
+    hosts not previously associated with the account. Best operated as an identity analytic with
+    new-host / off-hours / impossible-travel baselining. Requires logon auditing on DCs and servers.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.privilege-escalation
+    - attack.t1078.002
+    - attack.t1078.003
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType:
+            - 3
+            - 10
+        ElevatedToken: '%%1842'
+    condition: selection
+falsepositives:
+    - Legitimate administrator logons to DCs and servers are frequent - this rule requires
+      identity-analytics enrichment (first-seen source host, off-hours, impossible travel) before
+      alerting; deploy as a Risk-Based-Alerting contribution, not a standalone high-severity alert
+level: low

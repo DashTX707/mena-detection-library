@@ -1,0 +1,42 @@
+title: HEXANE Runtime Decode of Obfuscated / Encoded Payloads
+id: c68cdc62-b981-454a-bfb1-cca6361a5df7
+status: experimental
+description: |
+    Detects HEXANE / Lyceum loaders and scripts decoding or deobfuscating embedded payloads at
+    runtime prior to execution (T1140 deobfuscate/decode, T1027 obfuscated files or information).
+    Keys on certutil decode/encode operations, PowerShell/VBA base64 and byte-array decode routines,
+    and expand/copy of encoded blobs from user-writable paths - the tell of DanDrop/DanBot unpacking
+    an obfuscated stage on disk. Requires process-creation logging with command lines.
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1140
+    - attack.t1027
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_certutil:
+        Image|endswith: '\certutil.exe'
+        CommandLine|contains:
+            - 'decode'
+            - '-decodehex'
+            - 'encode'
+    selection_decode:
+        CommandLine|contains:
+            - 'FromBase64String'
+            - '::FromBase64'
+            - '[System.Convert]'
+            - 'gzipstream'
+            - 'deflatestream'
+            - '-bxor'
+    condition: selection_certutil or selection_decode
+falsepositives:
+    - Certificate management legitimately using certutil - baseline expected PKI/admin hosts
+    - Developer or packaging tooling performing base64 decode - allowlist known automation
+level: medium

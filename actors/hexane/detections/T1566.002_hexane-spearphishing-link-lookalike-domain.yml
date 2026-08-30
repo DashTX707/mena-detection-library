@@ -1,0 +1,46 @@
+title: HEXANE Spearphishing Link to Spoofed Recruitment / Lookalike Domain
+id: 7460134a-f51d-4b05-8565-8d3607d340df
+status: experimental
+description: |
+    Detects victims following HEXANE / Siamesekitten spearphishing links (T1566.002) and clicking
+    malicious links (T1204.001) that lead to attacker-controlled spoofed careers/recruitment or
+    lookalike domains delivered through fake LinkedIn personas and email. Keys on web-proxy requests
+    to newly-observed or lookalike recruitment/HR-themed hosts, and on browser/mail-client processes
+    fetching content from such domains. Because HEXANE registers job-lure domains impersonating
+    legitimate firms, pair this rule with a threat-intel/newly-registered-domain feed and lookalike
+    string matching. Requires web-proxy or DNS/URL-gateway logging.
+references:
+    - https://www.clearskysec.com/siamesekitten/
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.t1566.002
+    - attack.t1204.001
+    - mena-detection-library.hexane
+logsource:
+    category: proxy
+detection:
+    selection_lure:
+        c-uri|contains:
+            - 'careers'
+            - 'career'
+            - 'recruit'
+            - 'hr-'
+            - 'jobs'
+            - 'vacancy'
+            - 'apply'
+            - 'cv-'
+    selection_referrer:
+        cs-referrer|contains:
+            - 'linkedin.com'
+            - 'mail.'
+            - 'outlook.'
+    condition: selection_lure and selection_referrer
+falsepositives:
+    - Genuine visits to real recruitment portals from LinkedIn or webmail - allowlist the
+      organization's known career/HR domains and legitimate job boards
+    - HR/recruiter staff browsing job sites as part of their role - scope out expected user groups
+level: medium

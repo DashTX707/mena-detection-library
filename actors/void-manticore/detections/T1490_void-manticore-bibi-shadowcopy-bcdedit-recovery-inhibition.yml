@@ -1,0 +1,46 @@
+title: Void Manticore BiBi Wiper Recovery Inhibition via vssadmin/wmic Shadow Delete and bcdedit
+id: 770927c1-178a-4c5f-a1bf-3a4c2bf2b71e
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) BiBi-Windows-Wiper recovery inhibition (T1490 Inhibit System
+    Recovery) - the highest-fidelity early-warning step in its destruction chain. The wiper deletes
+    volume shadow copies with 'vssadmin delete shadows /quIet /all' and 'wmic shadowcopy delete', then
+    disables Windows automatic recovery with 'bcdedit /set {default} bootstatuspolicy ignoreallfailures'
+    and 'bcdedit /set {default} recoveryenabled no' (command strings are stored reversed inside the
+    binary and reconstructed at runtime, so this keys on the executed command lines, not static strings).
+    Any of these executions on a server is a strong destructive precursor. Requires process-creation
+    telemetry with command line (Sysmon EID 1 / Security 4688).
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+    - https://thehackernews.com/2024/05/iranian-mois-linked-hackers-behind.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1490
+    - mena-detection-library.void-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_vssadmin:
+        Image|endswith: '\vssadmin.exe'
+        CommandLine|contains|all:
+            - 'delete'
+            - 'shadows'
+    selection_wmic:
+        Image|endswith: '\wmic.exe'
+        CommandLine|contains|all:
+            - 'shadowcopy'
+            - 'delete'
+    selection_bcdedit:
+        Image|endswith: '\bcdedit.exe'
+        CommandLine|contains:
+            - 'ignoreallfailures'
+            - 'recoveryenabled no'
+    condition: selection_vssadmin or selection_wmic or selection_bcdedit
+falsepositives:
+    - Backup software or administrators pruning old shadow copies - baseline scheduled backup jobs and
+      allowlist the expected service accounts/hosts; bcdedit recovery-disable is rarely legitimate
+    - Storage-maintenance scripts using vssadmin - scope to known maintenance windows
+level: high

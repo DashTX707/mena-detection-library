@@ -1,0 +1,36 @@
+title: Moses Staff StrifeWater RAT Ingress Tool Transfer - C2 Module Download
+id: 3d1bee75-3a3b-48d2-89ff-590f7c8b983c
+status: experimental
+description: |
+    Detects the Moses Staff StrifeWater RAT downloading additional modules from its C2 to extend
+    functionality on the compromised host (T1105). StrifeWater masquerades as calc.exe and fetches
+    named modules (observed: mainfunc, Ah13, mkb64, strt) over its HTTP channel. Keys on the RAT
+    process - calc.exe running from a non-standard user-writable path (outside System32 / WinSxS) -
+    making an outbound network connection, which is the fetch step preceding new-module execution.
+    Correlate with a subsequent file-write of a new executable/module by the same process. Requires
+    process network-connection telemetry (Sysmon EID 3).
+references:
+    - https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.moses-staff
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_calc:
+        Image|endswith: '\calc.exe'
+    filter_legit_path:
+        Image|contains:
+            - ':\Windows\System32\'
+            - ':\Windows\SysWOW64\'
+            - ':\Windows\WinSxS\'
+    condition: selection_calc and not filter_legit_path
+falsepositives:
+    - The genuine System32 / WinSxS calculator is excluded by path; a calc.exe making network
+      connections from a user-writable directory is inherently suspicious. Baseline any sanctioned
+      third-party tool named calc.exe and allowlist it by full path and signer
+level: high

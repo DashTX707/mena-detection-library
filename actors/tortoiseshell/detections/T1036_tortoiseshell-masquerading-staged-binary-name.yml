@@ -1,0 +1,48 @@
+title: Tortoiseshell Masquerading - Staged Binary with Legit Name in Temp Path
+id: df2b99e6-4863-4e72-8aa0-f03a9c6b78ef
+status: experimental
+description: |
+    Detects masquerading (T1036, T1036.005 Match Legitimate Resource Name or Location) by Tortoiseshell /
+    Imperial Kitten, which named payloads and staged binaries to blend in (e.g. bak.exe, sha.exe,
+    stereoversioncontrol.exe) and placed them in trusted-looking locations such as %Windir%\temp\bak.exe.
+    Keys on process execution from user-writable/temp paths using the actor's named artefacts, and on
+    system-looking binary names running from non-system directories. Tagged under stealth (defense-evasion)
+    per environment convention. Requires process-creation logging with image path.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1036
+    - attack.t1036.005
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_named:
+        Image|endswith:
+            - '\bak.exe'
+            - '\sha.exe'
+            - '\sha432.exe'
+            - '\stereoversioncontrol.exe'
+            - '\syskit.exe'
+    selection_tempsystemname:
+        Image|contains:
+            - '\Windows\Temp\'
+            - '\AppData\Local\Temp\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+        Image|endswith:
+            - '\svchost.exe'
+            - '\lsass.exe'
+            - '\services.exe'
+            - '\rundll32.exe'
+            - '\winlogon.exe'
+    condition: selection_named or selection_tempsystemname
+falsepositives:
+    - Rare third-party tools sharing a generic name (sha.exe/bak.exe) - baseline signed publishers and
+      expected paths
+    - Legitimate binaries legitimately staged in ProgramData - verify signature and reputation
+level: high

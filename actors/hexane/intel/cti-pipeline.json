@@ -1,0 +1,668 @@
+{
+  "report_title": "HEXANE / Lyceum (G1001) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "MITRE ATT&CK G1001 (https://attack.mitre.org/groups/G1001/); SecureWorks CTU 'LYCEUM Takes Center Stage in Middle East Campaign' (2019, https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign); ClearSky 'Siamesekitten – Lyceum' (Aug 2021, https://www.clearskysec.com/siamesekitten/); Kaspersky/Securelist Lyceum reporting (Oct 2021); Accenture/ESET Marlin & Shark reporting (Nov 2021, https://www.welivesecurity.com/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "HEXANE",
+    "mitre_id": "G1001",
+    "mitre_canonical_name": "HEXANE",
+    "aliases": [
+      "Lyceum",
+      "Siamesekitten",
+      "Spirlin"
+    ],
+    "related_clusters": [
+      "APT33 (G0064) — TTP overlap, tracked separately",
+      "OilRig (G0049) — TTP overlap, tracked separately"
+    ],
+    "attribution": "Iran-nexus cyber-espionage group active since at least 2017; targets energy, oil & gas, telecommunications, aviation and ISP organizations across the Middle East and Africa. TTPs resemble APT33 and OilRig but victimology and toolset differentiate it as a distinct cluster.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Israel",
+      "Saudi Arabia",
+      "Kuwait",
+      "United Arab Emirates",
+      "Morocco",
+      "Tunisia"
+    ],
+    "targeted_regions_global": [
+      "Middle East",
+      "Africa"
+    ],
+    "targeted_sectors": [
+      "Oil & gas / energy",
+      "Telecommunications",
+      "Aviation",
+      "Internet Service Providers"
+    ],
+    "key_campaigns": [
+      {
+        "name": "LYCEUM Middle East campaign (DanBot)",
+        "date": "2018-2019",
+        "summary": "Campaign against Middle Eastern oil & gas and telecommunications organizations using the DanBot backdoor, which supports both DNS-tunneling and HTTP-based C2. Initial access via password spraying and spearphishing with macro-laden Excel documents.",
+        "source_url": "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"
+      },
+      {
+        "name": "Siamesekitten / Lyceum campaign vs. Israeli targets",
+        "date": "2021",
+        "summary": "Impersonation of a legitimate HR/IT firm via fake LinkedIn personas and a spoofed careers website to lure IT and communications personnel at Israeli organizations; delivered Milan and DanBot implants.",
+        "source_url": "https://www.clearskysec.com/siamesekitten/"
+      },
+      {
+        "name": "Marlin / Shark backdoor campaign",
+        "date": "2021",
+        "summary": "Later-stage espionage tooling (Milan, Shark, Marlin) targeting diplomatic and technology organizations; Marlin abuses Microsoft OneDrive/Graph API for bidirectional C2 while Shark uses DNS and HTTP.",
+        "source_url": "https://www.welivesecurity.com/"
+      }
+    ]
+  },
+  "threat_actors": ["HEXANE", "Lyceum", "Siamesekitten", "Spirlin"],
+  "targeted_regions": ["Israel", "Saudi Arabia", "Kuwait", "UAE", "Morocco", "Tunisia"],
+  "targeted_sectors": ["Oil & gas / energy", "Telecommunications", "Aviation", "Internet Service Providers"],
+  "malware": ["DanBot", "Milan", "Shark", "Marlin", "DanDrop", "Kevin", "PowerShell/DNS keylogger"],
+  "tooling_observed": [
+    "DanBot (DNS/HTTP-tunneling backdoor)",
+    "DanDrop (VBA macro dropper)",
+    "PowerShell",
+    "DNS-tunneling C2",
+    "keylogger",
+    "credential harvester",
+    "password-spraying scripts",
+    "fake LinkedIn personas",
+    "spoofed careers/recruitment website",
+    "Microsoft OneDrive / Graph API (Marlin C2)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "HEXANE conducted reconnaissance against target-organization personnel, gathering identity details of employees in IT and communications roles to enable social-engineering lures.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim identity reconnaissance is not endpoint-observable; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1589.002",
+      "technique_name": "Gather Victim Identity Information: Email Addresses",
+      "tactic": "reconnaissance",
+      "procedure_description": "HEXANE collected employee email addresses to build spearphishing target lists.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — email-address harvesting occurs off-victim; not endpoint-observable, hunt/intel candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1591.004",
+      "technique_name": "Gather Victim Org Information: Identify Roles",
+      "tactic": "reconnaissance",
+      "procedure_description": "HEXANE identified individuals in specific roles (IT, communications, HR) at target organizations to tailor its recruitment-themed lures.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — role identification via public sources (LinkedIn) is off-victim; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "HEXANE registered domains, some spoofing legitimate brands (e.g. a fake careers/recruitment site), for use in phishing and C2.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — infrastructure acquisition is off-victim; intel/hunt candidate via lookalike-domain and registration monitoring",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1583.002",
+      "technique_name": "Acquire Infrastructure: DNS Server",
+      "tactic": "resource-development",
+      "procedure_description": "HEXANE operated attacker-controlled DNS servers to support DanBot's DNS-tunneling C2 channel.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "low — adversary DNS-server acquisition is off-victim; intel/hunt candidate, though downstream DNS-tunneling (T1071.004) is detectable",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "HEXANE created fake LinkedIn personas impersonating HR/recruitment staff of a legitimate company to approach targeted employees.",
+      "observed_tooling": ["fake LinkedIn personas"],
+      "detection_feasibility": "low — fake social-media persona creation is off-victim; intel/hunt candidate via persona and brand-impersonation monitoring",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "HEXANE established email accounts to support its social-engineering and phishing operations.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — attacker email-account creation is off-victim; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "HEXANE compromised legitimate email accounts to lend credibility to its phishing and to send messages from trusted senders.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — compromise of third-party email accounts is off-victim; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "HEXANE obtained and used tooling to support intrusion operations alongside its custom implants.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — tool acquisition is off-victim; downstream use is where detection applies, this is an intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "HEXANE staged malware on attacker-controlled infrastructure (including the spoofed careers site) for delivery to targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — malware staging on adversary infrastructure is off-victim; intel/hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "HEXANE leveraged valid credentials obtained via password spraying against internet-facing services (e.g. Exchange/OWA, O365) to gain and maintain access.",
+      "observed_tooling": ["password-spraying scripts"],
+      "detection_feasibility": "medium — valid-account abuse is detectable via impossible-travel, anomalous-logon and first-seen sign-in analytics on authentication logs",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "HEXANE sent spearphishing emails carrying macro-enabled Microsoft Excel/Office attachments (DanDrop) that dropped the DanBot backdoor when macros were enabled.",
+      "observed_tooling": ["DanDrop"],
+      "detection_feasibility": "medium — malicious-attachment delivery is detectable via mail sandboxing and macro-content analysis at the gateway",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "HEXANE lured targets to a spoofed recruitment/careers website via links delivered through fake LinkedIn personas and email.",
+      "observed_tooling": ["spoofed careers/recruitment website"],
+      "detection_feasibility": "medium — link-based spearphishing is detectable via URL detonation and proxy telemetry to newly-registered/lookalike domains",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "HEXANE relied on targets opening malicious Office documents and enabling macros to execute the DanDrop dropper / DanBot payload.",
+      "observed_tooling": ["DanDrop"],
+      "detection_feasibility": "high — Office applications spawning script/child processes after macro enablement is a core, well-covered detectable behavior",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "HEXANE induced victims to click links to attacker-controlled sites hosting malicious content.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — link clicks are detectable via URL-gateway and proxy logs; endpoint signal is indirect",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "HEXANE used PowerShell scripts for execution, tooling and DNS-based post-exploitation activity.",
+      "observed_tooling": ["PowerShell"],
+      "detection_feasibility": "high — script-block/module logging and suspicious PowerShell parenting are core, well-covered detections",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "HEXANE used the Windows command shell to run commands and orchestrate its tooling on compromised hosts.",
+      "observed_tooling": ["cmd.exe"],
+      "detection_feasibility": "high — cmd.exe execution with anomalous parents and command lines is visible in process-creation logs",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "HEXANE used VBA macros (DanDrop) embedded in Office documents to drop and execute the DanBot backdoor.",
+      "observed_tooling": ["DanDrop"],
+      "detection_feasibility": "high — Office spawning script children via VBA macros is a strong, detectable process-lineage anomaly",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "HEXANE used scheduled tasks to establish persistence for its implants.",
+      "observed_tooling": ["schtasks.exe"],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1546.003",
+      "technique_name": "Event Triggered Execution: Windows Management Instrumentation Event Subscription",
+      "tactic": "persistence",
+      "procedure_description": "HEXANE used WMI event subscriptions to persistently trigger execution of its payloads.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — WMI permanent event-subscription creation is detectable via WMI-Activity logging and __EventFilter/__EventConsumer telemetry",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "HEXANE established persistence via Registry Run-key entries for its DanBot/DanDrop components.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "high — Run-key value creation is directly detectable via registry-modification telemetry",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "procedure_description": "HEXANE conducted brute-force attacks to obtain valid credentials for internet-facing services.",
+      "observed_tooling": ["password-spraying scripts"],
+      "detection_feasibility": "high — brute-force patterns are detectable via failed-logon volume and lockout analytics on authentication logs",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1110.003",
+      "technique_name": "Brute Force: Password Spraying",
+      "tactic": "credential-access",
+      "procedure_description": "HEXANE used password spraying — a small set of common passwords tried across many accounts — against Exchange/OWA and O365 to obtain initial access while avoiding lockouts.",
+      "observed_tooling": ["password-spraying scripts"],
+      "detection_feasibility": "high — password spraying is detectable via many-accounts/few-passwords sign-in analytics and distributed failed-auth patterns (a signature HEXANE initial-access TTP)",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1555",
+      "technique_name": "Credentials from Password Stores",
+      "tactic": "credential-access",
+      "procedure_description": "HEXANE used a credential-harvesting tool to steal credentials from password stores on compromised hosts.",
+      "observed_tooling": ["credential harvester"],
+      "detection_feasibility": "medium — password-store access is detectable mainly via known-tool execution signatures and file-access to credential stores",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "HEXANE deployed a tool to steal credentials saved in victims' web browsers.",
+      "observed_tooling": ["credential harvester"],
+      "detection_feasibility": "medium — access to browser Login Data / credential stores is detectable via file-access and known-tool telemetry",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "HEXANE deployed a keylogger (a PowerShell/DNS keylogger and Milan components) to capture keystrokes from targeted users.",
+      "observed_tooling": ["keylogger", "Milan"],
+      "detection_feasibility": "low — keystroke-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1010",
+      "technique_name": "Application Window Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated open application windows on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — window enumeration uses common APIs with little discrete signal; hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE collected network-configuration details (IP addresses, domain) from compromised systems.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — ipconfig-style recon is common but suspicious within tight process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1016.001",
+      "technique_name": "System Network Configuration Discovery: Internet Connection Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE checked for internet connectivity from compromised hosts prior to establishing C2.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — connectivity checks to well-known hosts are common; meaningful in process-lineage/beaconing context",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated remote systems on the target network to support lateral movement.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — host-enumeration commands (net view, ping sweeps) are detectable in command-line logs but need baselining",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE collected the current username from compromised hosts.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — whoami/username enumeration is common; value is in process-lineage correlation",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1049",
+      "technique_name": "System Network Connections Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated active network connections on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — netstat-style enumeration is common but meaningful in process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE obtained lists of running processes on compromised systems.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — tasklist/Get-Process enumeration is common but meaningful in process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1069.001",
+      "technique_name": "Permission Groups Discovery: Local Groups",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated local group memberships on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — 'net localgroup' enumeration is directly observable in command-line logging",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE collected host information such as OS version and machine name.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — systeminfo-style discovery is common; suspicious mainly in process-lineage context",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated files and directories on compromised systems to locate data of interest.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — file/dir enumeration is common; meaningful when correlated in process lineage",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1087",
+      "technique_name": "Account Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated user accounts within the target environment.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — 'net user'/account enumeration is directly observable in command-line logs",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated domain accounts to expand access and plan lateral movement.",
+      "observed_tooling": ["net.exe"],
+      "detection_feasibility": "high — 'net user /domain' and net group domain enumeration are directly observable in command-line logging",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "HEXANE enumerated installed software on compromised hosts, including to identify security tooling.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — software enumeration is detectable in script/command telemetry; needs baselining",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "HEXANE used RDP for lateral movement within compromised networks.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — anomalous internal RDP sessions are detectable via logon type 10 (Event 4624) and network-flow analytics",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1534",
+      "technique_name": "Internal Spearphishing",
+      "tactic": "lateral-movement",
+      "procedure_description": "HEXANE used compromised internal mailboxes to send spearphishing messages to additional users within the target organization.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — internal-origin phishing is detectable via mail-flow anomalies and unusual send patterns from compromised accounts",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "HEXANE staged collected data locally on compromised hosts prior to exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — local staging in temp paths is common and noisy; better as a hunt over file-write telemetry",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "HEXANE's tooling captured screenshots from compromised hosts.",
+      "observed_tooling": ["Milan"],
+      "detection_feasibility": "low — screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
+      "sources": ["https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1114",
+      "technique_name": "Email Collection",
+      "tactic": "collection",
+      "procedure_description": "HEXANE collected email content from compromised mailboxes as part of its espionage objectives.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — mailbox access can blend with normal use; hunt candidate via anomalous mailbox-access and sync telemetry",
+      "sources": ["https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "HEXANE's implants automatically collected files and system data of interest from compromised hosts.",
+      "observed_tooling": ["DanBot", "Milan"],
+      "detection_feasibility": "low — automated collection blends with normal file access; hunt candidate via bulk file-read patterns",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "procedure_description": "HEXANE archived collected data prior to exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — archive creation of staged data is detectable via file-write and known-archiver process telemetry",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "HEXANE used utilities to compress/archive collected data before exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — archiver utilities used against staged directories are a detectable LOLBin/staging pattern",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE's DanBot and Shark backdoors support HTTP(S)-based C2 communications as an alternative to DNS tunneling.",
+      "observed_tooling": ["DanBot", "Shark"],
+      "detection_feasibility": "medium — HTTP C2 is detectable via proxy/beacon analytics and URI/JA3 anomalies but blends with normal web traffic",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE's signature DanBot backdoor tunnels C2 over DNS, embedding commands and exfiltrated data in DNS queries/responses to attacker-controlled name servers — a defining HEXANE tradecraft.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "high — DNS tunneling is a strong detection surface: high query volume to a single domain, long/high-entropy subdomain labels, unusual TXT/A record patterns and non-resolver DNS destinations are all detectable in DNS logs (priority detection candidate for this actor)",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE encapsulates C2 traffic within the DNS protocol (DNS tunneling via DanBot) to conceal communications and bypass network filtering.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — protocol tunneling is detectable via traffic-shape and entropy analytics on the carrier protocol (DNS), overlapping with the T1071.004 DNS-tunneling detection surface",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE routed C2 through intermediary infrastructure to obscure the true location of its command-and-control.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — proxy relays are hard to distinguish at the endpoint; network/hunt candidate",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1102.002",
+      "technique_name": "Web Service: Bidirectional Communication",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE's Marlin backdoor abuses Microsoft OneDrive / Graph API for bidirectional C2, receiving commands and returning results via a legitimate cloud service.",
+      "observed_tooling": ["Marlin", "Microsoft OneDrive / Graph API"],
+      "detection_feasibility": "low — C2 over legitimate cloud services blends with normal traffic; hunt on proxy/API access anomalies to OneDrive/Graph from unexpected processes",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.welivesecurity.com/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE's implants download additional tools and payloads to compromised hosts.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — tool transfer over C2 is detectable via file-write-after-network telemetry and, where HTTP is used, download analytics",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE encoded C2 data (embedded within DNS labels/HTTP) using standard encoding schemes.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — encoded C2 content is detectable via encoding heuristics and entropy analysis where traffic is inspectable",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE used non-standard ports for some C2 communications.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — protocol-on-non-standard-port mismatches are detectable via netflow/firewall analytics",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "HEXANE encrypted C2 traffic using symmetric cryptography to protect command and exfiltration content.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "low — custom-encrypted C2 defeats content inspection; hunt on beacon/traffic-shape anomalies",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "HEXANE obfuscated its payloads and scripts to hinder analysis and evade detection.",
+      "observed_tooling": ["DanBot", "DanDrop"],
+      "detection_feasibility": "medium — obfuscated content is detectable via entropy/encoding heuristics and static signatures; needs supporting context",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "procedure_description": "HEXANE obfuscated command-line and script content (including PowerShell and VBA) to evade detection.",
+      "observed_tooling": ["PowerShell", "DanDrop"],
+      "detection_feasibility": "high — obfuscated/encoded commands are detectable via script-block logging and encoding/entropy heuristics",
+      "sources": ["https://attack.mitre.org/groups/G1001/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "HEXANE stored payload components in encrypted/encoded form on disk to evade static detection.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "low — encrypted/encoded files on disk yield little static signal; hunt candidate via high-entropy file and decode-at-runtime patterns",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "HEXANE's loaders and scripts decode/deobfuscate embedded payloads at runtime prior to execution.",
+      "observed_tooling": ["DanDrop"],
+      "detection_feasibility": "medium — runtime decode routines are observable in script-block and command-line logging",
+      "sources": ["https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "HEXANE took steps to impair host defensive tooling to reduce detection of its implants.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — tampering with security tooling (service/registry/process changes) is detectable via service-state and registry-modification telemetry",
+      "sources": ["https://www.clearskysec.com/siamesekitten/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "HEXANE exfiltrated collected data over its C2 channel, including embedded within DNS-tunneling traffic.",
+      "observed_tooling": ["DanBot"],
+      "detection_feasibility": "medium — exfil over C2 blends with C2 traffic; detectable via outbound-volume/beacon anomalies and, for DNS, oversized/high-frequency query analytics",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign"]
+    },
+    {
+      "technique_id": "T1567.002",
+      "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
+      "tactic": "exfiltration",
+      "procedure_description": "HEXANE exfiltrated data to cloud-storage services (e.g. via the Marlin backdoor's OneDrive channel).",
+      "observed_tooling": ["Marlin", "Microsoft OneDrive"],
+      "detection_feasibility": "medium — uploads to cloud-storage endpoints are detectable via proxy/DLP telemetry and anomalous data-volume to cloud APIs",
+      "sources": ["https://attack.mitre.org/groups/G1001/", "https://www.welivesecurity.com/"]
+    }
+  ],
+  "detection_signals": [
+    "High-volume DNS queries to a single second-level domain with long, high-entropy subdomain labels (DanBot DNS tunneling) — priority detection",
+    "DNS queries to non-resolver / attacker-controlled name servers, unusual TXT/A record request patterns",
+    "Password-spraying pattern: many distinct accounts hit with a small set of passwords, distributed failed auth against Exchange/OWA/O365",
+    "Office application (excel.exe/winword.exe) spawning script/child processes after macro enablement (DanDrop)",
+    "PowerShell script-block logs with obfuscated/encoded content or DNS-query construction",
+    "Registry Run-key value creation for DanBot/DanDrop persistence",
+    "WMI permanent event-subscription creation (__EventFilter / __EventConsumer)",
+    "Scheduled-task creation (Event ID 4698) with script/LOLBin actions",
+    "Anomalous OneDrive / Microsoft Graph API access from non-browser/unexpected processes (Marlin C2)",
+    "Access to browser Login Data / credential stores by non-browser processes",
+    "'net user /domain', 'net localgroup', account/host enumeration in command-line logs",
+    "Outbound C2 on non-standard ports and protocol-on-wrong-port mismatches"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [],
+    "emails": [],
+    "hashes": [],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Base ATT&CK mapping is the authoritative MITRE G1001 technique set (36 techniques), enriched with well-documented HEXANE/Lyceum behaviors from named public reporting (SecureWorks CTU 2019 DanBot/Lyceum, ClearSky Siamesekitten Aug 2021, Kaspersky/Securelist 2021, Accenture/ESET Marlin Nov 2021), for a total of 64 techniques across 13 tactics. Every technique_id was verified present in this environment's bundled ATT&CK dataset via sigma.data.mitre_attack (0 invalid). Env conventions applied: defense-evasion emitted as tactic 'stealth'; Impair Defenses family emitted as T1685 under tactic 'defense-impairment'; encrypted/encoded-file emitted as T1027.013. DNS-tunneling C2 (T1071.004) is HEXANE's signature tradecraft and is marked high detection-feasibility as the priority detection surface; password spraying (T1110.003) is the signature initial-access detection surface. Attribution is Iran-nexus at MEDIUM confidence: MITRE tracks HEXANE as a distinct cluster with TTP overlap to APT33 and OilRig but differing victimology/tooling, and public reporting does not converge on a single sponsor with the same weight as the MuddyWater/MOIS case. IOCs (ips/domains/emails/hashes/cves) are DELIBERATELY EMPTY: primary vendor sources could not be fetched in this pass (SecureWorks 301-redirects to a Sophos threat-profiles landing page; ESET welivesecurity Marlin URLs returned 404), and the no-hallucinated-IOC rule forbids emitting indicators not seen in a fetched source. Raw DanBot/Milan/Shark/Marlin domains and hashes should be ingested directly from the SecureWorks, ClearSky and ESET appendices before this pack's IOC block is populated. Low detection-feasibility techniques (hunt candidates, not detection candidates): T1589, T1589.002, T1591.004, T1583.001, T1583.002, T1585.001, T1585.002, T1586.002, T1588.002, T1608.001, T1056.001, T1010, T1074.001, T1113, T1114, T1119, T1090, T1102.002, T1573.001, T1027.013."
+}

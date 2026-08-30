@@ -1,0 +1,46 @@
+title: Moses Staff StrifeWater RAT Track-Covering - Genuine calc.exe Copy Then Self-Deletion
+id: 3288d093-0640-4aa1-a2c0-d2fb5e2a4b2e
+status: experimental
+description: |
+    Detects the Moses Staff StrifeWater RAT covering its tracks (T1070.004). To hide itself the RAT
+    is replaced with the original Windows calculator binary - the genuine calc.exe is copied from
+    System32 to C:\Users\Public - and the RAT binary is then deleted (the RAT also supports an
+    operator self-removal command). Keys on a cmd/powershell command line that copies System32
+    calc.exe into a user-writable directory (C:\Users\Public) and/or deletes a same-named binary
+    there, which is the observed restore-then-erase sequence. Requires process-creation telemetry
+    (Sysmon EID 1 / Security 4688) or file-create/delete EDR telemetry.
+references:
+    - https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.moses-staff
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\xcopy.exe'
+            - '\robocopy.exe'
+    selection_calc:
+        CommandLine|contains: 'calc.exe'
+    selection_action:
+        CommandLine|contains:
+            - 'copy'
+            - 'Copy-Item'
+            - 'del '
+            - 'erase '
+            - 'Remove-Item'
+    selection_pubpath:
+        CommandLine|contains: '\Users\Public'
+    condition: selection_tool and selection_calc and selection_action and selection_pubpath
+falsepositives:
+    - Legitimate scripts staging the Windows calculator into a shared public folder are uncommon;
+      baseline any sanctioned software-packaging job that copies system binaries and allowlist it
+level: medium

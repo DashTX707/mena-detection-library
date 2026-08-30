@@ -1,0 +1,49 @@
+title: APT39 ANTAK/ASPXSpy Web Shell - IIS Worker Process Spawning Command Shell
+id: a4474a44-1fb4-4e04-a603-8f7b187f1eb8
+status: experimental
+description: |
+    Detects the flagship APT39 / Chafer persistence behavior: an Internet-facing IIS worker
+    process (w3wp.exe) or classic-ASP host (dllhost.exe/aspnet_wp.exe) spawning an interactive
+    command shell (cmd.exe, powershell.exe, or reconnaissance binaries). APT39 deploys the ANTAK
+    and ASPXSpy .aspx web shells on public-facing IIS/web servers - frequently after SQL injection -
+    to maintain persistent remote access and run operating-system commands. A web-server worker
+    process is not expected to launch a shell or living-off-the-land discovery utilities, making this
+    a high-fidelity signal. Correlate with newly written/modified .aspx files in the web root.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.cisa.gov/news-events/analysis-reports/ar20-259a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\aspnet_wp.exe'
+            - '\httpd.exe'
+            - '\nginx.exe'
+            - '\php-cgi.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\whoami.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\ipconfig.exe'
+            - '\systeminfo.exe'
+            - '\reg.exe'
+            - '\certutil.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Legitimate web applications that shell out to run maintenance scripts - baseline expected
+      child processes per application pool and allowlist the specific command lines
+    - Server management/monitoring agents hosted under the web worker
+level: high

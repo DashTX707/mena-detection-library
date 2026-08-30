@@ -1,0 +1,65 @@
+title: Tortoiseshell Host / Network / Security Reconnaissance Command Burst
+id: 8fff6e47-656a-45bd-9c3a-10c547ff6cb0
+status: experimental
+description: |
+    Detects the hands-on-keyboard reconnaissance burst run by Tortoiseshell / Imperial Kitten, covering
+    system information (T1082 systeminfo), network configuration (T1016 ipconfig), network connections
+    (T1049 netstat), process enumeration (T1057 tasklist), system services (T1007 sc query / net start),
+    system owner/user (T1033 whoami and get-logon-history.ps1), and security-software discovery (T1518.001
+    querying AV services/processes). Individually these are common; value comes from clustering several
+    within a short process-lineage window on one host. Best operated as a per-host burst analytic
+    (N distinct recon commands within a few minutes). Requires process-creation logging with command line.
+references:
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1082
+    - attack.t1016
+    - attack.t1049
+    - attack.t1057
+    - attack.t1007
+    - attack.t1033
+    - attack.t1518.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_recon:
+        Image|endswith:
+            - '\systeminfo.exe'
+            - '\ipconfig.exe'
+            - '\netstat.exe'
+            - '\tasklist.exe'
+            - '\whoami.exe'
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+    selection_recon_cmd:
+        CommandLine|contains:
+            - 'systeminfo'
+            - 'ipconfig /all'
+            - 'netstat -'
+            - 'tasklist'
+            - 'whoami'
+            - 'get-logon-history'
+            - 'sc query'
+            - 'net start'
+    selection_secsw:
+        CommandLine|contains:
+            - 'tasklist /svc'
+            - 'MsMpEng'
+            - 'windefend'
+            - 'CrowdStrike'
+            - 'CylanceSvc'
+            - 'Sysmon'
+            - 'SentinelAgent'
+    condition: selection_recon or selection_recon_cmd or selection_secsw
+falsepositives:
+    - Individual commands are routine admin/helpdesk activity - deploy as a burst/threshold correlation over
+      a short window rather than alerting on single commands
+    - Inventory and monitoring agents enumerating services/processes - baseline expected tooling and hosts
+level: low

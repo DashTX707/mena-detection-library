@@ -1,0 +1,193 @@
+{
+  "actor": "UNC1860",
+  "provenance": "Lane split derived by the orchestrator applying the Stage-2 decision-agent's documented routing rule (detect-vs-hunt by detection feasibility: low=hunt, medium/high=detect) because the decision-agent run was interrupted by a session rate limit. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "medium — load of a known-good AV filter driver on a host that does not run that AV product, or driver hash/signature-context mismatch, is a discrete hunt signal (Sysmon EID 6)"
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "medium — SharePoint/IIS exploitation is detectable via WAF/IPS signatures for CVE-2019-0604 and anomalous web-worker child processes (w3wp.exe spawning cmd.exe), though n-day exploitation can precede the first host artifact"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "medium — new/modified webshell files in IIS web-content directories and web-worker processes spawning shells are detectable via file-integrity monitoring and process-lineage analytics, though masquerade-as-server-file naming defeats simple name rules"
+    },
+    {
+      "technique_id": "T1505.004",
+      "technique_name": "Server Software Component: IIS Components",
+      "tactic": "persistence",
+      "rationale": "medium — unexpected modules/handlers or unmanaged HTTP.sys URL reservations on an IIS server are detectable via IIS module auditing and URL-ACL review, though the implants deliberately bind below the IIS/HTTP-API layer"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "medium — new service/driver registration and service-config-change events (Event ID 7045/7040) on a server are discrete signals, though driver installs blend with legitimate admin activity"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — anomalous internal RDP (Event ID 4624 type 10 / 4778) from a server or newly-active source, and RDP sessions correlated to a compromised web host, are detectable via authentication and session telemetry"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — runtime decode-then-execute is partly observable via AMSI/.NET in-memory content, though the memory-resident server-side design leaves little host telemetry"
+    },
+    {
+      "technique_id": "T1014",
+      "technique_name": "Rootkit",
+      "tactic": "stealth",
+      "rationale": "medium — malicious driver loads are detectable via kernel-module-load telemetry (Sysmon EID 6), Microsoft vulnerable/blocked-driver policy, and signature/hash review, though a loaded kernel rootkit can then subvert host visibility"
+    },
+    {
+      "technique_id": "T1685.001",
+      "technique_name": "Impair Defenses: Disable or Modify Windows Event Log",
+      "tactic": "defense-impairment",
+      "rationale": "medium — stop/kill of the EventLog service and gaps in event-log continuity are detectable via service-state monitoring (Event ID 7035/7036, 1100) and log-continuity analytics, though the technique is quiet by design"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — a server web/host process spawning cmd.exe is detectable via process-lineage analytics where interactive shells are abnormal, though cmd usage is ubiquitous"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — internal scanning bursts (many connections/short-lived sessions from one source) are detectable via network flow analytics, though scanning can be low-and-slow"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; the shared tooling family is an attribution/triage hunting signal, not a host detection"
+    },
+    {
+      "technique_id": "T1205",
+      "technique_name": "Traffic Signaling",
+      "tactic": "command-and-control",
+      "rationale": "low — the defining hunt case: no outbound beacon exists to catch, and inbound triggers ride legitimate web ports; hunt via HTTP.sys URL-reservation/UrlGroup review, unexpected IOCTL-consuming drivers, and memory scanning of web-server processes"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "low — C2 is inbound-only, TLS-wrapped, and rides ports 80/443 with no beacon; hunt via anomalous request patterns to server endpoints and HTTP.sys-level listener enumeration rather than signature detection"
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "rationale": "low — driver-level IOCTL command channels produce essentially no standard network telemetry; only reachable via kernel/driver behavioral analysis and memory forensics"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "low — proxying rides the compromised server's own web channel; hunt via anomalous internal connections sourced from a web/edge server rather than a discrete signature"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "low — tunnelled remote-access traffic is wrapped inside the compromised host's normal channels; hunt via traffic-timing/volume anomalies and unexpected internal RDP paths"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "low — the custom crypto layer sits inside otherwise-normal HTTPS; hunt via YARA on the shared encryption constants in samples, not log detection"
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "rationale": "low — packing/obfuscation defeats static AV signatures; hunt via obfuscator-artifact YARA and in-memory behavioral analysis"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "low — encoding/encryption at rest defeats static inspection; hunt via entropy analysis and decoded in-memory content rather than log detection"
+    },
+    {
+      "technique_id": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "tactic": "stealth",
+      "rationale": "low — reflective/in-memory loading avoids disk artifacts and masks execution within legitimate server processes; hunt via in-memory scanning and CLR/shellcode-load anomalies"
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "rationale": "low — kernel-assisted injection into privileged processes is largely invisible to user-mode EDR; hunt via kernel-callback/driver-behavior telemetry and memory forensics"
+    },
+    {
+      "technique_id": "T1068",
+      "technique_name": "Exploitation for Privilege Escalation",
+      "tactic": "privilege-escalation",
+      "rationale": "low — kernel-level privilege escalation via signed/repurposed drivers is difficult to observe from user mode; hunt via driver-load provenance and kernel behavioral analysis"
+    },
+    {
+      "technique_id": "T1211",
+      "technique_name": "Exploitation for Defense Evasion",
+      "tactic": "stealth",
+      "rationale": "low — driver-enforced file protection operates in kernel and resists user-mode inspection; hunt via presence of the AV filter driver on non-AV hosts and files that resist deletion/modification"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "rationale": "low — name/location masquerading defeats name-based allow-lists; hunt via signer/hash validation and original-filename metadata mismatch"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Impair Defenses",
+      "tactic": "defense-impairment",
+      "rationale": "low — impairment is achieved via kernel-mode file protection and passive design rather than noisy tool-killing; hunt via driver provenance and AV/EDR tamper-attempt telemetry"
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactic": "execution",
+      "rationale": "low — native-API/IOCTL calls are ubiquitous and hard to distinguish; only reachable via targeted driver/behavioral instrumentation"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "low — file transfers arrive inbound to a passive listener and are often loaded straight into memory; hunt via correlating listener activity with new file writes/assembly loads"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — file reads by a server process are routine; collection blends with the passive C2 and produces little discrete telemetry"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "low — exfiltration rides the passive-listener response channel and blends with normal web responses; the inbound-only design limits egress visibility"
+    }
+  ],
+  "summary": {
+    "total": 30,
+    "detection": 11,
+    "hunt": 19
+  }
+}

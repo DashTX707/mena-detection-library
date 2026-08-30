@@ -1,0 +1,43 @@
+title: Tortoiseshell Scheduled Task Creation for Payload Persistence
+id: df9a274e-d43d-4e3c-95df-d66f1b32a8ca
+status: experimental
+description: |
+    Detects scheduled-task creation (T1053.005) used by Tortoiseshell / Imperial Kitten to persist and
+    execute payloads. Keys on schtasks.exe /create invoking a script interpreter/LOLBin or a binary from a
+    user-writable path. Complementary to Task Scheduler operational / Security EID 4698 auditing. Requires
+    process-creation logging with command line.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_schtasks:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_action:
+        CommandLine|contains:
+            - 'powershell'
+            - 'pwsh'
+            - 'cmd.exe'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - 'regsvr32'
+            - '\Temp\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    condition: selection_schtasks and selection_action
+falsepositives:
+    - Legitimate software and admin automation registering scheduled tasks - baseline known task names,
+      authors and signed action binaries
+    - Management agents creating maintenance tasks - allowlist expected tooling
+level: medium

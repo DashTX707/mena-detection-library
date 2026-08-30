@@ -1,0 +1,358 @@
+{
+  "report_title": "CyberAv3ngers (IRGC-CEC) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "CISA/FBI/NSA/EPA/INCD/CCCS/NCSC joint Cybersecurity Advisory AA23-335A 'IRGC-Affiliated Cyber Actors Exploit PLCs in Multiple Sectors, Including US Water and Wastewater Systems Facilities' (orig. 2023-12-01, updated 2024-12-18; https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a); Claroty Team82 'Inside a New OT/IoT Cyberweapon: IOCONTROL' (2024-12; https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol). Corroboration: Tenable 'CyberAv3ngers FAQ' and BleepingComputer/Industrial Cyber IOCONTROL reporting. NO local seed; this is a rare OT/ICS actor with NO MITRE ATT&CK Enterprise G-id. TTPs mapped to ENTERPRISE ATT&CK only — ICS (T0xxx) behaviors expressed via closest Enterprise technique with ICS specifics in the procedure text.",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "CyberAv3ngers",
+    "mitre_id": "",
+    "mitre_canonical_name": "CyberAv3ngers",
+    "aliases": [
+      "CyberAv3ngers",
+      "CyberAveng3rs",
+      "Cyber Avengers"
+    ],
+    "related_clusters": [
+      "IRGC Cyber-Electronic Command (IRGC-CEC)",
+      "Soldiers of Solomon (IRGC-linked, reported connection)"
+    ],
+    "attribution": "Iranian IRGC-affiliated cyber persona assessed by CISA/FBI and Claroty to be operated by the Islamic Revolutionary Guard Corps Cyber-Electronic Command (IRGC-CEC). Active under the CyberAv3ngers persona since 2020 with hacktivist-style Telegram claims (several false), escalating to genuine OT/ICS compromise of internet-exposed Unitronics Vision-series PLCs/HMIs at water/wastewater and other critical-infrastructure sites in Israel and the United States from late 2023, and in 2024 to the custom IOCONTROL/OrpaCrypt Linux IoT/OT malware platform. The IRGC is designated a foreign terrorist organization by the U.S. and Canada. Attribution to the IRGC-CEC is corroborated across the government advisory and independent vendor (Claroty Team82) reporting.",
+    "attribution_confidence": "high",
+    "targeted_regions_mena": [
+      "Israel"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "United Kingdom"
+    ],
+    "targeted_sectors": [
+      "Water and Wastewater Systems (WWS)",
+      "Energy",
+      "Fuel management systems (gas stations / fuel pumps)",
+      "Food and beverage manufacturing",
+      "Transportation / shipping and distribution",
+      "Healthcare",
+      "Critical manufacturing / OT-ICS operators"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Unitronics Vision-series PLC/HMI defacement campaign",
+        "date": "2023-11 to 2024-01 (four assessed waves)",
+        "summary": "Under the CyberAv3ngers persona, IRGC-CEC actors compromised internet-exposed Unitronics Vision Series PLCs/HMIs by authenticating to the default TCP port 20256 using default or no password. They compromised at least 75 devices (>=34 in the U.S. WWS Sector), erased the original ladder logic and downloaded their own empty logic, downgraded the ladder-logic software version, renamed devices and password-protected uploads to lock out operators, disabled upload/download functions, changed the default port from 20256 to 20257, and pushed a defacement splash page to the HMI reading 'You have been hacked, down with Israel. Every equipment made in Israel is CyberAv3ngers legal target.' Victims spanned multiple U.S. states, Israel and the UK.",
+        "source_url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      },
+      {
+        "name": "IOCONTROL / OrpaCrypt IoT-OT malware operation (Orpak/Gasboy fuel systems)",
+        "date": "2024 (domain registered 2023-11-23)",
+        "summary": "CyberAv3ngers deployed IOCONTROL (aka OrpaCrypt), a custom modular Linux malware platform for IoT/OT devices (IP cameras, routers, PLCs, HMIs, firewalls, fuel systems) from vendors including Baicells, D-Link, Hikvision, Red Lion, Orpak, Phoenix Contact, Teltonika and Unitronics. One wave compromised several hundred Israel-made Orpak and U.S.-made Gasboy fuel-management systems in Israel and the U.S. The malware installs an rc3.d boot-script backdoor (/etc/rc3.d/S93InitSystemd.sh relaunching /usr/bin/iocontrol), decrypts AES-256-CBC config, resolves its C2 hostname (uuokhhfsdlk.tylarion867mino.com) via Cloudflare DNS-over-HTTPS, and communicates with C2 over MQTT/TLS (port 8883). Modules: report-in, arbitrary OS command execution, self-delete, and port scanning.",
+        "source_url": "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      }
+    ]
+  },
+  "threat_actors": [
+    "CyberAv3ngers",
+    "IRGC Cyber-Electronic Command (IRGC-CEC)"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "United States",
+    "United Kingdom"
+  ],
+  "targeted_sectors": [
+    "Water and Wastewater Systems",
+    "Energy",
+    "Fuel / gas station management systems",
+    "Food and beverage manufacturing",
+    "Transportation / shipping",
+    "Healthcare",
+    "Critical manufacturing / OT-ICS"
+  ],
+  "malware": [
+    "IOCONTROL (aka OrpaCrypt) — custom modular Linux IoT/OT backdoor"
+  ],
+  "tooling_observed": [
+    "Custom empty ladder-logic files (per Unitronics device model)",
+    "HMI defacement splash page / text file",
+    "MQTT (MQTTs) over TLS, port 8883, for C2",
+    "Cloudflare DNS-over-HTTPS (1.1.1.1) for C2 hostname resolution",
+    "AES-256-CBC encrypted configuration",
+    "rc3.d boot script (/etc/rc3.d/S93InitSystemd.sh)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "CyberAv3ngers developed IOCONTROL (aka OrpaCrypt), a bespoke modular Linux malware platform purpose-built to run across heterogeneous IoT/OT devices (IP cameras, routers, PLCs, HMIs, firewalls, fuel systems) from many vendors, plus custom empty ladder-logic files tailored per Unitronics device model.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "low — adversary capability development occurs off-victim and is not observable in defender telemetry; value is strategic (sample analysis / YARA), not host detection",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "The actors registered the domain tylarion867mino.com on 2023-11-23 (WHOIS) and used the subdomain uuokhhfsdlk.tylarion867mino.com as the IOCONTROL command-and-control hostname to manage compromised devices.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — domain acquisition is off-victim; hunt candidate via newly-registered-domain and passive-DNS enrichment of the C2 domain across egress logs",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "The actors gained access to internet-exposed Unitronics Vision Series PLCs/HMIs reachable on the default TCP port 20256. The devices were internet-facing with default or no credentials, and were compromised at scale (at least 75 devices across four assessed waves, >=34 in the U.S. WWS Sector). This is the primary DETECTABLE initial-access surface for this OT actor.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — internet-exposed PLC/HMI on TCP 20256 is inventoriable via external attack-surface scanning (Shodan/Censys) and edge netflow; inbound connections to 20256 from external hosts are a strong, monitorable signal",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "initial-access",
+      "procedure_description": "The actors abused the internet-exposed remote-programming interface of Unitronics PLC/HMI devices (remote logic upload/download over TCP 20256) as an external remote service to reach and reprogram OT devices directly from the internet.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — external connections to OT remote-management ports are detectable at the network boundary, but legitimate remote engineering access can blend in without an allowlist",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    },
+    {
+      "technique_id": "T1078.001",
+      "technique_name": "Valid Accounts: Default Accounts",
+      "tactic": "initial-access",
+      "procedure_description": "The actors authenticated to internet-connected Unitronics devices using the vendor default password (widely reported as '1111') or no password at all, gaining privileged control of the PLC/HMI. Default-credential access is a core DETECTABLE behavior for this actor.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — successful logon to a PLC/HMI from an external source, and continued presence of default credentials, are directly detectable via device auth logs and credential-audit scans; strong hardening/detection surface",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    },
+    {
+      "technique_id": "T1110",
+      "technique_name": "Brute Force",
+      "tactic": "credential-access",
+      "procedure_description": "CISA maps the actors' authentication to internet-connected Unitronics devices on default TCP port 20256 to Brute Force — repeated/automated login attempts against devices to obtain valid (often default) credentials.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — repeated/sustained login attempts to a PLC on TCP 20256 from external hosts are detectable via a fronting firewall/gateway or IDS; CISA explicitly recommends monitoring for this brute-force pattern",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    },
+    {
+      "technique_id": "T1059.004",
+      "technique_name": "Command and Scripting Interpreter: Unix Shell",
+      "tactic": "execution",
+      "procedure_description": "IOCONTROL exposes an 'Execute command' module that runs arbitrary OS commands on the compromised Linux IoT/OT device via a system() call and publishes the output back to C2; its persistence backdoor is itself a bash rc script.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "medium — unexpected shell command execution spawned by a non-shell IoT service binary is detectable on Linux endpoints with auditd/EDR, but most embedded OT devices lack such telemetry (hunt on gateways that do)",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1037.004",
+      "technique_name": "Boot or Logon Initialization Scripts: RC Scripts",
+      "tactic": "persistence",
+      "procedure_description": "IOCONTROL installs a backdoor as an rc3.d boot script at /etc/rc3.d/S93InitSystemd.sh; the script runs a watchdog loop that relaunches /usr/bin/iocontrol every 5 seconds if not running, ensuring persistence across device reboots.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "medium — creation/modification of an rc3.d init script and a persistent watchdog process is detectable via file-integrity monitoring on managed Linux gateways, but not on closed embedded PLC/HMI firmware",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "IOCONTROL blends in by naming its main binary 'iocontrol' under /usr/bin and its persistence boot script 'S93InitSystemd.sh' to mimic a legitimate systemd initialization component on the Linux device.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "low — legitimate-looking file names and paths defeat name-based rules; hunt candidate via known-bad path/name (/etc/rc3.d/S93InitSystemd.sh, /usr/bin/iocontrol) and file hashing on gateways with visibility",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "IOCONTROL stores its configuration entries (including the C2 hostname, port, and MQTT topics) as AES-256-CBC encrypted blobs on disk; each entry is length-prefixed and decrypted at runtime, hiding C2 and operational parameters from static inspection.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "low — encrypted-at-rest config is opaque to log-based detection; value is in sample/entropy analysis, not host telemetry",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "At runtime IOCONTROL derives the AES key/IV (the SHA-256 of an embedded victim GUID, used as a hex string) from environment variables and decrypts each stored configuration entry immediately before use to obtain its C2 hostname, port and MQTT topics.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "low — in-memory runtime decode leaves little observable trace on constrained OT devices; hunt candidate via dynamic/sandbox analysis of recovered samples",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "IOCONTROL's 'Self-delete' module stops execution and removes the malware main binary, its persistence service (the rc3.d boot script) and related log files to erase its footprint on the device, then reports completion to C2.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "medium — deletion of the implant binary, init script and logs is detectable as a file-delete burst on gateways with EDR/auditd, but anti-forensic self-wipe hinders post-hoc triage on embedded devices",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "IOCONTROL includes a 'Port scan' module: given a start IP, end IP and a target port, it scans the range and publishes results to C2 — enabling the operators to enumerate additional reachable services and devices from a compromised OT foothold.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "medium — horizontal scanning from an OT device produces anomalous connection fan-out detectable via netflow/east-west monitoring, though many OT networks lack such sensors",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1071",
+      "technique_name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "IOCONTROL uses the MQTT IoT messaging protocol as its dedicated C2 channel (connecting to the broker on port 8883), subscribing to a '/push' topic to receive commands and publishing to '/output' and device-info topics — deliberately disguising C2 as ordinary IoT telemetry traffic.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "medium — MQTT egress from an OT/IoT device to an external broker on 8883 is detectable via netflow/protocol analytics, especially where MQTT to internet destinations is not expected; blends with legitimate IoT where MQTT is normal",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "procedure_description": "Before connecting to C2, IOCONTROL resolves its C2 hostname (uuokhhfsdlk.tylarion867mino.com) using Cloudflare DNS-over-HTTPS (1.1.1.1, 'application/dns-json' requests) instead of the device's normal resolver, to evade DNS monitoring; the DoH response returned the C2 IP 159.100.6.69.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "medium — an OT/IoT device making outbound DoH (HTTPS to 1.1.1.1 / known DoH endpoints) is anomalous and monitorable at the egress boundary; blocking/inspecting DoH from OT segments is a practical detection and control",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "IOCONTROL wraps its MQTT C2 in TLS (MQTTs on port 8883), using transport encryption to conceal the content of command-and-control exchanges with the attacker infrastructure.",
+      "observed_tooling": [
+        "IOCONTROL (OrpaCrypt)"
+      ],
+      "detection_feasibility": "low — TLS conceals payload content; detection relies on metadata (destination, JA3/SNI, port 8883 to unexpected external brokers) rather than inspection",
+      "sources": [
+        "https://claroty.com/team82/research/inside-a-new-ot-iot-cyber-weapon-iocontrol"
+      ]
+    },
+    {
+      "technique_id": "T1565.001",
+      "technique_name": "Data Manipulation: Stored Data Manipulation",
+      "tactic": "impact",
+      "procedure_description": "On compromised Unitronics PLCs the actors erased the original ladder-logic file and downloaded their own logic containing no inputs or outputs, halting the device's intended control function, and set the ladder-logic software version to an older version so operators' engineering workstations could no longer communicate with the PLC (recoverable only by matching the workstation version or factory reset). The actors also did not burn their logic to the device, preventing retrieval of the original logic. [ICS effect; expressed via Enterprise T1565.001]",
+      "observed_tooling": [
+        "Custom empty ladder-logic files"
+      ],
+      "detection_feasibility": "medium — unauthorized ladder-logic download and program/version change is detectable via OT asset-management config-change monitoring and PLC operating-mode/program-change events, but requires OT-specific instrumentation",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    },
+    {
+      "technique_id": "T1531",
+      "technique_name": "Account Access Removal",
+      "tactic": "impact",
+      "procedure_description": "The actors renamed the compromised PLC/HMI devices (the device name is a required field for remote connections, so renaming delayed/blocked operator remote access) and enabled password protection on the upload/settings functions to prevent operators from remotely changing the programming and removing the defacement. [ICS effect; expressed via Enterprise T1531]",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — device rename and newly-enabled upload password protection are detectable as configuration changes via OT asset monitoring, and manifest operationally as sudden loss of remote access",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    },
+    {
+      "technique_id": "T1499",
+      "technique_name": "Endpoint Denial of Service",
+      "tactic": "impact",
+      "procedure_description": "The actors disabled the upload and download functions of the PLC to stop operators from taking down the defacement splash page, and changed the device's default remote-communication port from 20256 to 20257 — denying legitimate remote operation of the endpoint. [ICS effect; expressed via Enterprise T1499]",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — the default-port change and disabled upload/download are detectable via OT config-change monitoring and by connection failures on the expected port; CISA recommends monitoring standard protocols appearing on non-standard ports",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    },
+    {
+      "technique_id": "T1491.001",
+      "technique_name": "Defacement: Internal Defacement",
+      "tactic": "impact",
+      "procedure_description": "The actors uploaded a splash page to the HMI screen displaying 'You have been hacked, down with Israel. Every equipment made in Israel is CyberAv3ngers legal target,' overwriting the normal operational display (input/output readings); on older devices unable to render a graphic they displayed a text file with the same message. This is the actor's signature, highly DETECTABLE impact behavior. [ICS/HMI defacement; expressed via Enterprise T1491.001]",
+      "observed_tooling": [
+        "HMI defacement splash page / text file"
+      ],
+      "detection_feasibility": "high — the defacement is directly observable to operators and, where HMI/screen monitoring exists, an unexpected splash-page change is an immediate high-fidelity indicator; the message text is a durable behavioral signature of this actor",
+      "sources": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "Inbound connection from an external/internet host to a Unitronics PLC/HMI on TCP 20256 (or the actor-changed 20257) — internet-exposed OT device exploitation",
+    "Successful authentication to a PLC/HMI using the vendor default password ('1111') or no password, especially from an external source",
+    "Repeated/sustained login attempts to a PLC on TCP 20256 from a single external source — brute-force pattern (CISA-recommended monitoring)",
+    "External attack-surface finding: Unitronics Vision-series device reachable from the internet (Shodan/Censys), device name changed or unexpected splash page",
+    "Unexpected HMI splash-page/screen change or a defacement text containing 'down with Israel' / 'CyberAv3ngers' — signature impact indicator",
+    "Unauthorized ladder-logic download, empty (no-I/O) logic, or a ladder-logic software-version downgrade on a Unitronics PLC (OT config-change / program-change monitoring)",
+    "PLC default remote-communication port changed (20256 -> 20257) and upload/download functions disabled — endpoint DoS on OT device",
+    "OT/IoT device (fuel system, camera, router, PLC gateway) making outbound MQTT to an external broker on TCP 8883 — IOCONTROL C2",
+    "OT/IoT device issuing DNS-over-HTTPS (HTTPS to 1.1.1.1 / DoH endpoints, 'application/dns-json') where it should use the local resolver — IOCONTROL C2 hostname resolution evasion",
+    "On managed Linux OT gateways: creation of /etc/rc3.d/S93InitSystemd.sh, a /usr/bin/iocontrol binary, or a 5-second watchdog loop relaunching a process — IOCONTROL persistence",
+    "Outbound connection to tylarion867mino.com (or subdomain uuokhhfsdlk.tylarion867mino.com) or to 159.100.6.69 — IOCONTROL C2 infrastructure"
+  ],
+  "iocs": {
+    "ips": [
+      "159.100.6.69"
+    ],
+    "domains": [
+      "tylarion867mino.com",
+      "uuokhhfsdlk.tylarion867mino.com"
+    ],
+    "emails": [],
+    "hashes": [
+      "1b39f9b2b96a6586c4a11ab2fdbff8fdf16ba5a0ac7603149023d73f33b84498"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "CyberAv3ngers is a rare OT/ICS actor with NO MITRE ATT&CK Enterprise G-id (actor.mitre_id left empty). Per CI constraint, ALL 20 technique_ids are ENTERPRISE (v16) and were verified present in this environment's bundled dataset via sigma.data.mitre_attack; NO ICS T0xxx IDs were emitted. ICS/OT-specific behaviors are expressed through the closest Enterprise technique with the ICS specifics carried in procedure_description: exposed-PLC exploitation -> T1190/T1133; default-cred access -> T1078.001/T1110; ladder-logic erase/downgrade -> T1565.001 Stored Data Manipulation; device rename + upload-password lockout -> T1531; disable upload/download + port change -> T1499; HMI defacement -> T1491.001 (CISA maps this to Internal Defacement .001, not External .002, because the splash page is on the operator's own HMI screen — source-faithful). TACTIC-SLUG NOTE: per the environment convention supplied for this library, the defense-evasion tactic is emitted as 'stealth' (used for T1036.005, T1027.013, T1140, T1070.004); Impair Defenses (T1685 family / defense-impairment) is NOT applicable — this actor was not observed disabling security tooling. DETECTABLE CORE (route to DETECTION): T1190 exposed-service exploitation, T1078.001/T1110 default-cred/brute-force access, and T1491.001 defacement are the strong, log-observable enterprise-facing detection surfaces (external ASM, edge netflow to TCP 20256/20257, PLC auth logs, HMI-screen change). IOCONTROL C2 (T1071 MQTT/8883, T1071.004 DoH, T1573.002 TLS) and the Linux persistence/masquerade/self-delete chain (T1037.004, T1036.005, T1070.004, T1140) lean HUNT/MONITORING because most embedded OT/IoT endpoints lack host telemetry — hunt at the network boundary and on managed Linux gateways. IOC PROVENANCE: only values actually present in fetched sources are included. From Claroty Team82: the IOCONTROL Orpak-fuel sample SHA-256 1b39f9b2b96a6586c4a11ab2fdbff8fdf16ba5a0ac7603149023d73f33b84498, C2 domain tylarion867mino.com (registered 2023-11-23) with C2 subdomain uuokhhfsdlk.tylarion867mino.com, and DoH-resolved C2 IP 159.100.6.69. Additional Claroty artifacts NOT placed in the IOC arrays because they are not standard indicator types / are derived values: victim GUID 855958ce-6483-4953-8c18-3f9625d88c27, and the AES-256-CBC key 22e70a3056aa209e90dc5a354edda2c1c3b88f1e4720dc6a090c4617a919447e (this is the SHA-256 of the GUID used as a hex-string key, NOT a file hash). CISA AA23-335A's original (Dec 2023) IOC set was REMOVED by CISA in the Dec 2024 update as outdated and was not re-fetched, so no CISA host IOCs are listed. No specific CVE is applicable — the Unitronics access was via default/empty passwords and internet exposure, not a numbered vulnerability — so cves is empty rather than fabricated. No verbatim YARA rule appeared in either source; yara_rules left empty (never authored from scratch). Claroty also assessed IOCONTROL could potentially steal payment-card data from fuel systems, but this is an assessed capability rather than an observed procedure, so it was not extracted as a TTP. Attribution to IRGC-CEC is corroborated across the CISA-led joint government advisory and independent Claroty Team82 reporting -> confidence high."
+}

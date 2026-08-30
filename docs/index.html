@@ -217,11 +217,11 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <p class="lede">An open library of <b>deployable Sigma rules</b> and <b>threat-hunt hypotheses</b>, organized around the specific adversaries that operate against the region — every item mapped to MITRE ATT&amp;CK and traceable to public reporting. Each actor pack is produced by a transparent four-stage analyst pipeline anyone can re-run.</p>
 
     <div class="stats" id="stats">
-      <div class="stat"><div class="n tnum" data-to="8">8</div><div class="k">actors · 2 clusters</div></div>
-      <div class="stat"><div class="n tnum" data-to="424">424</div><div class="k">ATT&amp;CK techniques</div></div>
-      <div class="stat hl"><div class="n tnum" data-to="171">171</div><div class="k">Sigma detections</div></div>
-      <div class="stat"><div class="n tnum" data-to="69">69</div><div class="k">hunt packages</div></div>
-      <div class="stat"><div class="n tnum" data-to="279">279</div><div class="k">sourced IOCs</div></div>
+      <div class="stat"><div class="n tnum" data-to="18">18</div><div class="k">actors · 3 clusters</div></div>
+      <div class="stat"><div class="n tnum" data-to="827">827</div><div class="k">ATT&amp;CK techniques</div></div>
+      <div class="stat hl"><div class="n tnum" data-to="338">338</div><div class="k">Sigma detections</div></div>
+      <div class="stat"><div class="n tnum" data-to="129">129</div><div class="k">hunt packages</div></div>
+      <div class="stat"><div class="n tnum" data-to="466">466</div><div class="k">sourced IOCs</div></div>
     </div>
   </div>
 </header>
@@ -255,8 +255,8 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <div class="sec-head">
       <div>
         <div class="sec-num">02 / ACTOR DOSSIERS</div>
-        <h2>Eight actors, two threat clusters</h2>
-        <p>Iran-nexus espionage, a Palestinian-nexus operator, and an Iran-nexus <em>wiper</em>, and a Palestinian-nexus actor that turned destructive — chosen for documented, sourced MENA targeting. More to follow.</p>
+        <h2>Eighteen actors, three threat clusters</h2>
+        <p>Iran-nexus espionage, credential and access brokers, OT/ICS disruption and destructive <em>wipers</em>, IRGC influence operations, plus Palestinian-nexus operators — each chosen for documented, sourced MENA targeting. More to follow.</p>
       </div>
     </div>
     <div class="actors" id="cards"></div>
@@ -409,7 +409,47 @@ var ACTORS=[
  {name:"APT33",id:"G0064",cluster:"iran",clbl:"Iran · aviation/Shamoon",
   targ:"Saudi Arabia (primary), broader Gulf", sect:"Aviation, aerospace, energy, petrochemical",
   ttps:48,sig:26,hunts:6,iocs:8,
-  t:{"resource-development":[0,1],"initial-access":[4,0],"credential-access":[7,4],"execution":[5,0],"persistence":[4,0],"privilege-escalation":[1,0],"defense-evasion":[3,1],"command-and-control":[5,3],"discovery":[2,0],"collection":[1,0],"lateral-movement":[1,0],"exfiltration":[1,0],"impact":[3,2]}}
+  t:{"resource-development":[0,1],"initial-access":[4,0],"credential-access":[7,4],"execution":[5,0],"persistence":[4,0],"privilege-escalation":[1,0],"defense-evasion":[3,1],"command-and-control":[5,3],"discovery":[2,0],"collection":[1,0],"lateral-movement":[1,0],"exfiltration":[1,0],"impact":[3,2]}},
+ {name:"Void Manticore",id:"Storm-1084",cluster:"dest",clbl:"Iran · BiBi wiper",
+  targ:"Israel (and Albania)", sect:"Government, critical infrastructure, enterprise",
+  ttps:21,sig:10,hunts:5,iocs:13,
+  t:{"resource-development":[0,2],"initial-access":[1,1],"execution":[1,0],"persistence":[1,0],"defense-evasion":[1,3],"discovery":[1,1],"lateral-movement":[1,0],"command-and-control":[3,0],"impact":[3,2]}},
+ {name:"HEXANE / Lyceum",id:"G1001",cluster:"iran",clbl:"Iran · telecom/energy",
+  targ:"Israel, Saudi Arabia, Kuwait, UAE, Africa", sect:"Oil & gas, energy, telecommunications, ISPs",
+  ttps:63,sig:22,hunts:8,iocs:0,
+  t:{"reconnaissance":[0,3],"resource-development":[0,7],"initial-access":[3,0],"execution":[5,0],"persistence":[3,0],"defense-evasion":[4,1],"credential-access":[4,0],"discovery":[12,1],"lateral-movement":[2,0],"collection":[2,5],"command-and-control":[6,3],"exfiltration":[2,0]}},
+ {name:"APT39 / Chafer",id:"G0087",cluster:"iran",clbl:"Iran · MOIS surveillance",
+  targ:"Iran (dissidents), Saudi Arabia, UAE, Kuwait, Gulf", sect:"Telecom, travel & tourism, government, academia",
+  ttps:53,sig:26,hunts:6,iocs:0,
+  t:{"resource-development":[0,1],"initial-access":[3,0],"execution":[8,0],"persistence":[6,0],"defense-evasion":[8,0],"credential-access":[4,1],"discovery":[5,1],"lateral-movement":[3,0],"collection":[3,3],"command-and-control":[3,3],"exfiltration":[0,1]}},
+ {name:"CyberAv3ngers",id:"IRGC-CEC",cluster:"dest",clbl:"Iran · IRGC OT/ICS",
+  targ:"Israel, United States", sect:"Water/wastewater, energy, fuel systems, manufacturing (OT/ICS)",
+  ttps:20,sig:10,hunts:5,iocs:4,
+  t:{"resource-development":[0,2],"initial-access":[3,0],"execution":[0,1],"persistence":[0,1],"defense-evasion":[1,3],"credential-access":[1,0],"discovery":[1,0],"command-and-control":[2,1],"impact":[4,0]}},
+ {name:"Moses Staff",id:"Cobalt Sapling",cluster:"dest",clbl:"Iran · hack-and-leak",
+  targ:"Israel, Saudi Arabia", sect:"Critical infrastructure, engineering, finance, government",
+  ttps:28,sig:13,hunts:6,iocs:23,
+  t:{"resource-development":[0,1],"initial-access":[1,0],"execution":[4,0],"persistence":[3,0],"defense-evasion":[1,2],"discovery":[0,3],"lateral-movement":[2,1],"collection":[0,2],"command-and-control":[2,1],"exfiltration":[0,1],"impact":[1,3]}},
+ {name:"Tortoiseshell",id:"G0139",cluster:"iran",clbl:"Iran · IRGC supply-chain",
+  targ:"Saudi Arabia, Israel, UAE, Kuwait, Gulf", sect:"IT / managed service providers, maritime, logistics, defense",
+  ttps:74,sig:28,hunts:7,iocs:6,
+  t:{"reconnaissance":[0,2],"resource-development":[0,9],"initial-access":[4,3],"execution":[6,1],"persistence":[4,0],"privilege-escalation":[1,0],"defense-evasion":[11,0],"credential-access":[4,3],"discovery":[10,1],"lateral-movement":[2,0],"collection":[2,3],"command-and-control":[3,3],"exfiltration":[1,1]}},
+ {name:"UNC1860",id:"UNC1860",cluster:"iran",clbl:"Iran · MOIS access broker",
+  targ:"Israel, Saudi Arabia, UAE, Qatar, Iraq", sect:"Government, telecom, military / defense, IT services",
+  ttps:30,sig:9,hunts:6,iocs:43,
+  t:{"resource-development":[1,1],"initial-access":[1,0],"execution":[1,1],"persistence":[3,0],"privilege-escalation":[0,1],"defense-evasion":[3,7],"discovery":[1,0],"lateral-movement":[1,0],"collection":[0,1],"command-and-control":[0,7],"exfiltration":[0,1]}},
+ {name:"Cotton Sandstorm",id:"G1009",cluster:"iran",clbl:"Iran · IRGC influence",
+  targ:"Israel, Palestinian Territories, UAE, global", sect:"Elections, media, sports/events, IPTV & broadcast",
+  ttps:30,sig:9,hunts:7,iocs:43,
+  t:{"reconnaissance":[2,6],"resource-development":[1,8],"initial-access":[2,0],"execution":[1,0],"defense-evasion":[0,2],"credential-access":[1,1],"discovery":[1,0],"command-and-control":[3,0],"exfiltration":[0,1],"impact":[1,0]}},
+ {name:"Homeland Justice",id:"Storm-0842",cluster:"dest",clbl:"Iran · Albania wiper",
+  targ:"Albania, Israel", sect:"Government, public administration, critical IT services",
+  ttps:34,sig:14,hunts:5,iocs:30,
+  t:{"resource-development":[0,1],"initial-access":[1,1],"execution":[2,0],"persistence":[4,0],"defense-evasion":[4,1],"credential-access":[1,0],"discovery":[2,1],"lateral-movement":[3,0],"collection":[0,2],"command-and-control":[2,0],"exfiltration":[0,1],"impact":[5,3]}},
+ {name:"Pioneer Kitten",id:"Fox Kitten",cluster:"iran",clbl:"Iran · access broker",
+  targ:"UAE, Israel, Azerbaijan, US / global", sect:"Education, finance, healthcare, defense, government",
+  ttps:50,sig:26,hunts:5,iocs:25,
+  t:{"reconnaissance":[1,1],"resource-development":[0,3],"initial-access":[2,0],"execution":[1,0],"persistence":[5,1],"privilege-escalation":[2,0],"defense-evasion":[7,0],"credential-access":[4,1],"discovery":[6,0],"lateral-movement":[5,0],"collection":[3,1],"command-and-control":[5,0],"exfiltration":[1,0],"impact":[0,1]}}
 ];
 
 // global max cell total for bar scaling

@@ -1,0 +1,43 @@
+title: HEXANE Valid Account Abuse - Anomalous / Impossible-Travel Sign-in
+id: 2639d608-60b9-4094-b9f3-d8722ee8dcf1
+status: experimental
+description: |
+    Detects HEXANE / Lyceum abuse of valid accounts obtained via password spraying to gain and
+    maintain access to internet-facing services (T1078). Keys on successful interactive sign-ins that
+    are anomalous for the account - first-seen source country/ASN or a non-browser/automation user
+    agent - which follow the spray campaign. Best operated alongside the password-spray analytic and
+    an impossible-travel model; a successful sign-in from a spray-source IP is a strong compromise
+    signal. Requires Entra ID / Azure AD sign-in logs.
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1078
+    - mena-detection-library.hexane
+logsource:
+    product: azure
+    service: signinlogs
+detection:
+    selection_success:
+        ResultType: 0
+    selection_anomaly:
+        - UserAgent|contains:
+              - 'python'
+              - 'curl'
+              - 'go-http-client'
+              - 'ruby'
+              - 'powershell'
+        - RiskState: 'atRisk'
+        - RiskLevelDuringSignIn:
+              - 'high'
+              - 'medium'
+    condition: selection_success and selection_anomaly
+falsepositives:
+    - Legitimate scripted/API sign-ins from approved automation - baseline expected service
+      principals and source IPs
+    - Traveling users triggering risk scoring - correlate with the password-spray analytic before
+      escalating
+level: high

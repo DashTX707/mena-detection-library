@@ -1,0 +1,33 @@
+title: Void Manticore Wiper Signed by Unexpected Publisher (Attest Inspection Limited)
+id: 6a14aff6-2123-4a5b-b2d2-c52b8c745216
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) abuse of code-signing trust controls: the Albania partition
+    wiper internally named LowEraser / No-Justice Wiper was digitally signed by 'Attest Inspection
+    Limited' and carried that company's website logo as its file icon to appear legitimate (T1553.002
+    Subvert Trust Controls: Code Signing). Keys on process execution where the signer/publisher is the
+    known-abused certificate identity, or where a binary executes from a user-writable staging path with
+    that signer. Broadly, operate as a signature-issuer allow-list analytic: alert on execution of a
+    signed binary whose publisher is unexpected for the environment. Requires process-creation telemetry
+    enriched with signature/publisher fields (Sysmon EID 1 with signature enrichment, or EDR).
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+    - https://socradar.io/blog/dark-web-profile-storm-842-void-manticore/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1553.002
+    - mena-detection-library.void-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_signer:
+        Signature|contains: 'Attest Inspection'
+    condition: selection_signer
+falsepositives:
+    - Genuine software legitimately signed by 'Attest Inspection Limited' present in the environment -
+      allowlist the specific known-good product/hash; otherwise treat as suspicious
+    - Signature-enrichment gaps producing partial issuer strings - validate against the certificate chain
+level: high

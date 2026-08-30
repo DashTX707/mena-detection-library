@@ -1,0 +1,37 @@
+title: Cotton Sandstorm Masscan IP-Block Sweep and RTSP TCP/554 Camera Enumeration
+id: 93f99fa4-21ef-484e-b180-48eed39c8e6f
+status: experimental
+description: |
+    Detects the mass IP-block port scanning that opens Cotton Sandstorm / Emennet Pasargad (ASA)
+    reconnaissance, in particular the Masscan-driven enumeration of internet-facing hosts running
+    Real Time Streaming Protocol on TCP/554 across Israel, Gaza and Iran to locate accessible IP
+    cameras for surveillance-content harvesting (T1595.001). Keys on a high fan-out of inbound
+    connection attempts from a single external source to the RTSP service port observed at the
+    perimeter firewall / netflow layer. Source IPs are largely shared commercial-VPN exit nodes and
+    are not exclusive to the actor, so correlate the source against the advisory IP list and treat as
+    a reconnaissance-stage, retrospective-hunt-grade signal rather than a blind block. Requires
+    perimeter firewall or netflow logging; deploy behind a per-source aggregation of > 100 distinct
+    destination hosts on TCP/554 over a 5-minute window (via the SIEM threshold/correlation layer) to
+    isolate a Masscan sweep from ordinary inbound RTSP traffic.
+references:
+    - https://www.ic3.gov/CSA/2024/241030.pdf
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-290a
+    - https://blogs.microsoft.com/on-the-issues/2024/10/23/as-the-u-s-election-nears-russia-iran-and-china-step-up-influence-efforts/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.reconnaissance
+    - attack.t1595.001
+    - mena-detection-library.cotton-sandstorm
+logsource:
+    category: firewall
+detection:
+    selection_rtsp:
+        dst_port: 554
+        action: 'allowed'
+    condition: selection_rtsp
+falsepositives:
+    - Authorized internet-wide scanning / attack-surface-management vendors (Shodan, Censys, internal
+      security scanners) - allowlist their known source ranges
+    - Legitimate streaming/CDN infrastructure with many RTSP endpoints behind one client NAT
+level: medium

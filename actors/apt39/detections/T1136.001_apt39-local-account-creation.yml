@@ -1,0 +1,34 @@
+title: APT39 Local Account Creation for Persistence
+id: 2b73aef3-8b47-479f-b062-ab86d67e83b9
+status: experimental
+description: |
+    Detects APT39 / Chafer creation of local accounts to maintain persistent access on compromised
+    systems. Keys on net.exe / net1.exe user-add commands and optional group additions
+    (Administrators / Remote Desktop Users). APT39 creates local accounts to preserve access;
+    account creation is logged (Event ID 4720) and is high-fidelity when not tied to sanctioned IT
+    provisioning. Correlate account creation with immediate privileged-group membership changes.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1136.001
+    - mena-detection-library.apt39
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains|all:
+            - ' user '
+            - ' /add'
+    condition: selection
+falsepositives:
+    - Legitimate IT provisioning and helpdesk scripts that create local accounts - allowlist known
+      provisioning hosts, service accounts, and naming conventions
+level: high

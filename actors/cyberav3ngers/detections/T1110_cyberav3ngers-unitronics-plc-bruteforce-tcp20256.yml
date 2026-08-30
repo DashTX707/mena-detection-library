@@ -1,0 +1,37 @@
+title: CyberAv3ngers Brute-Force Login Attempts Against Unitronics PLC on TCP 20256
+id: 500d2a6d-180d-4062-a0fb-43a04cbf751b
+status: experimental
+description: |
+    Detects repeated / sustained connection attempts from a single external source to a Unitronics PLC
+    on TCP 20256, the pattern CISA maps to Brute Force (T1110) for CyberAv3ngers authenticating to
+    internet-connected Unitronics devices with default or guessed credentials. Keys on a high count of
+    denied or repeated inbound connections from one source IP to the PLC programming port within a short
+    window - a fronting firewall / IDS observes the repeated login attempts even though the PLC itself
+    lacks auth logging. CISA explicitly recommends monitoring for this brute-force pattern. Deploy as a
+    per-source threshold analytic (correlate connection count per src_ip over ~5-10 minutes); the raw
+    selection here isolates the candidate flows for that aggregation.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1110
+    - mena-detection-library.cyberav3ngers
+logsource:
+    category: firewall
+detection:
+    selection:
+        dst_port:
+            - 20256
+            - 20257
+    filter_internal_src:
+        src_ip|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: selection and not filter_internal_src
+falsepositives:
+    - Aggressive but benign internet background scanning of 20256 - still worth review as an exposure finding
+    - A misconfigured legitimate engineering client retrying against a device that changed its port - allowlist the known source
+level: high

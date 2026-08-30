@@ -1,0 +1,39 @@
+title: Pioneer Kitten SSH and Plink Pivoting
+id: 647e3bdf-c604-40ab-9b1d-78e0aa77d24e
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten lateral movement and pivoting over SSH (T1021.004 Remote
+    Services: SSH), including the SSH-tunneling utility Plink. The actor uses SSH clients and Plink to
+    access and pivot between compromised systems. Keys on process execution of ssh.exe and plink.exe,
+    with attention to Plink port-forwarding flags (-R / -L / -D / -N) that establish tunnels. Outbound
+    SSH from unusual internal hosts (workstations/servers that do not normally originate SSH) is the
+    actor pattern; pair with network telemetry for outbound tcp/22 from atypical sources.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.004
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_plink:
+        Image|endswith: '\plink.exe'
+    selection_plink_orig:
+        OriginalFileName: 'Plink'
+    selection_ssh_tunnel:
+        Image|endswith: '\ssh.exe'
+        CommandLine|contains:
+            - ' -R '
+            - ' -L '
+            - ' -D '
+            - ' -N '
+    condition: 1 of selection_*
+falsepositives:
+    - Administrators and developers using SSH/Plink legitimately - baseline expected source hosts and
+      accounts; the actor pattern is SSH/Plink tunneling from hosts that never normally use it
+level: medium

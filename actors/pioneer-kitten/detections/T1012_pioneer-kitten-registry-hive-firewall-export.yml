@@ -1,0 +1,45 @@
+title: Pioneer Kitten Registry Hive and Firewall Configuration Export
+id: 89043824-12dd-42a8-9650-ddce2099067d
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten discovery activity in which the actor exports system registry
+    hives and network firewall configurations on compromised servers (T1012 Query Registry). Keys on
+    reg.exe save/export of the SAM, SYSTEM and SECURITY hives and on netsh advfirewall configuration
+    dumps. Registry-hive export is also a credential-access precursor (SAM/SYSTEM enable offline
+    secret extraction). Correlate with the account, host and whether an export file is subsequently
+    staged or exfiltrated.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1012
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_reg_verb:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains:
+            - ' save '
+            - ' export '
+    selection_reg_hive:
+        CommandLine|contains:
+            - 'HKLM\SAM'
+            - 'HKLM\SYSTEM'
+            - 'HKLM\SECURITY'
+            - 'hklm\sam'
+            - 'hklm\system'
+    selection_netsh:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains|all:
+            - 'advfirewall'
+            - 'show'
+    condition: (selection_reg_verb and selection_reg_hive) or selection_netsh
+falsepositives:
+    - Legitimate backup or auditing scripts exporting hives / firewall config - restrict to authorized
+      admin hosts and correlate with change management
+level: medium

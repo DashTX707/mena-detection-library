@@ -1,0 +1,437 @@
+{
+  "report_title": "UNC1860 (Iran/MOIS Initial-Access Broker — 'Temple of Oats') Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Primary: Mandiant / Google Cloud Threat Intelligence, 'UNC1860 and the Temple of Oats: Iran's Hidden Hand in Middle Eastern Networks' (2024-09-19). NOTE: the canonical Google Cloud blog URL (https://cloud.google.com/blog/topics/threat-intelligence/unc1860-iran-middle-eastern-networks) currently returns HTTP 404 (Mandiant/GCTI blog was reorganized); its content was extracted via corroborating faithful re-reports of the same Mandiant research: The Hacker News (https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html) and Security Affairs (https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html). IOC appendix (hashes + CVE) from Rewterz threat advisory reproducing the Mandiant IOC set (https://rewterz.com/threat-advisory/middle-east-network-intrusions-facilitated-by-iranian-apt-unc1860-active-iocs). Technique IDs verified against this environment's bundled ATT&CK dataset. UNC1860 has NO official MITRE ATT&CK Group ID.",
+  "publication_date": "2024-09-19",
+  "actor": {
+    "name": "UNC1860",
+    "mitre_id": "",
+    "mitre_canonical_name": "n/a — no official MITRE ATT&CK Group ID exists for UNC1860",
+    "aliases": [
+      "UNC1860"
+    ],
+    "related_clusters": [
+      "Iran Ministry of Intelligence and Security (MOIS)-affiliated cluster",
+      "Storm-0861 / Scarred Manticore (Check Point) — UNC1860 assessed to provide initial/persistent access supporting operations aligned with this cluster",
+      "Shrouded Snooper / ShroudedSnooper — targeting overlap in Middle Eastern telecoms",
+      "APT34 / OilRig / Hazel Sandstorm — bidirectional victim overlap: organizations compromised by APT34 in 2019-2020 were previously or subsequently accessed by UNC1860, indicating a shared access-brokering role",
+      "Destructive/wiper operations enabled downstream: ROADSWEEP ransomware + CHIMNEYSWEEP + ZEROCLEAR/Cl Wiper against Albania (2022), and No-Justice / BiBi (BABYWIPER) wipers against Israel and Albania"
+    ],
+    "attribution": "Iran-nexus actor assessed with moderate confidence to be affiliated with Iran's Ministry of Intelligence and Security (MOIS), functioning as a specialized initial-access broker / persistent-access enabler rather than an end-effects actor. UNC1860 opportunistically compromises high-value government and telecommunications networks across the Middle East, establishes durable passive footholds, and hands reliable remote access to other Iranian actors (Storm-0861/Scarred Manticore, and destructive/wiper operators). Attribution rests on victimology aligned with MOIS interests, a large purpose-built library of passive GUI-operated implants and specialized tooling, and repeated victim overlap with APT34/OilRig. Mandiant did not publicly confirm UNC1860's direct participation in the named destructive attacks; the access-provider linkage is an assessed judgement.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Israel",
+      "Saudi Arabia",
+      "United Arab Emirates",
+      "Qatar",
+      "Iraq",
+      "Gulf states (broadly)"
+    ],
+    "targeted_regions_global": [],
+    "targeted_sectors": [
+      "Government",
+      "Telecommunications",
+      "Military / defense",
+      "IT services / internet-facing server operators"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Persistent-access brokering into Middle Eastern government and telecom networks ('Temple of Oats')",
+        "date": "Activity observed 2020-2024 (reported 2024-09-19)",
+        "summary": "UNC1860 opportunistically exploits internet-facing servers, deploys droppers (SASHEYAWAY) and webshells (STAYSHANTE, BASEWALK), and installs a library of passive, GUI-operated implants — chiefly TEMPLEDOOR (operated via the .NET TEMPLEPLAY controller), plus FACEFACE, SPARKLOAD, OATBOAT and the IOCTL-driven passive implants TOFULOAD/TOFUDRV. Implants listen for inbound operator traffic rather than beaconing out, evading egress-based network detection. Kernel-mode tooling (TOFUDRV, WINTAPIX-overlap) and the repurposed Iranian 'Sheed' antivirus filter driver (TEMPLEDROP) provide privileged code execution and anti-tamper file protection; TEMPLELOCK terminates/restarts the Windows Event Log service for anti-forensics; TUNNELBOI manages RDP and remote-host access for lateral movement and access hand-off.",
+        "source_url": "https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"
+      },
+      {
+        "name": "VIROGREEN SharePoint exploitation framework (CVE-2019-0604)",
+        "date": "2019-2020 and later (reported 2024-09-19)",
+        "summary": "VIROGREEN is a custom post-exploitation framework used to exploit vulnerable Microsoft SharePoint servers via CVE-2019-0604. It bundles vulnerability scanning, control of the STAYSHANTE webshell and BASEWALK backdoor, and orchestration of follow-on implant deployment — the initial-access mechanism that seeds UNC1860's passive footholds on internet-facing servers.",
+        "source_url": "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"
+      }
+    ]
+  },
+  "threat_actors": [
+    "UNC1860"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "Saudi Arabia",
+    "United Arab Emirates",
+    "Qatar",
+    "Iraq",
+    "Gulf states"
+  ],
+  "targeted_sectors": [
+    "Government",
+    "Telecommunications",
+    "Military",
+    "IT services"
+  ],
+  "malware": [
+    "TEMPLEDOOR (primary passive main-stage backdoor; controlled via TEMPLEPLAY)",
+    "TEMPLEPLAY (.NET GUI controller for TEMPLEDOOR — cmd.exe command execution, file upload/download, HTTP proxy)",
+    "TEMPLELOCK (.NET defense-evasion utility — terminates and restarts the Windows Event Log service via undocumented IOCTLs)",
+    "TEMPLEDROP (repurposed Iranian 'Sheed' antivirus Windows filesystem filter driver; protects deployed files from modification/deletion)",
+    "OATBOAT (loader that executes shellcode payloads)",
+    "TOFULOAD (passive implant communicating via undocumented HTTP.sys IOCTL commands)",
+    "TOFUDRV (malicious Windows kernel driver; functionality overlaps WINTAPIX)",
+    "WINTAPIX (kernel-mode driver associated with the same tooling lineage)",
+    "VIROGREEN (framework exploiting CVE-2019-0604 SharePoint; controls STAYSHANTE and BASEWALK; includes vuln scanning)",
+    "STAYSHANTE (passive webshell disguised as legitimate Windows server files; deployed via VIROGREEN)",
+    "BASEWALK (backdoor controlled within the VIROGREEN framework)",
+    "SASHEYAWAY (dropper that delivers/executes passive backdoors with low detection)",
+    "FACEFACE (passive implant delivered via dropper)",
+    "SPARKLOAD (passive implant/loader delivered via dropper)",
+    "OBFUSLAY (payload obfuscation utility)",
+    "CRYPTOSLAY (payload encryption utility)",
+    "TUNNELBOI (network controller managing RDP connections and remote-host access)"
+  ],
+  "tooling_observed": [
+    "Undocumented HTTP.sys I/O control (IOCTL) commands driven via DeviceIoControl to receive inbound operator traffic below the IIS/HTTP-API layer",
+    "Passive listeners on compromised internet-facing IIS/HTTP servers (no outbound C2 beaconing)",
+    "Repurposed signed Iranian 'Sheed AV' filesystem filter driver (TEMPLEDROP) for anti-tamper file protection",
+    "Kernel-mode drivers (TOFUDRV / WINTAPIX-overlap) for privileged code execution",
+    "HTTPS-encrypted C2 with custom encryption/obfuscation (OBFUSLAY, CRYPTOSLAY)",
+    "CVE-2019-0604 SharePoint exploitation via the VIROGREEN framework",
+    ".NET GUI operator tooling (TEMPLEPLAY controller)",
+    "RDP tunnelling / remote-host management (TUNNELBOI)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "UNC1860 maintains an unusually large, purpose-built library of custom passive implants, loaders, controllers and drivers — TEMPLEDOOR, TEMPLEPLAY, TEMPLELOCK, TEMPLEDROP, OATBOAT, TOFULOAD, TOFUDRV, VIROGREEN, STAYSHANTE, BASEWALK, SASHEYAWAY, FACEFACE, SPARKLOAD, OBFUSLAY, CRYPTOSLAY and TUNNELBOI — reflecting deep, in-house development including kernel-component reverse engineering.",
+      "observed_tooling": ["TEMPLEDOOR", "TEMPLEPLAY", "TOFUDRV", "VIROGREEN"],
+      "detection_feasibility": "low — capability development is off-victim; the shared tooling family is an attribution/triage hunting signal, not a host detection",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "TEMPLEDROP repurposes a legitimate signed Iranian antivirus product's Windows filesystem filter driver ('Sheed AV') as its own defensive tooling — obtaining and weaponizing a trusted third-party driver to protect deployed malware files from modification or removal.",
+      "observed_tooling": ["TEMPLEDROP", "repurposed Sheed AV filter driver"],
+      "detection_feasibility": "medium — load of a known-good AV filter driver on a host that does not run that AV product, or driver hash/signature-context mismatch, is a discrete hunt signal (Sysmon EID 6)",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "UNC1860 opportunistically exploits vulnerable internet-facing servers to gain initial access. The VIROGREEN framework specifically exploits Microsoft SharePoint via CVE-2019-0604, then deploys the STAYSHANTE webshell and BASEWALK backdoor to establish a foothold.",
+      "observed_tooling": ["VIROGREEN", "CVE-2019-0604", "STAYSHANTE", "BASEWALK"],
+      "detection_feasibility": "medium — SharePoint/IIS exploitation is detectable via WAF/IPS signatures for CVE-2019-0604 and anomalous web-worker child processes (w3wp.exe spawning cmd.exe), though n-day exploitation can precede the first host artifact",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html", "https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "STAYSHANTE (disguised as legitimate Windows server files) and BASEWALK are deployed on compromised internet-facing servers as webshells/backdoors under the VIROGREEN framework, providing persistent operator access and staging of follow-on passive implants.",
+      "observed_tooling": ["STAYSHANTE", "BASEWALK", "VIROGREEN"],
+      "detection_feasibility": "medium — new/modified webshell files in IIS web-content directories and web-worker processes spawning shells are detectable via file-integrity monitoring and process-lineage analytics, though masquerade-as-server-file naming defeats simple name rules",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1505.004",
+      "technique_name": "Server Software Component: IIS Components",
+      "tactic": "persistence",
+      "procedure_description": "UNC1860's passive main-stage implants (TEMPLEDOOR, TOFULOAD) install as HTTP request handlers on compromised internet-facing IIS/HTTP servers, listening for inbound operator traffic on the server's existing web bindings rather than opening new outbound channels.",
+      "observed_tooling": ["TEMPLEDOOR", "TOFULOAD"],
+      "detection_feasibility": "medium — unexpected modules/handlers or unmanaged HTTP.sys URL reservations on an IIS server are detectable via IIS module auditing and URL-ACL review, though the implants deliberately bind below the IIS/HTTP-API layer",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "UNC1860's drivers and implants are installed as system services/drivers to survive reboot on compromised servers, including registration of the kernel drivers TOFUDRV / TEMPLEDROP (repurposed AV filter driver) as loaded system components.",
+      "observed_tooling": ["TOFUDRV", "TEMPLEDROP"],
+      "detection_feasibility": "medium — new service/driver registration and service-config-change events (Event ID 7045/7040) on a server are discrete signals, though driver installs blend with legitimate admin activity",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1205",
+      "technique_name": "Traffic Signaling",
+      "tactic": "command-and-control",
+      "procedure_description": "UNC1860's signature tradecraft: passive implants (TEMPLEDOOR, TOFULOAD, TOFUDRV, FACEFACE, SPARKLOAD) do NOT initiate outbound connections; they sit dormant and act on inbound operator commands arriving from volatile/varied source infrastructure, intercepted via undocumented HTTP.sys IOCTLs before the request reaches the normal application/logging layer. This trigger-on-inbound-traffic design defeats egress-based network detection.",
+      "observed_tooling": ["TEMPLEDOOR", "TOFULOAD", "TOFUDRV", "undocumented HTTP.sys IOCTLs"],
+      "detection_feasibility": "low — the defining hunt case: no outbound beacon exists to catch, and inbound triggers ride legitimate web ports; hunt via HTTP.sys URL-reservation/UrlGroup review, unexpected IOCTL-consuming drivers, and memory scanning of web-server processes",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "The passive implants communicate over HTTP(S) on the compromised server's existing web listener, receiving operator commands and returning results in HTTP responses. TEMPLEDOOR/TOFULOAD interact directly with the HTTP.sys kernel stack via undocumented IOCTLs to grab requests below IIS, so the C2 blends into normal web traffic and bypasses IIS request logging.",
+      "observed_tooling": ["TEMPLEDOOR", "TOFULOAD", "TEMPLEPLAY"],
+      "detection_feasibility": "low — C2 is inbound-only, TLS-wrapped, and rides ports 80/443 with no beacon; hunt via anomalous request patterns to server endpoints and HTTP.sys-level listener enumeration rather than signature detection",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "TOFULOAD and the TOFUDRV kernel driver receive commands via undocumented I/O control (IOCTL) commands issued to a driver device rather than a standard application protocol, providing a covert command path that user-mode network monitoring does not observe.",
+      "observed_tooling": ["TOFULOAD", "TOFUDRV", "undocumented IOCTLs"],
+      "detection_feasibility": "low — driver-level IOCTL command channels produce essentially no standard network telemetry; only reachable via kernel/driver behavioral analysis and memory forensics",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "The TEMPLEPLAY controller supports establishing HTTP proxy connections through TEMPLEDOOR to bypass network boundaries, letting operators route traffic to otherwise unreachable internal hosts via the compromised server.",
+      "observed_tooling": ["TEMPLEPLAY", "TEMPLEDOOR"],
+      "detection_feasibility": "low — proxying rides the compromised server's own web channel; hunt via anomalous internal connections sourced from a web/edge server rather than a discrete signature",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "TUNNELBOI is a network controller that manages RDP connections and remote-host access, tunnelling remote-access traffic through the compromised environment to reach internal hosts and support access hand-off to downstream actors.",
+      "observed_tooling": ["TUNNELBOI"],
+      "detection_feasibility": "low — tunnelled remote-access traffic is wrapped inside the compromised host's normal channels; hunt via traffic-timing/volume anomalies and unexpected internal RDP paths",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "TUNNELBOI manages RDP connections into and across the victim environment, enabling lateral movement to additional hosts and providing reliable interactive remote access that UNC1860 hands off to other Iranian operators.",
+      "observed_tooling": ["TUNNELBOI", "RDP"],
+      "detection_feasibility": "medium — anomalous internal RDP (Event ID 4624 type 10 / 4778) from a server or newly-active source, and RDP sessions correlated to a compromised web host, are detectable via authentication and session telemetry",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "In addition to HTTPS transport, UNC1860 protects payloads and C2 content with custom encryption via the CRYPTOSLAY utility (paired with OBFUSLAY obfuscation), adding a symmetric-crypto layer inside the web channel to defeat content inspection.",
+      "observed_tooling": ["CRYPTOSLAY", "OBFUSLAY"],
+      "detection_feasibility": "low — the custom crypto layer sits inside otherwise-normal HTTPS; hunt via YARA on the shared encryption constants in samples, not log detection",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "procedure_description": "The OBFUSLAY utility obfuscates UNC1860 payloads, and passive implants delivered via SASHEYAWAY are packed/obfuscated to keep detection rates low against static AV signatures.",
+      "observed_tooling": ["OBFUSLAY", "SASHEYAWAY"],
+      "detection_feasibility": "low — packing/obfuscation defeats static AV signatures; hunt via obfuscator-artifact YARA and in-memory behavioral analysis",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "CRYPTOSLAY encrypts UNC1860 payloads at rest so that on-disk artifacts (loader stages, implant payloads carried by SASHEYAWAY/OATBOAT) are stored encrypted/encoded and only decrypted in memory at runtime.",
+      "observed_tooling": ["CRYPTOSLAY", "OATBOAT"],
+      "detection_feasibility": "low — encoding/encryption at rest defeats static inspection; hunt via entropy analysis and decoded in-memory content rather than log detection",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "At runtime UNC1860 loaders reverse their own encoding — OATBOAT and the SASHEYAWAY dropper decode/decrypt embedded shellcode payloads (CRYPTOSLAY/OBFUSLAY-protected) before executing them in memory.",
+      "observed_tooling": ["OATBOAT", "SASHEYAWAY", "CRYPTOSLAY"],
+      "detection_feasibility": "medium — runtime decode-then-execute is partly observable via AMSI/.NET in-memory content, though the memory-resident server-side design leaves little host telemetry",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "tactic": "stealth",
+      "procedure_description": "OATBOAT is a loader that executes shellcode payloads directly in memory, and SASHEYAWAY enables execution of passive backdoors (FACEFACE, SPARKLOAD) with low detection by loading them reflectively rather than dropping executables to disk.",
+      "observed_tooling": ["OATBOAT", "SASHEYAWAY", "FACEFACE", "SPARKLOAD"],
+      "detection_feasibility": "low — reflective/in-memory loading avoids disk artifacts and masks execution within legitimate server processes; hunt via in-memory scanning and CLR/shellcode-load anomalies",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "procedure_description": "OATBOAT-delivered shellcode and the kernel-mode drivers (TOFUDRV / WINTAPIX-overlap) inject and execute payloads within privileged host processes, running the passive backdoor logic inside legitimate processes rather than as standalone executables.",
+      "observed_tooling": ["OATBOAT", "TOFUDRV", "WINTAPIX"],
+      "detection_feasibility": "low — kernel-assisted injection into privileged processes is largely invisible to user-mode EDR; hunt via kernel-callback/driver-behavior telemetry and memory forensics",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html", "https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1014",
+      "technique_name": "Rootkit",
+      "tactic": "stealth",
+      "procedure_description": "UNC1860 operates from kernel mode using malicious Windows drivers — TOFUDRV (overlapping the WINTAPIX driver family) — and the repurposed Sheed AV filter driver (TEMPLEDROP), demonstrating deep kernel-component reverse-engineering knowledge and providing stealthy, high-privilege execution and file-hiding/anti-tamper.",
+      "observed_tooling": ["TOFUDRV", "WINTAPIX", "TEMPLEDROP"],
+      "detection_feasibility": "medium — malicious driver loads are detectable via kernel-module-load telemetry (Sysmon EID 6), Microsoft vulnerable/blocked-driver policy, and signature/hash review, though a loaded kernel rootkit can then subvert host visibility",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1068",
+      "technique_name": "Exploitation for Privilege Escalation",
+      "tactic": "privilege-escalation",
+      "procedure_description": "UNC1860 leverages Windows OS and kernel-component exploitation, loading malicious/repurposed drivers (TOFUDRV, TEMPLEDROP) to obtain kernel-mode, local-system-level execution on compromised servers — reflecting deep reverse-engineering of Windows kernel internals.",
+      "observed_tooling": ["TOFUDRV", "TEMPLEDROP", "kernel driver abuse"],
+      "detection_feasibility": "low — kernel-level privilege escalation via signed/repurposed drivers is difficult to observe from user mode; hunt via driver-load provenance and kernel behavioral analysis",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1211",
+      "technique_name": "Exploitation for Defense Evasion",
+      "tactic": "stealth",
+      "procedure_description": "TEMPLEDROP repurposes a legitimate signed Iranian AV filesystem filter driver to run in kernel mode and protect UNC1860's deployed files from modification or deletion — abusing a trusted driver to shield malware from AV/EDR and analyst remediation.",
+      "observed_tooling": ["TEMPLEDROP", "Sheed AV filter driver"],
+      "detection_feasibility": "low — driver-enforced file protection operates in kernel and resists user-mode inspection; hunt via presence of the AV filter driver on non-AV hosts and files that resist deletion/modification",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html", "https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "STAYSHANTE is disguised as legitimate Windows server files, and TEMPLEDROP masquerades as / repurposes a legitimate signed antivirus driver — blending UNC1860 artifacts into expected system components by name and location.",
+      "observed_tooling": ["STAYSHANTE", "TEMPLEDROP"],
+      "detection_feasibility": "low — name/location masquerading defeats name-based allow-lists; hunt via signer/hash validation and original-filename metadata mismatch",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1685.001",
+      "technique_name": "Impair Defenses: Disable or Modify Windows Event Log",
+      "tactic": "defense-impairment",
+      "procedure_description": "TEMPLELOCK is a .NET defense-evasion utility that terminates and later restarts the Windows Event Log service (via undocumented IOCTL commands), suppressing event logging while UNC1860 operates and then resuming it to reduce forensic traces.",
+      "observed_tooling": ["TEMPLELOCK"],
+      "detection_feasibility": "medium — stop/kill of the EventLog service and gaps in event-log continuity are detectable via service-state monitoring (Event ID 7035/7036, 1100) and log-continuity analytics, though the technique is quiet by design",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Impair Defenses",
+      "tactic": "defense-impairment",
+      "procedure_description": "Beyond event-log tampering, UNC1860's tooling as a whole degrades host defenses: TEMPLEDROP uses a kernel driver to protect malware files from AV/EDR removal, and passive-implant design plus custom crypto/obfuscation are engineered to keep detection rates low — a defense-impairment posture spanning the toolset.",
+      "observed_tooling": ["TEMPLEDROP", "TEMPLELOCK", "SASHEYAWAY"],
+      "detection_feasibility": "low — impairment is achieved via kernel-mode file protection and passive design rather than noisy tool-killing; hunt via driver provenance and AV/EDR tamper-attempt telemetry",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactic": "execution",
+      "procedure_description": "Multiple UNC1860 components (TEMPLELOCK, TOFULOAD, TOFUDRV) drive functionality through undocumented I/O control (IOCTL) commands issued via native Windows APIs (e.g. DeviceIoControl against HTTP.sys and driver devices), executing capability directly through the OS/kernel interface rather than higher-level tooling.",
+      "observed_tooling": ["TEMPLELOCK", "TOFULOAD", "undocumented IOCTLs"],
+      "detection_feasibility": "low — native-API/IOCTL calls are ubiquitous and hard to distinguish; only reachable via targeted driver/behavioral instrumentation",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "The TEMPLEPLAY controller instructs TEMPLEDOOR to execute operator commands via cmd.exe on the compromised host, giving GUI-driven interactive command execution on servers.",
+      "observed_tooling": ["TEMPLEPLAY", "TEMPLEDOOR", "cmd.exe"],
+      "detection_feasibility": "medium — a server web/host process spawning cmd.exe is detectable via process-lineage analytics where interactive shells are abnormal, though cmd usage is ubiquitous",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html", "https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The VIROGREEN framework includes vulnerability-scanning functionality used to identify exploitable (SharePoint/CVE-2019-0604) services on reachable hosts prior to exploitation and implant deployment.",
+      "observed_tooling": ["VIROGREEN"],
+      "detection_feasibility": "medium — internal scanning bursts (many connections/short-lived sessions from one source) are detectable via network flow analytics, though scanning can be low-and-slow",
+      "sources": ["https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The TEMPLEPLAY controller supports uploading and downloading files through TEMPLEDOOR, allowing UNC1860 to stage additional tooling and payloads onto compromised servers over the passive C2 channel.",
+      "observed_tooling": ["TEMPLEPLAY", "TEMPLEDOOR"],
+      "detection_feasibility": "low — file transfers arrive inbound to a passive listener and are often loaded straight into memory; hunt via correlating listener activity with new file writes/assembly loads",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Via TEMPLEPLAY's file-download capability, UNC1860 collects files of interest from the local filesystem of compromised servers for retrieval by operators.",
+      "observed_tooling": ["TEMPLEPLAY", "TEMPLEDOOR"],
+      "detection_feasibility": "low — file reads by a server process are routine; collection blends with the passive C2 and produces little discrete telemetry",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "TEMPLEPLAY retrieves collected files from TEMPLEDOOR back to operators over the same inbound HTTP(S) passive C2 channel, exfiltrating data through the implant's response traffic.",
+      "observed_tooling": ["TEMPLEPLAY", "TEMPLEDOOR"],
+      "detection_feasibility": "low — exfiltration rides the passive-listener response channel and blends with normal web responses; the inbound-only design limits egress visibility",
+      "sources": ["https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html"]
+    }
+  ],
+  "detection_signals": [
+    "Unexpected HTTP.sys URL reservations / registered UrlGroups on an internet-facing server (review netsh http show urlacl and HTTP.sys registrations) not tied to a legitimate application — TEMPLEDOOR/TOFULOAD passive listeners binding below IIS",
+    "A driver consuming undocumented I/O control (IOCTL) commands, or unusual DeviceIoControl activity against HTTP.sys / a custom driver device — TOFULOAD/TOFUDRV/TEMPLELOCK inbound command path",
+    "Kernel driver load (Sysmon EID 6) of an unknown/unsigned driver, or of a legitimate Iranian 'Sheed' antivirus filesystem filter driver on a host that does not run that AV product — TOFUDRV / WINTAPIX-overlap / TEMPLEDROP",
+    "Files on a compromised server that resist modification/deletion (kernel filter-driver protection) — TEMPLEDROP anti-tamper",
+    "Windows Event Log service being terminated and later restarted, or gaps in event-log continuity on a server — TEMPLELOCK",
+    "New/modified webshell files (disguised as legitimate Windows server files) in IIS web-content directories, and w3wp.exe spawning cmd.exe — STAYSHANTE/BASEWALK via VIROGREEN",
+    "Exploitation attempts against internet-facing SharePoint matching CVE-2019-0604, followed by webshell deployment — VIROGREEN initial access",
+    "A server process establishing an HTTP proxy or tunnelling internal RDP outward to internal hosts — TEMPLEPLAY proxy / TUNNELBOI RDP tunnelling",
+    "Anomalous internal RDP sessions (Event ID 4624 type 10 / 4778) sourced from a compromised web/edge server — TUNNELBOI lateral movement / access hand-off",
+    "Passive .NET/PE implant loaded into a web-server process with no corresponding outbound C2 connection (inbound-only) — TEMPLEDOOR/FACEFACE/SPARKLOAD hunt signal",
+    "Victim/host overlap with prior APT34/OilRig compromise — corroborating UNC1860 access-brokering activity"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [],
+    "emails": [],
+    "hashes": [
+      "1176381da7dea356f3377a59a6f0e799",
+      "41f4732ed369f2224a422752860b0bc5",
+      "4029bc4a06638bb9ac4b8528523b72f6",
+      "126bc1c30fba27f8bf67dce4892b1e8c",
+      "0c9ff0db00f04fd4c6a9160bffd85a1d",
+      "a7693e399602eb79db537c5022dd1e01",
+      "d9719f6738dbfaa21be7f184512fe074",
+      "17b27e6aa0ab6501f11bb4d2e0f829ff",
+      "4dd6250eb2d368f500949952eb013964",
+      "69fd67c115349abb4a313230a1692642",
+      "7f5f5f290910d256e6b012f898c88bf3",
+      "c90ec587e3333dabb647ebc182673460",
+      "efe8043e1b4214640c5f7b5ddf737653",
+      "a90236e4962620949b720f647a91f101",
+      "32a1651bb810bbe58df73bc2d2c2fa702ca7abd0",
+      "bf674e6834eeb76cad3ab9c6b7c77f417d417b7f",
+      "fa01d9bd5c2d96e31fdb26155c935e51c0a8245f",
+      "7820e56fbcde06ff766239e58c53610151962def",
+      "a4044e90be800adab547a238f8639db3cf92ebdc",
+      "8bbdb9f51a2ecc6d22cb6912da81d7eae47ee4dc",
+      "2fd571c0e0f9bcc21f323f71dd0d73a499f38df6",
+      "ed6f8317c4a2e6b99f6dc8d80d6dd17078854e9a",
+      "6802e2d2d4e6ee38aa513dafd6840e864310513b",
+      "e5551c768ba25cf52044bcf4367fed1f2064f474",
+      "c89b9ae0f278f3ff6331faa9162a94c27645cf0f",
+      "08d279ddb03dbf30c07adf06727d79816550d08c",
+      "5bf6c62ae190f2826bcd0af31e1a1fc86ae21a42",
+      "7f7d144cc80129d0db3159ea5d4294c34b79b20a",
+      "c5b4542d61af74cf7454d7f1c8d96218d709de38f94ccfa7c16b15f726dc08c0",
+      "90b3f7fefe8e11b8eacaba09a3c14ed6aa66a4c8d798440d912d0a663917a265",
+      "ce59bbe3ef7e16423718de50639d2278eab9c1f08f998677ba6fbd36695f316a",
+      "f4639c63fb01875946a4272c3515f005d558823311d0ee4c34896c2b66122596",
+      "36b61f94bdfc86e736a4ee30718e0b1ee1c07279db079d48d3fe78b1578dbf03",
+      "2538767f13218503bccf31fccb74e7531994b69a36a3780b53ba5020d938af20",
+      "b66919a18322aa4ce2ad47d149b7fe38063cd3cfa2e4062cd1a01ad6b3e47651",
+      "ed3745f82c7873adca16833b718e20090ac6a8c74e7004b854af29ef1551de75",
+      "f6c316e2385f2694d47e936b0ac4bc9b55e279d530dd5e805f0d963cb47c3c0d",
+      "8fdd00243ba68cadd175af0cbaf860218e08f42e715a998d6183d7c7462a3b5b",
+      "8e4f7a19b09e118ebda79726bf17e9d37ff4b66f4143762dd97ca80340388963",
+      "7a1fee8d879bc16e63d05c79c5419bd19ee308c54831d7ee196cfa8281498a06",
+      "ff51aa6cad655ddd99a525b78419cd746453fb2adcb689ba34ca3ab6e78b1347",
+      "1485c0ed3e875cbdfc6786a5bd26d18ea9d31727deb8df290a1c00c780419a4e"
+    ],
+    "cves": [
+      "CVE-2019-0604"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Stage-1 extraction for UNC1860, a MOIS-assessed Iran-nexus INITIAL-ACCESS BROKER / persistent-access enabler. 30 techniques across 12 tactics, hunt-heavy as expected for a deliberately stealthy passive-implant actor. PRIMARY-SOURCE CAVEAT: the canonical Mandiant/Google Cloud blog URL ('UNC1860 and the Temple of Oats', 2024-09-19) currently returns HTTP 404 (GCTI blog reorganized; verified via curl with browser UA). Extraction therefore drawn from faithful re-reports of the SAME Mandiant research (The Hacker News, Security Affairs) plus the Rewterz IOC advisory reproducing Mandiant's hash/CVE appendix — all tracing to one originating vendor report, hence confidence 'medium' (single primary origin, but technical IOCs present and internally consistent). ENV CONVENTIONS APPLIED: defense-evasion tactic emitted as 'stealth' (T1014, T1027.002, T1027.013, T1036.005, T1055, T1140, T1211, T1620); Impair-Defenses family emitted as T1685/T1685.001 under tactic 'defense-impairment' (TEMPLELOCK EventLog kill = T1685.001; toolset-wide defense degradation incl. TEMPLEDROP kernel file-protection = T1685 parent) — NOT T1562.*/T1070.001 (T1070.001 confirmed absent from this dataset). Encrypted-file = T1027.013 (CRYPTOSLAY). ALL 30 technique_ids validated present in this environment's bundled ATT&CK dataset; 0 dropped. HUNT vs DETECTION SPLIT: the durable value is behavioral. LOW-feasibility HUNT candidates (route to threat-hunter) dominate and center on the passive design — T1205 (passive implants trigger on INBOUND operator traffic, NO outbound beacon; THE defining hunt case), T1071.001/T1095 (HTTP.sys/IOCTL inbound C2 below IIS logging), T1090/T1572 (TEMPLEPLAY proxy / TUNNELBOI RDP tunnel), T1055/T1068/T1211 (kernel-driver injection/privesc/file-protection invisible to user-mode EDR), T1620/T1027.002/T1027.013/T1573.001/T1036.005 (in-memory loading + custom OBFUSLAY/CRYPTOSLAY crypto/masquerade), T1105/T1005/T1041 (passive-channel transfer/collection/exfil). HIGHER-feasibility DETECTION candidates (route to detection-engineer): T1190 (CVE-2019-0604 SharePoint exploitation), T1505.003/T1505.004 (STAYSHANTE/BASEWALK webshells + IIS handlers), T1543.003/T1588.002/T1014 (malicious/repurposed Sheed-AV driver loads), T1685.001 (EventLog service stop/gap), T1059.003 (server spawning cmd.exe), T1021.001 (anomalous internal RDP), T1046 (VIROGREEN scanning). NO OFFICIAL MITRE GROUP ID (mitre_id=''). IOCs: 14 MD5 + 14 SHA-1 + 14 SHA-256 hashes and CVE-2019-0604 from the reproduced Mandiant appendix; NO IPs/domains/emails were published — expected and characteristic: UNC1860's implants are PASSIVE inbound listeners with no outbound C2 infrastructure, so hashes (which expire fast) and the passive-listener TTPs/detection_signals are the value. No verbatim YARA rule was available in the fetched sources, so yara_rules is empty (never authored from scratch). No prompt-injection or manipulation attempts were observed in the fetched content. ACCESS-BROKER LINKAGE (assessed): supports downstream Iranian operators (Storm-0861/Scarred Manticore) and correlates with APT34/OilRig victim overlap; downstream destructive ops (ROADSWEEP, ZEROCLEAR, No-Justice, BiBi/BABYWIPER) are attributed to partner clusters, not UNC1860 directly."
+}

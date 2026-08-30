@@ -1,0 +1,50 @@
+title: Tortoiseshell Local Data Collection and Archive-Utility Staging
+id: 6dd6d8f7-3eeb-4abc-942b-b79612d2d6ad
+status: experimental
+description: |
+    Detects local data collection (T1005) staged and compressed with archive utilities (T1560.001) by
+    Tortoiseshell / Imperial Kitten prior to exfiltration. Keys on rar/7z/WinRAR/zip command lines that
+    create password-protected or multi-part archives, especially targeting user document/profile paths and
+    writing output to temp/staging locations. Best correlated with prior collection activity to reduce
+    noise. Requires process-creation logging with command line.
+references:
+    - https://www.crowdstrike.com/en-us/adversaries/imperial-kitten/
+    - https://www.security.com/threat-intelligence/tortoiseshell-apt-supply-chain
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1005
+    - attack.t1560.001
+    - mena-detection-library.tortoiseshell
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_archiver:
+        Image|endswith:
+            - '\rar.exe'
+            - '\winrar.exe'
+            - '\7z.exe'
+            - '\7za.exe'
+            - '\7zg.exe'
+    selection_action:
+        CommandLine|contains:
+            - ' a '
+            - ' -hp'
+            - ' -p'
+            - ' -v'
+            - ' -r '
+    selection_target:
+        CommandLine|contains:
+            - '\Users\'
+            - '\Documents\'
+            - '\Desktop\'
+            - '\Temp\'
+            - '\ProgramData\'
+    condition: selection_archiver and selection_action and selection_target
+falsepositives:
+    - Legitimate backup/compression by users and admins - baseline expected archiving workflows and output
+      locations
+    - Software packaging with 7z/rar - allowlist known build/backup tooling
+level: medium

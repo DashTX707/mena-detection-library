@@ -1,0 +1,45 @@
+title: Pioneer Kitten PowerShell Invoke-WebRequest to catbox.moe and PowerShell Web Access
+id: 0cddd380-a561-4e52-9cd1-3ddb91c47bbd
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten execution and tooling ingress through PowerShell (T1059.001
+    PowerShell, T1105 Ingress Tool Transfer, T1102 Web Service). The actor uses a compromised admin
+    account to launch PowerShell ISE and run Invoke-WebRequest against a URI containing
+    files.catbox.moe (free file hosting used as a tool repository), and enables Windows PowerShell Web
+    Access on servers. Keys on PowerShell script-block/module logging and command lines referencing
+    catbox.moe download cmdlets and the Install-WindowsFeature WindowsPowerShellWebAccess step.
+    Requires PowerShell Script Block Logging (Event ID 4104) or command-line logging enabled.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.command-and-control
+    - attack.t1059.001
+    - attack.t1105
+    - attack.t1102
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    category: ps_script
+detection:
+    selection_catbox:
+        ScriptBlockText|contains:
+            - 'catbox.moe'
+    selection_download:
+        ScriptBlockText|contains:
+            - 'Invoke-WebRequest'
+            - 'iwr '
+            - 'wget '
+            - 'Invoke-RestMethod'
+    selection_pswa:
+        ScriptBlockText|contains|all:
+            - 'Install-WindowsFeature'
+            - 'WindowsPowerShellWebAccess'
+    condition: (selection_catbox and selection_download) or selection_catbox or selection_pswa
+falsepositives:
+    - Very unlikely - legitimate enterprise scripts rarely download from catbox.moe; PowerShell Web
+      Access installs should be validated against sanctioned server-role changes
+level: high

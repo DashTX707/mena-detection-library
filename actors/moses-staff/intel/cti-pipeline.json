@@ -1,0 +1,523 @@
+{
+  "report_title": "Moses Staff / Cobalt Sapling Actor Intelligence Pack \u2014 Stage-1 CTI Extraction",
+  "source": "Check Point Research 'Uncovering MosesStaff techniques: Ideology over Money', 2021-11-15 (https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/); Cybereason Nocturnus 'StrifeWater RAT: Iranian APT Moses Staff Adds New Trojan to Ransomware Operations', 2022-02 (https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations); SOCRadar 'Dark Web Profile: Moses Staff' (https://socradar.io/blog/dark-web-profile-moses-staff/). Corroborating: FortiGuard / ClearSky Moses Staff reporting. Moses Staff has NO MITRE ATT&CK group G-id; TTP set is built from the two primary vendor technical analyses of PyDCrypt, DCSrv and StrifeWater RAT.",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Moses Staff",
+    "mitre_id": "",
+    "mitre_canonical_name": "Moses Staff",
+    "aliases": [
+      "Moses Staff",
+      "MosesStaff",
+      "Cobalt Sapling",
+      "DEV-0500"
+    ],
+    "related_clusters": [
+      "Abraham's Ax (related persona, same cluster/Cobalt Sapling)",
+      "Cobalt Sapling"
+    ],
+    "attribution": "Iran-nexus, ideologically motivated anti-Israel actor active since at least September 2021, conducting hack-and-leak plus destructive operations. Not financially motivated: encryption is used to destroy and disrupt \u2014 no ransom demand is made and no decryption is offered, and the encryption scheme was found by Check Point to be recoverable in some cases only due to implementation flaws, not by design. The related 'Abraham's Ax' persona (targeting Saudi/regional government) is tracked to the same Cobalt Sapling cluster. Iranian nexus is asserted from targeting, ideology, tooling and language artifacts rather than a single named intelligence unit; attribution is asserted rather than confirmed to a specific service.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Israel",
+      "Saudi Arabia (via Abraham's Ax persona)"
+    ],
+    "targeted_regions_global": [
+      "Italy",
+      "India",
+      "Germany",
+      "Chile",
+      "United Arab Emirates",
+      "United States"
+    ],
+    "targeted_sectors": [
+      "Critical infrastructure",
+      "Engineering / construction",
+      "Finance",
+      "Government",
+      "Utilities / energy",
+      "Manufacturing"
+    ],
+    "key_campaigns": [
+      {
+        "name": "MosesStaff hack-and-leak / destructive encryption of Israeli companies",
+        "date": "2021 (public from September 2021, reported 2021-11)",
+        "summary": "Moses Staff breached Israeli organizations by exploiting known vulnerabilities in public-facing infrastructure (notably Microsoft Exchange \u2014 ProxyLogon/ProxyShell), dropped ASPX web shells (e.g. IISpool.aspx under C:\\inetpub\\wwwroot\\aspnet_client\\system_web\\), collected domain names, machine names and administrator credentials, then used PyDCrypt (a PyInstaller-packaged Python loader) to spread via PowerShell, PsExec and WMIC and deploy DCSrv \u2014 a destructive encryptor built on the open-source DiskCryptor driver. DCSrv encrypted all drives C: to Z: and overwrote the boot-loader to deny system access. Stolen data was leaked via a dedicated website and Telegram. No ransom demand, no decryption.",
+        "source_url": "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      },
+      {
+        "name": "StrifeWater RAT earlier-stage access campaign",
+        "date": "2021 to 2022 (reported 2022-02)",
+        "summary": "Cybereason uncovered a previously undocumented remote-access trojan, StrifeWater, used by Moses Staff in earlier compromise stages for reconnaissance, command execution, screenshots and module downloading. StrifeWater masqueraded as the Windows calculator (calc.exe), persisted via a scheduled task disguised as a Firefox browser-agent task, and was removed and replaced with the genuine calc.exe binary before deletion to cover tracks. It beaconed over HTTP to techzenspace[.]com / 87.120.8[.]210 with XOR-obfuscated traffic.",
+        "source_url": "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Moses Staff",
+    "Cobalt Sapling",
+    "Abraham's Ax",
+    "DEV-0500"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "Saudi Arabia",
+    "Italy",
+    "India",
+    "Germany",
+    "UAE",
+    "United States"
+  ],
+  "targeted_sectors": [
+    "Critical infrastructure",
+    "Engineering / construction",
+    "Finance",
+    "Government",
+    "Utilities / energy",
+    "Manufacturing"
+  ],
+  "malware": [
+    "PyDCrypt (PyInstaller Python loader/deployer)",
+    "DCSrv (disk encryptor built on DiskCryptor driver)",
+    "StrifeWater RAT (masquerades as calc.exe, self-deletes)",
+    "IISpool.aspx / ASPX web shells"
+  ],
+  "tooling_observed": [
+    "DiskCryptor (open-source disk-encryption driver, weaponized as DCSrv)",
+    "PsExec",
+    "WMIC",
+    "PowerShell",
+    "Custom DiskCryptor bootloader (boot-loader overwrite)",
+    "PyInstaller (packer for PyDCrypt)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Moses Staff developed custom tooling: the PyDCrypt PyInstaller loader, the DCSrv destructive encryptor built by weaponizing the open-source DiskCryptor driver, and the previously undocumented StrifeWater RAT.",
+      "observed_tooling": [
+        "PyDCrypt",
+        "DCSrv",
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "low \u2014 off-victim capability development is not observable in defender telemetry; value is retrospective attribution via code/PDB/DiskCryptor-fork overlap analysis of recovered samples",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/",
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Initial access is achieved by exploiting known vulnerabilities in external-facing infrastructure, most notably Microsoft Exchange servers (ProxyLogon / ProxyShell) and other public-facing web vulnerabilities.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium \u2014 Exchange/ProxyShell/ProxyLogon exploitation is detectable via appliance/IIS logs, patch-level telemetry, and known exploit signatures, though n-day edge exploitation often precedes visibility",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "After exploitation the actor drops ASPX web shells onto compromised IIS servers \u2014 e.g. IISpool.aspx written to C:\\inetpub\\wwwroot\\aspnet_client\\system_web\\ \u2014 to maintain access and proxy follow-on commands.",
+      "observed_tooling": [
+        "IISpool.aspx / ASPX web shells"
+      ],
+      "detection_feasibility": "high \u2014 new .aspx files under web-root paths and w3wp.exe/IIS worker spawning child processes are strong, well-covered detection signals",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "DCSrv establishes persistence by registering Windows services \u2014 DCUMSrv (the encryptor service, masquerading as svchost.exe) and DCDrv (the DiskCryptor kernel driver service).",
+      "observed_tooling": [
+        "DCSrv",
+        "DiskCryptor"
+      ],
+      "detection_feasibility": "high \u2014 new-service creation (Event ID 7045 / Services registry writes) registering an unknown driver/service such as DCUMSrv or DCDrv is highly detectable",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "StrifeWater RAT persists by creating a scheduled task disguised with a legitimate-looking name, '_Mozilla\\Firefox Default Browser Agent 409046Z0FF4A39CB_', to survive reboots.",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "high \u2014 scheduled-task creation (Event ID 4698) with a spoofed browser-agent name pointing at an unusual binary is a strong, anomalous signal",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "PyDCrypt attempts to spread the DCSrv payload across the network using PowerShell (alongside PsExec and WMIC) with previously collected administrator credentials.",
+      "observed_tooling": [
+        "PyDCrypt",
+        "PowerShell"
+      ],
+      "detection_feasibility": "medium \u2014 remote PowerShell execution to push payloads to peers is detectable via script-block logging (4104), 4688/Sysmon process telemetry and remote-execution patterns, though PowerShell is heavily used by admins",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "PyDCrypt uses WMIC as one of its lateral spreading/execution mechanisms to deploy DCSrv to remote hosts using compromised administrator credentials.",
+      "observed_tooling": [
+        "PyDCrypt",
+        "WMIC"
+      ],
+      "detection_feasibility": "medium \u2014 WMIC-based remote process creation is detectable via WMI-activity logs and wmic.exe command-line telemetry, but overlaps with legitimate administration",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "procedure_description": "PyDCrypt uses PsExec to remotely execute the DCSrv payload as a service on target machines during network spreading.",
+      "observed_tooling": [
+        "PyDCrypt",
+        "PsExec"
+      ],
+      "detection_feasibility": "high \u2014 PsExec creates a named service and PSEXESVC on the target (Event ID 7045 / named-pipe activity), a well-covered remote-execution signal",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "StrifeWater RAT provides command execution via cmd.exe as one of its core operator capabilities on compromised hosts.",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "medium \u2014 cmd.exe spawned by an anomalous parent (a RAT masquerading as calc.exe) is detectable via parent-child process analytics",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Moses Staff extensively masquerades tooling with legitimate names: StrifeWater RAT runs as calc.exe, DCSrv masquerades as svchost.exe, and the StrifeWater persistence task impersonates a Firefox browser-agent task.",
+      "observed_tooling": [
+        "StrifeWater RAT",
+        "DCSrv"
+      ],
+      "detection_feasibility": "low \u2014 name-matching masquerade evades name-based rules; hunt candidate via original-filename (PE VERSIONINFO) vs on-disk-name mismatch and calc.exe/svchost.exe running from non-standard paths",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations",
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "To cover its tracks, StrifeWater is replaced with the original Windows calculator binary (copied from system32 to C:\\Users\\Public) and then deleted; the RAT also supports a self-removal command from its operators.",
+      "observed_tooling": [
+        "StrifeWater RAT",
+        "PyDCrypt"
+      ],
+      "detection_feasibility": "medium \u2014 the file-copy-of-genuine-calc-then-delete-of-RAT sequence is detectable via EDR file-create/delete telemetry, though self-deletion overlaps with benign cleanup",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "PyDCrypt carries the DCSrv payload in encrypted form and decrypts it at runtime before deployment; it is packaged with PyInstaller to hinder static analysis.",
+      "observed_tooling": [
+        "PyDCrypt",
+        "PyInstaller"
+      ],
+      "detection_feasibility": "low \u2014 an embedded encrypted payload is opaque until runtime extraction; hunt candidate via entropy/PyInstaller-artifact analysis of the sample rather than host log detection",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1078",
+      "technique_name": "Valid Accounts",
+      "tactic": "lateral-movement",
+      "procedure_description": "PyDCrypt collects and reuses compromised domain administrator credentials to authenticate to and spread the DCSrv payload across the network via PsExec, WMIC and PowerShell.",
+      "observed_tooling": [
+        "PyDCrypt"
+      ],
+      "detection_feasibility": "low \u2014 use of legitimate admin credentials blends with normal activity; hunt candidate via a single account authenticating to many hosts in a short window paired with service creation",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "procedure_description": "PsExec-based spreading of DCSrv relies on SMB and Windows admin shares (ADMIN$/IPC$) to copy and launch the payload on remote machines.",
+      "observed_tooling": [
+        "PyDCrypt",
+        "PsExec"
+      ],
+      "detection_feasibility": "medium \u2014 admin-share writes of executables followed by remote service creation are detectable via SMB file-write and 5140/7045 correlation",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "procedure_description": "PyDCrypt transfers the DCSrv payload to remote hosts as part of its network-spreading routine before executing it.",
+      "observed_tooling": [
+        "PyDCrypt"
+      ],
+      "detection_feasibility": "medium \u2014 internal copies of a novel executable to multiple hosts over SMB are detectable via file-write telemetry, though they ride trusted admin channels",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Prior to spreading, PyDCrypt collects the domain name and machine names; StrifeWater profiles each host (machine name, username, OS version, timezone, privilege level).",
+      "observed_tooling": [
+        "PyDCrypt",
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "low \u2014 host-profiling API/command activity is high-volume and mostly benign; hunt candidate only in correlation with the surrounding intrusion chain",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/",
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "procedure_description": "PyDCrypt enumerates machine names in the domain to identify targets for lateral spreading of the DCSrv encryptor.",
+      "observed_tooling": [
+        "PyDCrypt"
+      ],
+      "detection_feasibility": "low \u2014 domain host enumeration blends with legitimate administration; hunt candidate via enumeration immediately preceding mass remote execution",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "StrifeWater RAT enumerates files and directories on compromised hosts as one of its reconnaissance capabilities.",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "low \u2014 file/directory enumeration is ubiquitous benign activity; only meaningful in RAT-behavior correlation",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "StrifeWater RAT captures screenshots of the compromised host and sends them to its command-and-control server.",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "low \u2014 screen-capture APIs are used by many legitimate apps; not reliably detectable in isolation, hunt only via RAT-behavior clustering",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Consistent with its hack-and-leak model, Moses Staff steals data from compromised systems before deploying destructive encryption, later publishing the stolen data.",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "low \u2014 local file reads are high-volume normal activity; hunt candidate via bulk-access-then-stage-then-exfil sequencing",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/",
+        "https://socradar.io/blog/dark-web-profile-moses-staff/"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "StrifeWater RAT beacons over HTTP to its C2 (techzenspace[.]com / 87.120.8[.]210 on port 80) using URIs such as /RVP/index8.php and /RVP/index3.php, with a configurable default beacon interval of ~20-22 seconds.",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "medium \u2014 regular fixed-interval HTTP beaconing to a low-reputation domain with recurring /RVP/index*.php URIs is detectable via network beacon analytics and proxy logs",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "StrifeWater RAT obfuscates its C2 traffic using XOR-based symmetric encryption with a hardcoded key (observed key '9c4arSBr32g6IOni').",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "low \u2014 XOR-obfuscated payloads defeat plaintext content inspection; hunt candidate via traffic-shape/beacon analytics and static key extraction from recovered samples",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "StrifeWater RAT downloads additional modules from its C2 (observed module names mainfunc, Ah13, mkb64, strt) to extend functionality on the compromised host.",
+      "observed_tooling": [
+        "StrifeWater RAT"
+      ],
+      "detection_feasibility": "medium \u2014 the RAT process fetching and writing new executable modules is detectable via process-network-then-file-write correlation",
+      "sources": [
+        "https://www.cybereason.com/blog/research/strifewater-rat-iranian-apt-moses-staff-adds-new-trojan-to-ransomware-operations"
+      ]
+    },
+    {
+      "technique_id": "T1567",
+      "technique_name": "Exfiltration Over Web Service",
+      "tactic": "exfiltration",
+      "procedure_description": "In line with its hack-and-leak mission, Moses Staff exfiltrates stolen victim data and publishes it via a dedicated leak website and Telegram channel to maximize reputational and psychological impact.",
+      "observed_tooling": [],
+      "detection_feasibility": "low \u2014 exfil to web/Telegram services blends with normal web traffic; hunt candidate via large outbound transfers to file-sharing/messaging endpoints from server hosts",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/",
+        "https://socradar.io/blog/dark-web-profile-moses-staff/"
+      ]
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "procedure_description": "DCSrv, built on the open-source DiskCryptor driver, encrypts all available drives (C: through Z:) on infected machines by issuing IOCTL codes (DC_CTL_ENCRYPT_START, DC_CTL_ENCRYPT_STEP) to the DiskCryptor kernel driver. The intent is destruction and disruption, not extortion \u2014 no ransom is demanded and no decryption is offered.",
+      "observed_tooling": [
+        "DCSrv",
+        "DiskCryptor"
+      ],
+      "detection_feasibility": "low \u2014 full-volume encryption via a legitimate signed disk-crypto driver produces little conventional file-rename/entropy signal and is often unrecoverable regardless; hunt the precursors (DCUMSrv/DCDrv service creation, PsExec/WMIC spread, DiskCryptor driver load)",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1485",
+      "technique_name": "Data Destruction",
+      "tactic": "impact",
+      "procedure_description": "Moses Staff's use of encryption is fundamentally destructive: with no decryption capability offered and a flawed encryption implementation, the DCSrv operation renders victim data and systems permanently inaccessible, functionally destroying data rather than holding it for ransom.",
+      "observed_tooling": [
+        "DCSrv"
+      ],
+      "detection_feasibility": "low \u2014 by the time destruction is observable the impact has occurred; detection value is entirely in the earlier chain (web shell, credential reuse, lateral spread, driver/service install)",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/",
+        "https://thecyberpost.com/news/malware/mosesstaff-locks-up-targets-with-no-ransom-demand-no-decryption/"
+      ]
+    },
+    {
+      "technique_id": "T1561.002",
+      "technique_name": "Disk Wipe: Disk Structure Wipe",
+      "tactic": "impact",
+      "procedure_description": "DCSrv overwrites the boot-loader with a custom DiskCryptor bootloader, denying the victim access to the operating system and preventing normal boot \u2014 corrupting disk boot structures to render endpoints unusable.",
+      "observed_tooling": [
+        "DCSrv",
+        "DiskCryptor"
+      ],
+      "detection_feasibility": "medium \u2014 a user-mode/service process obtaining raw disk access to overwrite the boot-loader/MBR is a rare, high-fidelity destructive signal detectable via raw-disk-write / driver-load EDR analytics",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    },
+    {
+      "technique_id": "T1529",
+      "technique_name": "System Shutdown/Reboot",
+      "tactic": "impact",
+      "procedure_description": "After encrypting drives and overwriting the boot-loader, DCSrv reboots the machine so it comes up locked behind the DiskCryptor bootloader, finalizing the denial of access.",
+      "observed_tooling": [
+        "DCSrv"
+      ],
+      "detection_feasibility": "low \u2014 a reboot call is trivially common and only meaningful as the terminal step of the encrypt/boot-overwrite chain; hunt via correlation with preceding raw-disk-write and service-install events",
+      "sources": [
+        "https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "New or modified .aspx web shell in an IIS web root (e.g. IISpool.aspx under C:\\inetpub\\wwwroot\\aspnet_client\\system_web\\) followed by w3wp.exe spawning child processes",
+    "Exchange server exploitation artifacts (ProxyShell/ProxyLogon) \u2014 anomalous IIS POSTs to Autodiscover/PowerShell endpoints preceding web-shell drop",
+    "New Windows service named DCUMSrv or DCDrv, or a DiskCryptor kernel driver (dcrypt.sys) load on a host with no legitimate disk-encryption deployment",
+    "svchost.exe or calc.exe running from a non-standard path (C:\\Users\\Public or user-writable dirs) \u2014 DCSrv/StrifeWater masquerade",
+    "PyInstaller-packaged Python executable (PyDCrypt) invoking PsExec, WMIC or PowerShell to push an executable to many internal hosts in a short window",
+    "Raw disk / boot-loader overwrite: a service or user-mode process writing to \\\\.\\PhysicalDrive0 boot sectors, or unexpected DiskCryptor bootloader installation",
+    "Scheduled task with a spoofed browser-agent name (pattern '_Mozilla\\Firefox Default Browser Agent <hex>_') pointing at an unusual binary \u2014 StrifeWater persistence",
+    "Fixed-interval (~20-22s) HTTP beaconing to techzenspace[.]com / 87.120.8[.]210 with recurring /RVP/index*.php URIs",
+    "A process copying the genuine system32 calc.exe to C:\\Users\\Public and then deleting a same-named binary \u2014 StrifeWater track-covering self-deletion",
+    "Single domain-admin account authenticating to many hosts followed by 7045 service-creation events \u2014 credential-reuse mass deployment of DCSrv"
+  ],
+  "iocs": {
+    "ips": [
+      "87.120.8.210"
+    ],
+    "domains": [
+      "techzenspace.com",
+      "moses-staff.se"
+    ],
+    "emails": [],
+    "hashes": [
+      "e776c4e24c00fa3eeba68cde38ae24f3",
+      "3dfb7626dbe46136bc19404b63c6d1dc",
+      "7be30062c1a2c42a7061dfbfec364588",
+      "93c19436e6e5207e2e2bed425107f080",
+      "a06c125e6da566be67aacf6c4e44005e",
+      "2372c7639e70820f253a098dfcaf5060",
+      "680ce7d56fc427ee2fbedb5baea59d68",
+      "1094aa25e2d637e7f5795edd6c0f60e4",
+      "5ffc255557796512798617ae61c4274d",
+      "3dde69212234c98b503081d64b9beb52",
+      "a44775e7568b790505bbcaadbd61c993",
+      "3649c106c6edd7ef47acd46586c74d8e",
+      "c1bc20a9bbebbbdd19869999b9cec03b",
+      "29a08031c4debc7f91ca8efb40b7858c9aafc3ed",
+      "76a35d4087a766e2a5a06da7e25ef76a8314ec84",
+      "5cacfad2bb7979d7e823a92fb936c5929081e691"
+    ],
+    "cves": [
+      "CVE-2021-34473",
+      "CVE-2021-34523",
+      "CVE-2021-31207",
+      "CVE-2021-26855"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Moses Staff (Cobalt Sapling; related persona Abraham's Ax) has NO MITRE ATT&CK group G-id \u2014 actor.mitre_id is intentionally an empty string. 28 techniques extracted across 11 tactics from two primary vendor technical analyses (Check Point Research on PyDCrypt/DCSrv, Cybereason on StrifeWater RAT). ALL technique_ids were verified present in this environment's bundled ATT&CK dataset before emission; none were dropped. ENV CONVENTIONS APPLIED: defense-evasion tactic emitted as 'stealth' (T1036.005, T1070.004, T1027.013); encrypted/encoded payload = T1027.013. No Impair-Defenses (T1685.*) technique was included because neither source reports Moses Staff disabling/removing security tooling \u2014 not padded. KEY CHARACTERIZATION: this is a DESTRUCTIVE, ideologically motivated actor, not financially motivated \u2014 DCSrv encryption is used to destroy/disrupt with no ransom demand and no decryption offered; T1486 (Data Encrypted for Impact) is paired with T1485 (Data Destruction) and T1561.002 (Disk Structure Wipe, boot-loader overwrite) to capture the destructive nature. DETECTION POSTURE: the encrypt-for-impact and data-destruction endpoints are LOW detection feasibility (route to HUNTING / early-chain containment); the practical detection window is the precursor chain \u2014 web-shell drop (T1505.003, high), PsExec/WMIC/PowerShell mass spread (T1569.002/T1047/T1059.001), DCUMSrv/DCDrv + DiskCryptor driver service creation (T1543.003, high), and boot-loader overwrite (T1561.002, medium). IOC PROVENANCE / HASH CAVEAT: Check Point published MD5 hashes (6 PyDCrypt/DCSrv/bootloader/OICe.exe + 7 web-shell MD5s) and referenced the moses-staff[.]se leak domain; Cybereason published the StrifeWater C2 (87.120.8[.]210, techzenspace[.]com, /RVP/index*.php) and three SHA-1 hashes (40-hex: 29a0..., 76a3..., 5cac...) for PyDCrypt and two StrifeWater samples. Hashes are stored raw and are a MIX of MD5 (32-hex) and SHA-1 (40-hex) as published by the respective sources \u2014 NO SHA-256 was published in the fetched sources and none were fabricated. CVEs listed are the Exchange ProxyShell (CVE-2021-34473, -34523, -31207) and ProxyLogon (CVE-2021-26855) chains that the primary source attributes to 'known vulnerabilities in Microsoft Exchange' initial access; they are the standard identifiers for that named vector rather than CVE numbers printed verbatim in the report. No verbatim YARA rule appeared in the fetched sources, so yara_rules is empty (never authored from scratch)."
+}

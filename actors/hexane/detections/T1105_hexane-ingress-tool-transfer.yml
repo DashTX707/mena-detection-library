@@ -1,0 +1,46 @@
+title: HEXANE Ingress Tool Transfer via LOLBin Downloaders
+id: 71960427-a8af-4b75-a033-fc75efb064ee
+status: experimental
+description: |
+    Detects HEXANE / Lyceum downloading additional tools and payloads to compromised hosts over its
+    C2 channel (T1105). Keys on native download LOLBins - certutil -urlcache, bitsadmin /transfer,
+    curl, PowerShell DownloadFile/Invoke-WebRequest and mshta/regsvr32 remote fetches - saving content
+    to user-writable paths. This is the file-fetch stage that follows DanBot's initial foothold.
+    Requires process-creation logging with command lines.
+references:
+    - https://attack.mitre.org/groups/G1001/
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_lolbin:
+        - Image|endswith: '\certutil.exe'
+          CommandLine|contains:
+              - 'urlcache'
+              - 'verifyctl'
+        - Image|endswith: '\bitsadmin.exe'
+          CommandLine|contains: '/transfer'
+        - CommandLine|contains:
+              - 'DownloadFile'
+              - 'Invoke-WebRequest'
+              - 'wget '
+              - 'curl '
+              - 'Start-BitsTransfer'
+    selection_remote:
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+            - 'ftp://'
+    condition: selection_lolbin and selection_remote
+falsepositives:
+    - Legitimate admin/software-deployment downloads via curl/BITS/PowerShell - baseline expected
+      management hosts and destinations
+    - certutil used for genuine certificate retrieval - allowlist known PKI operations
+level: medium

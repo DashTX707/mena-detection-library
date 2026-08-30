@@ -1,0 +1,44 @@
+title: HEXANE WMI Event Subscription Persistence
+id: 169587aa-1b9e-4b41-b530-d6202e63b383
+status: experimental
+description: |
+    Detects WMI permanent event-subscription persistence attributable to HEXANE / Lyceum tradecraft
+    (T1546.003). Keys on the creation of a permanent WMI event consumer (CommandLineEventConsumer /
+    ActiveScriptEventConsumer) whose action launches a script host or command interpreter, and on
+    filter-to-consumer bindings - the durable, implementation-core signal of this persistence.
+    Requires Sysmon WMI eventing (EID 19 WmiEventFilter / 20 WmiEventConsumer / 21
+    WmiEventConsumerToFilter) or WMI-Activity operational logging.
+references:
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1546.003
+    - mena-detection-library.hexane
+logsource:
+    category: wmi_event
+    product: windows
+detection:
+    selection_consumer:
+        Destination|contains:
+            - 'CommandLineEventConsumer'
+            - 'ActiveScriptEventConsumer'
+    selection_payload:
+        Destination|contains:
+            - 'powershell'
+            - 'cmd.exe'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+            - '.vbs'
+            - '.ps1'
+            - 'CommandLineTemplate'
+            - 'ScriptText'
+    condition: selection_consumer or selection_payload
+falsepositives:
+    - Legitimate management/monitoring products (SCCM, antivirus, inventory agents) that register WMI
+      consumers - allowlist known consumer names and the deploying software
+    - Administrative WMI automation - baseline expected filters/consumers per host
+level: medium

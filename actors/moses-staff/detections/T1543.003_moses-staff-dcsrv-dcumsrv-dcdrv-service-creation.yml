@@ -1,0 +1,41 @@
+title: Moses Staff DCSrv Encryptor Service Creation - DCUMSrv / DCDrv (Event ID 7045)
+id: 3d0d6aba-43cd-4ffc-b1d0-b69af4e0aef6
+status: experimental
+description: |
+    Detects the Moses Staff pre-wipe persistence step: registration of the DCSrv destructive
+    encryptor as a Windows service (T1543.003). PyDCrypt installs DCUMSrv - the user-mode encryptor
+    service masquerading with an svchost-like identity - and DCDrv, the DiskCryptor kernel-driver
+    service. Keys on Service Control Manager new-service events (Event ID 7045) whose service name
+    or image path matches the DiskCryptor-derived service/driver names. This is one of the last
+    high-fidelity windows before full-volume encryption and boot-loader overwrite, so it is a
+    high-priority containment signal. Requires the System event log (Service Control Manager 7045).
+references:
+    - https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.moses-staff
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_eid:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_name:
+        ServiceName|contains:
+            - 'DCUMSrv'
+            - 'DCDrv'
+            - 'DCSrv'
+        ImagePath|contains:
+            - 'dcrypt'
+            - 'dcsrv'
+            - 'dcpar'
+    condition: selection_eid and selection_name
+falsepositives:
+    - A genuine authorized DiskCryptor deployment for full-disk encryption - rare in enterprise
+      environments; allowlist the specific approved hosts and installer path if DiskCryptor is
+      sanctioned
+level: high

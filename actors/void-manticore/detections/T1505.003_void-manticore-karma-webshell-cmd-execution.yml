@@ -1,0 +1,51 @@
+title: Void Manticore Karma/reGeorge Web Shell Command Execution via Web-Worker cmd.exe
+id: 12467d1b-edd1-4d3d-92e9-4ad40682e0d3
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) web-shell command relay: a homebrew 'Karma Shell' (masquerading
+    as an HTTP error page) or the public reGeorge tunneling web shell planted in the web root, then used
+    to run follow-on operator commands through cmd.exe /c parented by the web-server worker process
+    (T1505.003 Web Shell for persistence; T1059.003 Windows Command Shell for execution). Keys on an
+    IIS/web worker (w3wp.exe or similar) spawning cmd.exe together with the actor's observed command
+    lines - net user /domain enumeration, ping connectivity checks to 4.2.2.4 / microsoft.com, WinRAR
+    unpack of do.zip, and launching C:\ProgramData\do.exe. A web-worker parent of cmd.exe is by itself a
+    strong web-shell signal; the command-line selectors sharpen fidelity. Requires process-creation
+    telemetry with parent image and command line (Sysmon EID 1 / Security 4688).
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+    - https://thehackernews.com/2024/05/iranian-mois-linked-hackers-behind.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.execution
+    - attack.t1505.003
+    - attack.t1059.003
+    - mena-detection-library.void-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\httpd.exe'
+            - '\nginx.exe'
+            - '\tomcat.exe'
+            - '\php-cgi.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+    selection_cmdline:
+        CommandLine|contains:
+            - 'net user '
+            - '/domain'
+            - '4.2.2.4'
+            - '\ProgramData\do.exe'
+            - 'do.zip'
+    condition: selection_parent or (selection_cmdline and selection_parent)
+falsepositives:
+    - Web applications that legitimately invoke cmd.exe for maintenance tasks - baseline expected child
+      command lines per app pool and allowlist them narrowly
+    - Administrative scripts run under the web-server service account - scope to known automation
+level: high

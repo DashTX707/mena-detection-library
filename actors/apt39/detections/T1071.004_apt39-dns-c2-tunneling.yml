@@ -1,0 +1,29 @@
+title: APT39 DNS-Based Command-and-Control / Tunneling
+id: e0e0fea2-4730-4a47-8d5c-452e6062c187
+status: experimental
+description: |
+    Detects APT39 / Chafer use of DNS as a command-and-control channel. Keys on DNS query anomalies
+    characteristic of tunneling - unusually long query names, high-entropy/base32-like labels, and high
+    query volume or NXDOMAIN rates to a single parent domain. APT39 has used DNS for C2 with certain
+    tooling; DNS tunneling is detectable via query-length/entropy/volume analytics but requires full
+    DNS query logging, which is frequently under-instrumented. Operate as a per-domain aggregation
+    analytic.
+references:
+    - https://attack.mitre.org/groups/G0087/
+    - https://www.mandiant.com/resources/blog/apt39-iranian-cyber-espionage-group-focused-on-personal-information
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.004
+    - mena-detection-library.apt39
+logsource:
+    category: dns
+detection:
+    selection_long:
+        query|re: '^[A-Za-z0-9+/=_-]{50,}\.'
+    condition: selection_long
+falsepositives:
+    - Legitimate services that encode data in DNS labels (some CDNs, AV/telemetry, cloud SDKs) -
+      baseline expected long-query domains and allowlist known providers
+level: medium

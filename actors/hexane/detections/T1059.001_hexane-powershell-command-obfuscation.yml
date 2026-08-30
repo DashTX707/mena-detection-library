@@ -1,0 +1,53 @@
+title: HEXANE PowerShell Execution with Command Obfuscation
+id: e9352003-93d0-4df4-9e25-fc70f1769d44
+status: experimental
+description: |
+    Detects HEXANE / Lyceum PowerShell post-exploitation and DNS-query tooling launched with
+    obfuscated or encoded command lines (T1059.001 PowerShell, T1027.010 command obfuscation). Keys
+    on PowerShell invoked with encoded-command switches, hidden/no-profile execution, in-memory
+    download/execution cradles, and base64/format-operator obfuscation - the tradecraft HEXANE uses
+    to stage DanBot and its PowerShell/DNS keylogger while evading command-line inspection. Requires
+    process-creation logging with command lines (ideally with PowerShell script-block logging enabled
+    for corroboration).
+references:
+    - https://attack.mitre.org/groups/G1001/
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.t1059.001
+    - attack.t1027.010
+    - mena-detection-library.hexane
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_obfusc:
+        CommandLine|contains:
+            - ' -enc'
+            - ' -e '
+            - 'EncodedCommand'
+            - 'FromBase64String'
+            - '-w hidden'
+            - '-windowstyle hidden'
+            - '-nop'
+            - '-noprofile'
+            - 'IEX('
+            - 'Invoke-Expression'
+            - 'DownloadString'
+            - 'DownloadData'
+            - '[char]'
+            - "-join"
+            - '-bxor'
+    condition: selection_ps and selection_obfusc
+falsepositives:
+    - Legitimate administration and software deployment scripts using encoded or hidden PowerShell -
+      baseline expected management hosts and signed automation
+    - Monitoring agents invoking PowerShell with -nop/-w hidden - allowlist known parent processes
+level: high

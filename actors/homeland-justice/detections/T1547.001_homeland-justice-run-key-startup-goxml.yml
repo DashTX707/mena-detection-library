@@ -1,0 +1,41 @@
+title: Homeland Justice Run Key / Startup Persistence for ROADSWEEP Payload
+id: 967d93ac-91f2-4d98-beda-b023e2bab1a9
+status: experimental
+description: |
+    Detects the boot/logon autostart persistence Homeland Justice / Storm-0842 (Iran/MOIS) used
+    to launch the ROADSWEEP payload GoXml.exe from C:\ProgramData\Microsoft\Windows\ at system
+    startup (T1547.001). win.bat configured the destructive component to run on boot. Keys on
+    registry writes to the Run / RunOnce keys, or Startup-folder file drops, whose value points
+    at a binary in a user-writable staging path (notably ProgramData\Microsoft\Windows) or at
+    the named artifact GoXml.exe. Two branches: (1) reg.exe adding a Run-key value from the
+    command line, and (2) registry-set telemetry for the autostart values. Requires
+    process-creation and/or registry-set telemetry (Sysmon EID 1 / EID 13).
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-264a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.homeland-justice
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_reg_add:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains|all:
+            - 'add'
+            - '\CurrentVersion\Run'
+    selection_run_target:
+        CommandLine|contains:
+            - '\ProgramData\Microsoft\Windows\'
+            - 'GoXml.exe'
+            - '\Start Menu\Programs\Startup\'
+    condition: selection_reg_add and selection_run_target
+falsepositives:
+    - Legitimate software adding Run-key entries during installation - allowlist known-good
+      installers and value data
+    - Management tooling that stages helper binaries under ProgramData and registers autostart
+      - baseline expected autostart values per host image
+level: high

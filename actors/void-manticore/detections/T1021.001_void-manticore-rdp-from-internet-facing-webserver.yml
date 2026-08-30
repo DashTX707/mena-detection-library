@@ -1,0 +1,39 @@
+title: Void Manticore RDP Lateral Movement Sourced from Internet-Facing Web Server
+id: cbc6a2cb-48a8-4ae4-bd4d-4506f8595ccb
+status: experimental
+description: |
+    Detects Void Manticore (Storm-0842) hands-on-keyboard lateral movement via RDP after it deploys the
+    reGeorge tunneling web shell and uses handed-off Domain Admin access to reach additional hosts
+    before wiper deployment (T1021.001 Remote Services: Remote Desktop Protocol). Keys on outbound RDP
+    client (mstsc.exe) launched from a web-server / internet-facing host, or from a web-worker process
+    lineage - RDP originating on a public-facing web server is anomalous. Best operated together with a
+    correlation on inbound RDP (Security EID 4624 LogonType 10 / RemoteInteractive) whose source is the
+    web server. Requires process-creation telemetry (Sysmon EID 1 / Security 4688); enrich with logon
+    (4624) data where available.
+references:
+    - https://research.checkpoint.com/2024/bad-karma-no-justice-void-manticore-destructive-activities-in-israel/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.void-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mstsc:
+        Image|endswith: '\mstsc.exe'
+    selection_parent:
+        ParentImage|endswith:
+            - '\w3wp.exe'
+            - '\cmd.exe'
+            - '\httpd.exe'
+            - '\nginx.exe'
+            - '\tomcat.exe'
+    condition: selection_mstsc and selection_parent
+falsepositives:
+    - Administrators legitimately launching RDP from a jump/management host - restrict this analytic to
+      internet-facing web servers where interactive RDP client use is not expected
+    - Monitoring tools that invoke mstsc - baseline and allowlist
+level: medium

@@ -1,0 +1,44 @@
+title: CyberAv3ngers Unauthorized Ladder-Logic Download and Version Downgrade on Unitronics PLC
+id: 86c55c28-8f9e-42b4-919c-81a5033b017b
+status: experimental
+description: |
+    Detects unauthorized program/config change events on a Unitronics Vision-series PLC consistent with the
+    CyberAv3ngers (IRGC-CEC) impact behavior: erasing the original ladder logic and downloading their own
+    empty (no-I/O) logic to halt control function, and downgrading the ladder-logic software version so
+    operators' engineering workstations can no longer communicate with the device. Covers T1565.001 (stored
+    data manipulation). Where an OT asset-management / config-change monitor or PLC operating-mode change
+    logs are collected via syslog, this keys on program-download, project-change or firmware/version-change
+    events on Unitronics assets outside an approved change window. Requires OT-specific instrumentation (asset
+    monitor or PLC change telemetry); on bare devices this is a visibility gap. Field/event strings are
+    generic - map to your OT-monitor schema and gate on your change-management window.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1565.001
+    - mena-detection-library.cyberav3ngers
+logsource:
+    product: linux
+    service: syslog
+detection:
+    selection_change:
+        Message|contains:
+            - 'ladder logic'
+            - 'program download'
+            - 'project download'
+            - 'logic download'
+            - 'firmware version'
+            - 'version downgrade'
+            - 'program change'
+    selection_asset:
+        Message|contains:
+            - 'unitronics'
+            - 'vision'
+            - 'PLC'
+    condition: selection_change and selection_asset
+falsepositives:
+    - Sanctioned engineering program updates during an approved change window - gate on change-management tickets and allowlist the engineering workstation
+    - Vendor firmware upgrades performed by integrators - correlate with scheduled maintenance
+level: high

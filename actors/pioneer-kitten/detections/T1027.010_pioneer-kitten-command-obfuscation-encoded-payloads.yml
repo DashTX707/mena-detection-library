@@ -1,0 +1,44 @@
+title: Pioneer Kitten Command Obfuscation and Encoded Payloads
+id: fea927bd-4a60-4a46-a281-b82d101971af
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten obfuscation of commands and payloads to hinder analysis
+    (T1027.010 Command Obfuscation, T1027.013 Encrypted/Encoded File). The actor obfuscates command
+    lines and scripts and encodes/encrypts payloads to evade static detection. Keys on the strongest
+    command-obfuscation heuristics: PowerShell -EncodedCommand / -enc base64 blobs, FromBase64String
+    plus in-memory decompression (GzipStream/DeflateStream), and heavy character-substitution
+    obfuscation (large counts of ^, backtick, or -f format operators). High-entropy encoded blobs on
+    the command line are the durable signal; tune the length/entropy threshold to the environment.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1027.010
+    - attack.t1027.013
+    - mena-detection-library.pioneer-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_enc:
+        CommandLine|contains:
+            - ' -enc '
+            - ' -EncodedCommand '
+            - ' -e JAB'
+            - ' -enc JAB'
+    selection_decode:
+        CommandLine|contains|all:
+            - 'FromBase64String'
+            - 'GzipStream'
+    selection_iex_b64:
+        CommandLine|contains|all:
+            - 'IEX'
+            - 'FromBase64String'
+    condition: 1 of selection_*
+falsepositives:
+    - Some legitimate management tooling uses -EncodedCommand - baseline expected encoded-command
+      sources; combined base64-decode plus in-memory decompression/IEX is rarely benign
+level: medium

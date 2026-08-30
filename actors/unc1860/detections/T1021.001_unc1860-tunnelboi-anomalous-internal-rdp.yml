@@ -1,0 +1,38 @@
+title: Anomalous Internal RDP from a Compromised Server - TUNNELBOI Lateral Movement (UNC1860)
+id: bec84115-08b0-4774-a6ea-58ce8711325a
+status: experimental
+description: |
+    Detects the lateral movement / access hand-off that UNC1860 performs with TUNNELBOI, a network controller
+    that manages RDP connections and remote-host access to reach additional internal hosts and provide
+    reliable interactive access handed to other Iranian operators (T1021.001). Keys on remote-interactive
+    logons (Windows Security Event ID 4624 LogonType 10) over the network. On its own type-10 4624 is common
+    in administered environments, so operate this as an anomaly analytic: RDP sourced from a web/edge server
+    that should not initiate RDP, newly-observed source-to-destination host pairs, first-seen RDP paths for
+    the account, and off-hours access. Correlate the source host with a compromised IIS/SharePoint server to
+    raise fidelity. Requires Windows authentication (logon) event logging.
+references:
+    - https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.unc1860
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    filter_local:
+        IpAddress:
+            - '-'
+            - '127.0.0.1'
+            - '::1'
+    condition: selection and not filter_local
+falsepositives:
+    - Legitimate administrative RDP and jump-host access - baseline expected admin accounts and
+      source/destination pairs; operate as a new-path / off-hours anomaly rather than on every type-10 logon
+    - Help-desk remote support sessions - allowlist known support hosts
+level: medium

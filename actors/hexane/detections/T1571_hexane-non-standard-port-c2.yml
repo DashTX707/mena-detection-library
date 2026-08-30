@@ -1,0 +1,41 @@
+title: HEXANE C2 Over Non-Standard Port
+id: 6fa8a07f-818c-4e30-8244-3f7ee2e1e60f
+status: experimental
+description: |
+    Detects HEXANE / Lyceum command-and-control traffic sent over non-standard ports (T1571). Keys on
+    outbound connections carrying web/DNS-style C2 to destination ports that do not match the expected
+    service - for example HTTP(S) beaconing to high/uncommon ports, or DNS traffic to a port other than
+    53 - a protocol-on-wrong-port mismatch visible in firewall/netflow telemetry. Best operated as an
+    analytic that flags established outbound sessions to uncommon ports from workstation subnets.
+    Requires firewall/netflow logging with port and direction.
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1571
+    - mena-detection-library.hexane
+logsource:
+    category: firewall
+detection:
+    selection_outbound:
+        direction: 'outbound'
+        action: 'allow'
+    selection_ports:
+        dst_port:
+            - 4443
+            - 8443
+            - 8080
+            - 8000
+            - 5353
+            - 6666
+            - 8081
+            - 9001
+    condition: selection_outbound and selection_ports
+falsepositives:
+    - Legitimate applications and dev/test services that use alternate ports (proxies, internal
+      management consoles) - baseline expected destinations and ports per environment
+    - Corporate VPN or SaaS on non-standard ports - allowlist known endpoints
+level: low

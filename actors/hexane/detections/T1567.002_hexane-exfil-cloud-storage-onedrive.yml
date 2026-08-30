@@ -1,0 +1,42 @@
+title: HEXANE Marlin Exfiltration to Cloud Storage (OneDrive / Graph)
+id: f80df043-cd3d-4547-aa9f-9ae36f9959d8
+status: experimental
+description: |
+    Detects HEXANE / Lyceum exfiltration of collected data to cloud-storage services (T1567.002),
+    notably the Marlin backdoor's abuse of Microsoft OneDrive / Graph API for its C2 and data upload
+    channel. Keys on outbound uploads to cloud-storage/OneDrive/Graph endpoints from non-browser or
+    unexpected processes and on anomalous upload volume to those hosts. Best operated with data-volume
+    and rare-process analytics on proxy/DLP telemetry. Requires web-proxy or CASB/DLP logging.
+references:
+    - https://www.welivesecurity.com/
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1567.002
+    - mena-detection-library.hexane
+logsource:
+    category: proxy
+detection:
+    selection_dest:
+        c-uri-host|contains:
+            - 'graph.microsoft.com'
+            - '1drv.ms'
+            - 'onedrive.live.com'
+            - 'api.onedrive.com'
+            - 'storage.googleapis.com'
+            - 'dropboxapi.com'
+    selection_client:
+        cs-user-agent|contains:
+            - 'python'
+            - 'curl'
+            - 'go-http-client'
+            - 'WinHttp'
+            - 'powershell'
+    condition: selection_dest and selection_client
+falsepositives:
+    - Legitimate sync clients and backup tools uploading to OneDrive/Graph/Drive - allowlist the
+      sanctioned client user agents and processes
+    - Approved API integrations to cloud storage - baseline expected service accounts and volumes
+level: medium

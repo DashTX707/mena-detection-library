@@ -1,0 +1,43 @@
+title: Passive HTTP.sys URL Reservation / IIS Listener Install (UNC1860 TEMPLEDOOR/TOFULOAD)
+id: 9c6830e0-5501-4fd3-ac62-8ae282e347be
+status: experimental
+description: |
+    Flagship UNC1860 detection. The actor's passive main-stage implants (TEMPLEDOOR, controlled via the
+    .NET TEMPLEPLAY controller, and the IOCTL-driven TOFULOAD) install as HTTP request handlers that bind
+    below the IIS/HTTP-API layer, listening for inbound operator traffic on the server's existing web
+    bindings rather than beaconing out (T1505.004). To register a listener on the HTTP.sys kernel stack the
+    operator reserves a URL namespace via 'netsh http add urlacl' (or an equivalent HttpSetServiceConfiguration
+    call), which is abnormal outside a controlled application deployment. Keys on process-creation of
+    netsh.exe adding an HTTP URL-ACL / URL reservation, or a non-IIS host process (cmd/powershell/rundll32
+    lineage) manipulating HTTP.sys service configuration. Pair with periodic review of 'netsh http show urlacl'
+    for reservations not tied to a legitimate application.
+references:
+    - https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html
+    - https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.004
+    - mena-detection-library.unc1860
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_netsh:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains|all:
+            - 'http'
+            - 'urlacl'
+    selection_netsh_add:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains:
+            - 'add urlacl'
+            - 'add sslcert'
+            - 'add iplisten'
+    condition: selection_netsh or selection_netsh_add
+falsepositives:
+    - Legitimate application installers / developers reserving URL namespaces for a self-hosted HTTP service
+      (WCF, HttpListener apps) - baseline expected URL-ACLs per server and scope to change windows
+    - Administrators binding SSL certificates to HTTP.sys during a documented deployment
+level: high

@@ -1,0 +1,39 @@
+title: Pioneer Kitten SpaceAgentTaskMgrSHR Scheduled Task and Masquerading Task/Service
+id: 297dec49-7871-4a17-965d-9ea76e3b962e
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten persistence via a scheduled task that masquerades as a
+    legitimate agent (T1053.005 Scheduled Task, T1036.004 Masquerade Task or Service). The actor
+    creates the task SpaceAgentTaskMgrSHR inside the Windows\Spaceport\ task folder, which performs
+    DLL side-loading to launch a payload, and creates a second scheduled task to load malware through
+    installed backdoors. Keys on Task Scheduler operational logging (Event ID 4698 task creation) and
+    on the actor-specific task name / task-folder path. The name and Spaceport folder are highly
+    specific to this actor.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1053.005
+    - attack.t1036.004
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    service: taskscheduler
+detection:
+    selection_event:
+        EventID:
+            - 4698
+            - 4702
+    selection_name:
+        TaskName|contains:
+            - 'SpaceAgentTaskMgrSHR'
+            - '\Spaceport\'
+    condition: all of selection_*
+falsepositives:
+    - Genuine Microsoft Spaceport-related tasks are uncommon on endpoints - validate the task action,
+      the binary it launches and the creating account before dismissing
+level: high

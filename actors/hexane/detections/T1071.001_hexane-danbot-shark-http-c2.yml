@@ -1,0 +1,40 @@
+title: HEXANE DanBot / Shark HTTP(S) C2 Beaconing
+id: c949d746-5b8d-4439-a7ec-104000ecdfb6
+status: experimental
+description: |
+    Detects HEXANE / Lyceum HTTP(S)-based command-and-control used by the DanBot and Shark backdoors
+    as an alternative to DNS tunneling (T1071.001 web protocols). Keys on outbound web requests
+    exhibiting beacon characteristics - non-browser or scripted user agents, requests to
+    newly-observed/low-reputation hosts, and repetitive fixed-interval GET/POST to a small set of URIs
+    from unexpected processes. Best operated with beacon-interval and rare-user-agent analytics on
+    proxy telemetry. Requires web-proxy or TLS/HTTP metadata logging.
+references:
+    - https://www.secureworks.com/research/lyceum-takes-center-stage-in-middle-east-campaign
+    - https://attack.mitre.org/groups/G1001/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.hexane
+logsource:
+    category: proxy
+detection:
+    selection_ua:
+        cs-user-agent|contains:
+            - 'python'
+            - 'curl'
+            - 'go-http-client'
+            - 'WinHttp'
+            - 'Microsoft.XMLHTTP'
+            - 'powershell'
+    selection_method:
+        cs-method:
+            - 'GET'
+            - 'POST'
+    condition: selection_ua and selection_method
+falsepositives:
+    - Legitimate scripted API clients and software-update agents emitting non-browser user agents -
+      baseline expected automation hosts and destinations
+    - Monitoring/health-check tooling - allowlist known user agents and endpoints
+level: medium

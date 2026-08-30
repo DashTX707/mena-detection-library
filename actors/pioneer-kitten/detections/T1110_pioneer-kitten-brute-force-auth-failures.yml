@@ -1,0 +1,34 @@
+title: Pioneer Kitten Brute Force Authentication Failure Spikes
+id: fc216d27-f093-48de-b660-cf919ed4a94d
+status: experimental
+description: |
+    Detects Pioneer Kitten / Fox Kitten brute-force credential attacks against exposed and internal
+    services (T1110 Brute Force). Keys on bursts of Windows failed-logon events (Event ID 4625),
+    particularly status codes indicating bad password / user-not-found, which manifest as
+    authentication-failure spikes, account lockouts and password-spray patterns. Operate as a
+    threshold analytic: many failures from one source, or one password against many accounts, over a
+    short window. Requires account-logon failure auditing enabled.
+references:
+    - https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+    - https://attack.mitre.org/groups/G0117/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1110
+    - mena-detection-library.pioneer-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4625
+        Status:
+            - '0xc000006a'
+            - '0xc0000064'
+            - '0xc000006d'
+    condition: selection
+falsepositives:
+    - Misconfigured service accounts or applications repeatedly presenting stale credentials -
+      allowlist known offenders and tune the threshold to the environment baseline
+level: medium

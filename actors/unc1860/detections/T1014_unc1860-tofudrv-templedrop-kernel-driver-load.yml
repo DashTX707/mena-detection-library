@@ -1,0 +1,55 @@
+title: Malicious / Repurposed Kernel Driver Load - TOFUDRV & Sheed-AV TEMPLEDROP (UNC1860)
+id: 0bb3d2ee-76fa-48ad-8d8d-a25522cf7794
+status: experimental
+description: |
+    Flagship UNC1860 kernel detection. The actor operates from kernel mode using a malicious Windows driver
+    TOFUDRV (functionality overlapping the WINTAPIX driver family) for privileged code execution and
+    IOCTL-driven passive command handling (T1014), and repurposes a legitimate signed Iranian 'Sheed'
+    antivirus filesystem filter driver as TEMPLEDROP to protect deployed malware files from modification or
+    deletion - a trusted third-party driver obtained and weaponized as defensive tooling (T1588.002). Keys on
+    driver-load telemetry (Sysmon EID 6) for a .sys image that is unsigned / bears an invalid or absent
+    Authenticode signature, loads from a non-standard/user-writable path, or is the Sheed-AV filter driver
+    loading on a host that does not run that AV product. Correlate with Microsoft vulnerable/blocked-driver
+    policy hits and driver hash/signature review.
+references:
+    - https://thehackernews.com/2024/09/iranian-apt-unc1860-linked-to-mois.html
+    - https://securityaffairs.com/168656/apt/unc1860-provides-iran-linked-apts-access-middle-east.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.resource-development
+    - attack.t1014
+    - attack.t1588.002
+    - mena-detection-library.unc1860
+logsource:
+    category: driver_load
+    product: windows
+detection:
+    selection:
+        ImageLoaded|endswith: '.sys'
+    selection_unsigned:
+        Signed: 'false'
+    selection_badsig:
+        SignatureStatus|contains:
+            - 'Expired'
+            - 'Unavailable'
+            - 'Error'
+    selection_userpath:
+        ImageLoaded|contains:
+            - '\Temp\'
+            - '\ProgramData\'
+            - '\Users\'
+            - '\Windows\Temp\'
+            - '\PerfLogs\'
+    selection_sheed:
+        ImageLoaded|contains:
+            - '\sheed'
+            - '\shdrv'
+    condition: selection and (selection_unsigned or selection_badsig or selection_userpath or selection_sheed)
+falsepositives:
+    - Legitimate third-party drivers that are self-signed or load from vendor paths (baseline the driver
+      catalog and enable Microsoft vulnerable/blocked-driver policy to corroborate)
+    - Hosts that genuinely run the Sheed antivirus product - scope the Sheed match to servers where that AV is
+      not installed
+level: high

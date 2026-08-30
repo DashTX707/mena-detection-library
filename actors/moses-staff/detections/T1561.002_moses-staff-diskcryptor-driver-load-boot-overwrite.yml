@@ -1,0 +1,43 @@
+title: Moses Staff DiskCryptor Driver Load and Boot-Loader / Raw-Disk Overwrite (Pre-Wipe)
+id: 0981c203-244b-4a8f-b0d2-4693662d8857
+status: experimental
+description: |
+    Detects the Moses Staff (DCSrv) destructive disk-structure wipe precursor: loading of the
+    DiskCryptor kernel driver (dcrypt.sys / dcdrv) that DCSrv uses to encrypt every volume and to
+    overwrite the boot-loader with a custom DiskCryptor bootloader, denying access to the operating
+    system (T1561.002). Keys on driver-load telemetry (Sysmon EID 6) for the DiskCryptor driver
+    image/name and for the same driver loaded from a user-writable path. Because the boot-loader
+    overwrite and raw-disk writes to \\.\PhysicalDrive0 render the host unbootable once complete,
+    the driver load is the actionable signal. Requires driver-load telemetry (Sysmon EID 6).
+references:
+    - https://research.checkpoint.com/2021/mosesstaff-targeting-israeli-companies/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1561.002
+    - mena-detection-library.moses-staff
+logsource:
+    category: driver_load
+    product: windows
+detection:
+    selection_name:
+        ImageLoaded|contains:
+            - 'dcrypt.sys'
+            - 'dcdrv'
+            - 'diskcryptor'
+    selection_userpath:
+        ImageLoaded|endswith: '.sys'
+        ImageLoaded|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Public\'
+    condition: selection_name or selection_userpath
+falsepositives:
+    - A sanctioned DiskCryptor installation performing legitimate full-disk encryption - allowlist
+      the approved driver hash and host set
+    - Third-party low-level disk / imaging drivers loaded from staging directories - baseline the
+      expected signed drivers and their install paths
+level: high
