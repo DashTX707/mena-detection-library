@@ -72,7 +72,7 @@ scripts/                 helpers (validation, Navigator export)
 | [Homeland Justice (Storm-0842)](actors/homeland-justice/) | Iran-nexus · Albania wiper | ✅ published | 34 | 14 | 5 |
 | [Pioneer Kitten (Fox Kitten)](actors/pioneer-kitten/) | Iran-nexus · access broker | ✅ published | 50 | 26 | 5 |
 
-**18 actors · 827 ATT&CK techniques · 338 Sigma detections · 129 hunt packages · 466 sourced IOCs.**
+**18 actors · 827 ATT&CK techniques · 338 Sigma detections · 129 hunt packages · 496 sourced IOCs.**
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 
