@@ -1,0 +1,39 @@
+title: StrongPity Component Initiating Outbound Exfiltration Connection
+id: 9c3e7a10-4b58-4d26-8f91-1a0c2d6b5e37
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM exfiltration where a dropped StrongPity component (nvvscv.exe,
+    wmpsvn32.exe, wndplyr.exe) initiates an outbound HTTPS connection to send the encrypted .sft archive
+    fragments to the C2 (T1041 Exfiltration Over C2 Channel, T1020 Automated Exfiltration). Keys on the
+    named component process making an initiated egress connection over the actor's non-standard port 1402
+    or 443. The automated, periodic nature of the egress from a single component is the hallmark of the
+    StrongPity collect-stage-exfil loop.
+references:
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+    - https://attack.mitre.org/software/S0491/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - attack.t1020
+    - mena-detection-library.strongpity
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\nvvscv.exe'
+            - '\wmpsvn32.exe'
+            - '\wndplyr.exe'
+    selection_net:
+        Initiated: 'true'
+        DestinationPort:
+            - 1402
+            - 443
+    condition: all of selection_*
+falsepositives:
+    - These component names are actor-specific; an initiated external connection from one is high
+      confidence - confirm the destination reputation and correlate with prior staging before dismissing
+level: high

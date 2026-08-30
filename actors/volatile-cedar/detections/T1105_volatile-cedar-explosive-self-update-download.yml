@@ -1,0 +1,45 @@
+title: Volatile Cedar Explosive RAT Self-Update Executable Download From C2
+id: 66c4b79e-0a66-4469-874d-47146854fca9
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar Explosive RAT ingress tool transfer / self-update
+    (T1105). Explosive includes a self-update mechanism that retrieves updated binaries and DLLs from
+    its static and DGA-based update servers, letting operators refresh the implant to add
+    functionality and evade detection. Keys on HTTP(S) retrieval of executable content (PE/DLL MIME
+    type or executable file extension in the URI) from the known Explosive C2 domain and IP set.
+    Anchor is the download-of-executable-from-C2 behavior; the host list is the high-fidelity selector.
+references:
+    - https://blog.checkpoint.com/security/volatilecedar/
+    - https://securelist.com/sinkholing-volatile-cedar-dga-infrastructure/69421/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.volatile-cedar
+logsource:
+    category: proxy
+detection:
+    selection_host:
+        cs-host:
+            - 'edortntexplore.info'
+            - '68.65.122.109'
+            - '74.208.73.149'
+            - '191.101.5.183'
+            - '198.101.242.72'
+            - '169.50.13.61'
+    selection_executable:
+        - cs-uri-stem|endswith:
+              - '.exe'
+              - '.dll'
+              - '.bin'
+              - '.dat'
+        - sc-content-type|contains:
+              - 'application/x-msdownload'
+              - 'application/octet-stream'
+              - 'application/x-dosexec'
+    condition: all of selection_*
+falsepositives:
+    - Software-update traffic to a legitimately similar host is unlikely given the known-bad host list;
+      validate the downloaded object and the requesting process
+level: high

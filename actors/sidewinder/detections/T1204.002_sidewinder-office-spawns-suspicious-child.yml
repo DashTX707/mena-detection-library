@@ -1,0 +1,48 @@
+title: SideWinder Office Application Spawning Script or Shell Interpreter
+id: 5b2f8c14-6d3a-4e29-9f71-1a2b3c4d5e6f
+status: experimental
+description: |
+    Detects a Microsoft Office application (Word, Excel, PowerPoint, Outlook) spawning a
+    script host, shell or LOLBIN child process. This is the on-host manifestation of
+    SideWinder (Rattlesnake / APT-C-17) weaponized DOCX/RTF spear-phishing attachments that
+    use remote template injection and, historically, Office DDE to launch the multi-stage
+    mshta.exe -> obfuscated JavaScript -> .NET ModuleInstaller loader chain. Anchors on the
+    Office parent-to-child process lineage rather than IOCs because the actor rotates
+    payloads, file names and infrastructure within hours.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.t1566.001
+    - attack.t1204.002
+    - attack.t1559.002
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+    selection_child:
+        Image|endswith:
+            - '\mshta.exe'
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    condition: all of selection_*
+falsepositives:
+    - Office add-ins or enterprise automation legitimately launching scripts or shells - baseline per environment
+    - Help-desk or reporting macros invoking cmd/powershell for support tasks
+level: high

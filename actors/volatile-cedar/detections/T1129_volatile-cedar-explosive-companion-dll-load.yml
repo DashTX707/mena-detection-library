@@ -1,0 +1,46 @@
+title: Volatile Cedar Explosive RAT Companion API DLL Load From User-Writable Path
+id: f954b925-5cc8-44c1-9f6b-9545bc1332ca
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar Explosive RAT module-load behavior (T1129 Shared Modules,
+    T1574.001 Hijack Execution Flow: DLL). Explosive is architected as a main binary plus a separate
+    companion DLL that provides its API/functionality; the loader binary loads this module at runtime
+    so operators can patch the DLL independently to update capability and evade heuristic detection.
+    Keys on image-load telemetry where an unsigned or signature-invalid DLL is loaded from a
+    user-writable/non-system directory (Temp, AppData, ProgramData, Users, Public) - the pattern of a
+    non-OS process loading an untrusted companion module from its own drop directory. Requires
+    Sysmon Event ID 7 (ImageLoad) with signature fields; commonly needs enablement.
+references:
+    - https://blog.checkpoint.com/security/volatilecedar/
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.persistence
+    - attack.t1129
+    - attack.t1574.001
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    category: image_load
+detection:
+    selection_path:
+        ImageLoaded|endswith: '.dll'
+        ImageLoaded|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\Temp\'
+            - '\ProgramData\'
+            - '\Public\'
+    selection_unsigned:
+        Signed: 'false'
+    filter_system:
+        ImageLoaded|contains:
+            - '\Microsoft\'
+            - '\WindowsApps\'
+    condition: all of selection_* and not filter_system
+falsepositives:
+    - Legitimate third-party or in-house applications that ship unsigned DLLs from AppData/ProgramData
+      (some updaters and dev tools) - baseline per host and validate the loading binary and DLL origin
+level: medium

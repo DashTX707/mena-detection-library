@@ -1,0 +1,38 @@
+title: Dark Caracal Compiled HTML Help (hh.exe) Spawning Shell or Downloader
+id: c83f408b-bdf3-4a04-88de-43499b294957
+status: experimental
+description: |
+    Detects the Windows CHM handler hh.exe spawning a command shell or scripting interpreter as a
+    child process. Dark Caracal has abused compiled HTML (.chm) files containing embedded commands
+    to proxy execution of a downloader/payload through the trusted hh.exe binary (T1218.001 System
+    Binary Proxy Execution: Compiled HTML File). hh.exe launching cmd.exe/powershell.exe/mshta.exe
+    is a rare, high-fidelity process-lineage anomaly.
+references:
+    - https://attack.mitre.org/groups/G0070/
+    - https://www.eff.org/deeplinks/2020/12/dark-caracal-you-missed-spot
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1218.001
+    - mena-detection-library.dark-caracal
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        ParentImage|endswith: '\hh.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    condition: selection
+falsepositives:
+    - Legitimate .chm help files almost never spawn shells - investigate the source .chm and the
+      child command line before dismissing
+level: high

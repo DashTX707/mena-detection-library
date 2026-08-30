@@ -1,0 +1,39 @@
+title: Rocket Kitten Masqueraded Artifact Names in %TEMP% (NTSuser / NTUSER.dat GUID / HouseCall)
+id: 282a86e0-32c3-43e4-9fcf-feea32f23326
+status: experimental
+description: |
+    Detects creation of Rocket Kitten payloads that adopt legitimate-looking Windows / Adobe / AV
+    names to blend in (T1036.005 match legitimate resource name or location). The CWoolger
+    keylogger copies itself to %TEMP%\NTSuser.exe and drops as NTUSER.dat{GUID}.exe, and a fake
+    Trend Micro HouseCall installer masquerades as HousecallLauncher.exe. Keys on these
+    system/AV-mimicking executable names created in a user temp path - NTSuser.exe (mimicking the
+    NTUSER.dat hive), an NTUSER.dat*.exe (a registry-hive name with an .exe extension is never a
+    genuine artifact) or a HousecallLauncher.exe outside a real Trend Micro install.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_temp:
+        TargetFilename|contains:
+            - '\Temp\'
+            - '\AppData\Local\Temp'
+    selection_names:
+        - TargetFilename|endswith: '\NTSuser.exe'
+        - TargetFilename|contains: 'NTUSER.dat'
+          TargetFilename|endswith: '.exe'
+        - TargetFilename|endswith: '\HousecallLauncher.exe'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate Trend Micro HouseCall executed from its official installer path (not %TEMP%) -
+      an NTUSER.dat*.exe or NTSuser.exe in Temp has no benign equivalent and should be escalated
+level: high

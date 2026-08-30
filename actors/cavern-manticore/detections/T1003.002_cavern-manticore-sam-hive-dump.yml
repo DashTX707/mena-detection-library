@@ -1,0 +1,34 @@
+title: Cavern Manticore SAM Registry Hive Dump for Credential Extraction
+id: 6d8f0a24-3b5c-4e7a-9d1f-2b4c6e8a0d12
+status: experimental
+description: |
+    Detects Cavern Manticore (TunnelVision) dumping the SAM registry hive to extract local credential
+    material (T1003.002 OS Credential Dumping: Security Account Manager), observed during Horizon/Log4Shell
+    intrusions. The actor saves or reads the SAM (and often SYSTEM/SECURITY) hives via reg.exe save. Keys on
+    the reg.exe save command line targeting the HKLM\SAM hive.
+references:
+    - https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.002
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_reg:
+        Image|endswith: '\reg.exe'
+        CommandLine|contains: 'save'
+    selection_hive:
+        CommandLine|contains:
+            - 'hklm\sam'
+            - 'hklm\system'
+            - 'hklm\security'
+            - '\\HKLM\SAM'
+    condition: selection_reg and selection_hive
+falsepositives:
+    - Backup or migration tooling occasionally exports registry hives; a reg save of HKLM\SAM by an
+      interactive/remote session is rarely legitimate - validate the operator and destination path
+level: high

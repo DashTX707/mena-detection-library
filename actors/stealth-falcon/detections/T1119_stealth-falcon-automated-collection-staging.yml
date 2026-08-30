@@ -1,0 +1,45 @@
+title: Stealth Falcon Automated Local Collection and Archive Staging
+id: 0b5c7e29-3a64-4d18-9f72-2c6b8d4a1e57
+status: experimental
+description: |
+    Detects the Stealth Falcon (FruityArmor) backdoor's automated collection and staging of local data
+    for exfiltration (T1119 Automated Collection, T1005 Data from Local System). The implant gathers
+    files/data from the host on its standing tasking and stages them (often compressed) prior to BITS
+    exfiltration. Keys on scripted PowerShell performing recursive enumeration/compression of user data
+    into an archive from a script-host/backdoor lineage - abnormal automated bulk collection behavior.
+references:
+    - https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/
+    - https://attack.mitre.org/groups/G0038/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1119
+    - attack.t1005
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_collect:
+        CommandLine|contains:
+            - 'Compress-Archive'
+            - 'Get-ChildItem'
+            - '[IO.Compression'
+            - 'CreateFromDirectory'
+    selection_scope:
+        CommandLine|contains:
+            - '-Recurse'
+            - '\Documents'
+            - '\Desktop'
+            - '\Downloads'
+            - '-Include'
+    condition: selection_ps and selection_collect and selection_scope
+falsepositives:
+    - Backup scripts and admin housekeeping legitimately archive user directories - correlate with the
+      parent lineage and any subsequent BITS/HTTP transfer of the resulting archive
+level: medium

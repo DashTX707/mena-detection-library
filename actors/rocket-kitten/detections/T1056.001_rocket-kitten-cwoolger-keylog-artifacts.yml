@@ -1,0 +1,39 @@
+title: Rocket Kitten CWoolger Keylog File Artifacts in %TEMP%
+id: 9370d4dd-79e5-44ba-8d8b-b6e708da8d3b
+status: experimental
+description: |
+    Detects creation of the keystroke-log files written by Rocket Kitten's CWoolger
+    (TSPY_WOOLERG) keylogger. The implant hooks the keyboard via SetWindowsHookExW and records
+    keystrokes to %TEMP%\wlg.dat (later variants %TEMP%\AdobeARM.log / %TEMP%\AdobeARMM.log) in a
+    '[Window Title] - [Application Name] ([Language])' format (T1056.001 keylogging). Keys on the
+    actor-specific log filenames created under a user temp path. AdobeARM.log written outside a
+    genuine Adobe install path is a strong tell.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1056.001
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_temp:
+        TargetFilename|contains:
+            - '\Temp\'
+            - '\AppData\Local\Temp'
+    selection_names:
+        TargetFilename|endswith:
+            - '\wlg.dat'
+            - '\AdobeARM.log'
+            - '\AdobeARMM.log'
+    condition: all of selection_*
+falsepositives:
+    - Genuine Adobe updater components normally write ARM logs under their own Program Files /
+      Common Files paths, not %TEMP% - a wlg.dat or AdobeARM*.log created in Temp by a non-Adobe,
+      unsigned process should be treated as keylogger activity
+level: high

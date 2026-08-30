@@ -1,0 +1,57 @@
+title: CopyKittens Matryoshka DNS C2 to Lookalike Nameserver Infrastructure
+id: 3dae64aa-c979-4322-a17c-25e1482e70bc
+status: experimental
+description: |
+    Detects DNS resolution of CopyKittens (Slayer Kitten, G0052) command-and-control and CDN/service
+    lookalike domains used by the Matryoshka RAT for DNS-based C2 and by the actor to proxy traffic
+    through masquerading infrastructure in Operation Wilted Tulip (T1071.004 DNS, T1036.005 Masquerading,
+    T1090 Proxy). Anchors on host DNS-query telemetry (Sysmon EID 22) for known actor C2 / nameserver /
+    update-themed lookalike domains that do not map to the impersonated provider.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://www.clearskysec.com/copykitten-jpost/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.stealth
+    - attack.t1071.004
+    - attack.t1036.005
+    - attack.t1090
+    - mena-detection-library.copykittens
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection_domains:
+        QueryName|endswith:
+            - 'nameserver.win'
+            - 'nsserver.host'
+            - 'dnsserv.host'
+            - 'gtld-servers.services'
+            - 'gtld-servers.solutions'
+            - 'gtld-servers.zone'
+            - 'gsvr-static.co'
+            - 'wheatherserviceapi.info'
+            - 'wethearservice.com'
+            - 'windefender.org'
+            - 'cortana-search.com'
+            - 'winupdate64.com'
+            - 'winupdate64.net'
+            - 'winupdate64.org'
+            - 'windowkernel.com'
+            - 'windowskernel14.com'
+            - 'javaupdate.co'
+            - 'javaupdator.com'
+            - 'mswordupdate17.com'
+            - 'mcafee-analyzer.com'
+            - 'digicert.online'
+            - 'symcd.xyz'
+            - 'ipresolver.org'
+            - 'intelchip.org'
+            - 'cissco.net'
+    condition: selection_domains
+falsepositives:
+    - Very unlikely - these are known-malicious actor domains; any resolution warrants host isolation
+      review and identification of the querying process
+level: high

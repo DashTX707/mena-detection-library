@@ -1,0 +1,46 @@
+title: Dark Caracal Bandook Public IP Discovery Lookup
+id: eb769055-16a6-48e1-ac58-cb465e2c6eee
+status: experimental
+description: |
+    Detects a non-browser process resolving a public-IP / external-connectivity lookup service.
+    After implant start Bandook retrieves the victim's public IP address (command @0011) to profile
+    the host's internet connectivity and geolocation (T1016.001 System Network Configuration
+    Discovery: Internet Connection Discovery). Keys on a DNS query to common IP-lookup services from
+    a process that is not a normal web browser - the hollowed iexplore.exe or loader performing this
+    lookup shortly after execution is the signal.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1016.001
+    - mena-detection-library.dark-caracal
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection:
+        QueryName|contains:
+            - 'ipify.org'
+            - 'ipinfo.io'
+            - 'checkip.dyndns.org'
+            - 'icanhazip.com'
+            - 'wtfismyip.com'
+            - 'ip-api.com'
+            - 'myexternalip.com'
+            - 'ipecho.net'
+    filter_browser:
+        Image|endswith:
+            - '\chrome.exe'
+            - '\firefox.exe'
+            - '\msedge.exe'
+            - '\brave.exe'
+            - '\opera.exe'
+    condition: selection and not filter_browser
+falsepositives:
+    - Legitimate applications and updaters that check external connectivity - baseline expected
+      processes; strongest when the querying process is iexplore.exe with an anomalous parent or a
+      user-path binary
+level: medium

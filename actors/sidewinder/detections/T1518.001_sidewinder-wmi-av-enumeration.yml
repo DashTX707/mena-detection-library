@@ -1,0 +1,42 @@
+title: SideWinder Security Software Discovery via WMI SecurityCenter2 Query
+id: 16b675ad-16c3-4295-b4ae-a3b4c5d6e7f8
+status: experimental
+description: |
+    Detects enumeration of installed antivirus/security products through WMI queries against
+    the SecurityCenter2 namespace (AntiVirusProduct / AntiSpywareProduct / FirewallProduct) or
+    installed-software classes. The SideWinder (Rattlesnake / APT-C-17) ModuleInstaller
+    downloader reads AV productState values via WMI and checks running processes against a list
+    of ~137 security-tool names, then adapts its execution and persistence path accordingly.
+    This defensive-environment fingerprinting is characteristic of the loader chain.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - attack.t1518
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\wmic.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wbemtest.exe'
+            - '\cscript.exe'
+            - '\wscript.exe'
+    selection_query:
+        CommandLine|contains:
+            - 'SecurityCenter2'
+            - 'AntiVirusProduct'
+            - 'AntiSpywareProduct'
+            - 'FirewallProduct'
+            - 'Win32_Product'
+    condition: all of selection_*
+falsepositives:
+    - Endpoint inventory, asset-management or monitoring agents that legitimately query SecurityCenter2 or installed software - allowlist known tooling
+level: medium

@@ -1,0 +1,45 @@
+title: SideWinder Backdoor Loader DLL Side-Loading from Non-System Path
+id: d2723169-d28f-4e51-b06a-6f708192a3b4
+status: experimental
+description: |
+    Detects DLL side-loading of the SideWinder (Rattlesnake / APT-C-17) Backdoor Loader: a
+    process loading a system-library-named DLL (propsys.dll, vsstrace.dll, JetCfg.dll,
+    policymanager.dll, winmm.dll, xmllite.dll, dcntel.dll, UxTheme.dll and rotated variants)
+    from a user-writable / non-system directory rather than System32/SysWOW64/WinSxS. The
+    side-loaded Backdoor Loader decrypts and loads the StealerBot implant in memory. Anchors
+    on the load LOCATION (path mismatch) rather than the DLL name because SideWinder rotates
+    loader file names when detected, per Kaspersky.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1574.001
+    - attack.t1036.005
+    - mena-detection-library.sidewinder
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_dll:
+        ImageLoaded|endswith:
+            - '\propsys.dll'
+            - '\vsstrace.dll'
+            - '\jetcfg.dll'
+            - '\policymanager.dll'
+            - '\winmm.dll'
+            - '\xmllite.dll'
+            - '\dcntel.dll'
+            - '\uxtheme.dll'
+    filter_system_path:
+        ImageLoaded|startswith:
+            - 'C:\Windows\System32\'
+            - 'C:\Windows\SysWOW64\'
+            - 'C:\Windows\WinSxS\'
+            - 'C:\Program Files\'
+            - 'C:\Program Files (x86)\'
+    condition: selection_dll and not filter_system_path
+falsepositives:
+    - Portable or self-contained applications that legitimately ship a private copy of a system-named DLL alongside their EXE - allowlist the specific signed application path and hash
+level: high

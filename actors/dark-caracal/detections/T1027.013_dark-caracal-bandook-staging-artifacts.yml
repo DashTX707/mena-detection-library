@@ -1,0 +1,45 @@
+title: Dark Caracal Bandook Encoded/Packed Staging Artifacts Written
+id: ca58196e-bae1-4dd5-9812-8100183081e1
+status: experimental
+description: |
+    Detects the Dark Caracal / Bandook second-stage staging artifacts being written to disk,
+    typically into the Users\Public folder by the PowerShell loader. The loader stages RC4-encrypted
+    payload files a.png and b.png (encoded/encrypted file at rest, T1027.013), the Invoke-PSImage
+    steganographic untitled.png (T1027.003 Steganography), the base64 blob sdmc.jpg and fmx.ps1, and
+    a benign decoy draft.docx; the concatenated payload is UPX-packed before execution (T1027.002
+    Software Packing). Keys on the co-occurrence of these actor-specific filenames in a user-writable
+    path. Best paired with the PowerShell-loader rule for lineage.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1027.013
+    - attack.t1027.003
+    - attack.t1027.002
+    - mena-detection-library.dark-caracal
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_names:
+        TargetFilename|endswith:
+            - '\a.png'
+            - '\b.png'
+            - '\untitled.png'
+            - '\sdmc.jpg'
+            - '\fmx.ps1'
+            - '\draft.docx'
+    selection_path:
+        TargetFilename|contains:
+            - '\Users\Public\'
+            - '\AppData\'
+            - '\Temp\'
+    condition: all of selection_*
+falsepositives:
+    - Generic filenames such as a.png/b.png can occur benignly - the fidelity comes from several of
+      these appearing together in Users\Public alongside PowerShell loader activity; alert on the
+      cluster rather than a single common name where possible
+level: medium

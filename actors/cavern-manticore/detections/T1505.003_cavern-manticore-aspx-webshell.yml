@@ -1,0 +1,35 @@
+title: Cavern Manticore ASPX Web Shell Creation (aspx_[a-z]{13} Pattern)
+id: a1b2c3d4-e5f6-4a7b-9c8d-1e2f3a4b5c62
+status: experimental
+description: |
+    Detects Cavern Manticore (Cobalt Mirage) persistence via ASPX web shells dropped on compromised
+    Exchange/IIS servers after ProxyShell exploitation (T1505.003 Server Software Component: Web Shell).
+    The actor uses a distinctive file-name pattern aspx_[a-z]{13}.aspx (e.g. aspx_okqmeibjplh.aspx)
+    written into IIS/Exchange web roots. Keys on the file-creation of an ASPX matching that pattern
+    inside a web-content directory - an actor-specific, high-fidelity file-integrity signal.
+references:
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_name:
+        TargetFilename|re: 'aspx_[a-z]{13}\.aspx$'
+    selection_path:
+        TargetFilename|contains:
+            - '\inetpub\'
+            - '\FrontEnd\HttpProxy\'
+            - '\ClientAccess\'
+            - '\aspnet_client\'
+            - '\wwwroot\'
+    condition: selection_name and selection_path
+falsepositives:
+    - Extremely unlikely - the aspx_[a-z]{13}.aspx naming convention in a web root is not produced by
+      legitimate applications; treat any hit as a probable web shell
+level: high

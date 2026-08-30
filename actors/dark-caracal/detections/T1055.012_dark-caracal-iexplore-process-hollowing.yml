@@ -1,0 +1,39 @@
+title: Dark Caracal Bandook Process Hollowing Into Internet Explorer
+id: ffc4a4c0-072f-40ce-9844-a098734342f3
+status: experimental
+description: |
+    Detects Internet Explorer (iexplore.exe) started by an anomalous parent, indicative of the
+    Dark Caracal / Bandook Delphi loader hollowing the RAT into a trusted iexplore.exe process
+    (T1055.012 Process Hollowing). The loader reconstructs Bandook in memory and injects it into a
+    newly created iexplore.exe to mask the RAT under a trusted image. iexplore.exe is normally
+    launched by explorer.exe, another iexplore.exe or a browser broker - a parent such as
+    powershell.exe, a user-path loader, or an Office process is anomalous.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1055.012
+    - mena-detection-library.dark-caracal
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\iexplore.exe'
+    filter_parent_legit:
+        ParentImage|endswith:
+            - '\explorer.exe'
+            - '\iexplore.exe'
+            - '\ieuser.exe'
+            - '\svchost.exe'
+            - '\userinit.exe'
+    filter_path:
+        Image|contains: '\Program Files'
+    condition: selection and not filter_parent_legit and filter_path
+falsepositives:
+    - Enterprise applications or shortcuts that launch Internet Explorer / IE mode from unusual
+      parents - baseline expected launchers; pair with anomalous outbound C2 from iexplore.exe
+level: high

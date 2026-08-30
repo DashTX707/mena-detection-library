@@ -1,0 +1,49 @@
+title: Rocket Kitten Office Application Spawning Script or Dropper (GHOLE Macro Chain)
+id: e520aa77-198d-47b3-9c08-c884d7241b91
+status: experimental
+description: |
+    Detects Microsoft Office applications (excel/powerpnt/winword) spawning a script host,
+    LOLBin or shell child process, the endpoint-observable stage of Rocket Kitten (Operation
+    Woolen-GoldFish) spear-phishing. The actor delivers macro-laden Office attachments (delivery
+    documents detected as X2KM_DROPPR); enabling the VBA macro drops and executes the GHOLE
+    backdoor DLL (a modified Core Impact agent). This keys on the anomalous Office parent /
+    script-or-dropper child process lineage (T1137.001 Office template macros, T1204.002 user
+    execution of a malicious file, and the macro-execution landing point of T1566.001
+    spearphishing attachment), not on any single sample hash.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://www.clearskysec.com/thamar-reservoir/
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.initial-access
+    - attack.t1137.001
+    - attack.t1204.002
+    - attack.t1566.001
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\winword.exe'
+    selection_child:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\powershell.exe'
+            - '\cmd.exe'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate Office add-ins, enterprise document-automation macros or template deployment
+      tooling that intentionally shell out to script hosts - validate the child command line,
+      the dropped/loaded module and the document origin before dismissing
+level: high

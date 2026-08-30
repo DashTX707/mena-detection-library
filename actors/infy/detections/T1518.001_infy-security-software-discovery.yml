@@ -1,0 +1,45 @@
+title: Infy Security Software Discovery (AV Product Enumeration Before Install)
+id: 1e3f5a7c-9b0d-4e26-8f1a-3c5d7e9f0ab8
+status: experimental
+description: |
+    Detects Infy / Tonnerre security-software discovery (T1518.001 Software Discovery: Security Software
+    Discovery). Before installing, Infy checks for antivirus - probing AV installation directories and
+    specifically checking for Kaspersky Labs, Avast and Trend Micro - and will abort installation if AV
+    is present; Tonnerre also enumerates installed antivirus. Keys on discovery-utility processes
+    (reg/where/tasklist/findstr/wmic) whose command lines reference known AV vendor/product names. This
+    is a behavioral proxy for the native GetFileAttributes probing; correlate with a preceding dropper.
+references:
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - mena-detection-library.infy
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        Image|endswith:
+            - '\reg.exe'
+            - '\where.exe'
+            - '\tasklist.exe'
+            - '\findstr.exe'
+            - '\wmic.exe'
+            - '\cmd.exe'
+    selection_av:
+        CommandLine|contains:
+            - 'Kaspersky'
+            - 'Avast'
+            - 'Trend Micro'
+            - 'TrendMicro'
+            - 'avp.exe'
+            - 'AvastUI'
+    condition: selection_tool and selection_av
+falsepositives:
+    - Legitimate IT inventory/asset scripts and EDR health checks that enumerate AV products - baseline
+      expected inventory tooling and accounts; enumeration of AV vendors by an unusual parent immediately
+      before a file drop is the actor pattern
+level: medium

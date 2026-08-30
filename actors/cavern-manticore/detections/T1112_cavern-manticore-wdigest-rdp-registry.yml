@@ -1,0 +1,31 @@
+title: Cavern Manticore WDigest UseLogonCredential and RDP Enable Registry Modification
+id: 4e6a8c02-7b9d-4f1a-b3c5-8e0a2c4d6f29
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270) registry tampering to enable plaintext credential capture and RDP
+    (T1112 Modify Registry). The actor sets WDigest UseLogonCredential=1 (forcing LSASS to keep cleartext
+    credentials in memory) and clears fDenyTSConnections to enable Terminal Server / RDP. Keys on the
+    registry-set events for the WDigest value and the Terminal Server RDP-enable value.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1112
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_wdigest:
+        TargetObject|endswith: '\Control\SecurityProviders\WDigest\UseLogonCredential'
+        Details: 'DWORD (0x00000001)'
+    selection_rdp:
+        TargetObject|endswith: '\Control\Terminal Server\fDenyTSConnections'
+        Details: 'DWORD (0x00000000)'
+    condition: selection_wdigest or selection_rdp
+falsepositives:
+    - Enabling RDP is a legitimate administrative action; the WDigest UseLogonCredential=1 set is rarely
+      benign on modern systems - prioritize the WDigest hit and correlate the RDP-enable with change control
+level: high

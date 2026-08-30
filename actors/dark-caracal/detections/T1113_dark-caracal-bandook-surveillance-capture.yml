@@ -1,0 +1,43 @@
+title: Dark Caracal Bandook Surveillance Capture DLLs Loaded by Hollowed Browser
+id: 11e3cfc4-4599-49cf-8c49-4fc71a2a87eb
+status: experimental
+description: |
+    Detects the Dark Caracal / Bandook surveillance capability cluster via capture-related library
+    loads by the hollowed iexplore.exe host process. Once Bandook runs inside a hollowed
+    iexplore.exe it captures desktop screenshots (T1113 Screen Capture, GDI BitBlt), logs keystrokes
+    via low-level hooks (T1056.001 Keylogging), records microphone audio (T1123 Audio Capture) and
+    captures webcam video (T1125 Video Capture). Keys on iexplore.exe loading video/audio capture
+    libraries (avicap32.dll, msvfw32.dll, winmm.dll, dsound.dll) - modules a real browser process
+    does not normally load - as an observable proxy for this multimedia surveillance behavior.
+    Requires image-load telemetry (Sysmon EID 7).
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1113
+    - attack.t1056.001
+    - attack.t1123
+    - attack.t1125
+    - mena-detection-library.dark-caracal
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_host:
+        Image|endswith: '\iexplore.exe'
+    selection_capture:
+        ImageLoaded|endswith:
+            - '\avicap32.dll'
+            - '\msvfw32.dll'
+            - '\winmm.dll'
+            - '\dsound.dll'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate multimedia plugins or IE-mode content that loads audio/video libraries - the anchor
+      is a hollowed/anomalous iexplore.exe; pair with the process-hollowing rule and anomalous C2
+      for confirmation. This is an image-load proxy for API-level capture that is best confirmed
+      with EDR behavioral telemetry.
+level: medium

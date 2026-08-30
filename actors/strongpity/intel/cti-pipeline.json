@@ -1,0 +1,469 @@
+{
+  "report_title": "StrongPity / PROMETHIUM / APT-C-41 Actor Intelligence Pack — Stage-1 CTI Extraction (Türkiye-nexus watering-hole / trojanized-installer espionage)",
+  "source": "Kaspersky/Securelist 'On the StrongPity Waterhole Attacks Targeting Italian and Belgian Encryption Users' (2016, https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/); ESET WeLiveSecurity 'StrongPity-like spyware replaces FinFisher' (2017-12-08, https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/); Bitdefender 'StrongPity APT — Revealing Trojanized Tools, Working Hours and Infrastructure' whitepaper (2020, https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf); Cisco Talos 'PROMETHIUM extends global reach' (2020, https://blog.talosintelligence.com/promethium-extends-with-strongpity/); MITRE ATT&CK Group PROMETHIUM G0056 (https://attack.mitre.org/groups/G0056/) and Software StrongPity S0491 (https://attack.mitre.org/software/S0491/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "StrongPity",
+    "mitre_id": "",
+    "mitre_canonical_name": "PROMETHIUM",
+    "aliases": [
+      "StrongPity",
+      "PROMETHIUM",
+      "APT-C-41",
+      "StrongPity2",
+      "MITRE ATT&CK group id G0056 (cited as source only, not the actor id)",
+      "MITRE ATT&CK software id S0491 (StrongPity malware)"
+    ],
+    "related_clusters": [
+      "Türkiye-nexus state-aligned cluster (same cluster grouping as Sea Turtle)",
+      "NEODYMIUM (G0055) — overlapping victims/campaign characteristics per Microsoft SIR",
+      "Distinct from WIRTE — do NOT conflate"
+    ],
+    "attribution": "Türkiye-nexus, assessed state-aligned. StrongPity/PROMETHIUM is an espionage activity group active since at least 2012 with a heavy emphasis on Turkish and Syrian (notably Kurdish) targets, plus operations against individuals and organizations of intelligence interest in Italy, Belgium, North Africa and the broader MENA/Europe region. Bitdefender's 2020 victimology placed the majority of victims along the Turkey–Syria border and in Istanbul, consistent with interest in the Turkey–Kurdish geopolitical conflict; ESET's 2017 findings of delivery via ISP-level redirection (a capability that generally requires provider-level cooperation or access) further support a state-aligned assessment. Attribution to a Türkiye-aligned interest is assessed at medium-high confidence; the actor does not self-attribute and no single primary report makes a definitive government-of-Türkiye attribution.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Turkey",
+      "Syria (including Kurdish targets)",
+      "North Africa (broader MENA)"
+    ],
+    "targeted_regions_global": [
+      "Italy",
+      "Belgium",
+      "Europe (broader)"
+    ],
+    "targeted_sectors": [
+      "Individuals of intelligence interest (Kurdish community, activists)",
+      "Users of encryption / privacy software",
+      "Organizations of intelligence interest",
+      "Espionage targets (undifferentiated by industry vertical)"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Italian & Belgian encryption-user watering holes (WinRAR / TrueCrypt)",
+        "date": "2016 (reported October 2016)",
+        "summary": "StrongPity redirected users seeking encryption/archiving software to actor-controlled typosquat sites (ralrab[.]com mimicking rarlab.com; winrar[.]it, winrar[.]be; true-crypt[.]com replicating the TrueCrypt site, with victims funneled from the tamindir.com download portal) that served trojanized WinRAR and TrueCrypt installers. The dropper installs StrongPity components (procexp.exe, nvvscv.exe, prst.dll/prst.cab, wrlck.dll/wrlck.cab, wndplyr.exe) that hunt for documents and for other encryption/remote-admin tools (putty.exe, filezilla.exe, winscp.exe, mstsc.exe, mRemoteNG.exe) and exfiltrate to C2.",
+        "source_url": "https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/"
+      },
+      {
+        "name": "ISP-level redirection campaign (StrongPity2, replacing FinFisher)",
+        "date": "2017 (reported December 2017)",
+        "summary": "ESET observed a StrongPity variant delivered via man-in-the-middle / HTTP on-the-fly browser redirection most likely operating at the ISP level in two countries: victims downloading legitimate applications (CCleaner v5.34, Driver Booster, Opera, Skype, VLC v2.2.6, WinRAR 5.50) were transparently redirected to trojanized versions. Main component wmpsvn32.exe, staged in %temp%\\lang_be29c9f3-83we, persisted via an HKCU Run key ('Help Manager'), exfiltrating to updserv-east-cdn3[.]com with distribution from downloading.internetdownloading[.]co.",
+        "source_url": "https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/"
+      },
+      {
+        "name": "Kurdish-aimed trojanized-tools campaign (Turkey/Syria)",
+        "date": "2018–2020 (Bitdefender whitepaper June 2020)",
+        "summary": "StrongPity trojanized a broad set of legitimate tools (archivers, file-recovery, remote-connection utilities, and even security software — e.g. WinRAR, 7-Zip, WinBox, and others) and selectively delivered them to pre-defined IP lists corresponding to Kurdish targets in Turkey and Syria. The malware components split into dropper, file-searcher (documents by extension), and exfiltration modules; collected files are zipped, XOR-encrypted into hidden .sft files, sent to a three-tier C2 (HTTPS over non-standard TCP 1402, multi-hop proxy), then deleted from disk. It detects ESET/Bitdefender and excludes its own directories from Windows Defender.",
+        "source_url": "https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"
+      }
+    ]
+  },
+  "threat_actors": ["StrongPity", "PROMETHIUM", "APT-C-41", "StrongPity2"],
+  "targeted_regions": ["Turkey", "Syria", "Italy", "Belgium", "North Africa", "Europe", "MENA"],
+  "targeted_sectors": ["Individuals of intelligence interest", "Kurdish community / activists", "Encryption-software users", "Espionage targets"],
+  "malware": [
+    "StrongPity backdoor/spyware (S0491) — dropper + file-searcher + exfiltration components",
+    "StrongPity2 (wmpsvn32.exe, 2017 ISP-redirection variant)",
+    "prst.dll / prst.cab (encrypted config targeting encryption & remote-admin tools)",
+    "wrlck.dll / wrlck.cab (encrypted config, C2 callbacks)"
+  ],
+  "tooling_observed": [
+    "Trojanized WinRAR installers (wrar531*.exe, winrar-x64-531*.exe, WinRAR 5.50)",
+    "Trojanized TrueCrypt installers (TrueCrypt-Setup-7.1a.exe, TrueCrypt-7.2.exe)",
+    "Trojanized CCleaner v5.34, Driver Booster, Opera, Skype, VLC v2.2.6, 7-Zip, WinBox",
+    "procexp.exe / nvvscv.exe / wndplyr.exe (dropped components)",
+    "wmpsvn32.exe (StrongPity2 main component)",
+    "Self-signed / actor code-signing certificates",
+    "Multi-hop / three-tier HTTPS C2 (TCP 1402)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register typosquatting domains that closely mimic legitimate software vendors to host trojanized installers — e.g. ralrab[.]com (vs rarlab.com), winrar[.]it, winrar[.]be, and true-crypt[.]com (a replica of the TrueCrypt site). C2/distribution domains such as updserv-east-cdn3[.]com and downloading.internetdownloading[.]co were also registered.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — domain registration is off-victim; intel/hunt candidate via typosquat/brand monitoring, passive DNS and certificate-transparency tracking around impersonated vendors",
+      "sources": ["https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/", "https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/"]
+    },
+    {
+      "technique_id": "T1584.004",
+      "technique_name": "Compromise Infrastructure: Server",
+      "tactic": "resource-development",
+      "procedure_description": "StrongPity operates a three-tier command-and-control infrastructure using layered upstream servers (multi-hop) to thwart forensic investigation and hide the operators' true endpoint.",
+      "observed_tooling": ["Multi-hop / three-tier HTTPS C2 (TCP 1402)"],
+      "detection_feasibility": "low — adversary C2 layering is off-victim infrastructure; intel/hunt candidate via infrastructure clustering and pivoting on TLS certs/ports",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "procedure_description": "Actors stand up watering-hole/replica download sites (fake WinRAR and TrueCrypt pages) so that users seeking encryption and archiving software are served an attacker-controlled page from which a trojanized installer is delivered.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim staging; intel/hunt candidate via monitoring of spoofed download pages and lookalike sites impersonating security/utility vendors",
+      "sources": ["https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors host trojanized legitimate-software installers (WinRAR, TrueCrypt, CCleaner, Opera, Skype, VLC, Driver Booster, 7-Zip, WinBox) on their staging/distribution infrastructure for delivery to redirected victims.",
+      "observed_tooling": ["Trojanized WinRAR installers (wrar531*.exe, winrar-x64-531*.exe, WinRAR 5.50)", "Trojanized TrueCrypt installers (TrueCrypt-Setup-7.1a.exe, TrueCrypt-7.2.exe)"],
+      "detection_feasibility": "low — off-victim hosting; intel/hunt candidate via retro-hunting known trojanized-installer hashes on download telemetry",
+      "sources": ["https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/", "https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/"]
+    },
+    {
+      "technique_id": "T1587.002",
+      "technique_name": "Develop Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "Actors use self-signed / attacker-controlled code-signing certificates to sign trojanized droppers and components so they appear more trustworthy at execution time.",
+      "observed_tooling": ["Self-signed / actor code-signing certificates"],
+      "detection_feasibility": "low — certificate creation is off-victim; the resulting signature is observable on-host (see T1553.002). Intel/hunt candidate via certificate pivoting",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1587.003",
+      "technique_name": "Develop Capabilities: Digital Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "Actors provision TLS/SSL certificates for the HTTPS C2 channel used by the exfiltration component.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim certificate provisioning; intel/hunt candidate via TLS-certificate clustering and JA3/JARM fingerprinting of C2",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Signature delivery vector: watering-hole / drive-by. Users seeking legitimate encryption and utility software are redirected to actor-controlled replica sites that deliver a trojanized installer instead of the genuine application.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the redirect/delivery happens off-victim (attacker sites/ISP path); intel/hunt candidate via web-proxy and download-source analysis. The trojanized-installer EXECUTION that follows is where host detection lands (see T1204.002)",
+      "sources": ["https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/", "https://attack.mitre.org/groups/G0056/"]
+    },
+    {
+      "technique_id": "T1659",
+      "technique_name": "Content Injection",
+      "tactic": "initial-access",
+      "procedure_description": "In the 2017 campaign, delivery used on-path HTTP content injection / 'on-the-fly' browser redirection most likely operating at the ISP level: a victim's plain-HTTP download request for a legitimate application was transparently redirected to a trojanized version.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — ISP/on-path manipulation is off the victim endpoint and largely invisible to host telemetry; hunt candidate via TLS-downgrade/plain-HTTP download anomalies, hash mismatch of downloaded installers vs vendor-published hashes, and unexpected redirect chains",
+      "sources": ["https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/"]
+    },
+    {
+      "technique_id": "T1557",
+      "technique_name": "Adversary-in-the-Middle",
+      "tactic": "credential-access",
+      "procedure_description": "The 2017 delivery relied on a man-in-the-middle positioned in the network path (assessed at the ISP level) to intercept and rewrite software-download traffic to serve trojanized binaries.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — on-path/ISP MitM is not observable on the victim host; hunt/intel candidate via download-integrity verification and monitoring for unexpected certificate/redirect behavior",
+      "sources": ["https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "The victim runs the trojanized installer (e.g. WinRAR, TrueCrypt, CCleaner, VLC), which installs the legitimate application as a decoy while silently dropping the StrongPity dropper and components.",
+      "observed_tooling": ["Trojanized WinRAR installers (wrar531*.exe, winrar-x64-531*.exe, WinRAR 5.50)", "Trojanized TrueCrypt installers (TrueCrypt-Setup-7.1a.exe, TrueCrypt-7.2.exe)"],
+      "detection_feasibility": "high — execution of a signed-but-anomalous installer that spawns unexpected child processes (procexp.exe, nvvscv.exe, wmpsvn32.exe) and writes to %temp% staging folders is observable via process-creation and file-write telemetry; known trojanized-installer hashes give high-fidelity detection",
+      "sources": ["https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/", "https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/"]
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "procedure_description": "StrongPity components execute via a Windows service installed by the dropper, launching the persistent backdoor payload.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — service-based execution of the dropped payload is observable via service-install (Event ID 7045) and the resulting process lineage, but requires baselining of legitimate services",
+      "sources": ["https://attack.mitre.org/software/S0491/", "https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "StrongPity has used PowerShell to execute commands/scripts on the compromised host as part of its component chain.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — PowerShell invocation by the malware chain is capturable via script-block/module logging and process-lineage (installer/service spawning powershell.exe is anomalous), but PowerShell is common and needs context",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "The StrongPity2 component (wmpsvn32.exe) persists via an HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run entry named 'Help Manager', pointing at the payload staged in %temp%\\lang_be29c9f3-83we.",
+      "observed_tooling": ["wmpsvn32.exe (StrongPity2 main component)"],
+      "detection_feasibility": "high — creation of a Run-key value (e.g. 'Help Manager') pointing at an executable in a %temp% language-named folder is a high-fidelity registry-modification/autorun detection",
+      "sources": ["https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "The StrongPity dropper installs a Windows service to persist and auto-launch the backdoor/exfiltration components across reboots.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — service creation (Event ID 7045 / registry Services key) by a freshly-dropped binary is directly observable and, combined with an anomalous image path, is a strong persistence detection",
+      "sources": ["https://attack.mitre.org/software/S0491/", "https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "StrongPity has used scheduled tasks (alongside services and Run keys) to maintain execution of its components on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); a task created by a dropped binary pointing at a %temp%/AppData payload is a strong detection",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1036.004",
+      "technique_name": "Masquerading: Masquerade Task or Service",
+      "tactic": "stealth",
+      "procedure_description": "Actors name services/tasks and the autorun entry to look benign (e.g. Run-key value 'Help Manager', components named wmpsvn32.exe, procexp.exe, nvvscv.exe) so persistence blends with legitimate Windows/utility software.",
+      "observed_tooling": ["wmpsvn32.exe (StrongPity2 main component)"],
+      "detection_feasibility": "medium — benign-looking service/task names are detectable via name-vs-path/hash baselining and signature-mismatch, but require established baselines",
+      "sources": ["https://attack.mitre.org/software/S0491/", "https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Trojanized installers reuse the exact filenames and branding of the legitimate applications (e.g. wrar531.exe, WinRAR-x64-531it.exe, TrueCrypt-Setup-7.1a.exe), and dropped components mimic legitimate tool names (procexp.exe = SysInternals Process Explorer) to evade suspicion.",
+      "observed_tooling": ["Trojanized WinRAR installers (wrar531*.exe, winrar-x64-531*.exe, WinRAR 5.50)"],
+      "detection_feasibility": "medium — legitimate-looking names/locations combined with signature or hash mismatch against the genuine vendor binary are detectable via allowlist/hash baselining",
+      "sources": ["https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/", "https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "procedure_description": "StrongPity droppers/components are code-signed (self-signed / actor certificates) to subvert trust controls and reduce user and security-product suspicion.",
+      "observed_tooling": ["Self-signed / actor code-signing certificates"],
+      "detection_feasibility": "medium — signatures by unknown/self-signed or untrusted CAs on executables that behave maliciously are detectable via signature-issuer reputation and certificate-thumbprint watchlisting",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Configuration is stored in encrypted .cab blobs (prst.cab, wrlck.cab), and collected data is zipped then XOR-encrypted (per-byte nibble-swap XOR, chunked) into hidden .sft files before exfiltration, obscuring both config and staged data.",
+      "observed_tooling": ["prst.dll / prst.cab (encrypted config targeting encryption & remote-admin tools)", "wrlck.dll / wrlck.cab (encrypted config, C2 callbacks)"],
+      "detection_feasibility": "medium — creation of hidden high-entropy .sft files and encrypted .cab configs in the malware directory is detectable via file-write + entropy analytics and file-extension/attribute anomalies, but requires targeted content inspection",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf", "https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "After the exfiltration component reads the hidden .sft archive fragments and sends them to the C2, the .sft files are deleted from disk to remove evidence of collection and exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — the create-then-delete lifecycle of .sft files near an exfiltration event is detectable via file-operation auditing (create + delete of hidden files by the same process), but is short-lived",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1564.003",
+      "technique_name": "Hide Artifacts: Hidden Window",
+      "tactic": "stealth",
+      "procedure_description": "StrongPity components run with hidden windows to operate without a visible UI on the victim desktop.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — hidden-window execution leaves little discrete signal; hunt candidate combined with process-lineage and persistence context",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "StrongPity adds its own directories to the Windows Defender scan-exclusion list so its files are not scanned, impairing endpoint defenses.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — modification of Windows Defender exclusion paths (registry/PowerShell Add-MpPreference / WMI) is a rare, high-fidelity tamper signal detectable via registry-modification and Defender operational logging",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Before executing, StrongPity checks for the presence of security products (notably ESET and Bitdefender) and adapts its behavior accordingly.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — enumeration of installed AV/EDR (process/service/registry queries for known security-product names) is detectable via API/command-line telemetry but is common in benign software too",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "StrongPity enumerates running processes on the host as part of its environment checks and targeting logic.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — process enumeration is ubiquitous and low-signal; hunt candidate only in tight process-lineage windows",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The File Searcher component recursively enumerates the file system hunting for documents of interest by file extension (and for the presence of specific encryption/remote-admin tools such as putty.exe, filezilla.exe, winscp.exe, mstsc.exe, mRemoteNG.exe).",
+      "observed_tooling": ["prst.dll / prst.cab (encrypted config targeting encryption & remote-admin tools)"],
+      "detection_feasibility": "medium — broad recursive extension-based file enumeration by a non-indexer process is detectable via file-access auditing and API telemetry, but resembles legitimate search/indexing and needs behavioral context",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf", "https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/"]
+    },
+    {
+      "technique_id": "T1680",
+      "technique_name": "Local Storage Discovery",
+      "tactic": "discovery",
+      "procedure_description": "StrongPity enumerates local and removable storage volumes to locate documents and data for collection.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — drive/volume enumeration is low-signal and common; hunt candidate combined with subsequent collection activity",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "StrongPity gathers system network configuration information from the compromised host.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — network-config queries are common admin/telemetry actions; low standalone detection value, hunt-only",
+      "sources": ["https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "Early StrongPity toolkits shipped multiple modular components including a keylogger to capture user input on infected systems (documented in the original 2016 waterhole reporting alongside the file-collection modules).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — keylogging via low-level keyboard hooks / GetAsyncKeyState and raw-input registration is detectable via API-hook and behavioral EDR telemetry, but modern StrongPity variants emphasize file collection over keylogging, so confidence in this component's continued use is lower",
+      "sources": ["https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "The File Searcher component automatically and continuously collects documents matching the target extensions and copies them for staging without operator interaction per file.",
+      "observed_tooling": ["prst.dll / prst.cab (encrypted config targeting encryption & remote-admin tools)"],
+      "detection_feasibility": "medium — bursty automated reads/copies of many document files by a single non-office process are detectable via file-access-rate analytics and process-behavior baselining",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf", "https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Collected documents are first copied into a zip archive, which is then chunk-encrypted into hidden .sft files staged locally in the malware directory prior to exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — local staging of an archive plus multiple hidden .sft fragments in a working directory is detectable via file-write telemetry and hidden-attribute/entropy heuristics",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1560.003",
+      "technique_name": "Archive Collected Data: Archive via Custom Method",
+      "tactic": "collection",
+      "procedure_description": "Collected data is archived into a zip and then transformed by a custom XOR routine (per-byte least/most-significant-nibble XOR, chunked up to 53 times, with N/O prefix markers on the first vs continuation fragments) into .sft files — a bespoke archive/encoding method.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — the custom .sft archive format with its N/O-prefixed fragments is a distinctive host artifact detectable via file-format/entropy heuristics and YARA-style content matching, but requires targeted file inspection",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "StrongPity supports self-update and can pull additional components/commands from the C2, transferring tools onto the compromised host.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — inbound file writes following C2 connections by the malware process are detectable via correlated network + file-creation telemetry, but blend with normal update traffic without a known-bad C2",
+      "sources": ["https://attack.mitre.org/software/S0491/", "https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "StrongPity uses HTTP/HTTPS web protocols for command-and-control and for exfiltrating the .sft archive fragments to its C2 servers.",
+      "observed_tooling": ["Multi-hop / three-tier HTTPS C2 (TCP 1402)"],
+      "detection_feasibility": "medium — HTTP(S) beaconing to unknown external hosts is detectable via proxy/DNS + network analytics; fidelity is high only when the specific C2 domains/ports are known/blocklisted",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf", "https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "C2 communication between the first tier and the upstream target is protected with SSL/TLS (HTTPS), encrypting the exfiltration channel.",
+      "observed_tooling": ["Multi-hop / three-tier HTTPS C2 (TCP 1402)"],
+      "detection_feasibility": "medium — TLS to unusual hosts/ports is detectable via JA3/JARM fingerprinting and cert anomalies, but payload contents are opaque; detection leans on metadata and the non-standard port",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "First-tier C2 communication uses HTTPS over the unusual TCP port 1402 rather than 443.",
+      "observed_tooling": ["Multi-hop / three-tier HTTPS C2 (TCP 1402)"],
+      "detection_feasibility": "high — TLS/HTTPS traffic on TCP 1402 (a non-standard HTTPS port) to external hosts is a crisp network detection via port/protocol-mismatch analytics and egress monitoring",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1090.003",
+      "technique_name": "Proxy: Multi-hop Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "StrongPity relays C2 through a three-tier/multi-hop proxy chain so that the victim only ever contacts a first-layer node, hiding the true upstream operator infrastructure.",
+      "observed_tooling": ["Multi-hop / three-tier HTTPS C2 (TCP 1402)"],
+      "detection_feasibility": "low — the multi-hop relay is on adversary-controlled infrastructure and not visible from the victim; hunt/intel candidate via infrastructure mapping of the C2 tiers",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "The Exfiltration component sends the collected, encrypted .sft archive fragments to the C2 server over the same HTTPS channel used for command-and-control.",
+      "observed_tooling": ["Multi-hop / three-tier HTTPS C2 (TCP 1402)"],
+      "detection_feasibility": "medium — outbound data transfer to the C2 (especially over the non-standard port 1402) is detectable via egress-volume analytics correlated with the malware process, though TLS hides content",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf", "https://attack.mitre.org/software/S0491/"]
+    },
+    {
+      "technique_id": "T1020",
+      "technique_name": "Automated Exfiltration",
+      "tactic": "exfiltration",
+      "procedure_description": "Once documents are collected and staged into .sft files, StrongPity automatically exfiltrates them to the C2 without per-file operator action, then deletes the local copies.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — periodic automated egress bursts from a single host process are detectable via network-behavior baselining, but require correlation with the staging/collection activity",
+      "sources": ["https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf", "https://attack.mitre.org/software/S0491/"]
+    }
+  ],
+  "detection_signals": [
+    "Execution of a signed installer for WinRAR / TrueCrypt / CCleaner / VLC / Opera / Skype / 7-Zip / WinBox that spawns unexpected child processes (procexp.exe, nvvscv.exe, wmpsvn32.exe, wndplyr.exe) or writes to %temp%\\lang_* staging folders — trojanized-installer behavior",
+    "Downloaded installer hash does NOT match the vendor-published hash for that version (integrity mismatch from ISP-level content injection / redirect)",
+    "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run value 'Help Manager' pointing at an executable in a %temp%\\lang_<hex>-<suffix> folder (e.g. %temp%\\lang_be29c9f3-83we\\wmpsvn32.exe)",
+    "New Windows service or scheduled task created by a freshly-dropped binary launching a payload from %temp%/AppData",
+    "Modification of Windows Defender scan-exclusion paths (Add-MpPreference / registry Exclusions\\Paths) to whitelist a malware directory",
+    "Creation of hidden, high-entropy .sft files (with 'N'/'O' first-byte prefixes) and encrypted .cab configs (prst.cab, wrlck.cab) in a malware working directory, followed by their deletion after network egress",
+    "Recursive file-system enumeration hunting documents by extension and probing for putty.exe/filezilla.exe/winscp.exe/mstsc.exe/mRemoteNG.exe presence",
+    "Outbound HTTPS/TLS to external hosts over non-standard TCP port 1402",
+    "DNS/web-proxy resolutions to typosquat delivery/C2 domains (ralrab[.]com, winrar[.]it, winrar[.]be, true-crypt[.]com, updserv-east-cdn3[.]com, downloading.internetdownloading[.]co)",
+    "Security-software discovery: process/registry queries specifically checking for ESET and Bitdefender before payload execution"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [
+      "ralrab.com",
+      "winrar.it",
+      "winrar.be",
+      "true-crypt.com",
+      "updserv-east-cdn3.com",
+      "downloading.internetdownloading.co"
+    ],
+    "emails": [],
+    "hashes": [
+      "4ad3ecc01d3aa73b97f53e317e3441244cf60cbd",
+      "8b33b11991e1e94b7a1b03d6fb20541c012be0e3",
+      "49c2bcae30a537454ad0b9344b38a04a0465a0b5",
+      "e17b5e71d26b2518871c73e8b1459e85fb922814",
+      "76fc68607a608018277afa74ee09d5053623ff36",
+      "87a38a8c357f549b695541d603de30073035043d",
+      "9f2d9d2131eff6220abaf97e2acd1bbb5c66f4e0",
+      "f8009ef802a28c2e21bce76b31094ed4a16e70d6",
+      "a0437a2c8c50b8748ca3344c38bc80279779add7",
+      "f4831a0983e28ad14e16050e75893cb0",
+      "0629ab800ae234a056b8c3ee1b6d4e45",
+      "900d937455c62807fb4b0b0000142d37",
+      "2d18af05c04e56ab513a06b0ae8bb40f",
+      "6189d3e23fd46225df49808af04acb93",
+      "68a7ec5cbc1d9829af68d049694e98d8",
+      "fb1891e4b5960bfbbe837456c142c474"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Primary sources: Kaspersky/Securelist 2016 (original waterhole reporting, watering-hole domains + component filenames), ESET WeLiveSecurity 2017 (ISP-level HTTP redirection 'StrongPity2', wmpsvn32.exe, Help Manager Run key, SHA1 sample hashes, C2 updserv-east-cdn3[.]com), Bitdefender 2020 whitepaper (three-tier HTTPS C2 over TCP 1402, .sft/.cab encryption, file-searcher/exfil component behavior, victimology on the Turkey-Syria/Kurdish axis, large MD5 sample-hash appendix), and MITRE ATT&CK PROMETHIUM G0056 / StrongPity S0491 for the technique baseline. attribution set to Türkiye-nexus/state-aligned at medium-high confidence, encoded as attribution_confidence 'medium' per the honest single-vendor-consensus (no definitive government attribution in any primary source); the ISP-redirection capability is the strongest state-alignment signal. actor.mitre_id intentionally left empty per tasking; public MITRE ids G0056 (group) and S0491 (malware) are cited only as sources/aliases, never as the actor id. STRICTLY DISTINCT FROM WIRTE — not conflated. ATT&CK normalization for THIS bundled dataset: Defense-Evasion techniques use tactic slug 'stealth'; Disable/Modify Tools uses T1685 under tactic 'defense-impairment'; Encrypted/Encoded File uses T1027.013; Scheduled Task uses T1053.005. ISP-level on-path redirection is mapped to T1659 (Content Injection) with the MitM aspect as T1557 (Adversary-in-the-Middle); watering-hole delivery is T1189 (Drive-by Compromise) + T1608.004/T1608.001 staging. Every technique_id was validated as a key in the environment's bundled attack_dump.json (697 techniques) before inclusion — zero invalid IDs; no substitutions were required. DETECTION SURFACE (detect-candidate, medium/high): trojanized-installer execution + anomalous child processes (T1204.002), Run-key 'Help Manager'/%temp% staging persistence (T1547.001), service/scheduled-task persistence (T1543.003/T1053.005), Defender exclusion tampering (T1685), hidden .sft staging + custom archive + deletion (T1074.001/T1560.003/T1070.004), automated document collection (T1119), and non-standard-port TCP 1402 HTTPS C2 (T1571). HUNT-leaning (low, off-victim/ISP/infra): watering-hole & ISP content-injection delivery (T1189/T1659/T1557), domain/cert/infrastructure acquisition and multi-hop proxy tiers (T1583.001/T1584.004/T1587.x/T1608.x/T1090.003). IOCs: watering-hole/typosquat + C2 domains taken verbatim from Kaspersky/ESET (legitimate vendor sites rarlab.com, truecrypt.org, and the abused-but-legitimate tamindir.com download portal deliberately EXCLUDED); ESET SHA1 sample hashes and a representative subset of Bitdefender MD5 trojanized-sample hashes included (the Bitdefender appendix lists hundreds keyed by compile-time/version tag; full list available in the whitepaper). No IPs or CVEs are provided because the primary reports did not enumerate exploited CVEs (delivery is user-execution/redirection, not vulnerability exploitation) and did not publish standalone C2 IP indicators in their public bodies. No YARA rules were present in the cited reports, so none are reproduced (rules are extracted verbatim only, never authored)."
+}

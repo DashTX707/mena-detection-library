@@ -1,0 +1,51 @@
+title: Infy/Tonnerre Office Macro Dropping and Executing fwupdate.temp
+id: 3f8c1a2e-5b7d-4e63-9a1f-2c4d6e8f0a11
+status: experimental
+description: |
+    Detects the Infy (Prince of Persia) / Tonnerre macro-execution chain (T1137.001 Office Template
+    Macros, T1059.005 Visual Basic, T1204.002 User Execution: Malicious File). Tonnerre is delivered as
+    a macro-enabled Word/PowerPoint document; when the victim closes the document a VBA macro extracts
+    an embedded package to the temp directory as fwupdate.temp and executes it. Keys on Office
+    applications (WINWORD/POWERPNT/EXCEL) spawning a child process that is, or references, fwupdate.temp
+    in a temp path. Office spawning an executable dropped file is the durable signal; the specific
+    fwupdate.temp name is a high-fidelity actor selector.
+references:
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1137.001
+    - attack.t1059.005
+    - attack.t1204.002
+    - mena-detection-library.infy
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_office:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\powerpnt.exe'
+            - '\excel.exe'
+    selection_drop_image:
+        Image|endswith: '\fwupdate.temp'
+    selection_drop_cmd:
+        CommandLine|contains: 'fwupdate.temp'
+    selection_office_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\rundll32.exe'
+            - '\mshta.exe'
+        Image|contains:
+            - '\Temp\'
+            - '\AppData\'
+    condition: selection_office and (selection_drop_image or selection_drop_cmd or selection_office_child)
+falsepositives:
+    - Legitimate Office add-ins or document automation that spawn helper processes - baseline expected
+      Office child processes; execution of a dropped .temp binary or a scripting host from a temp/AppData
+      path on document close is not normal user behavior
+level: high

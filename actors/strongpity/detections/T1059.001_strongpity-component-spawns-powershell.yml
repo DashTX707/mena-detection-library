@@ -1,0 +1,37 @@
+title: StrongPity Component Spawning PowerShell
+id: 9e0a7c34-1b52-4d86-8f29-6c3d1a0b5e47
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM execution of PowerShell as a child of a dropped StrongPity
+    component (procexp.exe, nvvscv.exe, wmpsvn32.exe, wndplyr.exe) (T1059.001 PowerShell). These
+    utility-masquerading components have no legitimate reason to spawn powershell.exe / pwsh.exe, so the
+    process lineage is anomalous. Anchored on the parent-child process relationship rather than any
+    single command line.
+references:
+    - https://attack.mitre.org/software/S0491/
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - mena-detection-library.strongpity
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\procexp.exe'
+            - '\nvvscv.exe'
+            - '\wmpsvn32.exe'
+            - '\wndplyr.exe'
+    selection_child:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    condition: all of selection_*
+falsepositives:
+    - Unlikely - these component names are actor-specific and should not exist as legitimate parents of
+      PowerShell; validate the parent image path and signature before dismissing
+level: high

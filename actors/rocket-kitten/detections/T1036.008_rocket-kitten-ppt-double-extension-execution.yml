@@ -1,0 +1,36 @@
+title: Rocket Kitten Double-Extension Document Executable (.ppt.exe Masquerade)
+id: b936bd0c-ff6f-4798-8bb6-91316e331790
+status: experimental
+description: |
+    Detects execution of a masqueraded document executable using a document double-extension
+    (e.g. 'Iran's Missiles Program.ppt.exe' carrying a PowerPoint icon) as delivered by Rocket
+    Kitten via OneDrive / spear-phishing links. Running the file drops a benign decoy while
+    silently installing the CWoolger keylogger. Keys on a process image whose name embeds a
+    document extension immediately before .exe/.scr (T1036.008 masquerade file type), which is
+    the endpoint landing point of T1204.001 user execution of a malicious link and T1566.002
+    spearphishing link. Behavior-based on the extension pattern, not a fixed filename.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.execution
+    - attack.initial-access
+    - attack.t1036.008
+    - attack.t1204.001
+    - attack.t1566.002
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|re: '(?i)\.(ppt|pptx|doc|docx|xls|xlsx|pdf|rtf)\.(exe|scr)$'
+    condition: selection
+falsepositives:
+    - Rare legitimate installers or self-extractors named with an embedded document extension -
+      verify the file signer, download source (proxy) and whether a decoy document is dropped
+level: high

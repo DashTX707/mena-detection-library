@@ -1,0 +1,40 @@
+title: CopyKittens NBTScanner NetBIOS Network and Remote System Discovery
+id: 5c512ef5-46c9-41d2-8158-4f4cf56ff9e0
+status: experimental
+description: |
+    Detects execution of NBTScanner (and equivalent NetBIOS sweep tooling) used by CopyKittens (Slayer
+    Kitten, G0052) to enumerate NetBIOS/network services and identify remote hosts for lateral movement
+    (T1046 Network Service Discovery, T1018 Remote System Discovery). Anchors on the scanner process
+    image/original filename and NetBIOS-sweep command-line ranges in process-creation telemetry.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1046
+    - attack.t1018
+    - mena-detection-library.copykittens
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_name:
+        - Image|endswith:
+              - '\nbtscan.exe'
+              - '\nbtscanner.exe'
+        - OriginalFileName:
+              - 'nbtscan.exe'
+              - 'nbtscanner.exe'
+        - Description|contains: 'NBTscan'
+    selection_cmd:
+        Image|endswith: '\nbtstat.exe'
+        CommandLine|contains:
+            - ' -a '
+            - ' -A '
+            - ' -n'
+    condition: selection_name or selection_cmd
+falsepositives:
+    - Authorized network-inventory or vulnerability scanning - correlate with the running account, source
+      host and scan scope, and confirm the activity is sanctioned before dismissing
+level: medium

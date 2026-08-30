@@ -1,0 +1,43 @@
+title: Dark Caracal Bandook PowerShell Loader and PNG Steganography Reconstruction
+id: 2a1da998-4f0c-44fc-8d41-6cd26fccf2e8
+status: experimental
+description: |
+    Detects the Dark Caracal / Bandook PowerShell loader stage via script-block logging (EID 4104).
+    The macro drops and runs a PowerShell loader (fmx.ps1 plus a base64-encoded blob sdmc.jpg,
+    T1059.001 PowerShell) that base64-decodes and RC4-decrypts staged payloads (T1140
+    Deobfuscate/Decode) and reconstructs an executable from PNG pixel data using the Invoke-PSImage
+    technique against a.png/b.png/untitled.png (T1027.003 Steganography). Keys on the actor-specific
+    artifact names combined with the image-pixel reconstruction and base64/RC4 decoding patterns.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.t1059.001
+    - attack.t1140
+    - attack.t1027.003
+    - mena-detection-library.dark-caracal
+logsource:
+    category: ps_script
+    product: windows
+detection:
+    selection_artifact:
+        ScriptBlockText|contains:
+            - 'fmx.ps1'
+            - 'sdmc.jpg'
+            - 'untitled.png'
+            - 'Invoke-PSImage'
+    selection_stego:
+        ScriptBlockText|contains:
+            - '.GetPixel('
+            - 'FromBase64String'
+            - 'System.Drawing.Bitmap'
+    condition: selection_artifact or selection_stego
+falsepositives:
+    - Security research or red-team use of Invoke-PSImage
+    - Legitimate scripts that read image pixel data or perform base64 decoding - require the
+      artifact names or combine with an Office/loader parent to raise confidence
+level: high

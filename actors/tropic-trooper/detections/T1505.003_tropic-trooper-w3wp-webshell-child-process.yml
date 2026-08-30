@@ -1,0 +1,44 @@
+title: Tropic Trooper China Chopper Web Shell Command Execution via w3wp
+id: b3d47e51-2c8a-4f16-9e0b-7a1d3c5f2b94
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) web shell command execution (T1505.003 Server
+    Software Component: Web Shell, T1059.003 Windows Command Shell). After planting a China Chopper /
+    Godzilla variant compiled as an Umbraco .NET module, the actor runs OS commands through the web
+    shell, causing the IIS worker process (w3wp.exe) to spawn command interpreters and discovery
+    utilities. Keys on the anomalous process lineage w3wp.exe -> cmd.exe / powershell.exe / net.exe /
+    ping.exe / whoami.exe, which is a durable behavioral signal independent of the specific web shell
+    variant. An IIS worker spawning a shell is inherently suspicious on a production web server.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.execution
+    - attack.t1505.003
+    - attack.t1059.003
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\w3wp.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\ping.exe'
+            - '\whoami.exe'
+            - '\tasklist.exe'
+            - '\systeminfo.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Some web applications legitimately shell out (build agents, monitoring scripts) - baseline the
+      specific application pool identities and commands, and allowlist known automation before alerting
+level: high

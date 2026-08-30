@@ -1,0 +1,50 @@
+title: Stealth Falcon BITS Jobs Abuse for C2 and Data Transfer
+id: 2f9c6b41-7d38-4a05-8e1b-4c7a2d9f5e18
+status: experimental
+description: |
+    Detects the Win32/StealthFalcon signature abuse of the Background Intelligent Transfer Service
+    (BITS) for command-and-control, follow-on payload retrieval and exfiltration (T1197 BITS Jobs,
+    T1105 Ingress Tool Transfer, T1041 Exfiltration Over C2 Channel, T1020 Automated Exfiltration).
+    The backdoor creates BITS transfer jobs to external non-Microsoft hosts instead of standard socket
+    APIs, evading firewalls that ignore BITS traffic. Keys on bitsadmin.exe transfer/addfile usage and
+    PowerShell Start-BitsTransfer to a remote http(s) URL - behavior abnormal outside browsers/updaters.
+references:
+    - https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/
+    - https://attack.mitre.org/groups/G0038/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1197
+    - attack.t1105
+    - attack.t1041
+    - attack.t1020
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_bitsadmin:
+        Image|endswith: '\bitsadmin.exe'
+        CommandLine|contains:
+            - '/transfer'
+            - '/addfile'
+            - '/create'
+            - '/setnotifycmdline'
+    selection_ps_bits:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        CommandLine|contains:
+            - 'Start-BitsTransfer'
+            - 'BitsTransfer'
+    selection_remote:
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+    condition: (selection_bitsadmin or selection_ps_bits) and selection_remote
+falsepositives:
+    - Legitimate software updaters use BITS; investigate transfers to non-Microsoft/unknown external
+      domains and jobs created by script hosts or backdoor-lineage processes
+level: high

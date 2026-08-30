@@ -1,0 +1,43 @@
+title: Dark Caracal PowerShell Payload Download From Cloud Staging
+id: b557f2ea-1815-463a-93d3-32262b0ff2ed
+status: experimental
+description: |
+    Detects the Dark Caracal / Bandook loader retrieving its second-stage payload ZIP from
+    legitimate cloud hosting (T1105 Ingress Tool Transfer). The fmx.ps1 PowerShell loader downloads
+    a four-file archive (RC4-encrypted a.png/b.png, the Invoke-PSImage untitled.png and decoy
+    draft.docx) from Dropbox, Bitbucket or Amazon S3 using PowerShell download primitives. Keys on
+    a PowerShell download cmdlet/class referencing those cloud-hosting hostnames in the script block
+    (EID 4104). Cloud hosting is legitimately used, so the anchor is a PowerShell download to it.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.dark-caracal
+logsource:
+    category: ps_script
+    product: windows
+detection:
+    selection_download:
+        ScriptBlockText|contains:
+            - 'DownloadFile'
+            - 'DownloadData'
+            - 'Invoke-WebRequest'
+            - 'Invoke-RestMethod'
+            - 'Start-BitsTransfer'
+            - 'Net.WebClient'
+    selection_host:
+        ScriptBlockText|contains:
+            - 'dropbox.com'
+            - 'dl.dropboxusercontent.com'
+            - 'bitbucket.org'
+            - 'amazonaws.com'
+            - '.s3.'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate scripts or installers that pull assets from Dropbox/Bitbucket/S3 - baseline
+      approved automation and scope by host and following file writes/execution
+level: medium

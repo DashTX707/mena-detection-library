@@ -1,0 +1,49 @@
+title: Volatile Cedar Caterpillar Web Shell File Browsing and Data Retrieval
+id: 0c31554a-9835-48f4-beca-a292140f2d4b
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar use of the Caterpillar WebShell file-browser to
+    enumerate the compromised server's filesystem (T1083 File and Directory Discovery) and to
+    retrieve files of interest (T1005 Data from Local System). The web shell exposes file-manager
+    style actions as HTTP query parameters (e.g. action=dir/list/download/read with a path/filepath
+    argument) against a server-side script the actor planted. Keys on web-server access-log requests
+    to script files carrying these file-manager parameters. Anchor on the parameterized request
+    pattern rather than any single filename, since the web-shell name varies per victim.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.collection
+    - attack.t1083
+    - attack.t1005
+    - mena-detection-library.volatile-cedar
+logsource:
+    category: webserver
+detection:
+    selection_script:
+        cs-uri-stem|endswith:
+            - '.jsp'
+            - '.jspx'
+            - '.aspx'
+            - '.ashx'
+    selection_action:
+        c-uri-query|contains:
+            - 'action=dir'
+            - 'action=list'
+            - 'action=download'
+            - 'action=read'
+            - 'action=view'
+            - 'cmd=download'
+            - 'filepath='
+            - 'downpath='
+    selection_method:
+        cs-method:
+            - 'GET'
+            - 'POST'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate JSP/ASPX file-management or document-download applications that use similar query
+      parameters - baseline known application endpoints and exclude them by cs-uri-stem
+level: medium

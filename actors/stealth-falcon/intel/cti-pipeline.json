@@ -1,0 +1,588 @@
+{
+  "report_title": "Stealth Falcon (FruityArmor) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Citizen Lab 'Keep Calm and (Don't) Enable Macros: A New Threat Actor Targets UAE Dissidents' / Stealth Falcon (2016-05-29, https://citizenlab.ca/2016/05/stealth-falcon/); ESET Research 'Backdoor of the Stealth Falcon group' on Win32/StealthFalcon (2019-09-09, https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/); MITRE ATT&CK Group Stealth Falcon G0038 (https://attack.mitre.org/groups/G0038/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Stealth Falcon",
+    "mitre_id": "",
+    "mitre_canonical_name": "Stealth Falcon",
+    "aliases": [
+      "Stealth Falcon",
+      "FruityArmor",
+      "MITRE ATT&CK group id G0038 (cited as source, not used as actor id)"
+    ],
+    "related_clusters": [
+      "Project Raven (operational overlap only — treated as a distinct cluster, not merged)"
+    ],
+    "attribution": "UAE-nexus, state-aligned espionage. Circumstantial evidence (victimology of Emirati journalists/activists/dissidents, the aax.me tracking infrastructure predominantly baiting UAE political content, and Project Raven operational overlap reported separately) links Stealth Falcon to United Arab Emirates government interests, but a direct state link has not been publicly confirmed to high confidence. Assessed medium-high confidence as UAE-aligned. FruityArmor is used by ESET/Kaspersky as an alias for the same cluster. This is the first UAE-cluster pack in the library.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "United Arab Emirates"
+    ],
+    "targeted_regions_global": [
+      "United Arab Emirates (diaspora/exiled dissidents abroad)"
+    ],
+    "targeted_sectors": [
+      "Journalists / media",
+      "Human-rights activists and defenders",
+      "Political dissidents and opposition figures",
+      "Civil society"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Spear-phishing of Emirati journalists, activists and dissidents (aax.me tracking + malicious macro documents)",
+        "date": "2012 to 2016",
+        "summary": "Long-running targeted-spyware operation against Emirati journalists, human-rights activists and dissidents. Operators built fictitious organizations ('The Right to Fight') and fake personas (e.g. journalist 'Andrew Dwight') to build rapport over multiple months, then delivered malicious links via Twitter mentions and pretext emails. Links passed through a custom URL-shortener/tracking service (aax.me, regex /aax.me/[0-9a-f]{5}/) that profiled the visitor (browser, plugins, timezone, installed AV via port-probing, Tor use) before redirecting. Follow-on delivery used macro-enabled Word documents (.docm, e.g. right2fight.docm, message_032456944343.docm) with spoofed Proofpoint security-warning lures prompting macro enablement, dropping a two-stage custom PowerShell backdoor (Stage One system/.NET profiling via WMI, VBS 'IEWebCache.vbs' with Base64 PowerShell, hourly 'IE Web Cache' scheduled task, RC4-encrypted C2).",
+        "source_url": "https://citizenlab.ca/2016/05/stealth-falcon/"
+      },
+      {
+        "name": "Win32/StealthFalcon BITS-abusing backdoor",
+        "date": "2015 to 2019",
+        "summary": "ESET analyzed a distinctive backdoor (Win32/StealthFalcon) attributed to the group whose PowerShell-based capabilities overlap the 2016 Citizen Lab implant. Its signature behavior is the abuse of the Windows Background Intelligent Transfer Service (BITS) for command-and-control and data exfiltration — evading firewalls/security products that do not scrutinize BITS traffic. Configuration (including RC4-encrypted C2 domains, victim ID, sleep interval and failure counter) is stored under HKCU registry values prefixed with the malware filename; persistence is a scheduled task that runs the DLL at each user login. C2 domains masquerade as CDN/cache/search services (windowsearchcache[.]com, upnpdiscover[.]org, etc.).",
+        "source_url": "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Stealth Falcon",
+    "FruityArmor"
+  ],
+  "targeted_regions": [
+    "United Arab Emirates"
+  ],
+  "targeted_sectors": [
+    "Journalists / media",
+    "Human-rights activists",
+    "Political dissidents",
+    "Civil society"
+  ],
+  "malware": [
+    "Win32/StealthFalcon (BITS-abusing PowerShell backdoor)",
+    "Stealth Falcon two-stage PowerShell backdoor (2016 Citizen Lab implant; IEWebCache.vbs loader)"
+  ],
+  "tooling_observed": [
+    "Custom PowerShell backdoor (bespoke, not Empire/Cobalt Strike)",
+    "IEWebCache.vbs (VBScript loader with Base64-encoded PowerShell)",
+    "Windows BITS (Background Intelligent Transfer Service) abused for C2/exfil",
+    "Windows Management Instrumentation (WMI) for profiling",
+    "aax.me custom URL-shortener / visitor-profiling tracking service",
+    "Macro-enabled Word documents (.docm) with spoofed Proofpoint lure",
+    "RC4 (symmetric encryption of config and C2 traffic)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Operators created fake personas and social-media accounts — including a fictitious journalist 'Andrew Dwight' and front organizations ('The Right to Fight') — and used Twitter mentions to deliver malicious tracking links to targeted Emirati activists and journalists, building rapport over multiple months before delivery.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — actor-controlled social-media personas and rapport-building occur off-victim; intel/brand-monitoring and takedown candidate, not endpoint-observable",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Operators established email accounts tied to fictitious organizations and personas to send pretext emails offering speaking opportunities or collaboration, delivering aax.me tracking links and macro documents.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — sender-account creation is off-victim; hunt/intel candidate via sender-reputation and lookalike-domain monitoring",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors registered numerous C2 and staging domains, many deliberately masquerading as CDN/cache/search/ad services (e.g. incapsulawebcache[.]com, edgecacheimagehosting[.]com, windowsearchcache[.]com, adhostingcache[.]com, upnpdiscover[.]org) to blend malicious callbacks with benign-looking web traffic.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — adversary domain acquisition is off-victim; intel/hunt candidate via infrastructure tracking, passive DNS and newly-registered-lookalike-domain monitoring",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1608.005",
+      "technique_name": "Stage Capabilities: Link Target",
+      "tactic": "resource-development",
+      "procedure_description": "Actors operated a custom URL-shortener/profiling service at aax.me (link regex /aax.me/[0-9a-f]{5}/) with administrative access enabling specialized per-target tracking links; the shortener ran JavaScript visitor-profiling (browser, plugins, timezone, installed AV via port-timing, Tor detection) before redirecting to bait content. Over 402 aax.me links were identified, ~73% referencing UAE political issues.",
+      "observed_tooling": [
+        "aax.me custom URL-shortener / visitor-profiling tracking service"
+      ],
+      "detection_feasibility": "low — off-victim link-staging/tracking infrastructure; intel/hunt candidate via link-pattern (/aax.me/[0-9a-f]{5}/) blocklisting and web-proxy monitoring",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "The group developed bespoke malware rather than using off-the-shelf frameworks — a custom two-stage PowerShell backdoor (2016) and the Win32/StealthFalcon BITS-abusing backdoor (analyzed 2019) — indicating an in-house development capability.",
+      "observed_tooling": [
+        "Custom PowerShell backdoor (bespoke, not Empire/Cobalt Strike)",
+        "Win32/StealthFalcon (BITS-abusing PowerShell backdoor)"
+      ],
+      "detection_feasibility": "low — capability development is off-victim; intel/attribution signal, not endpoint-observable",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/",
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Primary delivery vector: spear-phishing links delivered via Twitter mentions and pretext emails, routed through the aax.me tracking shortener that profiled the recipient before redirecting. Links were individually crafted per target following months of social engineering.",
+      "observed_tooling": [
+        "aax.me custom URL-shortener / visitor-profiling tracking service"
+      ],
+      "detection_feasibility": "low — link-based delivery through a third-party shortener is largely off-victim social engineering; hunt candidate via email/URL gateway logs for the aax.me pattern rather than crisp endpoint detection",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Follow-on delivery used macro-enabled Word documents (.docm — e.g. right2fight.docm, message_032456944343.docm) attached to pretext emails, displaying a spoofed Proofpoint security warning to coax the target into enabling macros.",
+      "observed_tooling": [
+        "Macro-enabled Word documents (.docm) with spoofed Proofpoint lure"
+      ],
+      "detection_feasibility": "medium — .docm macro attachments are inspectable at the mail gateway and on the endpoint (Office child-process spawning, macro-security events); the specific lure/hashes are watchlistable, though initial delivery itself is partly off-victim",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Successful compromise depended on the target clicking the aax.me tracking link, which profiled the browser and redirected toward malicious/bait content.",
+      "observed_tooling": [
+        "aax.me custom URL-shortener / visitor-profiling tracking service"
+      ],
+      "detection_feasibility": "low — user click on an external link is a social action; hunt candidate via proxy/URL telemetry for the aax.me link pattern",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "The target opened the malicious .docm and enabled macros (prompted by the spoofed Proofpoint warning), triggering the macro that launched the PowerShell backdoor chain.",
+      "observed_tooling": [
+        "Macro-enabled Word documents (.docm) with spoofed Proofpoint lure"
+      ],
+      "detection_feasibility": "medium — WINWORD.EXE spawning wscript/powershell child processes and VBA macro execution are observable via process-lineage and Office/AMSI telemetry",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "A VBScript loader (IEWebCache.vbs) containing Base64-encoded PowerShell was written to disk and executed by a scheduled task to launch the backdoor stages.",
+      "observed_tooling": [
+        "IEWebCache.vbs (VBScript loader with Base64-encoded PowerShell)"
+      ],
+      "detection_feasibility": "high — wscript/cscript executing a .vbs that decodes and launches PowerShell is observable via process-creation and script-block/command-line telemetry; the IEWebCache.vbs filename is a watchlist item",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "The core implant is a bespoke two-stage PowerShell backdoor; Stage One performs system profiling and .NET version detection, later stages handle C2 and tasking. Win32/StealthFalcon is likewise a PowerShell-based implant.",
+      "observed_tooling": [
+        "Custom PowerShell backdoor (bespoke, not Empire/Cobalt Strike)"
+      ],
+      "detection_feasibility": "high — PowerShell script-block/module logging and AMSI capture the backdoor's script bodies, Base64-decoded content, and web/BITS activity; suspicious PowerShell launched from wscript/Office is high-fidelity",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/",
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    },
+    {
+      "technique_id": "T1059.007",
+      "technique_name": "Command and Scripting Interpreter: JavaScript",
+      "tactic": "execution",
+      "procedure_description": "The aax.me tracking page ran JavaScript to profile the visitor (ActiveX/Flash/Java/Office detection, AV port-probing via XMLHttpRequest timing, timezone/plugin/user-agent enumeration, Tor-browser deanonymization attempts) before redirecting.",
+      "observed_tooling": [
+        "aax.me custom URL-shortener / visitor-profiling tracking service"
+      ],
+      "detection_feasibility": "low — the profiling JavaScript executes in the target's browser against off-victim infrastructure; not endpoint-observable in enterprise logs, intel/hunt candidate only",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "Stage One of the PowerShell backdoor used WMI to detect the installed .NET Framework version and gather system-profiling information to select the appropriate follow-on payload.",
+      "observed_tooling": [
+        "Windows Management Instrumentation (WMI) for profiling"
+      ],
+      "detection_feasibility": "medium — PowerShell-initiated WMI queries are observable via WMI-activity and PowerShell logging, but system-profiling WMI use is common and needs process-lineage context",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "The 2016 implant created a scheduled task named 'IE Web Cache' executing hourly to run the VBS/PowerShell loader. The Win32/StealthFalcon backdoor DLL schedules itself as a task running at each user login for persistence.",
+      "observed_tooling": [
+        "IEWebCache.vbs (VBScript loader with Base64-encoded PowerShell)"
+      ],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); the task name 'IE Web Cache' and a task launching wscript/rundll32 on a masquerading DLL are actor-specific, high-fidelity detections",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/",
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "Win32/StealthFalcon stores its configuration in HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions under values prefixed with the malware filename — including -MRUData/-MRUList (RC4-encrypted C2 domains), -FontDisposition (victim ID), -IconDisposition (C2 selection flag), -IconPosition (sleep interval), and -PopupPosition (failed-connection counter).",
+      "observed_tooling": [
+        "RC4 (symmetric encryption of config and C2 traffic)"
+      ],
+      "detection_feasibility": "high — creation/modification of unusual values under the Shell Extensions key holding high-entropy (RC4/encrypted) blobs is detectable via registry-audit and EDR registry telemetry; the specific value names are a strong watchlist",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    },
+    {
+      "technique_id": "T1012",
+      "technique_name": "Query Registry",
+      "tactic": "discovery",
+      "procedure_description": "The backdoor reads its encrypted configuration (C2 domains, victim ID, sleep interval, failure counter) back from its HKCU Shell Extensions registry values on each execution cycle.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — registry reads of the specific config value names correlate with the backdoor process, but registry queries in general are high-volume and need process context",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Configuration data and C2 domains are RC4-encrypted in the registry, and the VBS loader carries Base64-encoded PowerShell — payloads and config are stored encoded/encrypted to evade static inspection.",
+      "observed_tooling": [
+        "RC4 (symmetric encryption of config and C2 traffic)",
+        "IEWebCache.vbs (VBScript loader with Base64-encoded PowerShell)"
+      ],
+      "detection_feasibility": "medium — high-entropy registry blobs and Base64-encoded script bodies are detectable via entropy/encoding heuristics on registry and script-block telemetry",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "procedure_description": "The VBScript loader embeds Base64-encoded PowerShell that is decoded and executed at runtime, obscuring the command payload from casual inspection.",
+      "observed_tooling": [
+        "IEWebCache.vbs (VBScript loader with Base64-encoded PowerShell)"
+      ],
+      "detection_feasibility": "high — Base64-encoded PowerShell (-enc / FromBase64String) invoked from a VBS loader is detectable via script-block logging and command-line encoding heuristics",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "At runtime the backdoor RC4-decrypts its registry-stored C2 configuration and the loader Base64-decodes its embedded PowerShell before execution.",
+      "observed_tooling": [
+        "RC4 (symmetric encryption of config and C2 traffic)"
+      ],
+      "detection_feasibility": "medium — decode/decrypt routines are inferred from script-block content rather than a discrete event; detectable when script-block logging captures the decode calls",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Actors named their scheduled task 'IE Web Cache' and VBS loader IEWebCache.vbs, and registered C2 domains masquerading as legitimate CDN/cache/search/discovery services (windowsearchcache[.]com, incapsulawebcache[.]com, edgecacheimagehosting[.]com, upnpdiscover[.]org) so tasks and callbacks blend with benign activity.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — benign-looking task/file names and lookalike infrastructure domains are detectable via name/path baselining and DNS analytics, but require known-bad lists or anomaly baselining",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The aax.me profiling JavaScript fingerprinted installed antivirus by probing product-specific localhost ports via XMLHttpRequest timing (e.g. 12993 Avast, 44080 Avira, 1110 Kaspersky, 6646 McAfee, 6999 Trend Micro, 30606 ESET) to tailor delivery and evade detection.",
+      "observed_tooling": [
+        "aax.me custom URL-shortener / visitor-profiling tracking service"
+      ],
+      "detection_feasibility": "low — AV port-probing executes browser-side against off-victim infrastructure; not observable in standard endpoint telemetry, intel/hunt candidate",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The profiling stage enumerated installed browser plugins and software versions (ActiveX, Flash, Java, Microsoft Office) via JavaScript/ActiveX detection to select an appropriate payload and lure.",
+      "observed_tooling": [
+        "aax.me custom URL-shortener / visitor-profiling tracking service"
+      ],
+      "detection_feasibility": "low — software/plugin enumeration occurs in the browser against attacker infrastructure; intel/hunt candidate rather than endpoint detection",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Stage One of the backdoor gathered system information (including .NET Framework version via WMI) to profile the host and choose the correct follow-on payload.",
+      "observed_tooling": [
+        "Windows Management Instrumentation (WMI) for profiling"
+      ],
+      "detection_feasibility": "medium — host-profiling commands via PowerShell/WMI are observable but common; value from process-lineage correlation to the macro/VBS chain",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The backdoor collects network configuration details from the compromised host as part of its reconnaissance and C2-setup routine.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — network-config discovery commands are observable in command-line/PowerShell logs but are common admin actions requiring correlation",
+      "sources": [
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The backdoor enumerates the current user/owner of the compromised system during profiling.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — whoami/user-context queries are observable but noisy; meaningful mainly in a recon-burst process window",
+      "sources": [
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The backdoor enumerates running processes on the host as part of environment reconnaissance and tasking.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — process enumeration is observable via command-line/API telemetry but common; correlate with backdoor process lineage",
+      "sources": [
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "Stealth Falcon tooling has capability to steal credentials saved in web browsers on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — access to browser credential-store files/APIs is detectable via file-access and process-access telemetry on the browser profile paths",
+      "sources": [
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1555.004",
+      "technique_name": "Credentials from Password Stores: Windows Credential Manager",
+      "tactic": "credential-access",
+      "procedure_description": "Stealth Falcon tooling has capability to steal credentials stored in the Windows Credential Manager / Vault.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — access to Credential Manager vault files and vaultcmd/credential APIs is detectable via file/process-access telemetry",
+      "sources": [
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "The backdoor automatically collects system data and information of interest from the compromised host as part of its standing tasking, without per-item operator interaction.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — automated bulk local collection is detectable via file-access-burst and staging patterns tied to the backdoor process, but blends with legitimate activity",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "The backdoor collects files and data from the local system on compromised hosts belonging to targeted journalists, activists and dissidents.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — local data collection is common; suspicious mainly via staging and process-lineage context tied to the implant",
+      "sources": [
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "command-and-control",
+      "procedure_description": "Signature behavior of Win32/StealthFalcon: the backdoor abuses the Windows Background Intelligent Transfer Service (BITS) to communicate with its C2 servers and exfiltrate data, rather than standard socket APIs — BITS traffic is often ignored by firewalls and security products, providing stealthy, resilient transport. (ATT&CK maps BITS Jobs to defense-evasion/persistence; placed here to reflect its observed C2/exfil function and Stage-2 detect routing.)",
+      "observed_tooling": [
+        "Windows BITS (Background Intelligent Transfer Service) abused for C2/exfil"
+      ],
+      "detection_feasibility": "high — anomalous BITS jobs to external/non-Microsoft hosts are a strong, actor-signature detection: BITS-Client operational log (Event IDs 3/59/60), bitsadmin/PowerShell BITS cmdlet usage, and non-browser/non-updater processes creating BITS transfers to unknown domains",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "C2 is conducted over HTTP(S) web protocols (carried via BITS transfers) to attacker domains that masquerade as CDN/cache services.",
+      "observed_tooling": [
+        "Windows BITS (Background Intelligent Transfer Service) abused for C2/exfil"
+      ],
+      "detection_feasibility": "medium — HTTP callbacks to the known C2 domains are detectable via proxy/DNS telemetry and domain blocklists, but generic web C2 blends with normal traffic absent the IOC list",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "C2 communications and stored configuration are protected with RC4 symmetric encryption using hardcoded keys, obscuring traffic content and the C2 domain list.",
+      "observed_tooling": [
+        "RC4 (symmetric encryption of config and C2 traffic)"
+      ],
+      "detection_feasibility": "medium — the encryption itself is not directly observable, but RC4-encrypted payloads over HTTP/BITS to unknown domains and hardcoded-key artifacts support signature/hunt detection when combined with the IOCs",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://citizenlab.ca/2016/05/stealth-falcon/"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The staged architecture retrieves follow-on payloads/tasking (Stage Two) from C2 infrastructure after Stage One profiling, transferring additional code to the compromised host.",
+      "observed_tooling": [
+        "Windows BITS (Background Intelligent Transfer Service) abused for C2/exfil"
+      ],
+      "detection_feasibility": "medium — download of follow-on payloads via BITS/HTTP is detectable via BITS job creation with a local file target and file-write-after-network telemetry",
+      "sources": [
+        "https://citizenlab.ca/2016/05/stealth-falcon/",
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Collected data is exfiltrated over the same BITS/HTTP C2 channel used for tasking, back to the attacker-controlled masquerading domains.",
+      "observed_tooling": [
+        "Windows BITS (Background Intelligent Transfer Service) abused for C2/exfil"
+      ],
+      "detection_feasibility": "medium — outbound BITS upload jobs to external hosts and data egress correlated with the C2 domains are detectable via BITS-Client log and proxy/DLP telemetry",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/",
+        "https://attack.mitre.org/groups/G0038/"
+      ]
+    },
+    {
+      "technique_id": "T1020",
+      "technique_name": "Automated Exfiltration",
+      "tactic": "exfiltration",
+      "procedure_description": "Exfiltration of collected host data is automated through the BITS-based backdoor on its C2 polling cycle (governed by the registry-stored sleep interval), without per-transfer operator action.",
+      "observed_tooling": [
+        "Windows BITS (Background Intelligent Transfer Service) abused for C2/exfil"
+      ],
+      "detection_feasibility": "medium — periodic/beaconing BITS upload jobs on a fixed interval to a fixed domain set are detectable via BITS-job and network-beaconing analytics",
+      "sources": [
+        "https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "Anomalous BITS transfer jobs created by non-browser/non-updater processes to external, non-Microsoft domains — BITS-Client operational log (Event IDs 3, 59, 60), bitsadmin.exe usage, and PowerShell Start-BitsTransfer to unknown hosts (Win32/StealthFalcon signature C2/exfil)",
+    "Scheduled task named 'IE Web Cache' (or a task launching wscript on IEWebCache.vbs / rundll32 on a masquerading DLL) created for hourly or at-logon execution (Event ID 4698)",
+    "wscript/cscript executing IEWebCache.vbs that Base64-decodes and launches PowerShell; WINWORD.EXE spawning wscript/powershell child processes after macro enablement",
+    "PowerShell script-block/AMSI content showing Base64 decode, RC4 routines, WMI .NET-version queries, or BITS cmdlet usage from an Office/VBS-spawned PowerShell",
+    "Registry values under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions prefixed with a malware filename (-MRUData, -MRUList, -FontDisposition, -IconDisposition, -IconPosition, -PopupPosition) holding high-entropy/RC4-encrypted blobs",
+    "DNS/proxy traffic to the C2 domains (windowsearchcache[.]com, upnpdiscover[.]org, footballtimes[.]info, vegetableportfolio[.]com, electricalweb[.]org, incapsulawebcache[.]com, edgecacheimagehosting[.]com, ministrynewschannel[.]com, adhostingcache[.]com and related) — many masquerade as CDN/cache/search services",
+    "Web-gateway/URL logs matching the aax.me tracking-link pattern /aax.me/[0-9a-f]{5}/ (off-victim delivery indicator; hunt)",
+    "Delivery of macro-enabled .docm attachments with spoofed Proofpoint security-warning lures; known sample hashes (right2fight.docm, message_032456944343.docm)",
+    "Traffic to IP 95.215.44.37 (historic adhostingcache.com resolution)"
+  ],
+  "iocs": {
+    "ips": [
+      "95.215.44.37"
+    ],
+    "domains": [
+      "footballtimes.info",
+      "vegetableportfolio.com",
+      "windowsearchcache.com",
+      "electricalweb.org",
+      "upnpdiscover.org",
+      "adhostingcache.com",
+      "adhostingcaches.com",
+      "simpleadbanners.com",
+      "clickstatistic.com",
+      "bestairlinepricetags.com",
+      "fasttravelclearance.com",
+      "yeastarr.com",
+      "amnkeysvc.com",
+      "amnkeysvcs.com",
+      "optimizedimghosting.com",
+      "incapsulawebcache.com",
+      "edgecacheimagehosting.com",
+      "ministrynewschannel.com",
+      "ministrynewsinfo.com",
+      "airlineadverts.com",
+      "aax.me"
+    ],
+    "emails": [],
+    "hashes": [
+      "80e8ef78b9e28015cde4205aaa65da97",
+      "f25466e4820404c817eaf75818b7177891735886",
+      "5a372b45285fe6f3df3ba277ee2de55d4a30fc8ef05de729cf464103632db40f",
+      "87e1df6f36b96b56186444e37e2a1ef5",
+      "1c3757006f972ca957d925accf8bbb3023550d1b",
+      "4320204d577ef8b939115d16110e97ff04cb4f7d1e77ba5ce011d43f74abc7be",
+      "31B54AEBDAF5FBC73A66AC41CCB35943CC9B7F72",
+      "50973A3FC57D70C7911F7A952356188B9939E56B",
+      "244EB62B9AC30934098CA4204447440D6FC4E259",
+      "5C8F83CC4FF57E7C67925DF4D8DAABE5D0CC07E2"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "First UAE-cluster pack in the MENA Detection Library. Primary sources: Citizen Lab 'Stealth Falcon' (2016-05-29) for the spear-phishing/aax.me tracking + macro-document PowerShell backdoor tradecraft, and ESET Research 'Backdoor of the Stealth Falcon group' (2019-09-09) on Win32/StealthFalcon for the BITS-based C2/exfil, RC4 registry config and scheduled-task persistence; enriched with MITRE ATT&CK Group Stealth Falcon G0038 for well-documented discovery/credential-access/exfil techniques. NOTE: the ESET 'Okrum and Ke3chang' report is a DIFFERENT actor (Ke3chang/APT15) and was deliberately NOT used. actor.mitre_id intentionally left empty per tasking; the public MITRE group id G0038 is cited only in source/aliases/notes, never as the actor id. Aliases limited to Stealth Falcon and FruityArmor — 'Karma' is deliberately EXCLUDED as it is tracked separately under another actor and would cause confusion; Project Raven is noted as operational overlap only in related_clusters, not merged. Attribution set to medium confidence: UAE-nexus is supported by victimology and infrastructure but a direct state link remains circumstantial/unconfirmed publicly. ATT&CK normalization to THIS environment's bundled dataset: defense-evasion techniques use the tactic slug 'stealth'; encrypted/encoded file uses T1027.013; scheduled task uses T1053.005. T1197 (BITS Jobs) is canonically a defense-evasion/persistence technique in ATT&CK but is placed under tactic 'command-and-control' here to reflect its observed function (BITS as the C2/exfil transport) and to route it correctly to the detect branch — noted for transparency. Every technique_id was validated as present in the environment's bundled attack_dump.json (697 techniques) before inclusion — zero invalid IDs. STRONGEST DETECTION SURFACE (detect candidates, high feasibility): T1197 anomalous BITS jobs to external hosts (actor signature), T1112 HKCU Shell Extensions RC4 config values, T1053.005 'IE Web Cache' scheduled task / at-logon DLL task, T1059.005 IEWebCache.vbs, T1059.001 PowerShell implant, T1027.010 Base64 PowerShell in VBS. HUNT-leaning (low feasibility, off-victim/social/browser-side): T1585.001/002 personas & email accounts, T1583.001 domain acquisition, T1608.005 aax.me link staging, T1587.001 malware development, T1566.002/T1204.001 link delivery & click, T1059.007 aax.me JavaScript profiling, T1518/T1518.001 browser-side software/AV discovery. IOCs are taken verbatim from the Citizen Lab and ESET appendices (SHA-1 backdoor hashes from ESET; MD5/SHA1/SHA256 .docm sample hashes and Stage One/Two C2 domains from Citizen Lab; IP 95.215.44.37 historic resolution). No legitimate/CDN domains were included — all listed domains are attacker-registered lookalikes per the source appendices. aax.me is retained as an actor-operated tracking domain. RC4 key material from the ESET report is documented in that appendix for reversing/attribution but is not a network/host IOC and is intentionally not placed in the iocs object. No CVEs — this actor relies on social engineering and macro-enabled documents rather than exploits. No YARA rules were present verbatim in the cited reports, so none are included (never authored from scratch)."
+}

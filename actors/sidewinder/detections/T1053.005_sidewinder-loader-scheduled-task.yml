@@ -1,0 +1,39 @@
+title: SideWinder Loader Scheduled Task Persistence from User-Writable Path
+id: f494538b-f4a1-4073-928c-8192a3b4c5d6
+status: experimental
+description: |
+    Detects creation of a scheduled task via schtasks.exe whose action launches a binary from
+    a user-writable path or through a proxy execution LOLBIN, an alternate persistence
+    mechanism SideWinder (Rattlesnake / APT-C-17) uses to relaunch the malicious loader. The
+    actor switches between Run-key and scheduled-task autostart methods to evade behavioral
+    detection, so this rule keys on the task action referencing AppData/ProgramData/Temp or
+    mshta/rundll32 rather than a fixed task name.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.execution
+    - attack.t1053.005
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_path:
+        CommandLine|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+            - 'mshta'
+            - 'rundll32'
+            - 'regsvr32'
+    condition: all of selection_*
+falsepositives:
+    - Software installers or IT automation creating scheduled tasks that run from a per-user location - baseline known deployment tooling
+level: high

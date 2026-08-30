@@ -1,0 +1,40 @@
+title: SideWinder JavaScript Loader COMPLUS_Version Runtime Manipulation
+id: af501f47-b06d-4c3f-9e48-4d5e6f708192
+status: experimental
+description: |
+    Detects the SideWinder (Rattlesnake / APT-C-17) obfuscated JavaScript loader stage, which
+    runs under mshta/wscript/cscript, enumerates installed .NET Framework versions and sets
+    the COMPLUS_Version environment variable to force a chosen CLR before Base64-decoding a
+    serialized .NET ModuleInstaller assembly into memory. Keys on the COMPLUS_Version
+    manipulation and on script hosts invoking mshtml/RunHTMLApplication - both distinctive of
+    this chain and rarely used by legitimate software.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.t1059.007
+    - attack.t1027.010
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_complus:
+        CommandLine|contains: 'COMPLUS_Version'
+    selection_js:
+        Image|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+        CommandLine|contains:
+            - 'RunHTMLApplication'
+            - 'mshtml'
+            - '.js'
+    condition: selection_complus or selection_js
+falsepositives:
+    - Developer or build tooling that legitimately sets COMPLUS_Version to pin a CLR runtime - baseline per developer host
+    - Internal scripts invoking scripting engines with .js payloads
+level: high

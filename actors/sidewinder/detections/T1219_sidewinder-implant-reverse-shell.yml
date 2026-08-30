@@ -1,0 +1,37 @@
+title: SideWinder StealerBot Reverse Shell Spawned from User-Writable Path
+id: af4f0e36-af5c-4b2e-9d37-3c4d5e6f7081
+status: experimental
+description: |
+    Detects a process running from a user-writable directory spawning an interactive command
+    shell (cmd.exe / powershell.exe / pwsh.exe), consistent with the SideWinder (Rattlesnake /
+    APT-C-17) StealerBot reverse-shell module that gives operators hands-on-keyboard remote
+    control of the compromised host. There is no third-party RMM binary to signature, so this
+    rule keys on the anomalous parent lineage: an implant/loader host executing from AppData/
+    ProgramData/Temp/Public launching an interactive interpreter.
+references:
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1219
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    condition: all of selection_*
+falsepositives:
+    - Portable or self-updating applications installed under a user profile that legitimately shell out - allowlist by signed parent image and hash
+level: medium

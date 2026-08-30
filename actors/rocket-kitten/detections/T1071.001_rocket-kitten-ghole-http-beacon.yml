@@ -1,0 +1,37 @@
+title: Rocket Kitten GHOLE HTTP Beacon URI (/index.php?c=&r=&u=&t=)
+id: fa84acf1-99a3-42d7-ab62-f19e13974756
+status: experimental
+description: |
+    Detects the distinctive command-and-control beacon of Rocket Kitten's GHOLE / Gholee backdoor
+    (a modified Core Impact agent). GHOLE beacons over HTTP GET to hard-coded C2 IPs using the URI
+    /index.php?c=<8-byte id>&r=<5-7 byte>&u=1&t=<time> (variants /index.php?c=%s&r=%lx and
+    /index.php?c=%s&r=%x). It obfuscates this channel with a hard-coded 256-byte symmetric key and
+    uses the same channel to exfiltrate collected data (T1071.001 web protocols, T1573.001
+    symmetric encryption, T1027 obfuscated communications key, T1041 exfiltration over C2). Keys on
+    the actor-specific URI parameter structure, optionally corroborated by the known C2 IPs.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.stealth
+    - attack.t1071.001
+    - attack.t1573.001
+    - attack.t1027
+    - attack.t1041
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: proxy
+detection:
+    selection_uri:
+        c-uri|re: '(?i)/index\.php\?c=[^&]+&r=[^&]+&u=\d&t='
+    condition: selection_uri
+falsepositives:
+    - Legitimate web applications using index.php with c/r/u/t query parameters - correlate the
+      destination (known GHOLE C2 IPs 83.170.33.60, 83.170.33.37, 83.170.43.67, 83.170.33.80,
+      84.11.26.230, 84.11.75.220, 84.11.146.55, 84.11.146.62), beacon periodicity and the
+      requesting process before dismissing
+level: high

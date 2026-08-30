@@ -1,0 +1,50 @@
+title: Volatile Cedar Web-Shell-Driven Host and Network Recon Burst
+id: 506e6ed5-c53d-426e-a90f-d15ad24b2d87
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar post-exploitation reconnaissance run through the
+    Caterpillar/JSP web shell. Operators execute built-in enumeration commands as children of the
+    web/application-server process to map the host and network: ipconfig (T1016 System Network
+    Configuration Discovery), whoami (T1033 System Owner/User Discovery), net group /domain (T1069.002
+    Domain Groups Discovery), systeminfo/hostname (T1082 System Information Discovery) and net
+    view / nltest for reachable internal hosts (T1018 Remote System Discovery). Each command is benign
+    in isolation; the high-fidelity signal is the discovery LOLBin spawned by an internet-facing
+    server process. Correlate multiple hits in a short window as a recon burst.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1016
+    - attack.t1033
+    - attack.t1069.002
+    - attack.t1082
+    - attack.t1018
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\java.exe'
+            - '\tomcat9.exe'
+            - '\tomcat8.exe'
+            - '\w3wp.exe'
+            - '\httpd.exe'
+            - '\cmd.exe'
+    selection_recon:
+        Image|endswith:
+            - '\ipconfig.exe'
+            - '\whoami.exe'
+            - '\systeminfo.exe'
+            - '\hostname.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\nltest.exe'
+    condition: all of selection_*
+falsepositives:
+    - Administrative or monitoring scripts that legitimately run these commands under an app-server
+      account - the strong signal is a web-server parent; a cmd.exe parent alone is weaker, tune per environment
+level: medium

@@ -1,0 +1,41 @@
+title: SideWinder StealerBot LSASS Memory Credential Access
+id: 5afab9e1-5a07-46d9-98e2-e7f8091a2b3c
+status: experimental
+description: |
+    Detects a process opening a handle to lsass.exe with access rights permitting memory read,
+    consistent with SideWinder (Rattlesnake / APT-C-17) StealerBot harvesting Windows account
+    credentials from LSASS memory. Keys on Sysmon ProcessAccess (EID 10) GrantedAccess masks
+    commonly used to read LSASS, excluding known security-product accessors. Access to LSASS
+    memory is highly observable and rarely legitimate outside AV/EDR and a few Windows
+    components.
+references:
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_access
+    product: windows
+detection:
+    selection:
+        TargetImage|endswith: '\lsass.exe'
+        GrantedAccess|contains:
+            - '0x1010'
+            - '0x1410'
+            - '0x1438'
+            - '0x143a'
+            - '0x1f0fff'
+            - '0x1fffff'
+    filter_system:
+        SourceImage|endswith:
+            - '\MsMpEng.exe'
+            - '\wininit.exe'
+            - '\services.exe'
+            - '\svchost.exe'
+    condition: selection and not filter_system
+falsepositives:
+    - Security products (AV/EDR) and Windows components that legitimately read LSASS - allowlist by signed SourceImage after validation
+level: high

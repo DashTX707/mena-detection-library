@@ -1,0 +1,42 @@
+title: SideWinder mshta.exe Remote HTA/JavaScript Payload Execution
+id: 9d4f0e36-af5c-4b2e-8d37-3c4d5e6f7081
+status: experimental
+description: |
+    Detects the signed Windows LOLBIN mshta.exe executing a remote HTA/JavaScript payload
+    referenced by a URL or script protocol on its command line. SideWinder (Rattlesnake /
+    APT-C-17) invokes mshta.exe both from the CVE-2017-11882 Equation Editor exploit and from
+    ZIP-delivered .LNK shortcuts to download and run an obfuscated JavaScript downloader
+    (via mshtml.RunHTMLApplication) from attacker infrastructure, proxying execution and
+    performing the ingress transfer of the next stage. Anchors on the remote-payload command
+    line rather than IOCs, as domains rotate within hours.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.command-and-control
+    - attack.t1218.005
+    - attack.t1204.001
+    - attack.t1566.002
+    - attack.t1105
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith: '\mshta.exe'
+    selection_remote:
+        CommandLine|contains:
+            - 'http://'
+            - 'https://'
+            - 'javascript:'
+            - 'vbscript:'
+            - 'RunHTMLApplication'
+    condition: all of selection_*
+falsepositives:
+    - Legacy line-of-business web applications that legitimately launch HTA content from an intranet URL - allowlist by internal domain
+level: high

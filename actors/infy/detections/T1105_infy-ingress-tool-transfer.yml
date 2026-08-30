@@ -1,0 +1,46 @@
+title: Foudre Ingress Tool Transfer (Second-Stage Payload Drop into SnailDriver)
+id: d1f3a5c7-9b0e-4a26-8c1f-4d6e8a0c2b30
+status: experimental
+description: |
+    Detects Foudre ingress tool transfer (T1105 Ingress Tool Transfer). Foudre functions as a downloader/
+    profiler that retrieves and installs the higher-value Tonnerre second-stage implant onto machines of
+    interest, and the implants pull additional payloads/updates from C2. Keys on the actor's loader
+    processes (rundll32/fwupdate.temp/helper.exe) writing new executable/DLL payloads into the
+    SnailDriver / ProgramData / AppData staging area - the download-and-drop of a second-stage binary.
+    A loader process writing a new .exe/.dll into the SnailDriver staging directory shortly after C2
+    beaconing is the durable behavioral signal.
+references:
+    - https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.infy
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\rundll32.exe'
+            - '\helper.exe'
+            - '\fwupdate.temp'
+    selection_payload:
+        TargetFilename|endswith:
+            - '.exe'
+            - '.dll'
+            - '.tmp'
+            - '.temp'
+    selection_stage:
+        TargetFilename|contains:
+            - 'SnailDriver'
+            - '\ProgramData\'
+            - '\AppData\'
+    condition: selection_proc and selection_payload and selection_stage
+falsepositives:
+    - Legitimate updaters that drop executables under ProgramData/AppData via rundll32 - baseline
+      expected writers; a loader writing a new second-stage binary into the SnailDriver staging directory
+      after beaconing is the actor pattern
+level: high

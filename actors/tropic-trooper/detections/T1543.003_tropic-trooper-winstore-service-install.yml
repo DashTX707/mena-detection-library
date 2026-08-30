@@ -1,0 +1,39 @@
+title: Tropic Trooper WinStore Windows Service Persistence
+id: 7a4c9e2b-1d38-4f67-8c05-9b2e4a6d3f17
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) establishing persistence by installing a Windows
+    service named WinStore that launches the side-loaded Crowdoor loader (T1543.003 Create or Modify
+    System Process: Windows Service). Keys on service-install events (System log Event ID 7045) where the
+    service name masquerades as WinStore and/or the image path points at a non-standard directory such as
+    c:\Windows\branding\data or c:\Users\Public\Music\data rather than a normal system/program-files
+    location. A service named after the Microsoft Store pointing at a branding/Public data path is
+    highly actor-relevant.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.tropic-trooper
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_event:
+        EventID: 7045
+        Provider_Name: 'Service Control Manager'
+    selection_name:
+        ServiceName|contains: 'WinStore'
+    selection_path:
+        ImagePath|contains:
+            - '\branding\data\'
+            - '\Public\Music\data\'
+            - '\Users\Public\'
+    condition: selection_event and (selection_name or selection_path)
+falsepositives:
+    - Legitimate WinStore/Microsoft Store components run from system paths, not branding or Public data
+      directories - validate the ImagePath and binary signature before dismissing
+level: high

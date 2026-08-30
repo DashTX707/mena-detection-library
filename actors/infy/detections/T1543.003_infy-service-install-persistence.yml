@@ -1,0 +1,38 @@
+title: Infy M Windows Service Installation from User-Writable Path
+id: e5f7a9b1-3c2d-4e68-9f0a-1b3c5d7e9f85
+status: experimental
+description: |
+    Detects the Infy 'M' variant persisting via a Windows service (T1543.003 Windows Service). The
+    higher-value Infy M variant installs itself as a service to survive reboots. Keys on service-install
+    events (Event ID 7045) where the service image path points at a binary in a user-writable location
+    (Users/AppData/ProgramData/Temp) rather than a standard system/program-files path. A newly installed
+    service whose binary lives in a user-writable directory is the durable signal; baseline legitimate
+    software to reduce noise.
+references:
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+    - https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1543.003
+    - mena-detection-library.infy
+logsource:
+    product: windows
+    service: system
+detection:
+    selection:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_path:
+        ImagePath|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: selection and selection_path
+falsepositives:
+    - Legitimate third-party software that installs a service from ProgramData/AppData - allowlist known
+      service names and signing publishers; a new service pointing at an unsigned binary in a
+      user-writable path is the actor pattern
+level: medium

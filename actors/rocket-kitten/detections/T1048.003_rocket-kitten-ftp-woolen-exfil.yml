@@ -1,0 +1,35 @@
+title: Rocket Kitten CWoolger FTP Keylog Exfiltration to /woolen/
+id: 1f47be4c-11fe-4b77-84aa-61bc889f97e8
+status: experimental
+description: |
+    Detects the keylog exfiltration of Rocket Kitten's CWoolger (TSPY_WOOLERG) keylogger, which
+    uploads staged keystroke logs over FTP using hard-coded credentials to attacker FTP servers,
+    placing LOG_(UserName)_timestamp files under a /woolen/ path once a log exceeds ~3000 bytes
+    (T1048.003 exfiltration over an unencrypted non-C2 protocol). Keys on outbound FTP STOR
+    activity to the actor's /woolen/ upload path or the hard-coded exfil IPs 107.6.172.54 /
+    107.6.181.116, distinct from the GHOLE HTTP C2 channel.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1048.003
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: firewall
+detection:
+    selection_path:
+        cs-uri|contains: '/woolen/'
+    selection_ip:
+        dst_ip:
+            - '107.6.172.54'
+            - '107.6.181.116'
+    condition: selection_path or selection_ip
+falsepositives:
+    - A legitimate FTP resource named /woolen/ is highly unlikely in an enterprise; the hard-coded
+      exfil IPs are direct network IOCs - validate the uploading host and whether LOG_* keylog
+      files are present locally
+level: high

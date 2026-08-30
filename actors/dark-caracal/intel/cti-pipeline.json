@@ -1,0 +1,530 @@
+{
+  "report_title": "Dark Caracal (Lebanon/GDGS-nexus mercenary espionage; Bandook Windows RAT, CrossRAT, Pallas Android) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Lookout & EFF 'Dark Caracal: Cyber-espionage at a Global Scale' (2018-01-18, https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf); EFF 'Dark Caracal: You Missed a Spot' (2020-12, https://www.eff.org/deeplinks/2020/12/dark-caracal-you-missed-spot); Check Point Research 'Bandook: Signed & Delivered' (2020-11, https://research.checkpoint.com/2020/bandook-signed-delivered/); MITRE ATT&CK Group Dark Caracal G0070 (https://attack.mitre.org/groups/G0070/), Bandook S0234, CrossRAT S0235, Pallas S0399",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Dark Caracal",
+    "mitre_id": "",
+    "mitre_canonical_name": "Dark Caracal",
+    "aliases": [
+      "Dark Caracal",
+      "MITRE ATT&CK G0070",
+      "GDGS (Lebanese General Directorate of General Security) cyber cluster",
+      "associated infrastructure overlaps: Operation Manul"
+    ],
+    "related_clusters": [
+      "Bandook RAT operators (S0234) — commercially available Delphi/C++ RAT also used in 'Operation Manul'",
+      "CrossRAT (S0235) — Java cross-platform implant",
+      "Pallas (S0399) — Android surveillance spyware (trojanized secure-messaging apps)",
+      "FinFisher (S0182) — commercial surveillance suite observed in the same operation",
+      "GoCaracal / later Bandook resurgences (follow-on reporting)"
+    ],
+    "attribution": "Lebanon-nexus. Lookout and EFF assess (medium-high confidence) that Dark Caracal operates from a building belonging to the Lebanese General Directorate of General Security (GDGS) in Beirut, based on test devices, exfiltrated data and infrastructure clustering. The operation has the hallmarks of a mercenary/offensive-capability-as-a-service actor: the same Bandook infrastructure and tooling has served multiple, unrelated campaigns (including 'Operation Manul' against Kazakh dissidents), so the operator is best understood as shared infrastructure serving several nation-state and private customers rather than a single monolithic APT. Check Point's 2020 Bandook analysis notes the technical continuity (shared C2 registration via Porkbun/NameSilo, identical AES-CFB with hardcoded IV) linking the resurgence to the original Dark Caracal/Manul cluster while cautioning that the ultimate operator behind any given campaign may differ.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Lebanon",
+      "Turkey",
+      "Cyprus",
+      "United Arab Emirates (Dubai/JAFZA-themed lures)",
+      "Middle East (broad)"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Germany",
+      "Switzerland",
+      "Italy",
+      "Singapore",
+      "Indonesia",
+      "Chile",
+      "Kazakhstan (Operation Manul overlap)",
+      "Global (100+ countries in the 2018 campaign)"
+    ],
+    "targeted_sectors": [
+      "Activists and dissidents",
+      "Journalists",
+      "Lawyers / legal institutions",
+      "Military and defense personnel",
+      "Government",
+      "Financial institutions",
+      "Energy",
+      "Healthcare",
+      "Education",
+      "IT / technology"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Dark Caracal — Cyber-espionage at a Global Scale (2018 disclosure)",
+        "date": "2012 to 2018 (disclosed January 2018)",
+        "summary": "Multi-year global espionage operation attributed to the Lebanese GDGS. Delivered the Pallas Android surveillanceware via trojanized copies of popular secure-messaging and utility apps (WhatsApp/Signal/Telegram/Primo look-alikes) distributed through a fake secure-messaging watering-hole site and phishing/social-engineering (Facebook groups, WhatsApp), alongside the Bandook Windows RAT, CrossRAT (Java cross-platform implant) and FinFisher. Stole SMS, call logs, contacts, location, photos, audio recordings, and desktop files from thousands of victims — activists, journalists, lawyers, and military/defense personnel across 100+ countries.",
+        "source_url": "https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf"
+      },
+      {
+        "name": "Bandook: Signed & Delivered (2020 resurgence)",
+        "date": "2019 to 2020",
+        "summary": "Resurgence of the Bandook Windows RAT with Certum-signed, digitally trusted samples. Infection chain: phishing email delivers a ZIP containing a malicious Word document that abuses the Office 'external template' feature to pull VBA macros via TinyURL/Bitly redirects; macros drop a PowerShell loader (fmx.ps1 + base64 image sdmc.jpg) that downloads a four-file ZIP from Dropbox/Bitbucket/S3 (RC4-encrypted a.png/b.png payload, an Invoke-PSImage steganographic untitled.png, and a benign decoy draft.docx); the reconstructed Delphi loader process-hollows into Internet Explorer to run Bandook. Two variants observed: a slim 11-command build and a full ~120-command build with Python/Java payload execution. Lures themed on Office365/OneDrive/Azure, government certificates (Dubai JAFZA) and shipping; victims across government, finance, energy, food, healthcare, education, IT and legal in many countries.",
+        "source_url": "https://research.checkpoint.com/2020/bandook-signed-delivered/"
+      },
+      {
+        "name": "Dark Caracal: You Missed a Spot (EFF follow-on)",
+        "date": "2020-12",
+        "summary": "EFF follow-on linking the 2020 Bandook activity back to the original Dark Caracal cluster and highlighting continued operational-security failures and infrastructure reuse consistent with a mercenary offensive-capability operation.",
+        "source_url": "https://www.eff.org/deeplinks/2020/12/dark-caracal-you-missed-spot"
+      }
+    ]
+  },
+  "threat_actors": ["Dark Caracal", "GDGS cyber cluster (Lebanon)"],
+  "targeted_regions": ["Lebanon", "Turkey", "Cyprus", "United Arab Emirates", "United States", "Germany", "Switzerland", "Italy", "Singapore", "Indonesia", "Chile", "Kazakhstan", "Global"],
+  "targeted_sectors": ["Activists and dissidents", "Journalists", "Lawyers", "Military and defense", "Government", "Financial", "Energy", "Healthcare", "Education", "IT"],
+  "malware": [
+    "Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)",
+    "CrossRAT (S0235) — Java cross-platform RAT (Windows/macOS/Linux)",
+    "Pallas (S0399) — Android surveillanceware delivered via trojanized secure-messaging apps",
+    "FinFisher (S0182) — commercial surveillance suite"
+  ],
+  "tooling_observed": [
+    "Trojanized Microsoft Word documents (external-template macro downloaders)",
+    "PowerShell loader (fmx.ps1, sdmc.jpg base64 image)",
+    "Invoke-PSImage (PNG steganography embedding)",
+    "RC4-encrypted PNG payload staging (a.png / b.png / untitled.png)",
+    "Process Hollowing loader (Delphi) injecting into iexplore.exe",
+    "UPX packer",
+    "Certum code-signing certificates",
+    "TinyURL / Bitly URL shorteners (template redirect)",
+    "Dropbox / Bitbucket / Amazon S3 (payload staging)",
+    "Porkbun / NameSilo (C2 domain registration)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register C2 and staging domains through Porkbun and NameSilo, using disposable/low-cost TLDs (.top, .live, .club, .icu, .monster, .info). Both the original Dark Caracal and the 2020 Bandook resurgence share these registration services.",
+      "observed_tooling": ["Porkbun / NameSilo (C2 domain registration)"],
+      "detection_feasibility": "low — domain registration is off-victim; intel/hunt candidate via passive DNS, registrar/WHOIS pivoting and infrastructure clustering on shared registrars and TLD patterns",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors maintain and evolve the Bandook RAT across builds — a full ~120-command version (March 2019), a signed full variant, and a slimmed 11-command signed version — and operate the Pallas Android implant and CrossRAT Java implant.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "low — capability development is off-victim; intel candidate via sample clustering and code/config reuse (AES-CFB IV, command opcodes)",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/", "https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf"]
+    },
+    {
+      "technique_id": "T1588.003",
+      "technique_name": "Obtain Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "Actors obtained Certum (Polish CA) code-signing certificates to digitally sign Bandook executables across the 2019-2020 campaign, defeating reputation and signature-based trust checks.",
+      "observed_tooling": ["Certum code-signing certificates"],
+      "detection_feasibility": "low — certificate acquisition is off-victim; intel/hunt candidate via certificate-transparency and signer-reputation tracking (the downstream signed binary is where endpoint detection lands)",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors stage the second-stage payload ZIP (containing a.png/b.png RC4 payload, the Invoke-PSImage untitled.png, and decoy draft.docx) on legitimate cloud services — Dropbox, Bitbucket and Amazon S3 — for retrieval by the PowerShell loader.",
+      "observed_tooling": ["Dropbox / Bitbucket / Amazon S3 (payload staging)"],
+      "detection_feasibility": "low — payload staging on legitimate cloud hosting is off-victim and blends with normal cloud traffic; hunt candidate via egress to cloud-hosting following macro/PowerShell activity",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "procedure_description": "In the 2018 operation the actors stood up a fake secure-messaging watering-hole site to distribute trojanized Android apps (Pallas) impersonating WhatsApp/Signal/Telegram/Primo and related utilities.",
+      "observed_tooling": ["Pallas (S0399) — Android surveillanceware delivered via trojanized secure-messaging apps"],
+      "detection_feasibility": "low — adversary-controlled distribution site is off-victim; intel/hunt candidate via infrastructure tracking and app-store/sideload telemetry (mobile)",
+      "sources": ["https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Actors deliver a ZIP archive containing a trojanized Microsoft Word document; lure themes include Office365/OneDrive/Azure notifications, government certificates (Dubai JAFZA) and shipment notifications.",
+      "observed_tooling": ["Trojanized Microsoft Word documents (external-template macro downloaders)"],
+      "detection_feasibility": "medium — inbound ZIP-wrapped macro-enabled documents and their detonation behavior (Word spawning macro/network activity) are detectable at the mail gateway and via office-child-process telemetry",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "The trojanized document's external-template feature reaches out through TinyURL/Bitly shortened links that redirect to the actor's macro/payload hosting.",
+      "observed_tooling": ["TinyURL / Bitly URL shorteners (template redirect)"],
+      "detection_feasibility": "medium — outbound document-template fetches to URL shorteners are detectable via proxy/DNS logs correlated with Office processes, but shortener use blends with benign traffic",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "procedure_description": "In the 2018 campaign actors conducted social-engineering delivery through third-party services — Facebook groups/pages and WhatsApp messages — luring targets to install trojanized apps or open malicious content.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — social-media/messaging delivery occurs off enterprise telemetry; intel/hunt candidate via user reporting and brand/persona monitoring (mobile-centric)",
+      "sources": ["https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf", "https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Actors operated a watering-hole / fake secure-messaging site to distribute trojanized Android applications (Pallas) to targets who browsed to it.",
+      "observed_tooling": ["Pallas (S0399) — Android surveillanceware delivered via trojanized secure-messaging apps"],
+      "detection_feasibility": "low — mobile sideload/watering-hole delivery is largely outside enterprise endpoint telemetry; hunt candidate via mobile-threat-defense and web-filtering (mobile)",
+      "sources": ["https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf", "https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Actors rely on the victim opening a malicious file — trojanized Word documents and payloads disguised as Adobe Flash Player, Microsoft Office, or PDF files — to trigger the infection chain.",
+      "observed_tooling": ["Trojanized Microsoft Word documents (external-template macro downloaders)"],
+      "detection_feasibility": "medium — user-opened lure documents/executables are detectable via office-application child-process spawning and execution of files masquerading as Flash/Office/PDF, but depend on the user action",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/", "https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Targets are induced to click links (including from the fake secure-messaging site and social-engineering messages) to download and install trojanized Pallas Android apps.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — link-driven mobile app installation is outside standard enterprise endpoint telemetry; hunt/intel candidate (mobile)",
+      "sources": ["https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf"]
+    },
+    {
+      "technique_id": "T1221",
+      "technique_name": "Template Injection",
+      "tactic": "stealth",
+      "procedure_description": "The lure Word document abuses the Office 'external template' feature to fetch remote VBA macros at open time (via TinyURL/Bitly), keeping the delivered document itself macro-free at rest. An encrypted script is embedded in a document Shape object (o4QQLW7zXjLbj = ActiveDocument.Shapes(1).TextFrame.TextRange.Text).",
+      "observed_tooling": ["Trojanized Microsoft Word documents (external-template macro downloaders)"],
+      "detection_feasibility": "medium — remote-template loads (settings.xml.rels referencing an external URL) and Office reaching out to shortener/remote hosts on document open are detectable via document inspection and office-network telemetry",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "Remotely fetched VBA macros execute inside Word to decrypt the embedded shape-object script and launch the next stage (dropping the PowerShell loader).",
+      "observed_tooling": ["Trojanized Microsoft Word documents (external-template macro downloaders)"],
+      "detection_feasibility": "medium — VBA macro execution spawning script/PowerShell children is detectable via office-macro and child-process telemetry (AMSI, Sysmon EID 1)",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "The macro drops and runs a PowerShell loader: fmx.ps1 plus sdmc.jpg (a base64-encoded PowerShell blob). The loader downloads the payload ZIP from cloud hosting, RC4-decrypts a.png/b.png into an executable, and extracts a hidden RC4 routine from a valid image (untitled.png, produced with Invoke-PSImage).",
+      "observed_tooling": ["PowerShell loader (fmx.ps1, sdmc.jpg base64 image)", "Invoke-PSImage (PNG steganography embedding)"],
+      "detection_feasibility": "high — PowerShell script-block/module logging (EID 4104) captures the fmx.ps1 loader, base64 decoding of sdmc.jpg, cloud downloads and RC4 image reconstruction; Word/Office spawning powershell.exe is a strong lineage signal",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "Actors leverage Word document macros/command-shell invocations to download and execute secondary malware stages.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — cmd.exe spawned by Office/loader processes to stage payloads is detectable via process-creation and command-line telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "tactic": "execution",
+      "procedure_description": "The full ~120-command Bandook build supports execution of Python payloads (e.g., a bundled dpx.pyc) as well as Java payloads.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "medium — a Python interpreter/.pyc executing from an unusual path under a RAT process is detectable via process-lineage and image-load telemetry, but requires Python-runtime presence",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1218.001",
+      "technique_name": "System Binary Proxy Execution: Compiled HTML File",
+      "tactic": "stealth",
+      "procedure_description": "Actors have abused compiled HTML (.chm) files containing embedded commands to download and execute payloads via the trusted hh.exe/CHM handler.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — hh.exe processing a .chm that spawns a shell/downloader is a rare, high-fidelity behavior detectable via process-lineage (hh.exe -> cmd/powershell) telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactic": "execution",
+      "procedure_description": "Bandook's Delphi loader and RAT use native Windows API calls to reconstruct, inject and execute payloads (including the process-hollowing sequence).",
+      "observed_tooling": ["Process Hollowing loader (Delphi) injecting into iexplore.exe"],
+      "detection_feasibility": "low — direct API use is ubiquitous and only meaningful in combination with the injection/hollowing sequence; hunt candidate via API-sequence/behavioral analytics",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "Bandook establishes persistence by adding a Run key under HKEY_USERS\\...\\Software\\Microsoft\\Windows\\CurrentVersion\\Run; CrossRAT similarly persists on Windows via a registry Run key.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)", "CrossRAT (S0235) — Java cross-platform RAT (Windows/macOS/Linux)"],
+      "detection_feasibility": "high — creation/modification of CurrentVersion\\Run values (Sysmon EID 13, autoruns) pointing to loader/RAT paths is a directly observable, high-fidelity persistence signal",
+      "sources": ["https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1543.001",
+      "technique_name": "Create or Modify System Process: Launch Agent",
+      "tactic": "persistence",
+      "procedure_description": "On macOS, CrossRAT installs a Launch Agent (property list under ~/Library/LaunchAgents) to auto-start the Java implant at login.",
+      "observed_tooling": ["CrossRAT (S0235) — Java cross-platform RAT (Windows/macOS/Linux)"],
+      "detection_feasibility": "medium — new/unusual LaunchAgent plists invoking java are detectable via file-integrity monitoring on LaunchAgents and endpoint telemetry, but require macOS visibility",
+      "sources": ["https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1547.013",
+      "technique_name": "Boot or Logon Autostart Execution: XDG Autostart Entries",
+      "tactic": "persistence",
+      "procedure_description": "On Linux, CrossRAT persists via an XDG autostart entry (~/.config/autostart) that relaunches the Java implant on desktop login.",
+      "observed_tooling": ["CrossRAT (S0235) — Java cross-platform RAT (Windows/macOS/Linux)"],
+      "detection_feasibility": "medium — new .desktop autostart entries invoking java from a user path are detectable via file-integrity monitoring on ~/.config/autostart, but require Linux endpoint visibility",
+      "sources": ["https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1055.012",
+      "technique_name": "Process Injection: Process Hollowing",
+      "tactic": "stealth",
+      "procedure_description": "The Delphi loader reconstructs Bandook in memory and uses process hollowing to inject and run it inside a legitimate Internet Explorer (iexplore.exe) process, masking the RAT under a trusted image.",
+      "observed_tooling": ["Process Hollowing loader (Delphi) injecting into iexplore.exe"],
+      "detection_feasibility": "high — the hollowing sequence (CreateProcess suspended, unmap, WriteProcessMemory, SetThreadContext/ResumeThread) into iexplore.exe, and iexplore.exe with anomalous network/parentage, are detectable via EDR process-injection and image/memory telemetry",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "procedure_description": "Actors pack the Bandook payload with UPX to hinder static analysis and signature detection.",
+      "observed_tooling": ["UPX packer"],
+      "detection_feasibility": "medium — UPX-packed sections and packer signatures are detectable via static scanning and entropy analysis, but packing alone is common and requires corroboration",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1027.003",
+      "technique_name": "Obfuscated Files or Information: Steganography",
+      "tactic": "stealth",
+      "procedure_description": "The loader hides an RC4-decryption routine and payload data inside a valid PNG image (untitled.png) using the Invoke-PSImage technique, embedding bytes in the RGB pixel values; the executable payload is split across a.png and b.png and concatenated.",
+      "observed_tooling": ["Invoke-PSImage (PNG steganography embedding)", "RC4-encrypted PNG payload staging (a.png / b.png / untitled.png)"],
+      "detection_feasibility": "medium — PowerShell reading pixel data from a PNG to reconstruct code is detectable via script-block logging and anomalous image-parsing behavior, but the images themselves are valid and evade content filters",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Bandook stores base64-encoded and encrypted strings/config internally, and the loader chain uses base64 (sdmc.jpg) and RC4-encrypted payload files (a.png/b.png) to keep components opaque at rest.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — high-entropy encoded/encrypted artifacts are detectable via entropy and decoding heuristics, but require dedicated file inspection",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The PowerShell loader base64-decodes sdmc.jpg and RC4-decrypts a.png/b.png at runtime to reconstruct the executable payload before injection.",
+      "observed_tooling": ["PowerShell loader (fmx.ps1, sdmc.jpg base64 image)"],
+      "detection_feasibility": "medium — runtime base64/RC4 decoding by PowerShell is visible in script-block logs (FromBase64String, byte-array XOR/RC4 patterns), but decoding is common and needs context",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "procedure_description": "Bandook samples in the 2019-2020 campaign are digitally signed with Certum-issued code-signing certificates so they appear trusted and bypass reputation/signature checks.",
+      "observed_tooling": ["Certum code-signing certificates"],
+      "detection_feasibility": "medium — a valid signature reduces alerting, but the specific abused signer/thumbprint can be watchlisted and signed-but-anomalous binaries flagged via signer-reputation and behavioral analytics",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "After execution the loader deletes the downloaded ZIP and its extracted components from the Public folder, and displays a benign decoy document (draft.docx) to reduce suspicion.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — deletion of just-downloaded staging files shortly after execution is detectable via file-creation/deletion telemetry correlated with the PowerShell loader, but is a brief window",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Bandook enumerates drives and produces file listings from default Windows directories to locate data of interest for exfiltration (commands @0004 list drives, @0005 list files).",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "medium — file/directory enumeration is common; meaningful mainly within the RAT's process lineage and recon burst",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1016.001",
+      "technique_name": "System Network Configuration Discovery: Internet Connection Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Bandook retrieves the victim's public IP address (command @0011) to profile the host's internet connectivity/geolocation.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "medium — outbound requests to public-IP-lookup services shortly after implant start are detectable via proxy/DNS telemetry correlated with the RAT process",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Bandook enumerates connected drives/devices (command @0004 list drives) to map available storage and removable media on the host.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "medium — drive/device enumeration by a non-system process is detectable in behavioral telemetry but is low-signal without process context",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "On Windows, Bandook/Dark Caracal extracted the complete contents of the Pictures folder and other local files. On Android, Pallas harvested locally stored PII — SMS messages, call logs, contacts and stored photos — from compromised devices.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)", "Pallas (S0399) — Android surveillanceware delivered via trojanized secure-messaging apps"],
+      "detection_feasibility": "medium — bulk reads/staging of user document and picture folders by a RAT are detectable on Windows via file-access telemetry; the Android/Pallas PII collection is a mobile-threat-defense hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "Bandook captures desktop screenshots on demand (command @0003); CrossRAT also supports screen capture across platforms.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)", "CrossRAT (S0235) — Java cross-platform RAT (Windows/macOS/Linux)"],
+      "detection_feasibility": "high — repeated screen-capture API usage (BitBlt/GDI) by a non-interactive process is detectable via EDR behavioral analytics",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "The full Bandook build logs keystrokes to capture credentials and message content from the victim.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "high — low-level keyboard hooks (SetWindowsHookEx) and keylog buffer files created by a RAT are detectable via EDR API-hooking and file-write telemetry",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "Bandook records microphone audio on Windows; Pallas records ambient audio from compromised Android devices for surveillance.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)", "Pallas (S0399) — Android surveillanceware delivered via trojanized secure-messaging apps"],
+      "detection_feasibility": "medium — microphone-access APIs invoked by a background process are detectable on Windows via EDR; the Android/Pallas audio recording is a mobile hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "procedure_description": "Bandook captures webcam video/images on Windows; Pallas can capture from the device camera on Android.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)", "Pallas (S0399) — Android surveillanceware delivered via trojanized secure-messaging apps"],
+      "detection_feasibility": "medium — webcam-device access by a non-conferencing process is detectable on Windows via EDR device-access telemetry; Android camera capture is a mobile hunt candidate",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "Bandook communicates with its C2 over a TCP port using HTTP-style payloads that are Base64-encoded and suffixed with the marker string '&&&&'. Pallas/mobile implants control via standard HTTP.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "high — the distinctive Base64+'&&&&'-suffixed HTTP payloads and beacons to the listed C2 domains are detectable via network/proxy inspection and IDS signatures",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "Bandook supports raw TCP-socket C2 (command @0002 download/execute via TCP socket), using direct socket communication in addition to HTTP-style payloads.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "medium — raw TCP sessions to actor C2 on non-standard ports are detectable via netflow/egress anomaly analytics but lack protocol-layer signatures",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/", "https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "Bandook encrypts C2 traffic and payloads with AES in CFB mode using a hardcoded IV (0123456789123456), a fingerprint shared across the Dark Caracal / Operation Manul lineage.",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "medium — encryption hides content, but the hardcoded AES-CFB IV (0123456789123456) is a strong hunt/attribution pivot for sample and traffic analysis",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The PowerShell loader downloads the second-stage ZIP from Dropbox/Bitbucket/S3, and Bandook itself downloads and executes additional payloads over HTTP (command @0001) and TCP (command @0002).",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)", "PowerShell loader (fmx.ps1, sdmc.jpg base64 image)"],
+      "detection_feasibility": "high — payload downloads following PowerShell/RAT activity, with subsequent file writes and execution, are detectable via process+network+file telemetry",
+      "sources": ["https://research.checkpoint.com/2020/bandook-signed-delivered/", "https://attack.mitre.org/groups/G0070/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Bandook uploads collected files, screenshots, keystrokes and media back to its C2 over the same encrypted HTTP/TCP channel (command @0006 file upload).",
+      "observed_tooling": ["Bandook (S0234) — commercially available Delphi/C++ Windows RAT (slim 11-command and full ~120-command builds)"],
+      "detection_feasibility": "medium — outbound data transfers to actor C2 over the RAT channel are detectable via egress-volume anomaly analytics tied to the C2 destinations, but blend into the encrypted channel",
+      "sources": ["https://attack.mitre.org/groups/G0070/", "https://research.checkpoint.com/2020/bandook-signed-delivered/"]
+    }
+  ],
+  "detection_signals": [
+    "Microsoft Word (winword.exe) making outbound connections to URL shorteners (tinyurl.com, bit.ly) or remote template URLs on document open — remote-template injection (T1221)",
+    "Word/Office spawning powershell.exe that references fmx.ps1 or a base64 image blob (sdmc.jpg), decodes with FromBase64String, and downloads a ZIP from Dropbox/Bitbucket/Amazon S3",
+    "PowerShell reconstructing an executable from PNG pixel data (Invoke-PSImage pattern) and RC4-decrypting a.png/b.png; artifacts a.png, b.png, untitled.png, draft.docx in the Public folder followed by their deletion",
+    "Process hollowing into iexplore.exe (CreateProcess suspended + WriteProcessMemory + SetThreadContext) and iexplore.exe with anomalous parent (PowerShell/loader) and outbound C2",
+    "Registry Run key added under CurrentVersion\\Run pointing to a loader/RAT path (Bandook, CrossRAT Windows); macOS LaunchAgent plist invoking java (~/Library/LaunchAgents); Linux XDG autostart .desktop invoking java (~/.config/autostart) — CrossRAT",
+    "Outbound HTTP payloads Base64-encoded and suffixed with '&&&&', and raw TCP-socket C2 to the listed Bandook domains; the hardcoded AES-CFB IV 0123456789123456 as a sample/traffic hunt pivot",
+    "hh.exe (CHM handler) spawning cmd.exe/powershell.exe to download an executable (T1218.001)",
+    "Digitally signed binaries using the abused Certum code-signing certificate exhibiting RAT behavior (screen/keylog/webcam/mic capture, file upload)",
+    "RAT behavioral cluster on one host: screenshot (BitBlt), keylogging hooks, webcam/microphone access, drive/file enumeration and public-IP lookup by a single non-interactive process",
+    "Mobile/hunt: sideloaded Android apps impersonating WhatsApp/Signal/Telegram/Primo requesting SMS, contacts, call-log, location, microphone and camera permissions and beaconing over HTTP (Pallas)",
+    "Network connections/DNS to the listed Bandook C2 and template domains (ntsclouds[.]com, jtoolbox[.]org, mainsrv[.]top, olex[.]live, megawoc[.]com, fikofiko[.]top, p2020[.]club, mbcde[.]net, horizongb[.]com, etc.)"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [
+      "ntsclouds.com",
+      "jtoolbox.org",
+      "idcmht.com",
+      "htname.info",
+      "vdscloud.net",
+      "mainsrv.top",
+      "olex.live",
+      "branchesv.com",
+      "megawoc.com",
+      "fikofiko.top",
+      "p2020.club",
+      "pronews.icu",
+      "p2020.xyz",
+      "2ndprog.monster",
+      "ercuc.com",
+      "tancredis.com",
+      "mbcde.net",
+      "nopejohn.com",
+      "horizongb.com",
+      "styleco.me",
+      "ewsdocs.com",
+      "raysdoor.com",
+      "vsimperial.com",
+      "mxtms.com"
+    ],
+    "emails": [],
+    "hashes": [
+      "1ad83e9d06428dd87203ab8fcc6142014a9c05f3eb9afd61347834f39082d72a",
+      "74feaf3aa116a88ef3b10453e77feadefbe4e53dd7a71dd3b8309cc9d76cdec9",
+      "034d8ec8d510033c387bb87cac35d240b7b8daa3b5167732118c755c5e6c1d48",
+      "766917fe9b543bf218bd824d55967d63f94b28456f1d4919bc990d8262dc608d",
+      "d4cf5c5c60e972cc19782d1f37ec9d47dd1e81cdf481b64dab62f96bac846bb4",
+      "06ed3daccfbb30c68a33583a761fc20cc3e21adb8dd64a42d922e6da2a01c0dd",
+      "27c6341554a04bdc792ffbc5cda26511cbcfcc66334fb6ebbc24a14969b4e498",
+      "27f8d8bbbeeda5fc439ee18d9d4da343",
+      "44584c8d010242fddb44afe5ce860872",
+      "a6501c62b3a6ffa8d028a88138fe509f",
+      "1a3889ded73044f8ba0a00c2f089a3bd",
+      "70ff19341dee7973ea6dd8e15c6ba86f",
+      "d1600f45005aa8b8fcbb446f34f7b9f5",
+      "4d7e67ed02713c789336f8804231b1ca"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Primary sources: Lookout/EFF 'Dark Caracal' (2018), EFF 'You Missed a Spot' (2020) and Check Point 'Bandook: Signed & Delivered' (2020), enriched with MITRE ATT&CK Dark Caracal G0070 and software profiles Bandook S0234, CrossRAT S0235, Pallas S0399. actor.mitre_id intentionally left empty per tasking; the public MITRE group id G0070 is cited only in source/aliases. Attribution to the Lebanese GDGS is assessed medium (Lookout/EFF medium-high), tempered by the mercenary/offensive-capability-as-a-service nature of the operation — the same Bandook infrastructure served multiple, unrelated campaigns (Operation Manul), so campaign-level operator attribution is deliberately not overstated (attribution_confidence: medium). ATT&CK normalization for THIS environment's bundled (reorganized) dataset: Defense-Evasion techniques use tactic slug 'stealth' (T1221, T1055.012, T1027.002/003/013, T1140, T1553.002, T1070.004, T1218.001); Bandook's public-IP lookup mapped to T1016.001 (Internet Connection Discovery); drive enumeration to T1120; DLL side-loading not applicable to this actor so T1574.002->T1574.001 substitution was not needed. Every technique_id was validated as a key in the 697-technique attack_dump.json before inclusion — zero invalid IDs. MOBILE (Pallas) behaviors are mapped to the nearest Enterprise techniques (T1189 watering hole, T1204.001 malicious app link, T1566.003 social delivery, T1005/T1123/T1125 collection) and rated low/hunt because Android surveillanceware sits outside enterprise endpoint telemetry; S0399 (Pallas) is not present in this bundled dataset. STRONGEST DETECTION SURFACE (detect candidates, high/medium feasibility): T1059.001 PowerShell fmx.ps1/sdmc.jpg loader, T1055.012 process hollowing into iexplore.exe, T1547.001 Run-key persistence, T1218.001 CHM proxy execution, T1071.001 Base64+'&&&&' HTTP C2, T1105 ingress transfer, T1113 screen capture, T1056.001 keylogging, T1221 remote-template injection. HUNT-leaning (low, off-victim/social/mobile): T1583.001/T1587.001/T1588.003/T1608.001/T1608.004 resource-development, T1566.003 social delivery, T1189/T1204.001 mobile watering-hole/app-link, T1106 native API. IOCs are taken from the Check Point 'Bandook: Signed & Delivered' appendix (C2 and external-template domains; malicious-document, Bandook slim-signed and Bandook full SHA-256/MD5 hashes). Legitimate staging/redirect services abused by the actor (Dropbox, Bitbucket, Amazon S3, TinyURL, Bitly) are described in TTPs but intentionally NOT listed as IOCs. No IPs or CVEs were enumerated in the retrieved appendices (Dark Caracal relies on social delivery/user execution rather than exploit CVEs); the 2018 Lookout PDF appendix (Pallas/CrossRAT domain and hash IOCs) could not be retrieved (HTTP 403) and its indicators are therefore not included rather than guessed. No YARA rules were published verbatim in the retrieved sources."
+}

@@ -1,0 +1,36 @@
+title: StrongPity Windows Defender Scan Exclusion Tampering
+id: 6d0b2f84-7c39-4e51-9a68-3f1c5a2d0b74
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM defense impairment where the malware adds its own directories to the
+    Windows Defender scan-exclusion list so its files are not scanned (T1685 Disable or Modify Tools).
+    Keys on the behavior of an Add-MpPreference / Set-MpPreference invocation configuring an
+    ExclusionPath, ExclusionExtension or ExclusionProcess. Exclusion additions are rare, high-fidelity
+    tamper events; benign use is almost always from IT/admin tooling that can be allowlisted.
+references:
+    - https://attack.mitre.org/software/S0491/
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - mena-detection-library.strongpity
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cli:
+        CommandLine|contains:
+            - 'Add-MpPreference'
+            - 'Set-MpPreference'
+    selection_excl:
+        CommandLine|contains:
+            - 'ExclusionPath'
+            - 'ExclusionExtension'
+            - 'ExclusionProcess'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate administrators and endpoint-management tooling add Defender exclusions - allowlist the
+      known management parent processes and accounts, then treat remaining hits as high priority
+level: high

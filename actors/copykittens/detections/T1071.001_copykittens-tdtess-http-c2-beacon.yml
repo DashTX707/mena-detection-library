@@ -1,0 +1,51 @@
+title: CopyKittens TDTESS / Cobalt Strike HTTP C2 Beacon and Tool Transfer
+id: 50e8d379-55b1-42ca-9e14-341fb5a2584f
+status: experimental
+description: |
+    Detects HTTP(S) command-and-control to CopyKittens (Slayer Kitten, G0052) lookalike/update-themed
+    infrastructure used by the TDTESS backdoor (periodic HTTP call-outs with basic auth) and the
+    NetSrv/Cobalt Strike loader (T1071.001 Web Protocols). The same channel carries follow-on payload
+    downloads (T1105 Ingress Tool Transfer) and data exfiltration back to C2 (T1041 Exfiltration Over C2
+    Channel). Anchors on web-proxy request telemetry to known actor C2 hosts.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://attack.mitre.org/groups/G0052/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.001
+    - attack.t1105
+    - attack.t1041
+    - mena-detection-library.copykittens
+logsource:
+    category: proxy
+detection:
+    selection_host:
+        cs-host:
+            - 'win-update.com'
+            - 'winupdate64.com'
+            - 'winupdate64.net'
+            - 'winupdate64.org'
+            - 'windowkernel.com'
+            - 'windowskernel14.com'
+            - 'main.windowskernel14.com'
+            - 'javaupdate.co'
+            - 'javaupdator.com'
+            - 'mswordupdate17.com'
+            - 'c.mswordupdate17.com'
+            - 'outlook360.net'
+            - 'outlook360.org'
+            - 'winfeedback.net'
+            - 'updatedrivers.org'
+            - 'labs-cloudfront.com'
+            - 'cloud-analyzer.com'
+            - 'chromeupdates.online'
+            - 'azurewebsites.tech'
+            - 'qoldenlines.net'
+    condition: selection_host
+falsepositives:
+    - Very unlikely - these are known-malicious actor C2 hosts; correlate the requesting process and
+      beacon interval, and treat any hit as an active-compromise indicator
+level: high

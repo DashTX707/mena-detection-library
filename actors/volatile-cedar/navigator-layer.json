@@ -1,0 +1,210 @@
+{
+  "name": "Volatile Cedar - MENA Detection Library",
+  "versions": {
+    "attack": "14",
+    "navigator": "4.9.1",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Volatile Cedar coverage: red=Sigma detection, orange=hunt hypothesis.",
+  "techniques": [
+    {
+      "techniqueID": "T1595.002",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1595.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1587.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1583.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1190",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1505.003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1059",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1129",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1574.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1016",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1033",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1069.002",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1082",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1083",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1018",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1056.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1113",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1005",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1074.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1550.002",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1021.002",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1570",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1071.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1008",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1568.002",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1105",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1573",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1027",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1140",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    }
+  ],
+  "gradient": {
+    "colors": [
+      "#ffffff",
+      "#e2504a"
+    ],
+    "minValue": 0,
+    "maxValue": 2
+  },
+  "legendItems": [
+    {
+      "label": "detection (Sigma)",
+      "color": "#e2504a"
+    },
+    {
+      "label": "hunt hypothesis",
+      "color": "#f6b26b"
+    }
+  ]
+}

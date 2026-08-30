@@ -1,0 +1,223 @@
+{
+  "actor": "Tropic Trooper (KeyBoy)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "high — exploitation of internet-facing CMS/Exchange/ColdFusion is a strong detection surface: web-server/WAF logs, anomalous POSTs to CMS endpoints, exploit signatures for the named CVEs, and new DLL/script artifacts written into the web root and ASP.NET temporary-files tree"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — new App_Web_*.dll modules and web-shell files appearing in the Umbraco/ASP.NET temporary-files tree, w3wp.exe spawning cmd.exe/powershell, and web-shell request patterns are high-fidelity file-integrity and process-lineage detections"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — cmd.exe/batch execution spawned by the IIS worker process (w3wp.exe) and ping-sweep loops writing enumeration output are detectable via process command-line and process-lineage telemetry"
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "rationale": "medium — service-based execution (services.exe spawning an unusual image) is detectable via service-install and process-lineage telemetry"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high — new service creation (Event ID 7045) named WinStore pointing at a non-standard binary path is a high-fidelity, actor-relevant detection"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation of an HKCU...\\Run value named WinStore referencing a payload in an unusual path is directly observable via registry-modification telemetry (Sysmon EID 13)"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "stealth",
+      "rationale": "high — a signed binary loading an unsigned VERSION.dll/datast.dll from c:\\Windows\\branding\\data or c:\\Users\\Public\\Music\\data is detectable via module-load (Sysmon EID 7) signature-mismatch and path-anomaly analytics; the exact DLL names/paths are actor-specific IOCs"
+    },
+    {
+      "technique_id": "T1055.001",
+      "technique_name": "Process Injection: Dynamic-link Library Injection",
+      "tactic": "privilege-escalation",
+      "rationale": "medium — colorcpl.exe spawned with an unusual argument and hosting injected code / making network connections is detectable via process-lineage and cross-process injection (Sysmon EID 8/10) telemetry"
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "rationale": "medium — anomalous network/behavior from colorcpl.exe and injected-thread indicators are detectable with EDR, but generic injection needs correlation with the side-load event"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy encrypted blobs embedded in DLLs and multi-layer Base64 web-shell payloads are detectable via file-entropy/YARA scanning, but require dedicated inspection"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — legitimate-looking names (WinStore, VERSION.dll) in unusual paths are detectable via name/path/hash baselining and signature-vs-name mismatch"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "medium — tampering with or bypassing security tooling is detectable via EDR tamper-protection and security-product health telemetry, but the report gives limited specifics"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — process access to lsass.exe and mimikatz signatures/command lines are highly observable via EDR process-access (Sysmon EID 10) telemetry"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — Fscan execution and internal connection-fanout/port-scan bursts are detectable via process command-line and east-west network analytics"
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — scripted ping-sweep loops (repeated ping.exe invocations) and output redirection are detectable via process command-line telemetry within a recon-burst window"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — queries listing AV/EDR services and products are detectable via command-line and API-call telemetry, though common in admin activity"
+    },
+    {
+      "technique_id": "T1210",
+      "technique_name": "Exploitation of Remote Services",
+      "tactic": "lateral-movement",
+      "rationale": "medium — internal exploitation attempts surface via service crash/anomaly telemetry and east-west IDS, but require internal instrumentation"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "rationale": "medium — admin-share access (ADMIN$/C$) and remote file writes/service installs are detectable via Type-3 logons (4624), 5140 share access and 7045 service-install events"
+    },
+    {
+      "technique_id": "T1090.001",
+      "technique_name": "Proxy: Internal Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — Neo-reGeorg tunneling shows as anomalous web-server child processes and SOCKS-over-HTTP request patterns; detectable via web-shell/process analytics and proxy-behavior heuristics"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "medium — FRP/reverse-proxy client execution and persistent outbound tunnels are detectable via process signatures and long-lived/anomalous egress connection analytics"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — outbound HTTPS from an unusual process (injected colorcpl.exe) to blog.techmersion[.]com / techmersion[.]com is detectable via proxy/DNS and process-to-network correlation; the C2 domain is an explicit IOC"
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — TLS C2 blends with legitimate HTTPS; detectable mainly via JA3/JA4 fingerprinting, destination-domain reputation and process-to-network anomaly correlation"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — files written to disk by the IIS worker process (w3wp.exe) or injected process following network transfer are detectable via file-creation and process-to-network telemetry"
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "rationale": "medium — archive-utility execution producing large/compressed outputs before egress is detectable via process command-line and file-write telemetry"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound data volume anomalies over the C2 channel to the actor domain are detectable via egress-volume analytics and process-to-network correlation"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "rationale": "low — pre-compromise scanning of public-facing servers happens off-victim/at the perimeter and rarely attributes to this actor; hunt/external-attack-surface candidate"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain registration/staging is off-victim; intel/infrastructure-tracking candidate (pivot on registrant/hosting/TLS)"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; intel candidate. Downstream implant execution is where host detection lands"
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactic": "execution",
+      "rationale": "low — direct native-API use is generic and hard to isolate without deep memory/EDR telemetry; hunt candidate correlated with side-load and injection events"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — in-memory decode routines leave little discrete host signal; hunt candidate alongside side-load/injection correlation"
+    },
+    {
+      "technique_id": "T1564.001",
+      "technique_name": "Hide Artifacts: Hidden Files and Directories",
+      "tactic": "stealth",
+      "rationale": "low — payloads tucked into uncommon data folders evade casual review; hunt candidate via file-creation telemetry on non-standard directories"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-impairment",
+      "rationale": "low — post-op cleanup/file deletion is hard to observe after the fact; hunt candidate via file-deletion auditing and shell-history reconstruction"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — system-info enumeration is common and noisy; hunt candidate within a tight recon-burst process-lineage window"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "low — ipconfig/route/arp-style enumeration is ubiquitous; hunt candidate only in recon-burst context"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "low — writing enumeration output/staging files is low-signal; hunt candidate via file-creation patterns in staging directories"
+    }
+  ],
+  "summary": {
+    "total": 35,
+    "detection": 25,
+    "hunt": 10
+  }
+}

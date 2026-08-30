@@ -1,0 +1,46 @@
+title: Tonnerre Command-Directed FTP Exfiltration to External Servers
+id: 7e9a1b3c-5d2f-4e68-9a0b-8c0d2f4e6a41
+status: experimental
+description: |
+    Detects Tonnerre (Infy second-stage) exfiltration over a non-C2 channel (T1048.003 Exfiltration Over
+    Alternative Protocol: Exfiltration Over Unencrypted/Obfuscated Non-C2 Protocol). Separate from its
+    HTTP C2, Tonnerre uploads operator-selected files over FTP to dedicated external FTP servers. Keys on
+    outbound FTP (port 21/20) from a workstation to an external destination, with the actor's known FTP
+    server IPs as high-fidelity reinforcers. Outbound FTP from a user endpoint to an external host is
+    anomalous in most enterprises and is the durable behavioral signal; internal destinations are
+    excluded.
+references:
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1048.003
+    - mena-detection-library.infy
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: true
+        DestinationPort:
+            - 20
+            - 21
+    selection_actor_ips:
+        DestinationIp:
+            - '54.37.60.199'
+            - '54.36.40.208'
+            - '79.137.24.207'
+            - '155.94.211.212'
+            - '155.94.210.82'
+    filter_internal:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+    condition: (selection and not filter_internal) or selection_actor_ips
+falsepositives:
+    - Legitimate FTP transfers to business partners - baseline expected external FTP destinations and
+      transferring hosts; interactive FTP from a user workstation to an unfamiliar external host, or any
+      connection to the actor's FTP IPs, is the pattern
+level: high

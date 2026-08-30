@@ -1,0 +1,48 @@
+title: CopyKittens Watering-Hole or Phishing-Link Navigation to CDN Lookalike Domain
+id: d3dfed35-90b7-4424-880d-df501a3be5fa
+status: experimental
+description: |
+    Detects victim web navigation to CopyKittens (Slayer Kitten, G0052) CDN/service-lookalike domains
+    used for spearphishing links and strategic-web-compromise (watering-hole) redirects in Operation
+    Wilted Tulip (T1566.002 Spearphishing Link, T1189 Drive-by Compromise). These typosquat domains
+    impersonate Akamai, Google/gstatic, Cloudflare, Twitter and Facebook but do not resolve to the real
+    provider's infrastructure. Keys on web-proxy request host/URL telemetry.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://www.clearskysec.com/copykitten-jpost/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1566.002
+    - attack.t1189
+    - mena-detection-library.copykittens
+logsource:
+    category: proxy
+detection:
+    selection_host:
+        cs-host:
+            - 'alkamaihd.com'
+            - 'alkamaihd.net'
+            - 'akamaitechnology.com'
+            - 'akamaitechnology.tech'
+            - 'akamitechnology.com'
+            - 'fbstatic-akamaihd.com'
+            - 'cloudflare-statics.com'
+            - 'cloudflare-analyse.com'
+            - 'gstatic.online'
+            - 'ssl-gstatic.online'
+            - 'gsvr-static.co'
+            - 'twiter-statics.info'
+            - 'img.twiter-statics.info'
+            - 'fb-statics.com'
+            - 'fbstatic-a.space'
+            - 'googlusercontent.center'
+            - 'cdninstagram.center'
+            - 'gmailtagmanager.com'
+            - 'doucbleclick.tech'
+    condition: selection_host
+falsepositives:
+    - Very unlikely - these are known-malicious typosquat domains; any hit warrants investigation of the
+      referring site and the user session
+level: high

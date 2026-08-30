@@ -1,0 +1,50 @@
+title: SideWinder StealerBot Local Collection and Staging File Writes
+id: 8d2dec14-8d3a-490c-9b15-1a2b3c4d5e6f
+status: experimental
+description: |
+    Detects a process running from a user-writable directory writing screenshot, keylog or
+    staged collection files into an AppData/ProgramData/Temp staging location. This is the
+    on-host footprint of the SideWinder (Rattlesnake / APT-C-17) StealerBot screenshot,
+    keylogger and file-stealer modules, which automatically collect documents, desktop
+    captures and keystrokes from the local system and stage them locally before exfiltration
+    to C2. Anchors on the implant-lineage writer plus image/staging paths rather than IOCs.
+references:
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1113
+    - attack.t1119
+    - attack.t1005
+    - attack.t1074.001
+    - mena-detection-library.sidewinder
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_proc:
+        Image|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+    selection_files:
+        TargetFilename|endswith:
+            - '.jpg'
+            - '.jpeg'
+            - '.png'
+            - '.bmp'
+            - '.klg'
+            - '.keys'
+            - '.scr'
+    selection_stagepath:
+        TargetFilename|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate applications caching thumbnails or screenshots under a user profile directory - baseline noisy writers per environment
+level: medium

@@ -1,0 +1,42 @@
+title: Dark Caracal Bandook/CrossRAT Run Key Persistence
+id: 353c7250-6518-441c-9187-fbcdfe1d75a8
+status: experimental
+description: |
+    Detects creation or modification of a CurrentVersion\Run autostart value pointing to a payload
+    in a user-writable directory. Bandook establishes persistence by adding a Run key under
+    HKU\...\Software\Microsoft\Windows\CurrentVersion\Run, and CrossRAT persists on Windows the same
+    way (T1547.001 Registry Run Keys / Startup Folder). Keys on a Run/RunOnce registry-set event
+    whose value data references a user-writable path (Public/AppData/Temp/ProgramData) or a
+    scripting host, which is characteristic of RAT persistence rather than installed software.
+references:
+    - https://attack.mitre.org/groups/G0070/
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.dark-caracal
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+    selection_data:
+        Details|contains:
+            - '\Users\Public\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - 'powershell'
+            - 'wscript'
+            - 'javaw'
+            - 'java.exe'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate applications that self-register autostart entries from AppData/ProgramData
+      (updaters, messaging clients) - baseline expected Run values per image and publisher
+level: high

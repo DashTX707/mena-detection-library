@@ -1,0 +1,485 @@
+{
+  "report_title": "Cavern Manticore (DEV-0270 / Nemesis Kitten / Cobalt Mirage / TunnelVision / PHOSPHORUS-nexus) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Microsoft Security 'Profiling DEV-0270: PHOSPHORUS' ransomware operations' (2022-09-07, https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/); Secureworks CTU 'COBALT MIRAGE conducts ransomware operations in U.S.' (2022-05-12, https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us); SentinelOne Labs 'Log4j2 In The Wild — Iranian-Aligned Threat Actor TunnelVision Actively Exploiting VMware Horizon' (2022-02, https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/). No public MITRE ATT&CK Gxxxx group is assigned to this cluster.",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Cavern Manticore",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "DEV-0270",
+      "Nemesis Kitten",
+      "Cobalt Mirage",
+      "TunnelVision",
+      "UNC2448",
+      "PHOSPHORUS (parent cluster)",
+      "Secnerd (cover company)",
+      "Lifeweb (cover company)"
+    ],
+    "related_clusters": [
+      "PHOSPHORUS / Mint Sandstorm (broader Iranian umbrella)",
+      "Najee Technology Hooshmand Fater LLC (sanctioned front company)",
+      "Afkar System Yazd Company (sanctioned front company)",
+      "COBALT MIRAGE Cluster A (opportunistic ransomware/BitLocker) and Cluster B (targeted intrusion via FRPC)"
+    ],
+    "attribution": "Iran-nexus, assessed as a sub-cluster of the Iranian state-aligned actor PHOSPHORUS (Mint Sandstorm), operated by a company running under the public aliases Secnerd and Lifeweb and linked to MOIS-affiliated contractors Najee Technology and Afkar System. Activity blends financially motivated ransomware/extortion (opportunistic, likely not fully state-sanctioned) with espionage-aligned intrusion in support of Iranian state interest. Secureworks tracks two behavioral clusters: Cluster A opportunistically encrypts (BitLocker/DiskCryptor) for low ransom demands, while Cluster B conducts more targeted intrusion using Fast Reverse Proxy (FRPC). Attribution is assessed high-medium confidence — multiple independent vendors (Microsoft, Secureworks, SentinelOne) converge on the same tooling/infrastructure and Iran-nexus assessment.",
+    "attribution_confidence": "high-medium",
+    "targeted_regions_mena": [
+      "Israel",
+      "Gulf / Arabian Peninsula organizations"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Europe",
+      "Australia"
+    ],
+    "targeted_sectors": [
+      "Technology",
+      "Government / local government",
+      "Defense",
+      "Healthcare",
+      "Education",
+      "Manufacturing",
+      "Financial services"
+    ],
+    "key_campaigns": [
+      {
+        "name": "DEV-0270 BitLocker/DiskCryptor full-disk-encryption extortion",
+        "date": "2021 to 2022",
+        "summary": "Opportunistic ransomware operations that gain access by early exploitation of high-severity vulnerabilities (Exchange ProxyShell/ProxyLogon, Fortinet CVE-2018-13379, Log4Shell), then abuse the native Windows BitLocker feature on servers (via setup.bat) and DiskCryptor on workstations (dropped over RDP) to encrypt drives and render hosts inoperable. Time-to-ransom as short as ~2 days; ransom demands around USD 8,000. Heavy use of LOLBins for discovery and credential access, WDigest registry tampering, comsvcs.dll LSASS dumping, scheduled-task persistence, and Microsoft Defender tampering.",
+        "source_url": "https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"
+      },
+      {
+        "name": "COBALT MIRAGE ransomware operations in U.S. (FRPC intrusions)",
+        "date": "2020 to 2022",
+        "summary": "Intrusions into U.S. and other organizations by exploiting internet-facing applications (Log4Shell on VMware Horizon, ProxyShell on Exchange, Fortinet FortiOS). Actors deploy Fast Reverse Proxy Client (FRPC, masqueraded as audio.exe) and Plink for tunneling, create a DefaultAccount/MSSQL local user, drop ASPX web shells (aspx_[a-z]{13}.aspx), and in Cluster A manually deploy BitLocker for extortion. A March 2022 U.S. local-government intrusion was attributed on the basis of a DefaultUser account, FRPC deployment, and matching infrastructure.",
+        "source_url": "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"
+      },
+      {
+        "name": "TunnelVision Log4Shell exploitation of VMware Horizon",
+        "date": "2021 to 2022",
+        "summary": "Wide exploitation of Log4Shell (CVE-2021-44228 / CVE-2021-45046) against internet-facing VMware Horizon (Tomcat ws_TomcatService.exe) to run PowerShell, deploy backdoors, create backdoor admin users, harvest credentials (Procdump, SAM hive, comsvcs MiniDump), scan subnets for RDP, and tunnel RDP out via Plink and Ngrok. Payloads hosted on actor domains and a GitHub account (protections20).",
+        "source_url": "https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"
+      }
+    ]
+  },
+  "threat_actors": ["Cavern Manticore", "DEV-0270", "Nemesis Kitten", "Cobalt Mirage", "TunnelVision", "UNC2448", "PHOSPHORUS"],
+  "targeted_regions": ["United States", "Israel", "Gulf", "Europe", "Australia"],
+  "targeted_sectors": ["Technology", "Government", "Defense", "Healthcare", "Education", "Manufacturing", "Financial services"],
+  "malware": [
+    "BitLocker (native Windows tool abused for extortion)",
+    "DiskCryptor (open-source full-disk encryption abused for extortion)",
+    "FRPC / Fast Reverse Proxy Client (masqueraded as audio.exe)",
+    "Impacket wmiexec"
+  ],
+  "tooling_observed": [
+    "BitLocker (setup.bat)",
+    "DiskCryptor",
+    "Fast Reverse Proxy Client (FRPC / audio.exe)",
+    "Plink",
+    "Ngrok",
+    "Procdump",
+    "comsvcs.dll (MiniDump via rundll32)",
+    "Impacket wmiexec",
+    "PowerShell",
+    "WMI",
+    "SoftPerfect Network Scanner (netscan / netscan_portable_v621.zip)",
+    "ASPX web shells (aspx_[a-z]{13}.aspx)",
+    "GitHub (protections20 account, dead-drop/payload hosting)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector: rapid exploitation of newly disclosed high-severity vulnerabilities in internet-facing applications — Log4Shell (CVE-2021-44228 / CVE-2021-45046) against VMware Horizon (Tomcat ws_TomcatService.exe), Microsoft Exchange ProxyShell (CVE-2021-34473/34523/31207) and ProxyLogon (CVE-2021-26855/26857/26858/27065), and Fortinet FortiOS (CVE-2018-13379, CVE-2020-12812, CVE-2019-5591).",
+      "observed_tooling": [],
+      "detection_feasibility": "high — exploitation of these specific CVEs on internet-facing appliances/servers is the strongest detection surface: appliance/WAF/IDS logs, exploit signatures, anomalous child processes spawned by Tomcat/Exchange/w3wp, and version/patch-state monitoring all apply",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/", "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us", "https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors conduct internet-wide scanning to identify servers vulnerable to the CVEs they weaponize (Log4Shell on Horizon, ProxyShell on Exchange, Fortinet), consistent with early-adopter opportunistic targeting.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — off-victim scanning of the wider internet is not endpoint-observable; hunt/intel candidate via external attack-surface and exposure monitoring, though inbound probes to one's own edge are perimeter-detectable",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "procedure_description": "Actors drop ASPX web shells on compromised Exchange/IIS servers following ProxyShell exploitation, using a distinctive naming pattern aspx_[a-z]{13}.aspx (e.g. aspx_okqmeibjplh.aspx) to maintain access.",
+      "observed_tooling": ["ASPX web shells (aspx_[a-z]{13}.aspx)"],
+      "detection_feasibility": "high — creation of ASPX files matching the aspx_[a-z]{13}.aspx pattern in IIS/Exchange web roots, and w3wp.exe spawning cmd/powershell, are high-fidelity file-integrity and process-lineage detections",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "Actors run malicious PowerShell from exploited services (Tomcat/Exchange) to download payloads (System.Net.WebClient), execute reverse shells, harvest credentials, install root certificates, and drive discovery. PowerShell is a core LOLBin throughout the intrusion.",
+      "observed_tooling": ["PowerShell"],
+      "detection_feasibility": "high — PowerShell script-block/module logging captures download cradles (System.Net.WebClient / DownloadString), reverse shells, and encoded commands, especially when spawned by ws_TomcatService.exe or w3wp.exe",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/", "https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "Actors execute .bat scripts (wininet.bat, nvContainerRecovery.bat, setup.bat) and cmd.exe commands for discovery, encryption setup, and lateral execution (e.g. cmd.exe /Q /c quser via Impacket).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — cmd.exe batch execution is common; value comes from the specific batch file names and process-lineage context (spawned by web/exploit processes or preceding encryption)",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us", "https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "procedure_description": "Actors use WMI for discovery (wmic computersystem get domain) and remote execution via Impacket wmiexec (cmd.exe /Q /c quser 1> \\\\127.0.0.1\\ADMIN$\\... 2>&1).",
+      "observed_tooling": ["Impacket wmiexec", "WMI"],
+      "detection_feasibility": "high — wmic/WMI remote execution with the Impacket wmiexec ADMIN$ output-redirect artifact (\\\\127.0.0.1\\ADMIN$\\<epoch>) is a well-known, detectable pattern in process command-line and named-pipe telemetry",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "Actors create scheduled tasks for persistence, loading XML task definitions and executing .bat/reverse-proxy payloads. Observed task XMLs include SynchronizeTimeZone.xml and Wininet.xml (with matching Wininet.bat).",
+      "observed_tooling": [],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); the specific task names (SynchronizeTimeZone, Wininet) and tasks launching .bat files are actor-specific, high-fidelity detections",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "tactic": "persistence",
+      "procedure_description": "Actors create local accounts for persistence and RDP access via net user /add — observed account names include DefaultAccount (password P@ssw0rd1234) and MSSQL (password _AS_@1394); Secureworks also observed a DefaultUser account.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — creation of accounts with these specific names/passwords is directly observable via account-creation logging (Event ID 4720) and makes strong actor-specific watchlist detections",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/", "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactic": "persistence",
+      "procedure_description": "Actors add their newly created backdoor users to privileged/administrator groups to retain elevated access.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — addition of a user to the local Administrators group (Event ID 4732) shortly after account creation is a high-fidelity, correlatable detection",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1078.001",
+      "technique_name": "Valid Accounts: Default Accounts",
+      "tactic": "persistence",
+      "procedure_description": "Actors repurpose/rename the built-in DefaultAccount and use created DefaultUser/DefaultAccount identities to blend malicious logons with legitimate-looking default accounts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — interactive/RDP logons by the normally-dormant DefaultAccount are anomalous and detectable via authentication analytics, but require baselining of default-account behavior",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us", "https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "Actors modify the registry to enable plaintext credential capture and RDP: reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f, and modify HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server (and WinStations\\RDP-Tcp) to enable RDP; ransom messaging added under HKLM\\SOFTWARE\\Policies.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — the WDigest UseLogonCredential=1 registry set and Terminal Server RDP-enable modifications are specific, low-noise registry-modification detections (Sysmon EID 13 / 4657)",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "Actors dump LSASS memory using the signed comsvcs.dll MiniDump function via rundll32 (output file name reversed to ssasl.dmp), and also use Procdump against LSASS.",
+      "observed_tooling": ["comsvcs.dll (MiniDump via rundll32)", "Procdump"],
+      "detection_feasibility": "high — rundll32 loading comsvcs.dll with MiniDump, process access to lsass.exe, and the reversed ssasl.dmp output name are highly observable via EDR process-access, image-load, and command-line telemetry",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/", "https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1003.002",
+      "technique_name": "OS Credential Dumping: Security Account Manager",
+      "tactic": "credential-access",
+      "procedure_description": "Actors dump the SAM registry hive to extract local credential material (observed in TunnelVision Horizon intrusions).",
+      "observed_tooling": [],
+      "detection_feasibility": "high — SAM hive access/save (reg save HKLM\\SAM, volume-shadow or direct hive read) is detectable via command-line and file-access auditing",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "procedure_description": "Actors disable Microsoft Defender Antivirus real-time protection (via PowerShell/registry) to allow their tools and encryption to run unimpeded.",
+      "observed_tooling": ["PowerShell"],
+      "detection_feasibility": "high — disabling Defender real-time protection (Set-MpPreference -DisableRealtimeMonitoring / DisableAntiSpyware registry) is detectable via Defender tamper-protection alerts, PowerShell logging, and registry-modification telemetry",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1553.004",
+      "technique_name": "Subvert Trust Controls: Install Root Certificate",
+      "tactic": "stealth",
+      "procedure_description": "Actors install a custom root certificate via PowerShell to facilitate trusted communications / evade inspection.",
+      "observed_tooling": ["PowerShell"],
+      "detection_feasibility": "medium — installation of a new root CA certificate (certutil / Import-Certificate to the Root store) is detectable via certificate-store change auditing but is relatively rare-signal and needs coverage",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Actors rename tooling to legitimate-looking Windows binaries — the FRPC client is dropped as audio.exe, and reverse-proxy/payloads masquerade as dllhost.exe, task_update.exe, user.exe, and CacheTask.",
+      "observed_tooling": ["Fast Reverse Proxy Client (FRPC / audio.exe)"],
+      "detection_feasibility": "medium — legitimate-looking names in unusual paths and signature/name mismatches (e.g. FRPC signed/behaving as audio.exe, dllhost.exe outside system32) are detectable via name/path/hash baselining",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/", "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "stealth",
+      "procedure_description": "Actors abuse rundll32.exe to proxy execution of comsvcs.dll's MiniDump function for LSASS credential theft.",
+      "observed_tooling": ["comsvcs.dll (MiniDump via rundll32)"],
+      "detection_feasibility": "high — rundll32.exe comsvcs.dll,MiniDump command lines are a well-known, high-fidelity detection in process command-line telemetry",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors enumerate system/domain info using LOLBins — wmic computersystem get domain and related host queries early in the intrusion.",
+      "observed_tooling": ["WMI"],
+      "detection_feasibility": "medium — individual discovery commands are common; meaningful mainly as a recon burst correlated by process lineage back to an exploit/web process",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors run whoami, net user, and quser to enumerate the current user and logged-on sessions.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — whoami/quser/net user are ubiquitous admin commands; value comes from recon-burst clustering and suspicious parent processes, not the command alone",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "procedure_description": "Actors enumerate mail/domain recipients with PowerShell — e.g. Get-Recipient | Select Name -ExpandProperty EmailAddresses -first 1 | Select SmtpAddress | ft -hidetableheaders — to map accounts on compromised Exchange.",
+      "observed_tooling": ["PowerShell"],
+      "detection_feasibility": "medium — Exchange Get-Recipient enumeration and net user /domain are observable in PowerShell/command-line logging but overlap with legitimate administration; needs baselining",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors scan internal subnets for RDP (port 3389) prior to lateral movement, and use SoftPerfect Network Scanner (netscan / netscan_portable_v621.zip, netscanold.exe) to enumerate hosts and services.",
+      "observed_tooling": ["SoftPerfect Network Scanner (netscan / netscan_portable_v621.zip)"],
+      "detection_feasibility": "medium — internal RDP subnet sweeps and SoftPerfect netscan execution are detectable via connection-fanout/east-west network analytics and known-scanner process signatures",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/", "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "persistence",
+      "procedure_description": "Actors enable and abuse RDP (adding firewall rule netsh advfirewall firewall add rule name=\"Terminal Server\" dir=in action=allow protocol=TCP localport=3389 and enabling Terminal Server) to establish durable external remote access via their backdoor accounts.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — the specific netsh firewall rule opening 3389 plus Terminal Server enablement and subsequent external RDP logons by backdoor accounts are strong, correlatable detections",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "procedure_description": "Actors move laterally and deploy tooling (e.g. dropping DiskCryptor on workstations) over interactive RDP sessions using the DefaultAccount/DefaultUser backdoor identities.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — RDP lateral movement is detectable via Type-10 logons (4624) and internal-RDP fanout analytics, but blends with legitimate admin RDP; backdoor-account context raises fidelity",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/", "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors tunnel C2 and RDP out of victim networks using Fast Reverse Proxy Client (FRPC, dropped as audio.exe), Plink, and Ngrok. FRPC deployment is a signature Cluster B behavior.",
+      "observed_tooling": ["Fast Reverse Proxy Client (FRPC / audio.exe)", "Plink", "Ngrok"],
+      "detection_feasibility": "high — FRPC/Plink/Ngrok process execution plus outbound connections to tunneling endpoints (and FRPC config files) are detectable via process, file, and network/DNS telemetry; FRPC (audio.exe) is an explicit actor IOC",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us", "https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "The Fast Reverse Proxy provides a reverse-proxy relay allowing the actors to reach internal services (RDP) from actor-controlled infrastructure, obscuring the true source of connections.",
+      "observed_tooling": ["Fast Reverse Proxy Client (FRPC / audio.exe)"],
+      "detection_feasibility": "medium — reverse-proxy relaying blends with normal traffic, but the FRPC binary/config and its persistent outbound control channel to actor IPs are detectable when baselined",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors download tooling and payloads to victim hosts via PowerShell (System.Net.WebClient) from actor-controlled domains and a GitHub account (protections20); observed staged archives include pxy.zip, pxy.rar, 23.zip, rsf.exe, and netscan_portable_v621.zip.",
+      "observed_tooling": ["PowerShell", "GitHub (protections20 account, dead-drop/payload hosting)"],
+      "detection_feasibility": "high — PowerShell download cradles to the named actor domains/GitHub and subsequent file writes of the staged archives are detectable via proxy/DNS and process+file telemetry",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/", "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "Backdoors and reverse shells communicate over HTTP(S) to actor C2 domains (e.g. microsoft-updateserver.cf as C2, service-management.tk as payload server).",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — HTTP C2 to the named masquerading domains is detectable when those domains are blocklisted/baselined and correlated with the originating process, but generic web C2 blends with normal traffic",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "procedure_description": "Signature impact behavior: full-disk-encryption extortion using native BitLocker on servers (enabled via PowerShell / setup.bat, rendering hosts inoperable) and open-source DiskCryptor on workstations (dropped over RDP and launched to encrypt the entire drive). Ransom notes reference low demands (~USD 8,000).",
+      "observed_tooling": ["BitLocker (setup.bat)", "DiskCryptor"],
+      "detection_feasibility": "high — abuse of BitLocker for extortion (manage-bde / Enable-BitLocker on non-baselined hosts, unexpected protector changes, mass volume-encryption events) and DiskCryptor driver install/execution are detectable via process command-line, service/driver-install, and BitLocker operational-log telemetry; this is the primary detection-candidate for impact",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/", "https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "procedure_description": "By enabling BitLocker/DiskCryptor full-disk encryption and withholding the recovery/decryption keys, actors render hosts inoperable and block normal recovery until ransom is paid.",
+      "observed_tooling": ["BitLocker (setup.bat)", "DiskCryptor"],
+      "detection_feasibility": "medium — recovery inhibition here is realized through the encryption itself; the detectable signals overlap with T1486 (BitLocker protector/recovery-key changes), so it is best hunted alongside the encryption events",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1657",
+      "technique_name": "Financial Theft",
+      "tactic": "impact",
+      "procedure_description": "Actors extort victims for payment (ransom demands around USD 8,000) in exchange for decryption keys after BitLocker/DiskCryptor encryption; ransom messaging is planted (including under HKLM\\SOFTWARE\\Policies).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — the extortion/ransom negotiation and payment occur off-victim; the on-host encryption and ransom-note planting are where detection lands (see T1486). Intel/hunt candidate",
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "Actors obtain and operationalize publicly available tools — Fast Reverse Proxy (FRPC), Plink, Ngrok, Procdump, Impacket wmiexec, DiskCryptor, and SoftPerfect Network Scanner.",
+      "observed_tooling": ["Fast Reverse Proxy Client (FRPC / audio.exe)", "Plink", "Ngrok", "Procdump", "Impacket wmiexec", "DiskCryptor"],
+      "detection_feasibility": "low — tool acquisition itself is off-endpoint; downstream use of each tool is where detection lands. Intel/hunt candidate",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us", "https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors stage payloads and tooling on a GitHub account (protections20) and on actor-controlled masquerading domains (service-management.tk payload/hosting server) for retrieval by compromised hosts.",
+      "observed_tooling": ["GitHub (protections20 account, dead-drop/payload hosting)"],
+      "detection_feasibility": "low — staging on GitHub/actor domains is off-victim; intel/hunt candidate via infrastructure tracking, though pulls from those endpoints on-victim are detectable (see T1105)",
+      "sources": ["https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register and operate C2/payload domains that masquerade as legitimate services (e.g. microsoft-updateserver.cf, service-management.tk, onedriver-srv.ml, symantecserver.co, msupdate.us, gupdate.us).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — domain registration/acquisition is off-victim; intel/hunt candidate via infrastructure tracking and DNS blocklisting",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us", "https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "Actors stage tooling/collected data in archives (pxy.zip, pxy.rar, 23.zip, netscan_portable_v621.zip) on compromised hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — creation of .zip/.rar archives (including the named staging archives) on servers preceding transfer is detectable via file-write and archive-utility command-line telemetry, but overlaps with legitimate activity",
+      "sources": ["https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us"]
+    }
+  ],
+  "detection_signals": [
+    "Exploitation and post-exploit activity on internet-facing VMware Horizon (Log4Shell CVE-2021-44228/45046 — ws_TomcatService.exe spawning powershell/cmd), Exchange ProxyShell/ProxyLogon (w3wp.exe spawning shells), and Fortinet FortiOS (CVE-2018-13379)",
+    "ASPX web shells matching aspx_[a-z]{13}.aspx (e.g. aspx_okqmeibjplh.aspx) written into IIS/Exchange web roots",
+    "reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f (plaintext credential capture)",
+    "rundll32.exe comsvcs.dll MiniDump against lsass.exe, and the reversed dump filename ssasl.dmp; Procdump against LSASS; SAM hive dump",
+    "Creation of local accounts DefaultAccount (P@ssw0rd1234), MSSQL (_AS_@1394), or DefaultUser via net user /add, followed by addition to Administrators (Event ID 4720 + 4732)",
+    "netsh advfirewall firewall add rule name=\"Terminal Server\" dir=in action=allow protocol=TCP localport=3389 and Terminal Server / RDP-Tcp registry enablement",
+    "Scheduled tasks SynchronizeTimeZone.xml and Wininet.xml (launching Wininet.bat / .bat payloads) — Event ID 4698",
+    "Impacket wmiexec artifact: cmd.exe /Q /c ... 1> \\\\127.0.0.1\\ADMIN$\\<epoch> 2>&1; wmic computersystem get domain",
+    "FRPC dropped as audio.exe, plus Plink and Ngrok — process execution and outbound tunneling; payloads masquerading as dllhost.exe, task_update.exe, user.exe, CacheTask",
+    "Microsoft Defender real-time protection disabled; custom root certificate installed via PowerShell",
+    "BitLocker enabled for extortion on servers (setup.bat / Enable-BitLocker / manage-bde, unexpected protector or recovery-key changes) and DiskCryptor driver install/launch over RDP on workstations — hosts rendered inoperable",
+    "PowerShell download cradles (System.Net.WebClient) to actor domains and GitHub account protections20; staged archives pxy.zip, pxy.rar, 23.zip, netscan_portable_v621.zip, rsf.exe",
+    "SoftPerfect Network Scanner (netscan_portable_v621.zip / netscanold.exe) and internal subnet RDP (3389) sweeps",
+    "Outbound traffic to actor C2/payload domains (microsoft-updateserver.cf, service-management.tk, onedriver-srv.ml, symantecserver.co, msupdate.us, gupdate.us, tcp443.org, newdesk.top, aptmirror.eu, winstore.us, my-logford.ml) and IPs listed in the IOC set"
+  ],
+  "iocs": {
+    "ips": [
+      "107.173.231.114",
+      "198.12.65.175",
+      "148.251.71.182",
+      "162.55.137.20",
+      "51.89.169.198",
+      "142.44.251.77",
+      "51.89.135.142",
+      "51.89.190.128",
+      "51.89.178.210",
+      "142.44.135.86",
+      "182.54.217.2"
+    ],
+    "domains": [
+      "newdesk.top",
+      "onedriver-srv.ml",
+      "symantecserver.co",
+      "microsoft-updateserver.cf",
+      "msupdate.us",
+      "service-management.tk",
+      "aptmirror.eu",
+      "winstore.us",
+      "my-logford.ml",
+      "gupdate.us",
+      "tcp443.org",
+      "google.onedriver-srv.ml"
+    ],
+    "emails": [],
+    "hashes": [
+      "668ec78916bab79e707dc99fdecfa10f3c87ee36d4dee6e3502d1f5663a428a0",
+      "27102b416ef5df186bd8b35190c2a4cc4e2fbf37",
+      "5f098b55f94f5a448ca28904a57c0e58",
+      "724d54971c0bba8ff32aeb6044d3b3fd571b13a4c19cada015ea4bcab30cae26",
+      "3da45558d8098eb41ed7db5115af5a2c61c543af",
+      "0f8b592126cc2be0e9967d21c40806bc",
+      "24a73efb6dcc798f1b8a08ccf3fa2263ff61587210fdec1f2b7641f05550fe3b",
+      "1bf98c565cbfc4a500fab1d44b0f7c357d87abf6",
+      "c8bd04b93ac9b95b712a84f119b31959",
+      "28332bdbfaeb8333dad5ada3c10819a1a015db9106d5e8a74beaaf03797511aa",
+      "5bd0690247dc1e446916800af169270f100d089b",
+      "b90f05b5e705e0b0cb47f51b985f84db",
+      "e6f4ce982908108759536f5aff21fa6686b8ea8153fdd4cdd087cceff5f1748a",
+      "5100230b454c33c05d1aef4235898543595ba378",
+      "c64f3293658ed3b3ba1f54c17fe37d18",
+      "9dce6086c61c23420ac497f306debf32731decc5527231002dbb69523fad3369",
+      "7f310ac9423852b7a0af0c898c3404b3b47cbf53",
+      "b22b4531dce8a9cb16ecb9e4c17daea3",
+      "7feb4d36a33f43d7a1bb254e425ccd458d3ea921",
+      "d28e07d2722f771bd31c9ff90b9c64d4a188435a",
+      "624278ed3019a42131a3a3f6e0e2aac8d8c8b438",
+      "e76e9237c49e7598f2b3f94a2b52b01002f8e862"
+    ],
+    "cves": [
+      "CVE-2021-44228",
+      "CVE-2021-45046",
+      "CVE-2018-13379",
+      "CVE-2020-12812",
+      "CVE-2019-5591",
+      "CVE-2021-34473",
+      "CVE-2021-34523",
+      "CVE-2021-31207",
+      "CVE-2021-26855",
+      "CVE-2021-26857",
+      "CVE-2021-26858",
+      "CVE-2021-27065"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high-medium",
+  "notes": "Primary sources are three independent vendor reports that converge on the same Iran-nexus cluster: Microsoft 'Profiling DEV-0270' (2022-09-07), Secureworks CTU 'COBALT MIRAGE' (2022-05-12, now served from sophos.com after the Secureworks/Sophos redirect), and SentinelOne 'TunnelVision' (2022). Attribution to an Iran-nexus PHOSPHORUS/Mint Sandstorm sub-cluster operated by cover companies Secnerd/Lifeweb (MOIS-affiliated contractors Najee Technology / Afkar System) is assessed high-medium: multiple vendors agree, but the DEV-0270 = Cobalt Mirage = TunnelVision equivalence is a cross-vendor cluster-merge and the ransomware activity is assessed likely not fully state-sanctioned. actor.mitre_id intentionally left empty per tasking; no public MITRE ATT&CK group id maps cleanly to this cluster. ATT&CK NORMALIZATIONS to this environment's bundled (reorganized) dataset: Impair-Defenses 'Disable or Modify Tools' (public T1562.001) -> T1685 under tactic 'defense-impairment'; all Defense-Evasion techniques use the env tactic slug 'stealth' (T1112, T1553.004, T1036.005, T1218.011). Every technique_id was validated as a key in attack_dump.json (697 techniques) before inclusion — zero invalid IDs. STRONGEST DETECTION SURFACE (detect candidates, high feasibility): T1190 Log4Shell/ProxyShell/Fortinet exploitation, T1505.003 aspx_[a-z]{13}.aspx web shells, T1112 WDigest UseLogonCredential registry set, T1003.001/T1218.011 comsvcs.dll MiniDump -> ssasl.dmp, T1136.001/T1098 DefaultAccount/MSSQL creation + admin add, T1133 netsh 3389 rule, T1053.005 SynchronizeTimeZone/Wininet tasks, T1047 Impacket wmiexec ADMIN$ artifact, T1572 FRPC(audio.exe)/Plink/Ngrok tunneling, T1685 Defender disable, T1486 BitLocker/DiskCryptor extortion. HUNT-leaning (low feasibility, off-victim): T1595.002 internet scanning, T1657 extortion/ransom, T1588.002 tooling acquisition, T1608.001/T1583.001 GitHub & domain staging. IOCs are taken verbatim from the three reports' IOC tables/appendices: Secureworks file hashes (MD5/SHA1/SHA256 for wininet.bat, dllhost.exe, SynchronizeTimeZone.xml, audio.exe FRPC, nvContainerRecovery.bat, wmiexec.exe), Secureworks IPs/domains, and SentinelOne TunnelVision SHA1 hashes/IPs/domains. The garbled start.vbs SHA256 returned by extraction ('927289dd...') was DROPPED as an unreliable/corrupted value rather than passed through. Financial/attribution identifiers (ransom USD ~8,000, cover-company names) are captured in prose, not the iocs object."
+}

@@ -1,0 +1,40 @@
+title: Volatile Cedar Web/Application Server Spawning a Command Interpreter
+id: 0bb78d1f-8434-4c7e-9e31-a937aed9d3e2
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar command execution through a deployed web shell
+    (T1059). Operators run commands via the Caterpillar/JSP web shell on the compromised
+    Atlassian/Oracle/IIS server, which manifests as a web or application-server process (java,
+    tomcat, w3wp, httpd) spawning a Windows command interpreter (cmd.exe / powershell.exe). A
+    server-side application process launching an interactive shell is anomalous and a high-fidelity
+    post-exploitation signal that a web shell is being used to run OS commands.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+    - https://blog.checkpoint.com/security/volatilecedar/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\java.exe'
+            - '\tomcat9.exe'
+            - '\tomcat8.exe'
+            - '\w3wp.exe'
+            - '\httpd.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    condition: all of selection_*
+falsepositives:
+    - Application monitoring, backup or management plugins that legitimately shell out to cmd/powershell
+      from an app-server process - baseline per host and validate the child command line
+level: high

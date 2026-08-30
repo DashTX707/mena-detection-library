@@ -1,0 +1,37 @@
+title: StrongPity C2 And Distribution Domain DNS Resolution
+id: 2d8f0b64-7c19-4a53-9e28-6f1c3a0d5b74
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM host resolution of the actor's typosquat delivery and C2 /
+    distribution domains, over which trojanized installers and additional components are transferred
+    (T1105 Ingress Tool Transfer, T1071.001 Web Protocols). StrongPity supports self-update and pulling
+    additional tooling from its C2; a DNS query for these actor-controlled domains indicates delivery or
+    ingress activity. Anchored on DNS-query behavior using the high-fidelity actor domains as selectors.
+references:
+    - https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/
+    - https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - attack.t1071.001
+    - mena-detection-library.strongpity
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection:
+        QueryName|endswith:
+            - 'updserv-east-cdn3.com'
+            - 'downloading.internetdownloading.co'
+            - 'ralrab.com'
+            - 'winrar.it'
+            - 'winrar.be'
+            - 'true-crypt.com'
+    condition: selection
+falsepositives:
+    - These domains are actor-controlled and should not appear in normal traffic - any resolution is high
+      priority; verify the resolving host and process context
+level: high

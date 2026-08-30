@@ -1,0 +1,40 @@
+title: Cavern Manticore C2/Payload Domain Communication
+id: 0c2e4a60-9b1d-4f3a-8c5e-7d9f1a3b5c32
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / Cobalt Mirage / TunnelVision) command-and-control over web protocols
+    to actor-controlled domains that masquerade as legitimate services (T1071.001 Application Layer Protocol:
+    Web Protocols). Backdoors and reverse shells communicate with domains such as microsoft-updateserver.cf,
+    service-management.tk, onedriver-srv.ml, symantecserver.co, msupdate.us and gupdate.us. Keys on DNS
+    resolution / network connections to these actor C2 and payload domains.
+references:
+    - https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection_domains:
+        QueryName|contains:
+            - 'newdesk.top'
+            - 'onedriver-srv.ml'
+            - 'symantecserver.co'
+            - 'microsoft-updateserver.cf'
+            - 'msupdate.us'
+            - 'service-management.tk'
+            - 'aptmirror.eu'
+            - 'winstore.us'
+            - 'my-logford.ml'
+            - 'gupdate.us'
+            - 'tcp443.org'
+    condition: selection_domains
+falsepositives:
+    - These domains are actor-controlled and should not appear in normal traffic; a hit is high-fidelity, but
+      confirm the resolving host and process and validate the domain has not been sinkholed/reused
+level: high

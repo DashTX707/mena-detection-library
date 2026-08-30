@@ -1,0 +1,43 @@
+title: StrongPity Security Software Discovery For ESET And Bitdefender
+id: 1c5a8e30-9d24-4b67-8f13-6a2c0d1b7e59
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM security-software discovery where the malware checks for the presence
+    of specific AV/EDR products (notably ESET and Bitdefender) before executing its payload
+    (T1518.001 Security Software Discovery). Keys on native enumeration utilities (tasklist, sc, reg,
+    wmic, PowerShell) whose command line references those security-product names or their process/service
+    identifiers. This behavior is common in benign software too, so context (parent lineage, proximity to
+    dropper activity) is required.
+references:
+    - https://attack.mitre.org/software/S0491/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - mena-detection-library.strongpity
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        Image|endswith:
+            - '\tasklist.exe'
+            - '\sc.exe'
+            - '\reg.exe'
+            - '\wmic.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_av:
+        CommandLine|contains:
+            - 'eset'
+            - 'bitdefender'
+            - 'egui'
+            - 'ekrn'
+            - 'bdagent'
+            - 'bdservicehost'
+    condition: all of selection_*
+falsepositives:
+    - Helpdesk and software-inventory scripts legitimately query for installed AV - correlate with the
+      parent process and any preceding dropper/installer activity before dismissing
+level: medium

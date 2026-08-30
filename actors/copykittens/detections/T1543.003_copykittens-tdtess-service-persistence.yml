@@ -1,0 +1,42 @@
+title: CopyKittens TDTESS Backdoor Windows Service Installation
+id: c8474632-ca07-4d21-b9de-e11be0029458
+status: experimental
+description: |
+    Detects installation of a new Windows service pointing to a backdoor binary in a user-writable /
+    non-standard path, as used by the CopyKittens (Slayer Kitten, G0052) TDTESS backdoor for persistence
+    (T1543.003). TDTESS ran as a service and reached its HTTP C2 for instructions; the actor also signed
+    malware to subvert trust controls (T1553.002), so a service binary in a temp/appdata/programdata path
+    is high-fidelity even when signed. Keys on Service Control Manager event 7045.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://attack.mitre.org/groups/G0052/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1543.003
+    - attack.t1553.002
+    - mena-detection-library.copykittens
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_event:
+        Provider_Name: 'Service Control Manager'
+        EventID: 7045
+    selection_path:
+        ImagePath|contains:
+            - '\Users\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Windows\Temp\'
+            - '\Temp\'
+            - '\PerfLogs\'
+    selection_name:
+        ServiceName|contains: 'TDTESS'
+    condition: selection_event and (selection_path or selection_name)
+falsepositives:
+    - Some legitimate agents install services from ProgramData - validate the binary signature/publisher,
+      hash reputation and installing account before dismissing
+level: high

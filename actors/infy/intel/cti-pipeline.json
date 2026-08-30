@@ -1,0 +1,513 @@
+{
+  "report_title": "Infy (Prince of Persia / Operation Mermaid) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Palo Alto Networks Unit 42 'Prince of Persia: Infy Malware Active In Decade of Targeted Attacks' (2016-05, https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/); Unit 42 'Prince of Persia – Game Over' (2016, https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/); Unit 42 'Prince of Persia – Ride the Lightning: Infy returns as Foudre' (2017, https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/); Check Point Research 'After Lightning Comes Thunder' (Tonnerre, 2021, https://research.checkpoint.com/2021/after-lightning-comes-thunder/); public MITRE ATT&CK tracks Infy under Malpedia/vendor naming (no assigned Gxxxx group id at time of writing)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Infy",
+    "mitre_id": "",
+    "mitre_canonical_name": "Infy",
+    "aliases": [
+      "Prince of Persia",
+      "Operation Mermaid",
+      "Foudre (malware family alias)",
+      "Tonnerre (malware family alias)"
+    ],
+    "related_clusters": [
+      "Foudre downloader/profiler (evolution of Infy, 2017)",
+      "Tonnerre high-value implant (second-stage payload, Check Point 2021)",
+      "MaxPinner Telegram-focused implant (later evolution)"
+    ],
+    "attribution": "Iran-nexus, assessed medium confidence. One of the longest-running Iranian cyber-espionage operations, with activity dating to ~2007. Unit 42 tied the C2 registration infrastructure to an Iranian individual ('Amin Jalali', Tehran contact details and yahoo.com registrant email) and to Iranian hosting/telecom infrastructure, and the operation's exclusive focus on surveillance of Iranian dissidents, expatriates, Persian-language media, and Middle Eastern/European governments and embassies is consistent with Iranian state intelligence interests. Attribution to a specific Iranian government element is not firmly established in the public reporting, hence medium confidence rather than high.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Iran (domestic dissidents and civil society)",
+      "Middle Eastern governments and embassies"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Europe (governments, embassies, expatriate/dissident communities)",
+      "Global (456 agents on 326 victims across 35 countries per Unit 42)"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Diplomatic / embassies",
+      "Dissidents, activists and expatriates",
+      "Media and Persian-language press",
+      "Civil society / political organizations"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Infy — decade of targeted attacks (Prince of Persia)",
+        "date": "2007 to 2016",
+        "summary": "Long-running espionage campaign using the proprietary Infy backdoor (and 'Infy M' variant) delivered via spear-phishing emails carrying weaponized Word/PowerPoint documents and multi-layer self-extracting archives. Backdoor established autostart-registry persistence, checked for antivirus and avoided installation if AV present, harvested keystrokes/clipboard/browser credentials and documents, and beaconed to HTTP C2 on ~5-minute intervals. Unit 42 sinkholed multiple C2 domains in 2016, disrupting access to victims.",
+        "source_url": "https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"
+      },
+      {
+        "name": "Infy returns as Foudre (Ride the Lightning)",
+        "date": "2017",
+        "summary": "After the 2016 sinkhole, the operator returned with a rebuilt toolset dubbed Foudre ('lightning'). A self-executable spear-phishing attachment drops a loader, malicious DLL and decoy file to %ALLUSERSPROFILE%\\AppData\\SnailDriver V<ver>, writes the loader to an autostart Run key, and loads the DLL via rundll32.exe after reboot. Foudre resolves C2 via a Domain Generation Algorithm (CRC32 of 'NRV1' + date) and uses RSA signature verification to authenticate C2 domains, defeating simple sinkholing. Foudre acts as a downloader/victim-profiler that pulls the higher-value Tonnerre implant onto machines of interest.",
+        "source_url": "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"
+      },
+      {
+        "name": "Tonnerre second-stage implant (After Lightning Comes Thunder)",
+        "date": "2018 to 2021",
+        "summary": "Foudre-delivered second-stage backdoor 'Tonnerre' ('thunder'). Delivered via macro-enabled Word documents (lures included a photo of Dorud city governor Mojtaba Biranvand and ISAAR-themed content); on document close a macro drops fwupdate.temp to %TEMP% and executes it. Tonnerre steals files from predefined folders and external/removable devices, records audio, captures the screen, and executes C2 commands. It exfiltrates built-in collections over HTTP POST and command-directed file uploads over FTP, uses a DGA (NITV1 + date) with RSA-verified C2, and persists via a scheduled task for helper.exe plus a Registry Run key.",
+        "source_url": "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"
+      }
+    ]
+  },
+  "threat_actors": ["Infy", "Prince of Persia", "Operation Mermaid"],
+  "targeted_regions": ["Iran", "United States", "Europe", "Middle East", "Global"],
+  "targeted_sectors": ["Government", "Diplomatic / embassies", "Dissidents and expatriates", "Media", "Civil society"],
+  "malware": [
+    "Infy (backdoor)",
+    "Infy M (backdoor variant with remote commands, screenshot and microphone capture)",
+    "Foudre (downloader / victim profiler)",
+    "Tonnerre (high-value second-stage implant)"
+  ],
+  "tooling_observed": [
+    "Multi-layer self-extracting (SFX) archives (encryption key 1qaz2wsx3edc)",
+    "rundll32.exe (DLL execution host)",
+    "Malicious DLL loaders (mpro*.dll, CLMediaLibrary-themed DLL)",
+    "Weaponized Word / PowerPoint documents with VBA macros",
+    "helper.exe (Tonnerre scheduled-task host)",
+    "Domain Generation Algorithm (CRC32 'NRV1' / 'NITV1' + date)",
+    "RSA signature verification of C2 domains",
+    "Self-signed / attacker-controlled TLS certificates for HTTP(S) C2"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector across all generations: spear-phishing emails carrying a weaponized Word or PowerPoint attachment, or a self-executable archive attachment, tailored to Iranian dissidents, expatriates and diplomatic targets. Tonnerre lures used politically themed Word documents (e.g., a photo of Dorud city governor Mojtaba Biranvand and ISAAR-themed content).",
+      "observed_tooling": ["Weaponized Word / PowerPoint documents with VBA macros", "Multi-layer self-extracting (SFX) archives (encryption key 1qaz2wsx3edc)"],
+      "detection_feasibility": "medium — inbound weaponized Office/archive attachments are observable at the mail gateway and endpoint (attachment type, macro presence, SFX execution), but lure content and sender infrastructure are largely off-endpoint and require mail-security correlation",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Execution relies on the victim opening the malicious document or double-clicking the self-extracting executable. Infy SFX archives present a fake video-player interface with a decoy readme.txt/image/video to social-engineer the user into clicking 'Run'; filenames follow ins*.exe and mpro*.dll patterns.",
+      "observed_tooling": ["Multi-layer self-extracting (SFX) archives (encryption key 1qaz2wsx3edc)"],
+      "detection_feasibility": "medium — user execution of an SFX/document dropper is detectable via process-creation lineage (Office/SFX spawning child processes, writes to temp) but depends on endpoint telemetry and baselining",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1137.001",
+      "technique_name": "Office Template Macros",
+      "tactic": "execution",
+      "procedure_description": "Tonnerre delivery uses macro-enabled Word documents: when the victim closes the document, a VBA macro extracts the embedded package to the temp directory as fwupdate.temp and executes it.",
+      "observed_tooling": ["Weaponized Word / PowerPoint documents with VBA macros"],
+      "detection_feasibility": "high — Office application spawning child processes and writing/executing a dropped file (fwupdate.temp) on document close is a high-fidelity macro-execution signal via process-lineage and Office child-process telemetry",
+      "sources": ["https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "The document weaponization uses VBA macro code to drop and launch the next-stage package (e.g., Tonnerre's fwupdate.temp), performing file writes and process execution from within Office.",
+      "observed_tooling": ["Weaponized Word / PowerPoint documents with VBA macros"],
+      "detection_feasibility": "high — VBA macro activity is capturable via VBA/AMSI and Office macro logging, and the resulting file-drop-and-execute chain is observable in process telemetry",
+      "sources": ["https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "Across generations the malware persists via autostart registry keys: Infy writes itself to the autorun registry key and activates after reboot; the Foudre loader writes itself to autostart in the Run key; Tonnerre also establishes a Registry Run key.",
+      "observed_tooling": ["Malicious DLL loaders (mpro*.dll, CLMediaLibrary-themed DLL)"],
+      "detection_feasibility": "high — creation/modification of HKCU/HKLM Run keys pointing to loader binaries in user-writable paths is directly observable via registry-modification auditing (Sysmon EID 13) and autostart baselining",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "Tonnerre establishes persistence via a scheduled task that launches helper.exe on a recurring basis, complementing its Registry Run-key persistence.",
+      "observed_tooling": ["helper.exe (Tonnerre scheduled-task host)"],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); a task launching helper.exe from a user-writable path is a strong, specific detection candidate",
+      "sources": ["https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "The Infy 'M' variant installs itself as a Windows service to persist across reboots on higher-value targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — new service installation (Event ID 7045) for an unknown binary is detectable via service-install telemetry but requires baselining to separate from legitimate software",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "Rundll32",
+      "tactic": "stealth",
+      "procedure_description": "Foudre executes its malicious DLL via rundll32.exe after the system reboots, using a signed system utility to load the payload and blend with normal activity.",
+      "observed_tooling": ["rundll32.exe (DLL execution host)", "Malicious DLL loaders (mpro*.dll, CLMediaLibrary-themed DLL)"],
+      "detection_feasibility": "high — rundll32.exe loading a DLL from a non-standard user-writable path (SnailDriver directory) with an unusual export is detectable via process-creation command-line and module-load (Sysmon EID 7) telemetry",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "DLL",
+      "tactic": "stealth",
+      "procedure_description": "Infy deployed its backdoor as a hijacked 'CLMediaLibrary' Dynamic Link Library, and Foudre drops a malicious DLL loaded alongside a legitimate-looking loader — abusing DLL loading/hijack to execute the implant.",
+      "observed_tooling": ["Malicious DLL loaders (mpro*.dll, CLMediaLibrary-themed DLL)"],
+      "detection_feasibility": "medium — DLL hijack/side-load is detectable via module-load telemetry and signature/path anomalies, but requires image-load instrumentation and baselining of legitimate DLL search paths",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/", "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"]
+    },
+    {
+      "technique_id": "T1036.002",
+      "technique_name": "Right-to-Left Override",
+      "tactic": "stealth",
+      "procedure_description": "Infy has used deceptive filename and camouflage techniques (fake readme.txt, image/video decoys, misleading extensions) to disguise executable droppers as benign media/document files so victims run them.",
+      "observed_tooling": ["Multi-layer self-extracting (SFX) archives (encryption key 1qaz2wsx3edc)"],
+      "detection_feasibility": "medium — filename/extension masquerading and decoy files are detectable via file-name/extension anomaly and MOTW/attachment inspection, but overlap with benign content",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "System Checks",
+      "tactic": "stealth",
+      "procedure_description": "Infy uses window-name checks as an anti-analysis / prior-infection guard: it searches for a specific window (keylogger window 'TRON2VDLLB'; Foudre searches for a window named 'foudre<version>' with class 'TNRRDPKE') to detect an existing infection or analysis condition before proceeding.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — in-memory window-enumeration and environment checks leave little discrete host telemetry; hunt candidate via memory/behavioral analysis rather than event logs",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"]
+    },
+    {
+      "technique_id": "T1010",
+      "technique_name": "Application Window Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The malware enumerates application windows by name/class (e.g., 'TRON2VDLLB', 'foudre<version>' / class 'TNRRDPKE') to detect prior infection and to support keylogging context.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — window enumeration is an in-process API behavior with minimal log footprint; hunt/behavioral candidate only",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Infy checks for the presence of antivirus before installing: it uses GetFileAttributesA against AV installation directories and specifically checks for Kaspersky Labs, Avast and Trend Micro, and will avoid installation rather than risk alerting if AV is detected. Tonnerre also enumerates installed antivirus software.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — filesystem/registry probing of AV product paths and enumeration of security products is detectable via file-access and process-behavior telemetry, but is subtle and needs correlation",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Foudre de-obfuscates its strings at runtime using an XOR-based decryption algorithm; Infy uses consistent string-encoding/decryption keys across the decade-long campaign and ZIP password obfuscation.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — runtime string decoding is in-memory and largely invisible to standard logs; hunt candidate via memory/YARA analysis",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/", "https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Infy ships payloads inside multi-layer SFX archives encrypted with the key '1qaz2wsx3edc', and compresses captured documents into password-protected archives (password 'Z8(2000_2001uI)') — encrypting/encoding stored files to evade static detection.",
+      "observed_tooling": ["Multi-layer self-extracting (SFX) archives (encryption key 1qaz2wsx3edc)"],
+      "detection_feasibility": "medium — password-protected/encrypted archive creation and high-entropy dropped files are detectable via file-entropy and archive-utility telemetry, but require dedicated scanning",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Keylogging",
+      "tactic": "collection",
+      "procedure_description": "All generations keylog: Infy initiates a keylogger operating under window name 'TRON2VDLLB' and captures keystrokes with language identification; Foudre keylogs on a cycle with periodic clipboard capture; Tonnerre keylogs on victim machines of interest.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — keylogging hooks are hard to see directly, but the created keystroke-log artifact files and their staging/exfiltration are detectable via file-write and process-behavior telemetry",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"]
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "procedure_description": "Infy harvests clipboard contents; Foudre captures the clipboard on a periodic (~10-second) cycle alongside keylogging.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — clipboard reads are a common API with negligible log footprint; hunt candidate via behavioral correlation with keylog artifacts",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "The Infy M variant and Tonnerre capture screenshots of the victim desktop for surveillance of dissidents and diplomatic targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — screenshot capture leaves image artifacts written to disk that, together with process behavior, are detectable via file-write telemetry and screen-capture API monitoring where instrumented",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "Infy M includes microphone/voice-recording capability (present in earlier versions, later selectively removed), and Tonnerre records sound from the victim machine for espionage.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — microphone-access and recorded-audio file artifacts are detectable via file-write telemetry and audio-device API monitoring where available",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "Infy steals saved passwords and form data from browsers including Microsoft Edge, Internet Explorer, Chrome, Opera and Firefox.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — access to browser credential stores (Login Data / logins.json / vault files) is detectable via file-access and process telemetry when browser credential-store paths are monitored",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1539",
+      "technique_name": "Steal Web Session Cookie",
+      "tactic": "credential-access",
+      "procedure_description": "Infy harvests browser cookies (along with history and form data) from Edge, IE, Chrome, Opera and Firefox; Tonnerre also collects cookies during system-information harvesting.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — reads of browser cookie databases are detectable via file-access telemetry on known cookie-store paths, correlated with the collecting process",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Infy selectively harvests documents by extension (.doc/.docx/.xls/.xlsx/.ppt/.pptx/.pdf/.zip/.rar/.7z, etc.) and monitors target folders (Documents, Program Files, Users, Windows, boot, inetpub). Tonnerre steals files from predefined folders on the local system.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — targeted document collection by extension is detectable via file-access patterns and staging behavior, but blends with legitimate file usage without process-lineage correlation",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Tonnerre steals files from external/removable devices, enumerating attached peripherals to locate data of interest; Infy also enumerates drives during system reconnaissance.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — removable-media enumeration is a common OS behavior with weak signal; hunt candidate via correlation with subsequent file collection from removable volumes",
+      "sources": ["https://research.checkpoint.com/2021/after-lightning-comes-thunder/", "https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "The implants automatically and continuously collect keystrokes, clipboard, screenshots, browser data and documents-by-extension from monitored folders without per-item operator interaction.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — automated, periodic collection produces recurring file-write and staging patterns detectable via behavioral analytics, but requires baselining",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Captured documents and collected data are compressed locally into password-protected archives (Infy document-capture password 'Z8(2000_2001uI)') prior to exfiltration, staging data on the host.",
+      "observed_tooling": ["Multi-layer self-extracting (SFX) archives (encryption key 1qaz2wsx3edc)"],
+      "detection_feasibility": "medium — creation of password-protected staging archives before egress is detectable via file-write and archive-utility telemetry, especially when correlated with subsequent C2 upload",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "Infy compresses captured documents into password-protected ZIP archives (password 'Z8(2000_2001uI)') and uses ZIP password obfuscation as part of data collection before exfiltration.",
+      "observed_tooling": ["Multi-layer self-extracting (SFX) archives (encryption key 1qaz2wsx3edc)"],
+      "detection_feasibility": "medium — archive creation with password protection preceding network egress is detectable via process command-line and file-write telemetry",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The implants profile the host, collecting computer name, username, OS version, CPU ID, machine GUID, drive enumeration and disk info; this system profile is posted to C2 to identify high-value machines.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — host-profiling API calls are common and low-signal; hunt candidate, meaningful mainly when correlated with beacon activity",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Infy and Tonnerre enumerate running processes as part of reconnaissance (and to identify security products).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — process enumeration is ubiquitous and low-fidelity; hunt candidate only in tight process-lineage windows",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Language Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Infy's keylogger performs language identification of captured keystroke data (and the operation collects locale/timezone context), consistent with targeting of Persian-language dissident and diaspora communities.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — locale/keyboard-language queries are benign OS calls with negligible detection value; hunt/behavioral only",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "The implants beacon over HTTP(S): Infy checks in to its HTTP C2 on ~5-minute intervals and posts system information; Foudre uses HTTP POST for exfiltration and an HTTP 200 response from google.com as an internet-connectivity check; Tonnerre verifies its HTTP C2 by downloading a signature file and exfiltrates built-in collections over HTTP POST.",
+      "observed_tooling": ["Self-signed / attacker-controlled TLS certificates for HTTP(S) C2"],
+      "detection_feasibility": "high — periodic HTTP(S) beaconing (fixed ~5-minute interval, POST to actor domains/IPs, signature-file fetch) is detectable via proxy/DNS/network telemetry and beacon-interval analytics, and pairs with the actor's C2 domain/IP IOCs",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1568.002",
+      "technique_name": "Domain Generation Algorithms",
+      "tactic": "command-and-control",
+      "procedure_description": "Foudre resolves C2 via a DGA computing a CRC32 hash of 'NRV1' + date components (producing .space/.site/.top domains); Tonnerre uses a DGA of the form 'NITV1{year}{month}{week}' across .site/.com/.win TLDs. Both use RSA signature verification so only attacker-authenticated domains are trusted, defeating naive sinkholing.",
+      "observed_tooling": ["Domain Generation Algorithm (CRC32 'NRV1' / 'NITV1' + date)", "RSA signature verification of C2 domains"],
+      "detection_feasibility": "high — DGA-style lookups (short random-hex .space/.site/.win domains, high NXDOMAIN rates, low-reputation newly-registered domains) are detectable via DNS analytics and are a strong hunt-to-detect pivot for this actor",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "Foudre and Tonnerre authenticate C2 using RSA signature verification of a downloaded signature file / domain, ensuring the client only trusts operator-controlled infrastructure; HTTPS C2 uses attacker-controlled/self-signed TLS certificates.",
+      "observed_tooling": ["RSA signature verification of C2 domains", "Self-signed / attacker-controlled TLS certificates for HTTP(S) C2"],
+      "detection_feasibility": "medium — self-signed/anomalous TLS certificates and signature-file fetches over HTTPS are detectable via TLS/JA3 fingerprinting and certificate-anomaly analytics, but require TLS-metadata visibility",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1587.003",
+      "technique_name": "Digital Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "The operator provisions attacker-controlled / self-signed TLS certificates and RSA key material to authenticate HTTP(S) C2 domains, part of building resilient, takedown-resistant infrastructure.",
+      "observed_tooling": ["Self-signed / attacker-controlled TLS certificates for HTTP(S) C2", "RSA signature verification of C2 domains"],
+      "detection_feasibility": "low — certificate/key provisioning happens off-victim on adversary infrastructure; intel/hunt candidate via certificate-transparency and infrastructure tracking",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Foudre functions as a downloader/profiler that retrieves and installs the higher-value Tonnerre second-stage implant onto machines of interest, and the implants pull additional payloads/updates from C2.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — staged payload download following an initial beacon is detectable via file-write-after-network-download correlation and proxy telemetry, but depends on endpoint+network visibility",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "The implants exfiltrate collected data (system profile, keylogs, documents, screenshots) back over their HTTP(S) C2 channel via HTTP POST — Infy posts to C2 servers, Foudre and Tonnerre exfiltrate built-in collections over HTTP POST.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — outbound POST bodies of collected data to actor C2 are detectable via egress-volume anomalies and DLP/proxy correlation with the beaconing process, especially against known C2 IOCs",
+      "sources": ["https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/", "https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "procedure_description": "Tonnerre uses a second, command-directed exfiltration channel: operator-selected file uploads are sent over FTP to dedicated FTP servers, separate from the HTTP C2 channel.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — outbound FTP from a workstation to external servers (the actor's FTP IPs) is anomalous in most enterprises and detectable via network/proxy telemetry and egress-policy monitoring",
+      "sources": ["https://research.checkpoint.com/2021/after-lightning-comes-thunder/"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "C2 traffic and stored strings use consistent encoding/obfuscation (XOR string obfuscation, ZIP password/encoding) to obscure command and data content in transit and at rest.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — encoded C2 content is opaque without deep protocol/decoder analysis; hunt candidate via traffic-pattern and decoder-based inspection",
+      "sources": ["https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/"]
+    }
+  ],
+  "detection_signals": [
+    "Office application (WINWORD/POWERPNT) spawning child processes or writing-and-executing a dropped file such as %TEMP%\\fwupdate.temp on document close (Tonnerre macro chain)",
+    "Self-extracting archive (ins*.exe) execution presenting a fake video-player UI and dropping mpro*.dll / loader DLL into user-writable paths",
+    "Loader/DLL written to autostart Run keys and files staged under %ALLUSERSPROFILE%\\AppData\\SnailDriver V<version> (Foudre)",
+    "rundll32.exe loading a DLL from the SnailDriver directory or other non-standard user-writable path after reboot",
+    "Scheduled task launching helper.exe from a user-writable path (Tonnerre) alongside a Registry Run-key loader",
+    "Windows service installation for an unknown binary (Infy M service persistence)",
+    "Process probing AV install directories via GetFileAttributesA / enumerating Kaspersky, Avast, Trend Micro before install",
+    "Creation of password-protected staging archives (Infy password 'Z8(2000_2001uI)'; SFX key '1qaz2wsx3edc') preceding network egress",
+    "Periodic HTTP beaconing on a fixed ~5-minute interval to actor C2 domains/IPs; HTTP 200 connectivity check to google.com immediately before beacon (Foudre)",
+    "DNS lookups for short random-hex domains under .space / .site / .top / .win TLDs (Foudre/Tonnerre DGA), high NXDOMAIN rate, newly-registered low-reputation domains",
+    "HTTP fetch of a small C2 signature file with subsequent RSA-validated command retrieval; self-signed/anomalous TLS certificates on C2 (JA3/cert-anomaly)",
+    "Outbound FTP from a workstation to external FTP servers (Tonnerre command-directed exfil): 54.37.60.199, 54.36.40.208, 79.137.24.207, 155.94.211.212, 155.94.210.82",
+    "Traffic to Infy/Foudre/Tonnerre C2 IPs (e.g., 198.252.108.158, 5.9.94.34, 138.201.47.150/153/158, 93.115.22.216, 185.203.116.111) and to the legacy registered C2 domains (updateserver1[.]com, bestupdateserver[.]com, safehostonline[.]com, short-url20[.]com, etc.)",
+    "Screenshot/audio artifact files and keystroke-log files written by a non-media process, followed by archive+upload activity"
+  ],
+  "iocs": {
+    "ips": [
+      "198.252.108.158",
+      "5.9.94.34",
+      "138.201.0.134",
+      "138.201.47.150",
+      "138.201.47.153",
+      "138.201.47.158",
+      "144.76.250.205",
+      "93.115.22.216",
+      "185.203.116.111",
+      "185.141.61.37",
+      "185.206.144.175",
+      "54.37.60.199",
+      "54.36.40.208",
+      "79.137.24.207",
+      "155.94.211.212",
+      "155.94.210.82"
+    ],
+    "domains": [
+      "bestbox3.com",
+      "myblog2000.com",
+      "safehostonline.com",
+      "updateserver1.com",
+      "updateserver3.com",
+      "short-name.com",
+      "bestupdateserver2.com",
+      "bestwebstat.com",
+      "updatebox4.com",
+      "bestupdateserver.com",
+      "short-url20.com",
+      "box4054.net",
+      "fastupdate.net",
+      "youripinfo.com",
+      "us1s2.strangled.net",
+      "gstat.strangled.net",
+      "wpstat.strangled.net",
+      "secup.soon.it",
+      "nus.soon.it",
+      "wep.soon.it",
+      "dbook.soon.it",
+      "lu.ige.es",
+      "wep.archvisio.com",
+      "uvps1.cotbm.com",
+      "bestupser.awardspace.info",
+      "2daa46f1.space",
+      "ns1.2daa46f1.space",
+      "ns2.2daa46f1.space",
+      "017eab31.space",
+      "43ec206d.top",
+      "0ca0453a.site",
+      "a74d1205.site",
+      "3e4443bf.site",
+      "49437329.site",
+      "d9fc6eb8.site",
+      "acbde077.site",
+      "cc7a6992.site",
+      "bb7d5904.site",
+      "227408be.site"
+    ],
+    "emails": [
+      "aminjalali_58@yahoo.com"
+    ],
+    "hashes": [
+      "a1d5ab7125f002262151e516151e9b9223b3f5ca3863d69dd8a12b066c162906",
+      "f07e85143e057ee565c25db2a9f36491102d4e526ffb02c83e580712ec00eb27",
+      "583349b7a2385a1e8de682a43351798ca113cbbb80606193ecf9a61e6942786a",
+      "2b37ce9e31625d8b9e51b88418d4bf38ed28c77d98ca59a09daab01be36d405a",
+      "4d51a0ea4ecc62456295873ff135e4d94d5899c4de749621bafcedbf4417c472",
+      "7ce2c5111e3560aa6036f98b48ceafe83aa1ac3d3b33392835316c859970f8bc",
+      "7e73a727dc8f3c48e58468c3fd0a193a027d085f25fa274a6e187cf503f01f74",
+      "da228831089c56743d1fbc8ef156c672017cdf46a322d847a270b9907def53a5",
+      "6bc9f6ac2f6688ed63baa29913eaf8c64738cf19933d974d25a0c26b7d01b9ac",
+      "7c6206eaf0c5c9c6c8d8586a626b49575942572c51458575e51cba72ba2096a4",
+      "db605d501d3a5ca2b0e3d8296d552fbbf048ee831be21efca407c45bf794b109",
+      "e124c048f5ddf2d9af6dcb6f8a70d6a2b2f79a0ba9486b17b52baae98d8d23de",
+      "6254613570fb43ae1b95bc08868a6023c2c04f8b69fe3e5ce0ffb6db273afddc",
+      "82d370d941fcde13dfc568fdca007bf469e5900b6f6b93c1829ab0cc7ed0f56c"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Primary sources are Palo Alto Networks Unit 42's 2016 'Prince of Persia: Infy' report and its 2016 'Game Over' follow-up (sinkhole), and Unit 42's 2017 'Ride the Lightning: Infy returns as Foudre' report; Tonnerre-specific TTPs and IOCs are drawn from Check Point Research 'After Lightning Comes Thunder' (2021), which documents the Foudre-delivered second-stage implant named in the tasking. Attribution to an Iran-nexus espionage operation is medium confidence: Unit 42 tied C2 registration to an Iranian registrant ('Amin Jalali', Tehran, aminjalali_58@yahoo.com) and Iranian hosting, and the exclusive targeting of Iranian dissidents/expatriates, Persian-language media and Middle Eastern/European diplomatic targets is consistent with Iranian state intelligence interests, but a specific government element is not firmly established in public reporting. actor.mitre_id intentionally left empty per tasking; Infy is tracked in public reporting/Malpedia by malware/vendor naming rather than an assigned ATT&CK Gxxxx group id. ATT&CK NORMALIZATIONS for THIS environment's bundled dataset (all 32 technique_ids validated as present keys in attack_dump.json before writing): Defense-Evasion techniques use tactic slug 'stealth'; DLL hijack/side-load uses T1574.001 'DLL' (T1574.002 absent); encrypted/encoded SFX and password-protected archives use T1027.013; scheduled task uses T1053.005; keylogging uses T1056.001; anti-analysis window/environment checks mapped to T1497.001 'System Checks' (behavioral guard) plus T1010 'Application Window Discovery' for the explicit window-name enumeration; self-signed/RSA-authenticated C2 mapped to T1573.002 (channel) and T1587.003 (infrastructure provisioning). STRONGEST DETECTION SURFACE (detect candidates, medium/high feasibility): T1137.001/T1059.005 Office-macro drop-and-execute (fwupdate.temp), T1547.001 Run-key loader persistence, T1053.005 helper.exe scheduled task, T1218.011 rundll32 loading DLL from SnailDriver path, T1071.001 fixed-interval HTTP beacon, T1568.002 short-hex .space/.site/.win DGA lookups, T1048.003 workstation-to-external FTP exfil (Tonnerre). HUNT-leaning (low feasibility, off-victim / in-memory / behavioral): T1497.001/T1010 window-name anti-analysis, T1140/T1132.001 runtime string decode/encoding, T1587.003 certificate provisioning, T1614.001 language discovery, T1082/T1057 host profiling. IOCs are taken verbatim from the cited report appendices — Infy registered/first-party C2 domains and the aminjalali_58@yahoo.com registrant email from the 2016 Unit 42 report; Infy v31/Infy M and thanks.pps sample hashes from the 2016 reports; eight Foudre SHA256 samples, the 198.252.108.158 primary C2 IP and representative Foudre .space/.site/.top DGA domains (incl. ns1/ns2.2daa46f1.space) from the 2017 report; three Tonnerre SHA256 samples, Tonnerre-11 .site DGA domains, and Tonnerre HTTP (93.115.22.216, 185.203.116.111, 185.141.61.37, 185.206.144.175) and FTP (54.37.60.199, 54.36.40.208, 79.137.24.207, 155.94.211.212, 155.94.210.82) C2 IPs from the Check Point report. legitimate infrastructure (google.com connectivity check; free dynamic-DNS parent zones) is excluded from the IOC object except where a specific attacker subdomain was published. The full Foudre/Tonnerre DGA domain sets (dozens of .space/.site/.win hosts) rotate by date and are best consumed as an algorithmic pattern (short random-hex under those TLDs) rather than a static blocklist; a representative subset is included here and the complete lists live in the cited report appendices. No CVEs: Infy relies on user execution of weaponized documents/SFX rather than exploit-based initial access."
+}

@@ -1,0 +1,259 @@
+{
+  "actor": "CopyKittens (Slayer Kitten)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "rationale": "medium — drive-by redirects and exploit delivery are detectable at the victim via web-proxy/browser telemetry and IDS on anomalous redirects to attacker CDN-lookalike domains, though the injected code lives on third-party sites"
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — malicious attachments are detectable at the mail gateway and via document-spawns-script/child-process telemetry (Word/Excel spawning rundll32/powershell), though initial lure content varies"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — links to newly-registered lookalike domains are detectable at mail/proxy layers via URL reputation and lookalike-domain analytics"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — user opening a malicious document is detectable via office-application child-process creation and mark-of-the-web/enable-macro telemetry"
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "stealth",
+      "rationale": "high — rundll32.exe executing DLLs from unusual paths, with anomalous exports/command lines, or as a child of Office is a well-characterized, high-fidelity detection via process-creation and command-line telemetry"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — Empire/Cobalt Strike PowerShell exhibits characteristic encoded/downloader command lines detectable via script-block and module logging plus known-framework signatures"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high — new service installation (Event ID 7045 / 4697) for an unsigned or anomalous binary is directly observable and high-fidelity, especially correlated with the TDTESS on-disk artifacts"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation/modification of Run-key autostart values pointing to implant paths is directly observable via registry-modification auditing and autoruns baselining"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); tasks launching payloads from user/temp paths are high-fidelity when baselined"
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "rationale": "medium — signed malware defeats naive signature trust, but signer reputation, certificate-transparency correlation and revoked/unusual-issuer analytics make it detectable in mature environments"
+    },
+    {
+      "technique_id": "T1564.003",
+      "technique_name": "Hide Artifacts: Hidden Window",
+      "tactic": "stealth",
+      "rationale": "medium — hidden-window flags (e.g. PowerShell -WindowStyle Hidden, ShowWindow SW_HIDE) are detectable in command-line and API telemetry but require correlation to reduce noise"
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "rationale": "medium — cross-process memory writes and remote-thread creation are detectable via EDR API telemetry, though injection is common and needs behavioral correlation"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "rationale": "medium — registry writes to autostart/config locations are observable via registry auditing but blend with legitimate activity absent baselining"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — abnormally long/high-entropy DNS labels and encoded payloads are detectable via DNS analytics and entropy heuristics"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — lookalike/typosquat hostnames (alkamaihd, twiter-statics, cloudflare-statics, gstatic.online) resolving to non-CDN infrastructure are detectable via DNS/proxy analytics and ASN/reputation mismatch"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — process access to lsass.exe and Mimikatz signatures/command lines are highly observable via EDR process-access and image-load telemetry"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — NBTScanner and NetBIOS sweep bursts are detectable via connection-fanout/east-west network analytics and known-scanner process signatures"
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — host-enumeration commands and NetBIOS resolution bursts are detectable in command-line/network logs but common; value from recon-burst process-lineage correlation"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "rationale": "medium — archive-utility execution producing large/compressed outputs before egress is detectable via process command-line and file-write telemetry"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium — creation of archive files in staging directories preceding egress is detectable via file-write and access-pattern telemetry with baselining"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "rationale": "medium — admin-share access (ADMIN$/C$), remote file writes and Type-3 logons (Event ID 5140/4624) are detectable via SMB and authentication telemetry, though they blend with legitimate administration"
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "rationale": "medium — DNS C2 is detectable via DNS analytics (high query volume to a single domain, abnormally long/high-entropy labels, TXT-record beaconing), but well-tuned DNS tunneling that mimics CDN nameserver traffic can blend — hunt-leaning candidate"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP beaconing with basic-auth headers and Cobalt Strike default profiles is detectable via proxy/TLS-metadata and JA3/beacon-interval analytics, though maskable via malleable profiles"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "medium — encoded blobs in DNS labels/HTTP fields are detectable via entropy and pattern analytics on C2 channels"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — downloads of secondary payloads following C2 contact are detectable via correlated network-fetch-then-file-write-then-execute telemetry"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — proxying via lookalike infrastructure is detectable when the lookalike domains/ASNs are baselined and correlated with process activity, but generic proxying blends with normal traffic"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — exfiltration over the existing C2 channel is detectable via outbound-volume anomalies on the C2 flow, though it hides within established beaconing"
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "rationale": "medium — DNS-tunnel exfiltration is detectable via per-domain query-volume, label-length and entropy analytics, but tuned tunneling that mimics CDN nameserver traffic can blend — hunt-leaning candidate"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain registration is off-victim; intel/hunt candidate via passive DNS, newly-registered-domain and typosquat/lookalike monitoring against brand strings (akamai, cloudflare, gstatic, twiter, fbstatic)"
+    },
+    {
+      "technique_id": "T1584.004",
+      "technique_name": "Compromise Infrastructure: Server",
+      "tactic": "resource-development",
+      "rationale": "low — compromise of third-party servers is off-victim from the perspective of the espionage target; intel/hunt candidate via web-defacement/injected-script monitoring on watched publisher sites"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; intel candidate via malware-family clustering and code-reuse tracking"
+    },
+    {
+      "technique_id": "T1587.003",
+      "technique_name": "Develop Capabilities: Digital Certificates",
+      "tactic": "resource-development",
+      "rationale": "low — certificate acquisition is off-victim; intel/hunt candidate via certificate-transparency monitoring and code-signing-certificate reputation tracking"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled personas are off-victim; intel/brand-monitoring candidate"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition is off-endpoint; downstream tool use is where detection lands (intel/hunt candidate)"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — in-memory decode leaves little discrete signal; hunt candidate via memory forensics and payload-staging correlation"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "rationale": "low — user-mode keylogging generates little discrete host signal; hunt candidate via implant behavioral correlation and hook/API telemetry"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — system-info queries are ubiquitous and low-signal; hunt candidate only within a tight recon-burst window"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "low — process enumeration is common and low-signal; hunt candidate via process-lineage correlation"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low — screen capture generates little discrete signal; hunt candidate via implant behavioral correlation"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — local file collection is common; suspicious mainly via staging patterns and process-lineage context (hunt candidate)"
+    },
+    {
+      "technique_id": "T1560.003",
+      "technique_name": "Archive Collected Data: Archive via Custom Method",
+      "tactic": "collection",
+      "rationale": "low — custom archiving leaves nonstandard artifacts that evade signature-based archive detection; hunt candidate via file-format/entropy analysis of staged output"
+    }
+  ],
+  "summary": {
+    "total": 41,
+    "detection": 28,
+    "hunt": 13
+  }
+}

@@ -1,0 +1,40 @@
+title: Cavern Manticore LSASS Dump via comsvcs.dll MiniDump / Procdump (ssasl.dmp)
+id: c2e4a680-9b1d-4f3a-8c5e-0a2c4e6d8f31
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / TunnelVision) dumping LSASS memory for credential theft
+    (T1003.001 LSASS Memory, T1218.011 Rundll32). The actor proxies the signed comsvcs.dll MiniDump export
+    through rundll32.exe against lsass.exe and writes the dump to a reversed file name ssasl.dmp; it also uses
+    Procdump against LSASS. Keys on the rundll32 comsvcs.dll,MiniDump command line, the reversed ssasl.dmp
+    output name, and Procdump targeting lsass.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+    - https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.stealth
+    - attack.t1003.001
+    - attack.t1218.011
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_comsvcs:
+        Image|endswith: '\rundll32.exe'
+        CommandLine|contains|all:
+            - 'comsvcs.dll'
+            - 'MiniDump'
+    selection_dumpname:
+        CommandLine|contains: 'ssasl.dmp'
+    selection_procdump:
+        CommandLine|contains|all:
+            - 'procdump'
+            - 'lsass'
+    condition: selection_comsvcs or selection_dumpname or selection_procdump
+falsepositives:
+    - Legitimate use of comsvcs MiniDump is rare; Procdump against lsass may occur during sanctioned crash
+      diagnostics - validate the operator, output path and whether a support case exists
+level: high

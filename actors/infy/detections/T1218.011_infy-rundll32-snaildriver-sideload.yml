@@ -1,0 +1,44 @@
+title: Foudre rundll32 Loading Malicious DLL from SnailDriver/User-Writable Path
+id: 8c0d2e4f-6a1b-4c39-8d5e-7f9a1b3c5d96
+status: experimental
+description: |
+    Detects Foudre (Infy) DLL execution and side-loading (T1218.011 System Binary Proxy Execution:
+    Rundll32, T1574.001 Hijack Execution Flow: DLL). After reboot Foudre executes its malicious DLL via
+    rundll32.exe, loading the payload dropped alongside a legitimate-looking loader under
+    %ALLUSERSPROFILE%\AppData\SnailDriver V<version>. Keys on rundll32.exe command lines that reference a
+    DLL in a user-writable path (SnailDriver/ProgramData/AppData/Temp) or the actor's mpro*/CLMediaLibrary
+    DLL naming. rundll32 loading a DLL from a non-standard user-writable directory is the durable signal;
+    Sysmon EID 7 image-load telemetry strengthens this materially (verify image-load logging is enabled).
+references:
+    - https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/
+    - https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1218.011
+    - attack.t1574.001
+    - mena-detection-library.infy
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_rundll:
+        Image|endswith: '\rundll32.exe'
+    selection_path:
+        CommandLine|contains:
+            - 'SnailDriver'
+            - '\ProgramData\'
+            - '\AppData\'
+            - '\Temp\'
+    selection_dll:
+        CommandLine|contains:
+            - '.dll'
+            - 'mpro'
+            - 'CLMediaLibrary'
+    condition: selection_rundll and selection_path and selection_dll
+falsepositives:
+    - Legitimate applications invoking rundll32 against DLLs staged under ProgramData/AppData - baseline
+      expected rundll32 command lines per host; a DLL loaded from a SnailDriver/temp path with a
+      non-standard export is the actor pattern
+level: high

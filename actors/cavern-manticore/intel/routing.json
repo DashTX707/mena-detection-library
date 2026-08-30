@@ -1,0 +1,217 @@
+{
+  "actor": "Cavern Manticore (DEV-0270 / Cobalt Mirage)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "high — exploitation of these specific CVEs on internet-facing appliances/servers is the strongest detection surface: appliance/WAF/IDS logs, exploit signatures, anomalous child processes spawned by Tomcat/Exchange/w3wp, and version/patch-state monitoring all apply"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — creation of ASPX files matching the aspx_[a-z]{13}.aspx pattern in IIS/Exchange web roots, and w3wp.exe spawning cmd/powershell, are high-fidelity file-integrity and process-lineage detections"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — PowerShell script-block/module logging captures download cradles (System.Net.WebClient / DownloadString), reverse shells, and encoded commands, especially when spawned by ws_TomcatService.exe or w3wp.exe"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — cmd.exe batch execution is common; value comes from the specific batch file names and process-lineage context (spawned by web/exploit processes or preceding encryption)"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "rationale": "high — wmic/WMI remote execution with the Impacket wmiexec ADMIN$ output-redirect artifact (\\\\127.0.0.1\\ADMIN$\\<epoch>) is a well-known, detectable pattern in process command-line and named-pipe telemetry"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); the specific task names (SynchronizeTimeZone, Wininet) and tasks launching .bat files are actor-specific, high-fidelity detections"
+    },
+    {
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "tactic": "persistence",
+      "rationale": "high — creation of accounts with these specific names/passwords is directly observable via account-creation logging (Event ID 4720) and makes strong actor-specific watchlist detections"
+    },
+    {
+      "technique_id": "T1098",
+      "technique_name": "Account Manipulation",
+      "tactic": "persistence",
+      "rationale": "high — addition of a user to the local Administrators group (Event ID 4732) shortly after account creation is a high-fidelity, correlatable detection"
+    },
+    {
+      "technique_id": "T1078.001",
+      "technique_name": "Valid Accounts: Default Accounts",
+      "tactic": "persistence",
+      "rationale": "medium — interactive/RDP logons by the normally-dormant DefaultAccount are anomalous and detectable via authentication analytics, but require baselining of default-account behavior"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "rationale": "high — the WDigest UseLogonCredential=1 registry set and Terminal Server RDP-enable modifications are specific, low-noise registry-modification detections (Sysmon EID 13 / 4657)"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — rundll32 loading comsvcs.dll with MiniDump, process access to lsass.exe, and the reversed ssasl.dmp output name are highly observable via EDR process-access, image-load, and command-line telemetry"
+    },
+    {
+      "technique_id": "T1003.002",
+      "technique_name": "OS Credential Dumping: Security Account Manager",
+      "tactic": "credential-access",
+      "rationale": "high — SAM hive access/save (reg save HKLM\\SAM, volume-shadow or direct hive read) is detectable via command-line and file-access auditing"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "high — disabling Defender real-time protection (Set-MpPreference -DisableRealtimeMonitoring / DisableAntiSpyware registry) is detectable via Defender tamper-protection alerts, PowerShell logging, and registry-modification telemetry"
+    },
+    {
+      "technique_id": "T1553.004",
+      "technique_name": "Subvert Trust Controls: Install Root Certificate",
+      "tactic": "stealth",
+      "rationale": "medium — installation of a new root CA certificate (certutil / Import-Certificate to the Root store) is detectable via certificate-store change auditing but is relatively rare-signal and needs coverage"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — legitimate-looking names in unusual paths and signature/name mismatches (e.g. FRPC signed/behaving as audio.exe, dllhost.exe outside system32) are detectable via name/path/hash baselining"
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "stealth",
+      "rationale": "high — rundll32.exe comsvcs.dll,MiniDump command lines are a well-known, high-fidelity detection in process command-line telemetry"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — individual discovery commands are common; meaningful mainly as a recon burst correlated by process lineage back to an exploit/web process"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — whoami/quser/net user are ubiquitous admin commands; value comes from recon-burst clustering and suspicious parent processes, not the command alone"
+    },
+    {
+      "technique_id": "T1087.002",
+      "technique_name": "Account Discovery: Domain Account",
+      "tactic": "discovery",
+      "rationale": "medium — Exchange Get-Recipient enumeration and net user /domain are observable in PowerShell/command-line logging but overlap with legitimate administration; needs baselining"
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — internal RDP subnet sweeps and SoftPerfect netscan execution are detectable via connection-fanout/east-west network analytics and known-scanner process signatures"
+    },
+    {
+      "technique_id": "T1133",
+      "technique_name": "External Remote Services",
+      "tactic": "persistence",
+      "rationale": "high — the specific netsh firewall rule opening 3389 plus Terminal Server enablement and subsequent external RDP logons by backdoor accounts are strong, correlatable detections"
+    },
+    {
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "tactic": "lateral-movement",
+      "rationale": "medium — RDP lateral movement is detectable via Type-10 logons (4624) and internal-RDP fanout analytics, but blends with legitimate admin RDP; backdoor-account context raises fidelity"
+    },
+    {
+      "technique_id": "T1572",
+      "technique_name": "Protocol Tunneling",
+      "tactic": "command-and-control",
+      "rationale": "high — FRPC/Plink/Ngrok process execution plus outbound connections to tunneling endpoints (and FRPC config files) are detectable via process, file, and network/DNS telemetry; FRPC (audio.exe) is an explicit actor IOC"
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "rationale": "medium — reverse-proxy relaying blends with normal traffic, but the FRPC binary/config and its persistent outbound control channel to actor IPs are detectable when baselined"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — PowerShell download cradles to the named actor domains/GitHub and subsequent file writes of the staged archives are detectable via proxy/DNS and process+file telemetry"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP C2 to the named masquerading domains is detectable when those domains are blocklisted/baselined and correlated with the originating process, but generic web C2 blends with normal traffic"
+    },
+    {
+      "technique_id": "T1486",
+      "technique_name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "rationale": "high — abuse of BitLocker for extortion (manage-bde / Enable-BitLocker on non-baselined hosts, unexpected protector changes, mass volume-encryption events) and DiskCryptor driver install/execution are detectable via process command-line, service/driver-install, and BitLocker operational-log telemetry; this is the primary detection-candidate for impact"
+    },
+    {
+      "technique_id": "T1490",
+      "technique_name": "Inhibit System Recovery",
+      "tactic": "impact",
+      "rationale": "medium — recovery inhibition here is realized through the encryption itself; the detectable signals overlap with T1486 (BitLocker protector/recovery-key changes), so it is best hunted alongside the encryption events"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "rationale": "medium — creation of .zip/.rar archives (including the named staging archives) on servers preceding transfer is detectable via file-write and archive-utility command-line telemetry, but overlaps with legitimate activity"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "rationale": "low — off-victim scanning of the wider internet is not endpoint-observable; hunt/intel candidate via external attack-surface and exposure monitoring, though inbound probes to one's own edge are perimeter-detectable"
+    },
+    {
+      "technique_id": "T1657",
+      "technique_name": "Financial Theft",
+      "tactic": "impact",
+      "rationale": "low — the extortion/ransom negotiation and payment occur off-victim; the on-host encryption and ransom-note planting are where detection lands (see T1486). Intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition itself is off-endpoint; downstream use of each tool is where detection lands. Intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — staging on GitHub/actor domains is off-victim; intel/hunt candidate via infrastructure tracking, though pulls from those endpoints on-victim are detectable (see T1105)"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration/acquisition is off-victim; intel/hunt candidate via infrastructure tracking and DNS blocklisting"
+    }
+  ],
+  "summary": {
+    "total": 34,
+    "detection": 29,
+    "hunt": 5
+  }
+}

@@ -1,0 +1,38 @@
+title: Cavern Manticore Impacket wmiexec ADMIN$ Output Redirect and WMI Discovery
+id: 9e1c3b55-6a7d-4e8f-b0a1-2c3d4e5f6a15
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270) using WMI for remote execution and discovery (T1047 Windows
+    Management Instrumentation). The actor runs Impacket wmiexec, which produces a signature command line of
+    the form cmd.exe /Q /c <command> 1> \\127.0.0.1\ADMIN$\<epoch> 2>&1, redirecting output to the local
+    ADMIN$ share, and issues wmic computersystem get domain for host discovery. Keys on the wmiexec ADMIN$
+    redirect artifact and the wmic domain query.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1047
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_wmiexec:
+        CommandLine|contains|all:
+            - 'cmd.exe'
+            - '/Q'
+            - '/c'
+            - '\\127.0.0.1\ADMIN$\'
+    selection_wmic_domain:
+        Image|endswith: '\wmic.exe'
+        CommandLine|contains|all:
+            - 'computersystem'
+            - 'get'
+            - 'domain'
+    condition: selection_wmiexec or selection_wmic_domain
+falsepositives:
+    - Some remote-administration and monitoring tools use ADMIN$ output redirection; the literal
+      \\127.0.0.1\ADMIN$ loopback redirect combined with /Q /c is strongly indicative of Impacket wmiexec
+level: high

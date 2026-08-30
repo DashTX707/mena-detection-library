@@ -1,0 +1,47 @@
+title: CopyKittens ZPP / DotNetZip Archiving of Collected Data into Local Staging
+id: bd08d807-3e67-440d-aebc-1119ca0381ad
+status: experimental
+description: |
+    Detects use of the CopyKittens (Slayer Kitten, G0052) ZPP console archiver (and bundled
+    Ionic.Zip/DotNetZip) to compress collected data prior to exfiltration, staged locally in temp/working
+    directories (T1560.001 Archive via Utility, T1074.001 Local Data Staging). Anchors on archiver
+    process execution writing/producing archive output in user-writable staging paths in process-creation
+    telemetry.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://attack.mitre.org/groups/G0052/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1560.001
+    - attack.t1074.001
+    - mena-detection-library.copykittens
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_zpp:
+        Image|endswith: '\zpp.exe'
+    selection_archiver:
+        Image|endswith:
+            - '\rar.exe'
+            - '\7z.exe'
+            - '\7za.exe'
+            - '\winrar.exe'
+        CommandLine|contains:
+            - ' a '
+            - ' -hp'
+            - ' -p'
+    selection_staging_path:
+        CommandLine|contains:
+            - '\AppData\Local\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Windows\Temp\'
+            - '\Temp\'
+    condition: selection_zpp or (selection_archiver and selection_staging_path)
+falsepositives:
+    - Legitimate backup or software-packaging jobs using command-line archivers - baseline the source
+      files, output location and invoking process before dismissing
+level: medium

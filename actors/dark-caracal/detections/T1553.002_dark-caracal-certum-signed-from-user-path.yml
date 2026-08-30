@@ -1,0 +1,39 @@
+title: Dark Caracal Bandook Signed Binary Executing From User-Writable Path
+id: e5b1ac11-69b4-4ee5-ae73-a34f7ec84961
+status: experimental
+description: |
+    Detects execution of a Certum-signed binary from a user-writable directory. Bandook samples in
+    the 2019-2020 Dark Caracal campaign were digitally signed with Certum-issued code-signing
+    certificates to defeat reputation and signature-based trust checks (T1553.002 Subvert Trust
+    Controls: Code Signing). A validly signed executable running from Public/AppData/Temp/ProgramData
+    - rather than a vendor install path - is anomalous and, when the signer is Certum, matches the
+    actor tradecraft. Requires Sysmon process_creation with signature enrichment (EID 1 Signature/
+    SignatureStatus fields; verify field availability in your Sysmon config).
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1553.002
+    - mena-detection-library.dark-caracal
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_signed:
+        Signature|contains: 'Certum'
+        SignatureStatus: 'Valid'
+    selection_path:
+        Image|contains:
+            - '\Users\Public\'
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate Certum-signed software distributed by resellers that stages into ProgramData/AppData
+      - confirm the signer subject/thumbprint and the binary behavior; treat Certum-signed RAT
+      behavior (capture, C2) as high confidence
+level: medium

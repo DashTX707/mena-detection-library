@@ -1,0 +1,50 @@
+title: SideWinder Host Reconnaissance Command Burst Under Loader Lineage
+id: 38d897cf-38e5-44b7-96c0-c5d6e7f8091a
+status: experimental
+description: |
+    Detects native host-reconnaissance utilities (whoami, ipconfig, systeminfo, tasklist, net,
+    nltest, hostname, route, arp) executed as children of a script host or proxy execution
+    LOLBIN (mshta/wscript/cscript/rundll32/regsvr32). SideWinder (Rattlesnake / APT-C-17)
+    tooling fingerprints the process, user, system, network configuration and file layout of a
+    compromised host after the mshta/.NET-loader stage. Individually these commands are noisy;
+    the parent-lineage constraint makes the burst high-fidelity.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+    - https://attack.mitre.org/groups/G0121/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1057
+    - attack.t1082
+    - attack.t1016
+    - attack.t1033
+    - attack.t1083
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    selection_recon:
+        Image|endswith:
+            - '\whoami.exe'
+            - '\ipconfig.exe'
+            - '\systeminfo.exe'
+            - '\tasklist.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\nltest.exe'
+            - '\hostname.exe'
+            - '\route.exe'
+            - '\arp.exe'
+    condition: all of selection_*
+falsepositives:
+    - Rare administrative scripts that shell out to recon utilities via a scripting engine - baseline per environment
+level: high

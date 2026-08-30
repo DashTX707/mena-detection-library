@@ -1,0 +1,52 @@
+title: Volatile Cedar Caterpillar/ASPXSpy Web Shell Written to Web Root
+id: ac0e52e6-4d80-40e5-80c7-e3807447a67c
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar persistence via web-shell deployment (T1505.003). After
+    exploiting a public-facing Atlassian, Oracle or IIS server the actor drops a JSP web shell and,
+    in the 2020-2021 campaign, the Caterpillar WebShell - a modified JSP file-browser derived from
+    the ASPXSpy web shell - into the server web/application root to maintain access, browse the
+    filesystem and stage the Explosive implant. Keys on creation or modification of server-side
+    script files (.jsp/.jspx/.aspx/.ashx/.war) by a web/application-server process inside common web
+    root and deployment directories. This behavior (server process writing a new executable script
+    into its own web root) is high fidelity for web-shell drops.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+    - https://blog.checkpoint.com/security/volatilecedar/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\java.exe'
+            - '\tomcat9.exe'
+            - '\tomcat8.exe'
+            - '\w3wp.exe'
+            - '\httpd.exe'
+    selection_scriptfile:
+        TargetFilename|endswith:
+            - '.jsp'
+            - '.jspx'
+            - '.aspx'
+            - '.ashx'
+            - '.war'
+    selection_webroot:
+        TargetFilename|contains:
+            - '\webapps\'
+            - '\confluence\'
+            - '\atlassian-jira\'
+            - '\wwwroot\'
+            - '\htdocs\'
+            - '\tomcat\'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate application deployments, plugin installs or hot-redeploys that write JSP/WAR/ASPX
+      files into web roots - correlate with change-management windows and the writing account
+level: high

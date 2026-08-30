@@ -1,0 +1,43 @@
+title: Cavern Manticore Host and User Discovery LOLBin Burst
+id: f6a8c204-7b9d-4e1a-b3c5-8d0f2a4c6e76
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270) early-intrusion reconnaissance using living-off-the-land discovery
+    commands (T1082 System Information Discovery, T1033 System Owner/User Discovery). The actor runs
+    wmic computersystem get domain and systeminfo for host/domain enumeration, and whoami / quser / net user
+    for the current user and logged-on sessions. Keys on these discovery command lines - highest fidelity
+    when the parent is a web/exploit or wmiexec process.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1082
+    - attack.t1033
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_sysinfo:
+        Image|endswith:
+            - '\wmic.exe'
+            - '\systeminfo.exe'
+        CommandLine|contains:
+            - 'computersystem get domain'
+            - 'os get'
+    selection_user:
+        Image|endswith:
+            - '\whoami.exe'
+            - '\quser.exe'
+    selection_netuser:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains: ' user'
+    condition: selection_sysinfo or selection_user or selection_netuser
+falsepositives:
+    - These commands are ubiquitous in legitimate administration; treat as a weak signal and prioritize when
+      clustered in a short window under a suspicious parent (web/exploit/wmiexec) - use for risk-based alerting
+level: low

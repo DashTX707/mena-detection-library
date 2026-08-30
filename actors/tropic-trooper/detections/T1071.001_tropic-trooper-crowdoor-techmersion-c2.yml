@@ -1,0 +1,48 @@
+title: Tropic Trooper Crowdoor HTTPS C2 to techmersion Infrastructure
+id: 1e6b4d82-7c3a-49f1-8b5d-2a9c6e4f1b37
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) Crowdoor backdoor command-and-control and data
+    exfiltration over HTTPS (T1071.001 Application Layer Protocol: Web Protocols, T1573.002 Encrypted
+    Channel: Asymmetric Cryptography, T1041 Exfiltration Over C2 Channel). The injected colorcpl.exe
+    process beacons over TLS/443 to blog.techmersion[.]com / techmersion[.]com (and hosting IPs
+    51.195.37.155, 162.19.135.182), carrying commands and staged data out. Keys on outbound network
+    connections to the actor C2 domain/IPs, strengthened when the initiating process is colorcpl.exe or
+    another injected/unexpected binary. The C2 domain is an explicit IOC; anchor detection on the
+    process-to-network pairing so it survives infrastructure rotation.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.001
+    - attack.t1573.002
+    - attack.t1041
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_domain:
+        Initiated: 'true'
+        DestinationHostname|contains:
+            - 'techmersion.com'
+            - 'blog.techmersion'
+    selection_ip:
+        Initiated: 'true'
+        DestinationIp:
+            - '51.195.37.155'
+            - '162.19.135.182'
+    selection_proc:
+        Initiated: 'true'
+        Image|endswith: '\colorcpl.exe'
+        DestinationPort: 443
+    condition: selection_domain or selection_ip or selection_proc
+falsepositives:
+    - The colorcpl.exe utility does not normally make outbound network connections, and the techmersion
+      domain/IPs have no legitimate business use - verify the destination reputation and initiating
+      process; a beaconing signed utility is the actor signal
+level: high

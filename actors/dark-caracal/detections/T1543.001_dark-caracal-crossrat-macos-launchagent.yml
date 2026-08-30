@@ -1,0 +1,31 @@
+title: Dark Caracal CrossRAT macOS Launch Agent Persistence
+id: 63933276-06ae-4727-8c44-595f1d4fa355
+status: experimental
+description: |
+    Detects creation of a Launch Agent property list under a user's ~/Library/LaunchAgents on macOS.
+    Dark Caracal's CrossRAT Java implant installs a Launch Agent plist to auto-start the Java implant
+    at login (T1543.001 Create or Modify System Process: Launch Agent). Keys on a new .plist file
+    written into a LaunchAgents directory, which for CrossRAT references a java runtime; this is the
+    persistence artifact that should be triaged against its ProgramArguments.
+references:
+    - https://attack.mitre.org/groups/G0070/
+    - https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1543.001
+    - mena-detection-library.dark-caracal
+logsource:
+    category: file_event
+    product: macos
+detection:
+    selection:
+        TargetFilename|contains: '/Library/LaunchAgents/'
+        TargetFilename|endswith: '.plist'
+    condition: selection
+falsepositives:
+    - Legitimate software that installs per-user Launch Agents - triage the plist ProgramArguments
+      (a java invocation of a payload in a user directory is the CrossRAT signal) and the writing
+      process before dismissing
+level: medium

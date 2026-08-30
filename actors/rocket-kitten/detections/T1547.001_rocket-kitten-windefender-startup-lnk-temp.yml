@@ -1,0 +1,35 @@
+title: Rocket Kitten WinDefender Startup Shortcut Pointing to %TEMP%
+id: 9d7e2134-a9d0-4835-850b-b80f5161b987
+status: experimental
+description: |
+    Detects the CWoolger (TSPY_WOOLERG) keylogger persistence used by Rocket Kitten: a shortcut
+    named 'WinDefender' (spoofing the Notepad icon) is written into the user Startup folder and
+    resolves to the keylogger binary staged in %TEMP% (%TEMP%\NTSuser.exe). Keys on creation of a
+    .lnk in a Startup path (T1547.001 registry run keys / Startup folder, T1547.009 shortcut
+    modification). The 'WinDefender' name in Startup is highly specific to this actor; the broader
+    Startup-.lnk creation is itself a rare, high-fidelity persistence signal.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - attack.t1547.009
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_startup:
+        TargetFilename|contains: '\Start Menu\Programs\Startup\'
+        TargetFilename|endswith: '.lnk'
+    selection_actor:
+        TargetFilename|contains: 'WinDefender'
+    condition: selection_startup and selection_actor
+falsepositives:
+    - Legitimate applications that install a Startup shortcut - the 'WinDefender' name mimicking
+      Windows Defender is not a genuine Microsoft artifact; validate the shortcut target path
+      (Temp/AppData targets are strongly suspicious) before dismissing
+level: high

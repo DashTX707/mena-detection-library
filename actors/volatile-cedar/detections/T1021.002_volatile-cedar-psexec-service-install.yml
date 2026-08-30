@@ -1,0 +1,36 @@
+title: Volatile Cedar PsExec Service Installation for Lateral Movement
+id: e3ef1a66-47ec-48e7-be52-fce75f272bbd
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar lateral movement via PsExec (T1021.002 Remote Services:
+    SMB/Windows Admin Shares). After compromising an initial public-facing server, operators use
+    PsExec to execute code on additional internal hosts. PsExec creates a service (default name
+    PSEXESVC) over the ADMIN$ share on the remote host, which the System event log records as a
+    service-installation event (Event ID 7045). Keys on the service-install event for the PsExec
+    service binary/name. PsExec is also used legitimately by administrators, so validate the source
+    host and account.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.002
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    service: system
+detection:
+    selection:
+        EventID: 7045
+        ServiceName|contains: 'PSEXESVC'
+    selection_binpath:
+        EventID: 7045
+        ImagePath|contains:
+            - 'PSEXESVC'
+            - '-service'
+    condition: 1 of selection*
+falsepositives:
+    - Legitimate administrative use of PsExec for remote management and software deployment - correlate
+      with the source host, the invoking account and change-management context
+level: medium

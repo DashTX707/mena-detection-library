@@ -1,0 +1,45 @@
+title: Tropic Trooper Crowdoor DLL Side-Loading from branding/Music Data Paths
+id: 2e7b4d19-8f6c-4a23-b15e-3d9c7a2f1e46
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) loading the Crowdoor / SparrowDoor loader via DLL
+    search-order hijacking (T1574.001 Hijack Execution Flow: DLL), the associated masquerading
+    (T1036.005 Match Legitimate Name or Location) and the RC4-encrypted payload it carries (T1027.013
+    Encrypted/Encoded File). Legitimate signed host binaries (inst.exe, WinStore.exe) are placed
+    alongside malicious VERSION.dll / datast.dll / datastate.dll dropped to c:\Windows\branding\data or
+    c:\Users\Public\Music\data; the trusted EXE loads the attacker DLL, which RC4-decrypts (key
+    fYTUdr643$3u) and runs the Crowdoor shellcode. Keys on module load of these DLL names from the
+    non-standard data directories - a system-named DLL loading from a user/branding data path is the
+    durable signal. Requires Sysmon EID 7 image-load logging.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1574.001
+    - attack.t1036.005
+    - attack.t1027.013
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_dll:
+        ImageLoaded|endswith:
+            - '\version.dll'
+            - '\datast.dll'
+            - '\datastate.dll'
+    selection_path:
+        ImageLoaded|contains:
+            - '\branding\data\'
+            - '\Public\Music\data\'
+    filter_signed:
+        Signed: 'true'
+    condition: selection_dll and selection_path and not filter_signed
+falsepositives:
+    - The genuine Windows version.dll loads from System32/SysWOW64 and is Microsoft-signed - a version.dll
+      or datast.dll loading unsigned from a branding or Public Music data directory is not expected on
+      normal systems
+level: high

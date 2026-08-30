@@ -1,0 +1,33 @@
+title: Cavern Manticore netsh Firewall Rule Opening RDP 3389 (External Remote Services)
+id: 9a1c3e50-6b7d-4f8a-b0c2-3d5f7a9b1c09
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270) enabling durable external remote access by opening RDP through the
+    Windows firewall (T1133 External Remote Services). The actor runs
+    netsh advfirewall firewall add rule name="Terminal Server" dir=in action=allow protocol=TCP localport=3389
+    to permit inbound 3389 for its backdoor accounts. Keys on the netsh add-rule command line opening
+    localport 3389.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1133
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_netsh:
+        Image|endswith: '\netsh.exe'
+        CommandLine|contains|all:
+            - 'firewall'
+            - 'add'
+            - 'rule'
+            - '3389'
+    condition: selection_netsh
+falsepositives:
+    - Administrators may open 3389 via netsh when standing up jump hosts; correlate with the rule name
+      ("Terminal Server"), the creating account and whether RDP exposure is sanctioned
+level: high

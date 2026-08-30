@@ -1,0 +1,40 @@
+title: CopyKittens Vminst Lateral Movement via SMB Admin Shares
+id: 44e6b761-8134-4ca3-aaf9-690b3afc20c8
+status: experimental
+description: |
+    Detects access to Windows administrative shares (ADMIN$, C$) with a remote file write, as used by
+    CopyKittens (Slayer Kitten, G0052) with the Vminst tool to move laterally and deploy implants to
+    additional hosts after credential theft (T1021.002 SMB/Windows Admin Shares). Anchors on Windows
+    Security detailed file-share auditing (Event ID 5145) where a network client writes an executable
+    payload to an admin share.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.002
+    - mena-detection-library.copykittens
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_event:
+        EventID: 5145
+    selection_share:
+        ShareName|contains:
+            - 'ADMIN$'
+            - 'C$'
+    selection_write:
+        AccessMask|contains: '0x2'
+        RelativeTargetName|endswith:
+            - '.exe'
+            - '.dll'
+            - '.bat'
+            - '.ps1'
+            - '.vbs'
+    condition: all of selection_*
+falsepositives:
+    - Software-deployment and remote-administration tools legitimately write to admin shares - baseline
+      the source host, account and pushed filename before dismissing
+level: medium

@@ -1,0 +1,54 @@
+title: Dark Caracal Bandook C2 Domain DNS Resolution
+id: 6d44b967-ae8e-4878-a82f-bbef1674a2d3
+status: experimental
+description: |
+    Detects DNS resolution of known Dark Caracal / Bandook command-and-control and external-template
+    domains from an endpoint (T1071.001 Application Layer Protocol: Web Protocols). These domains are
+    registered through Porkbun/NameSilo on disposable TLDs and serve as the RAT's HTTP/TCP C2 and
+    the redirect targets for the external-template macro fetch. A DNS query for any of them from a
+    managed host indicates likely Bandook C2 beaconing and should be triaged against the resolving
+    process.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.dark-caracal
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection:
+        QueryName|endswith:
+            - 'ntsclouds.com'
+            - 'jtoolbox.org'
+            - 'idcmht.com'
+            - 'htname.info'
+            - 'vdscloud.net'
+            - 'mainsrv.top'
+            - 'olex.live'
+            - 'branchesv.com'
+            - 'megawoc.com'
+            - 'fikofiko.top'
+            - 'p2020.club'
+            - 'pronews.icu'
+            - 'p2020.xyz'
+            - '2ndprog.monster'
+            - 'ercuc.com'
+            - 'tancredis.com'
+            - 'mbcde.net'
+            - 'nopejohn.com'
+            - 'horizongb.com'
+            - 'styleco.me'
+            - 'ewsdocs.com'
+            - 'raysdoor.com'
+            - 'vsimperial.com'
+            - 'mxtms.com'
+    condition: selection
+falsepositives:
+    - Minimal - actor-attributed domains. Some short domains may be reassigned over time; revalidate
+      periodically and confirm the resolving process context
+level: high

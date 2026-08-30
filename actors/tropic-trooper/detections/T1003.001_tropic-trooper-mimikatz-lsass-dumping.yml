@@ -1,0 +1,44 @@
+title: Tropic Trooper LSASS Credential Dumping via Swor/Mimikatz
+id: 4f7a1e93-2d6c-48b5-9a1f-7c3e5b2d8a61
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) credential theft from LSASS memory (T1003.001 OS
+    Credential Dumping: LSASS Memory). The actor delivers mimikatz inside the Swor tool bundle
+    (mimikatz + FRP + ElevationStation) to harvest credentials for lateral movement. Keys on mimikatz
+    command signatures (sekurlsa::logonpasswords, privilege::debug, lsadump), on comsvcs.dll MiniDump /
+    procdump-against-lsass patterns, and on the Swor bundle name. Pair with EDR process-access telemetry
+    for handles to lsass.exe requesting read masks (0x1010 / 0x1410) for the most durable coverage.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mimikatz:
+        CommandLine|contains:
+            - 'sekurlsa::logonpasswords'
+            - 'sekurlsa::minidump'
+            - 'privilege::debug'
+            - 'lsadump::'
+    selection_comsvcs:
+        CommandLine|contains|all:
+            - 'comsvcs.dll'
+            - 'MiniDump'
+    selection_procdump:
+        CommandLine|contains|all:
+            - 'procdump'
+            - 'lsass'
+    selection_swor:
+        Image|endswith: '\swor.exe'
+    condition: 1 of selection_*
+falsepositives:
+    - Sanctioned crash-dump collection or DFIR tooling accessing lsass - restrict to authorized
+      operators and hosts
+level: high

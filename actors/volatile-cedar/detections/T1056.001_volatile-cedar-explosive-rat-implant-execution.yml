@@ -1,0 +1,53 @@
+title: Volatile Cedar Explosive RAT Implant Execution (Keylogging and Screen Capture)
+id: 8f8b9e3c-25c6-471b-b4d6-3c4e5349ab3f
+status: experimental
+description: |
+    Detects execution of the Volatile Cedar / Lebanese Cedar Explosive RAT implant, whose documented
+    collection capabilities are keylogging (T1056.001 Input Capture) and desktop screenshot capture
+    (T1113 Screen Capture) exfiltrated to its HTTP C2. The keylogging and screen-capture primitives
+    themselves leave limited discrete host signal without EDR behavioral analytics, so this rule
+    anchors on execution of the known Explosive sample set using MD5 image hashes as high-fidelity
+    selectors, combined with the implant running from a user-writable directory rather than a system
+    path. Pair with the Explosive HTTP C2 network rule for corroboration. Requires process-creation
+    telemetry with hash fields (Sysmon Event ID 1).
+references:
+    - https://blog.checkpoint.com/security/volatilecedar/
+    - https://securelist.com/sinkholing-volatile-cedar-dga-infrastructure/69421/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1056.001
+    - attack.t1113
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection_hash:
+        Hashes|contains:
+            - 'a97fdcb6493c2012aeebdeef0e09625a'
+            - '1316d35f6472eb323ae2c8b75199fbb5'
+            - '09a0970bfc1bc8acec1ec609d8d98fda'
+            - 'fef76a8027e07c7a51b312a26c488653'
+            - '902bcc27ed86bc623e20532239895da7'
+            - '8ac64a171736252b81c4a559df1f9bae'
+            - '65954b4c60031fb857a09761497ff641'
+            - '4147d6beb17b507a5df345dae5f15c41'
+            - '544fdcce998fc7f4bb2914b3ec5b4761'
+    selection_md5field:
+        MD5:
+            - 'a97fdcb6493c2012aeebdeef0e09625a'
+            - '1316d35f6472eb323ae2c8b75199fbb5'
+            - '09a0970bfc1bc8acec1ec609d8d98fda'
+            - 'fef76a8027e07c7a51b312a26c488653'
+            - '902bcc27ed86bc623e20532239895da7'
+            - '8ac64a171736252b81c4a559df1f9bae'
+            - '65954b4c60031fb857a09761497ff641'
+            - '4147d6beb17b507a5df345dae5f15c41'
+            - '544fdcce998fc7f4bb2914b3ec5b4761'
+    condition: 1 of selection_*
+falsepositives:
+    - Very low - these MD5s are known Explosive RAT samples; any match warrants investigation. Hash
+      rotation by the actor is a blind spot, so corroborate with the Explosive C2 network signature
+level: high

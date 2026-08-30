@@ -1,0 +1,217 @@
+{
+  "actor": "Rocket Kitten (Ajax Security Team)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — inbound Office attachments with macros are inspectable at the mail gateway/sandbox; endpoint detection lands at the macro-execution stage rather than delivery"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — outbound clicks to newly-seen cloud/look-alike URLs are detectable at proxy/mail-URL-rewrite, though attribution requires infrastructure context"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "high — Office applications (winword/excel/powerpnt) spawning script/dropper child processes and writing a DLL/EXE, and execution of double-extension .ppt.exe, are high-fidelity endpoint signals via process-lineage and image-load telemetry"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium — link-click to file-download followed by execution is reconstructable from proxy + endpoint telemetry, but the click itself blends with normal browsing"
+    },
+    {
+      "technique_id": "T1137.001",
+      "technique_name": "Office Application Startup: Office Template Macros",
+      "tactic": "execution",
+      "rationale": "high — VBA macro execution that writes and launches a PE is detectable via Office macro-runtime (AMSI), VBA-project inspection and Office-spawns-child-process rules"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high — creation/execution of wsc.vbs in %TEMP% via wscript/cscript and macro VBA activity are captured by script-block/AMSI and process-creation logging"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — a new Startup-folder shortcut named 'WinDefender' pointing to %TEMP%\\NTSuser.exe (and the 'woolger' mutex) are actor-specific, high-fidelity persistence detections via file/registry and process telemetry"
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "rationale": "high — creation of a Startup .lnk whose target resides in %TEMP% is a rare, high-fidelity signal via file-creation and shortcut-target auditing"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "rationale": "high — creation/growth of %TEMP% log files named wlg.dat / AdobeARM.log / AdobeARMM.log by a non-Adobe process, plus SetWindowsHookExW keyboard hooks from an unsigned %TEMP% binary, are strong host detections"
+    },
+    {
+      "technique_id": "T1036.008",
+      "technique_name": "Masquerading: Masquerade File Type",
+      "tactic": "stealth",
+      "rationale": "medium — double-extension executables with document icons and PE files masquerading as .ppt are detectable via file-type/extension-mismatch and icon-resource heuristics, but need scanning coverage"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — names mimicking system/AV/Adobe artifacts (NTUSER.dat*.exe, NTSuser.exe, WinDefender, AdobeARM*.log, HousecallLauncher.exe) in %TEMP%/startup are detectable via name/path/signer baselining"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — embedded high-entropy blobs/keys and encoded credential strings are detectable via static/entropy analysis, but require sample-level inspection"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium — growth of specific %TEMP% log files and their rename to a LOG_username_timestamp pattern before egress are detectable via file-write and file-rename telemetry"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — local document collection is common; suspicious mainly in a backdoor/keylogger process-lineage and staging context"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — the distinctive /index.php?c=&r=&u=&t= URI pattern to hard-coded C2 IPs is a strong network-detection/IDS signature via proxy and TLS/HTTP metadata"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — custom-encrypted C2 defeats content inspection but is detectable via the embedded key/algorithm in samples and via beacon-timing/destination analytics"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — download of executables from cloud storage followed by execution, and appearance of companion binaries (wsnd.exe) alongside the keylogger, are detectable via proxy + file-creation telemetry"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "rationale": "medium — the modified Core Impact agent and fake-HouseCall installer are detectable via sample signatures/hashes and their fixed C2 destinations, though a custom agent is less name-recognizable than commodity RMM"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound data to the fixed C2 IPs correlated with the GHOLE URI pattern is detectable at the network egress, but volume alone is subtle"
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "rationale": "high — outbound FTP from a workstation to the hard-coded exfil IPs, uploading LOG_username_timestamp files to a /woolen/ path, is a strong network-detection opportunity via flow/proxy logging and destination-IP blocklists"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "rationale": "low — victim-side profiling and OSINT occur off-victim and are not endpoint-observable; intel/hunt candidate via targeted-user awareness and external exposure monitoring"
+    },
+    {
+      "technique_id": "T1591",
+      "technique_name": "Gather Victim Org Information",
+      "tactic": "reconnaissance",
+      "rationale": "low — organizational targeting research is off-victim; intel candidate only"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled social accounts are off-victim; brand/impersonation-monitoring and user-reporting candidate"
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — attacker-controlled sender accounts are off-victim; inbound-mail sender/impersonation analytics apply at delivery time"
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — compromise/impersonation of a third party's identity and mailbox is off the defender's network; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain registration is off-victim; intel/hunt candidate via newly-registered/look-alike-domain monitoring"
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim staging on third-party services; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — payload staged on attacker-controlled cloud is off-victim until delivery; intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware development is off-victim; the compiled artifact's runtime behavior is where detection lands — intel candidate"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition is off-endpoint; downstream deployment is where detection lands — intel candidate"
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "rationale": "low — third-party social-platform contact is off-victim and outside enterprise telemetry; user-awareness/hunt candidate"
+    },
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "rationale": "low — the harvesting page is off-victim adversary infrastructure; hunt candidate via mail-URL/proxy telemetry to look-alike login domains and impossible-travel logons after credential theft"
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "rationale": "low — credential capture occurs on attacker-hosted pages outside defender telemetry; hunt via post-theft anomalous-authentication analytics"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-impairment",
+      "rationale": "low — self-deletion after in-memory load leaves little discrete signal; hunt via memory-resident/fileless detection and short-lived-file telemetry"
+    }
+  ],
+  "summary": {
+    "total": 34,
+    "detection": 20,
+    "hunt": 14
+  }
+}

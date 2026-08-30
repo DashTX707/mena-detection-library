@@ -81,8 +81,18 @@ scripts/                 helpers (validation, Navigator export)
 | [Greenbug (ISMDOOR)](actors/greenbug/) | Iran-nexus · Shamoon precursor | ✅ published | 35 | 17 | 2 |
 | [Sea Turtle (Marbled Dust)](actors/sea-turtle/) | Türkiye-nexus · DNS hijack | ✅ published | 33 | 15 | 5 |
 | [Bahamut (Windshift-adjacent)](actors/bahamut/) | Mercenary · hack-for-hire | ✅ published | 41 | 6 | 7 |
+| [Rocket Kitten (Ajax Security Team)](actors/rocket-kitten/) | Iran-nexus · IRGC espionage | ✅ published | 34 | 10 | 5 |
+| [CopyKittens (G0052)](actors/copykittens/) | Iran-nexus · Wilted Tulip | ✅ published | 41 | 15 | 5 |
+| [Infy (Prince of Persia)](actors/infy/) | Iran-nexus · dissident surveillance | ✅ published | 37 | 17 | 5 |
+| [Cavern Manticore (DEV-0270)](actors/cavern-manticore/) | Iran-nexus · MOIS ransomware | ✅ published | 34 | 23 | 4 |
+| [Volatile Cedar (Lebanese Cedar)](actors/volatile-cedar/) | Lebanon-nexus · Hezbollah | ✅ published | 30 | 14 | 5 |
+| [Dark Caracal (G0070)](actors/dark-caracal/) | Lebanon-nexus · GDGS mercenary | ✅ published | 41 | 20 | 5 |
+| [Stealth Falcon (FruityArmor)](actors/stealth-falcon/) | UAE-nexus · BITS backdoor | ✅ published | 36 | 10 | 5 |
+| [StrongPity (PROMETHIUM)](actors/strongpity/) | Türkiye-nexus · trojanized installers | ✅ published | 38 | 15 | 5 |
+| [SideWinder (Rattlesnake)](actors/sidewinder/) | India-nexus · maritime/gov | ✅ published | 46 | 20 | 4 |
+| [Tropic Trooper (KeyBoy)](actors/tropic-trooper/) | China-nexus · gov espionage | ✅ published | 35 | 18 | 5 |
 
-**28 actors · 1190 ATT&CK techniques · 508 Sigma detections · 179 hunt packages · 974 sourced IOCs.**
+**38 actors · 1562 ATT&CK techniques · 670 Sigma detections · 227 hunt packages · 1493 sourced IOCs.**
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

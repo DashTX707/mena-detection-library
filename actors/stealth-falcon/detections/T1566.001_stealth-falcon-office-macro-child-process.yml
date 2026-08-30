@@ -1,0 +1,43 @@
+title: Stealth Falcon Office Document Spawning Script Interpreter After Macro Enablement
+id: 3b8f1c42-6d29-4a71-9e05-1f7c2a4d8b60
+status: experimental
+description: |
+    Detects the Stealth Falcon (FruityArmor) initial-access chain where a macro-enabled Word
+    document (.docm, e.g. right2fight.docm) with a spoofed Proofpoint security-warning lure coaxes
+    the target into enabling macros (T1566.001 Spearphishing Attachment, T1204.002 User Execution),
+    after which WINWORD.EXE spawns a script interpreter (wscript/cscript/powershell/cmd/mshta) to
+    launch the PowerShell backdoor chain. Keys on the Office-to-interpreter process lineage, which is
+    abnormal for benign documents. Anchors on behavior (parent-child) not on the specific lure hash.
+references:
+    - https://citizenlab.ca/2016/05/stealth-falcon/
+    - https://attack.mitre.org/groups/G0038/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.t1566.001
+    - attack.t1204.002
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+    selection_child:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\mshta.exe'
+    condition: all of selection_*
+falsepositives:
+    - Enterprise document templates or add-ins that legitimately shell out to scripts - baseline the
+      specific template and the child command line before dismissing
+level: high

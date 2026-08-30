@@ -1,0 +1,45 @@
+title: Infy Self-Extracting Attachment Dropper Executed from Mail/Temp Path
+id: 7d2e4b6a-1c3f-4a58-8b9e-0d1f2a3c4b52
+status: experimental
+description: |
+    Detects the Infy (Prince of Persia) spearphishing-attachment initial-access vector (T1566.001
+    Spearphishing Attachment). Infy delivers a multi-layer self-extracting (SFX) archive attachment
+    that presents a fake video-player interface with a decoy readme/image/video; the SFX executable
+    follows an ins*.exe naming pattern and drops mpro*.dll / loader DLLs into user-writable paths. Keys
+    on a mail client (Outlook) or archive host spawning an executable from a temporary/attachment path.
+    Outlook spawning an .exe from a temp path is the behavioral anchor; the ins* prefix and mpro* DLL
+    drop are actor-specific reinforcers.
+references:
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.infy
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_mail_parent:
+        ParentImage|endswith:
+            - '\outlook.exe'
+            - '\winrar.exe'
+            - '\7zFM.exe'
+            - '\explorer.exe'
+    selection_exec_from_temp:
+        Image|endswith: '.exe'
+        Image|contains:
+            - '\Temp\'
+            - '\Content.Outlook\'
+            - '\Downloads\'
+            - '\INetCache\'
+    selection_ins_name:
+        Image|re: '\\ins[^\\]*\.exe$'
+    condition: selection_mail_parent and selection_exec_from_temp and selection_ins_name
+falsepositives:
+    - Legitimate installers named with an ins prefix run from Downloads/Temp - baseline expected
+      software deployment; an Outlook/archive parent launching an ins*.exe from an attachment cache
+      directory is the actor pattern and warrants attachment inspection
+level: medium

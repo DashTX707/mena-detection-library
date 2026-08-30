@@ -1,0 +1,47 @@
+title: Dark Caracal Office Application Spawning Script Interpreter
+id: 0413b3c8-f6ae-4467-aae6-822f0ada7cc3
+status: experimental
+description: |
+    Detects a Microsoft Office application spawning a command shell or scripting interpreter as a
+    child process. In Dark Caracal's Bandook chain a user opens a ZIP-delivered trojanized Word
+    document (T1566.001 Spearphishing Attachment / T1204.002 User Execution), the remotely fetched
+    VBA macro executes inside Word (T1059.005 Visual Basic) and launches the next stage via
+    PowerShell/cmd (T1059.003 Windows Command Shell) to drop the PowerShell loader. Office
+    productivity applications spawning cmd.exe/powershell.exe/wscript.exe/cscript.exe/mshta.exe is
+    a classic macro-detonation lineage signal.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.execution
+    - attack.t1566.001
+    - attack.t1204.002
+    - attack.t1059.005
+    - attack.t1059.003
+    - mena-detection-library.dark-caracal
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate office document automation, VBA-based enterprise templates or add-ins that shell
+      out - baseline expected parent/child pairs and command lines before alerting
+level: high

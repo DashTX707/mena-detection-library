@@ -1,0 +1,30 @@
+title: Dark Caracal CrossRAT Linux XDG Autostart Persistence
+id: f4233319-c928-44ac-8490-df03c4ac1a7f
+status: experimental
+description: |
+    Detects creation of an XDG autostart desktop entry under a user's ~/.config/autostart on Linux.
+    Dark Caracal's CrossRAT Java implant persists by writing a .desktop autostart entry that
+    relaunches the Java implant on desktop login (T1547.013 XDG Autostart Entries). Keys on a new
+    .desktop file written into a .config/autostart directory; for CrossRAT the Exec line invokes a
+    java runtime against a payload in a user path.
+references:
+    - https://attack.mitre.org/groups/G0070/
+    - https://www.lookout.com/documents/reports/lookout-dark-caracal-20180118-us.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.013
+    - mena-detection-library.dark-caracal
+logsource:
+    category: file_event
+    product: linux
+detection:
+    selection:
+        TargetFilename|contains: '/.config/autostart/'
+        TargetFilename|endswith: '.desktop'
+    condition: selection
+falsepositives:
+    - Desktop applications that legitimately register autostart entries on install - triage the
+      .desktop Exec line (a java invocation of a payload in a user directory is the CrossRAT signal)
+level: medium

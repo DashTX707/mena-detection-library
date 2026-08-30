@@ -1,0 +1,32 @@
+title: Foudre/Tonnerre DGA Short-Hex Domain Lookups (.space/.site/.top/.win)
+id: f2a4c6e8-0b1d-4f37-9a5c-3d5e7f9a1b1e
+status: experimental
+description: |
+    Detects Foudre / Tonnerre domain-generation-algorithm C2 resolution (T1568.002 Dynamic Resolution:
+    Domain Generation Algorithms). Foudre resolves C2 via a DGA computing a CRC32 hash of 'NRV1' + date
+    (producing short random-hex domains under .space/.site/.top), and Tonnerre uses a 'NITV1{year}{month}
+    {week}' DGA across .site/.com/.win; both authenticate domains with RSA signatures to defeat naive
+    sinkholing. Keys on DNS queries for short (6-10 char) all-hex labels under the .space/.site/.top/.win
+    TLDs. The short-hex-under-those-TLDs shape is the durable algorithmic signal (e.g. 2daa46f1.space,
+    43ec206d.top); pair with NXDOMAIN-rate and newly-registered-domain analytics.
+references:
+    - https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1568.002
+    - mena-detection-library.infy
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection:
+        QueryName|re: '(^|\.)[0-9a-f]{6,10}\.(space|site|top|win)$'
+    condition: selection
+falsepositives:
+    - Legitimate services using short hexadecimal subdomains under .space/.site/.top/.win (CDN shards,
+      hashed hostnames) - baseline expected domains under these TLDs; a burst of never-before-seen
+      short-hex lookups with high NXDOMAIN is the actor pattern
+level: medium

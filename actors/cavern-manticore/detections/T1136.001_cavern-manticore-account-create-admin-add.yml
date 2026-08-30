@@ -1,0 +1,41 @@
+title: Cavern Manticore Backdoor Local Account Creation and Admin Group Add
+id: 1f3d5b79-2c4e-4a6b-8d0f-3e5a7c9b1d27
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / Cobalt Mirage) creating backdoor local accounts and elevating them
+    (T1136.001 Create Account: Local Account, T1098 Account Manipulation). The actor runs net user /add to
+    create accounts with specific names (DefaultAccount, MSSQL, DefaultUser) and then adds them to the local
+    Administrators group with net localgroup administrators /add. Keys on the net.exe account-creation and
+    privileged-group-add command lines, with the actor account names as high-confidence enrichment.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1136.001
+    - attack.t1098
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_net:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+    selection_create:
+        CommandLine|contains|all:
+            - ' user '
+            - '/add'
+    selection_admin:
+        CommandLine|contains|all:
+            - 'localgroup'
+            - 'administrators'
+            - '/add'
+    condition: selection_net and (selection_create or selection_admin)
+falsepositives:
+    - Legitimate helpdesk/IT provisioning of local accounts; correlate with the account name (DefaultAccount/
+      MSSQL/DefaultUser), the creating process lineage, and immediate admin-group addition to prioritize
+level: high

@@ -1,0 +1,44 @@
+title: Cavern Manticore FRPC/Plink/Ngrok Tunneling and Reverse Proxy
+id: 7b9d1f30-4c5e-4a6b-8d9f-0c2e4a6b8d21
+status: experimental
+description: |
+    Detects Cavern Manticore (Cobalt Mirage / TunnelVision) tunneling C2 and RDP out of victim networks
+    (T1572 Protocol Tunneling, T1090 Proxy). The actor deploys Fast Reverse Proxy Client (FRPC, dropped as
+    audio.exe), Plink, and Ngrok to relay internal services (RDP) to actor-controlled infrastructure. Keys on
+    the tunneling tool process names/original file names and their signature command-line flags (frpc config,
+    plink -R reverse tunnel, ngrok tcp).
+references:
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+    - https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1572
+    - attack.t1090
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_frpc:
+        - Image|endswith: '\frpc.exe'
+        - OriginalFileName: 'frpc.exe'
+        - CommandLine|contains:
+            - 'frpc.ini'
+            - '[common]'
+            - 'server_addr'
+    selection_plink:
+        Image|endswith: '\plink.exe'
+        CommandLine|contains:
+            - ' -R '
+            - ' -L '
+            - '3389:'
+    selection_ngrok:
+        - Image|endswith: '\ngrok.exe'
+        - CommandLine|contains: 'ngrok tcp'
+    condition: selection_frpc or selection_plink or selection_ngrok
+falsepositives:
+    - Plink/Ngrok have legitimate administrative uses; FRPC and reverse-tunnel flags (-R, ngrok tcp 3389) to
+      external endpoints on a server are rarely sanctioned - validate the destination and business need
+level: high

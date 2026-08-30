@@ -1,0 +1,33 @@
+title: Cavern Manticore Scheduled Task Persistence (SynchronizeTimeZone / Wininet)
+id: 5a7c9e13-8b0d-4f2a-9c3e-1d4f5a6b7c86
+status: experimental
+description: |
+    Detects Cavern Manticore (Cobalt Mirage) scheduled-task persistence (T1053.005 Scheduled Task). The
+    actor registers tasks from XML definitions - observed names include SynchronizeTimeZone and Wininet
+    (Wininet.xml launching Wininet.bat) - to relaunch .bat / reverse-proxy payloads. Keys on Task Scheduler
+    operational logging (Event ID 4698/4702 task creation) matching the actor-specific task names.
+references:
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.cavern-manticore
+logsource:
+    product: windows
+    service: taskscheduler
+detection:
+    selection_event:
+        EventID:
+            - 4698
+            - 4702
+    selection_name:
+        TaskName|contains:
+            - 'SynchronizeTimeZone'
+            - 'Wininet'
+    condition: all of selection_*
+falsepositives:
+    - A genuine time-zone synchronization task could share a similar name; validate the task action, the
+      binary/script it launches, and the creating account before dismissing
+level: high

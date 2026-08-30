@@ -1,0 +1,50 @@
+title: CopyKittens Empire / Cobalt Strike PowerShell Downloader and Hidden-Window Execution
+id: 14a264e0-c329-492e-b5d2-f6db83e45097
+status: experimental
+description: |
+    Detects CopyKittens (Slayer Kitten, G0052) post-exploitation PowerShell using the Empire framework
+    and Cobalt Strike payloads (T1059.001), which exhibit characteristic encoded, hidden-window and
+    in-memory downloader command lines (T1564.003 Hidden Window). Anchors on powershell.exe command-line
+    flags for encoded commands, execution-policy bypass, hidden window style and download-cradle
+    patterns in process-creation / script-block telemetry.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://attack.mitre.org/groups/G0052/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.t1059.001
+    - attack.t1564.003
+    - mena-detection-library.copykittens
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+        OriginalFileName:
+            - 'PowerShell.EXE'
+            - 'pwsh.dll'
+    selection_flags:
+        CommandLine|contains:
+            - '-enc '
+            - '-encodedcommand'
+            - '-e '
+            - 'FromBase64String'
+            - 'IEX (New-Object'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'Net.WebClient'
+            - '-nop -w hidden'
+            - '-w hidden'
+            - '-windowstyle hidden'
+            - 'System.Reflection.Assembly'
+    condition: selection_img and selection_flags
+falsepositives:
+    - Legitimate administrative or software-deployment scripts that use encoded commands or hidden
+      windows - baseline the decoded script block and invoking parent before dismissing
+level: high

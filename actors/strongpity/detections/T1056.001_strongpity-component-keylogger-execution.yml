@@ -1,0 +1,39 @@
+title: StrongPity Dropped Component Execution From Temp Staging Folder
+id: 7a2d4c90-1e63-4b58-9f27-8c0d3a1b5e46
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM modular component execution from a user-writable staging path
+    (%temp%, AppData or a lang_ folder), covering the input-capture / keylogger module shipped with the
+    StrongPity toolkit alongside the file-collection modules (T1056.001 Input Capture: Keylogging). The
+    keylogger and other components (nvvscv.exe, wndplyr.exe, wmpsvn32.exe) run from the same staging
+    directory. Anchored on execution of these named components from an anomalous path; keystroke-hook API
+    activity itself requires EDR API telemetry not captured by process events, so this is the observable
+    proxy for that module.
+references:
+    - https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1056.001
+    - mena-detection-library.strongpity
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith:
+            - '\nvvscv.exe'
+            - '\wndplyr.exe'
+            - '\wmpsvn32.exe'
+    selection_path:
+        Image|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\lang_'
+    condition: all of selection_*
+falsepositives:
+    - These component names are actor-specific; a match from a temp staging path is high confidence -
+      confirm the image signature and parent process before dismissing
+level: high

@@ -1,0 +1,229 @@
+{
+  "actor": "Stealth Falcon (FruityArmor)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — .docm macro attachments are inspectable at the mail gateway and on the endpoint (Office child-process spawning, macro-security events); the specific lure/hashes are watchlistable, though initial delivery itself is partly off-victim"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — WINWORD.EXE spawning wscript/powershell child processes and VBA macro execution are observable via process-lineage and Office/AMSI telemetry"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high — wscript/cscript executing a .vbs that decodes and launches PowerShell is observable via process-creation and script-block/command-line telemetry; the IEWebCache.vbs filename is a watchlist item"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — PowerShell script-block/module logging and AMSI capture the backdoor's script bodies, Base64-decoded content, and web/BITS activity; suspicious PowerShell launched from wscript/Office is high-fidelity"
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "rationale": "medium — PowerShell-initiated WMI queries are observable via WMI-activity and PowerShell logging, but system-profiling WMI use is common and needs process-lineage context"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); the task name 'IE Web Cache' and a task launching wscript/rundll32 on a masquerading DLL are actor-specific, high-fidelity detections"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "rationale": "high — creation/modification of unusual values under the Shell Extensions key holding high-entropy (RC4/encrypted) blobs is detectable via registry-audit and EDR registry telemetry; the specific value names are a strong watchlist"
+    },
+    {
+      "technique_id": "T1012",
+      "technique_name": "Query Registry",
+      "tactic": "discovery",
+      "rationale": "medium — registry reads of the specific config value names correlate with the backdoor process, but registry queries in general are high-volume and need process context"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy registry blobs and Base64-encoded script bodies are detectable via entropy/encoding heuristics on registry and script-block telemetry"
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "rationale": "high — Base64-encoded PowerShell (-enc / FromBase64String) invoked from a VBS loader is detectable via script-block logging and command-line encoding heuristics"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — decode/decrypt routines are inferred from script-block content rather than a discrete event; detectable when script-block logging captures the decode calls"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — benign-looking task/file names and lookalike infrastructure domains are detectable via name/path baselining and DNS analytics, but require known-bad lists or anomaly baselining"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — host-profiling commands via PowerShell/WMI are observable but common; value from process-lineage correlation to the macro/VBS chain"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — network-config discovery commands are observable in command-line/PowerShell logs but are common admin actions requiring correlation"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — whoami/user-context queries are observable but noisy; meaningful mainly in a recon-burst process window"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — process enumeration is observable via command-line/API telemetry but common; correlate with backdoor process lineage"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "medium — access to browser credential-store files/APIs is detectable via file-access and process-access telemetry on the browser profile paths"
+    },
+    {
+      "technique_id": "T1555.004",
+      "technique_name": "Credentials from Password Stores: Windows Credential Manager",
+      "tactic": "credential-access",
+      "rationale": "medium — access to Credential Manager vault files and vaultcmd/credential APIs is detectable via file/process-access telemetry"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "medium — automated bulk local collection is detectable via file-access-burst and staging patterns tied to the backdoor process, but blends with legitimate activity"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — local data collection is common; suspicious mainly via staging and process-lineage context tied to the implant"
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "command-and-control",
+      "rationale": "high — anomalous BITS jobs to external/non-Microsoft hosts are a strong, actor-signature detection: BITS-Client operational log (Event IDs 3/59/60), bitsadmin/PowerShell BITS cmdlet usage, and non-browser/non-updater processes creating BITS transfers to unknown domains"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP callbacks to the known C2 domains are detectable via proxy/DNS telemetry and domain blocklists, but generic web C2 blends with normal traffic absent the IOC list"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — the encryption itself is not directly observable, but RC4-encrypted payloads over HTTP/BITS to unknown domains and hardcoded-key artifacts support signature/hunt detection when combined with the IOCs"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — download of follow-on payloads via BITS/HTTP is detectable via BITS job creation with a local file target and file-write-after-network telemetry"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound BITS upload jobs to external hosts and data egress correlated with the C2 domains are detectable via BITS-Client log and proxy/DLP telemetry"
+    },
+    {
+      "technique_id": "T1020",
+      "technique_name": "Automated Exfiltration",
+      "tactic": "exfiltration",
+      "rationale": "medium — periodic/beaconing BITS upload jobs on a fixed interval to a fixed domain set are detectable via BITS-job and network-beaconing analytics"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled social-media personas and rapport-building occur off-victim; intel/brand-monitoring and takedown candidate, not endpoint-observable"
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — sender-account creation is off-victim; hunt/intel candidate via sender-reputation and lookalike-domain monitoring"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain acquisition is off-victim; intel/hunt candidate via infrastructure tracking, passive DNS and newly-registered-lookalike-domain monitoring"
+    },
+    {
+      "technique_id": "T1608.005",
+      "technique_name": "Stage Capabilities: Link Target",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim link-staging/tracking infrastructure; intel/hunt candidate via link-pattern (/aax.me/[0-9a-f]{5}/) blocklisting and web-proxy monitoring"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; intel/attribution signal, not endpoint-observable"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "low — link-based delivery through a third-party shortener is largely off-victim social engineering; hunt candidate via email/URL gateway logs for the aax.me pattern rather than crisp endpoint detection"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "low — user click on an external link is a social action; hunt candidate via proxy/URL telemetry for the aax.me link pattern"
+    },
+    {
+      "technique_id": "T1059.007",
+      "technique_name": "Command and Scripting Interpreter: JavaScript",
+      "tactic": "execution",
+      "rationale": "low — the profiling JavaScript executes in the target's browser against off-victim infrastructure; not endpoint-observable in enterprise logs, intel/hunt candidate only"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "low — AV port-probing executes browser-side against off-victim infrastructure; not observable in standard endpoint telemetry, intel/hunt candidate"
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "rationale": "low — software/plugin enumeration occurs in the browser against attacker infrastructure; intel/hunt candidate rather than endpoint detection"
+    }
+  ],
+  "summary": {
+    "total": 36,
+    "detection": 26,
+    "hunt": 10
+  }
+}

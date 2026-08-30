@@ -1,0 +1,38 @@
+title: Foudre/Tonnerre RSA-Authenticated C2 Signature-File Fetch
+id: a4c6e8f0-2b1d-4c39-8d0a-5f7b9d1e3c2f
+status: experimental
+description: |
+    Detects Foudre / Tonnerre asymmetric-cryptography C2 authentication (T1573.002 Encrypted Channel:
+    Asymmetric Cryptography). Both implants verify their C2 by downloading a small signature file and
+    validating it with an embedded RSA public key so the client only trusts operator-controlled
+    infrastructure, and HTTPS C2 uses attacker-controlled / self-signed TLS certificates. Keys on HTTP(S)
+    GET requests for a small signature/verification file from the actor's DGA-style hosts. The
+    signature-file fetch from a short-hex .space/.site/.win host preceding RSA-validated command retrieval
+    is the behavioral anchor; pair with TLS/JA3 and self-signed-certificate anomaly analytics where TLS
+    metadata is available.
+references:
+    - https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1573.002
+    - mena-detection-library.infy
+logsource:
+    category: proxy
+detection:
+    selection_method:
+        cs-method: 'GET'
+    selection_sig:
+        c-uri|contains:
+            - 'signature'
+            - '.sig'
+            - 'verify'
+    selection_host:
+        cs-host|re: '(^|\.)[0-9a-f]{6,10}\.(space|site|top|win)$'
+    condition: selection_method and selection_sig and selection_host
+falsepositives:
+    - Legitimate services serving files named signature/verify from short-hex hosts under these TLDs -
+      rare; correlate the fetching host with the DGA-lookup and beacon analytics before escalating
+level: medium

@@ -1,0 +1,241 @@
+{
+  "actor": "StrongPity (PROMETHIUM)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "high — execution of a signed-but-anomalous installer that spawns unexpected child processes (procexp.exe, nvvscv.exe, wmpsvn32.exe) and writes to %temp% staging folders is observable via process-creation and file-write telemetry; known trojanized-installer hashes give high-fidelity detection"
+    },
+    {
+      "technique_id": "T1569.002",
+      "technique_name": "System Services: Service Execution",
+      "tactic": "execution",
+      "rationale": "medium — service-based execution of the dropped payload is observable via service-install (Event ID 7045) and the resulting process lineage, but requires baselining of legitimate services"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "medium — PowerShell invocation by the malware chain is capturable via script-block/module logging and process-lineage (installer/service spawning powershell.exe is anomalous), but PowerShell is common and needs context"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation of a Run-key value (e.g. 'Help Manager') pointing at an executable in a %temp% language-named folder is a high-fidelity registry-modification/autorun detection"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "rationale": "high — service creation (Event ID 7045 / registry Services key) by a freshly-dropped binary is directly observable and, combined with an anomalous image path, is a strong persistence detection"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); a task created by a dropped binary pointing at a %temp%/AppData payload is a strong detection"
+    },
+    {
+      "technique_id": "T1036.004",
+      "technique_name": "Masquerading: Masquerade Task or Service",
+      "tactic": "stealth",
+      "rationale": "medium — benign-looking service/task names are detectable via name-vs-path/hash baselining and signature-mismatch, but require established baselines"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — legitimate-looking names/locations combined with signature or hash mismatch against the genuine vendor binary are detectable via allowlist/hash baselining"
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "rationale": "medium — signatures by unknown/self-signed or untrusted CAs on executables that behave maliciously are detectable via signature-issuer reputation and certificate-thumbprint watchlisting"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — creation of hidden high-entropy .sft files and encrypted .cab configs in the malware directory is detectable via file-write + entropy analytics and file-extension/attribute anomalies, but requires targeted content inspection"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "rationale": "medium — the create-then-delete lifecycle of .sft files near an exfiltration event is detectable via file-operation auditing (create + delete of hidden files by the same process), but is short-lived"
+    },
+    {
+      "technique_id": "T1685",
+      "technique_name": "Disable or Modify Tools",
+      "tactic": "defense-impairment",
+      "rationale": "high — modification of Windows Defender exclusion paths (registry/PowerShell Add-MpPreference / WMI) is a rare, high-fidelity tamper signal detectable via registry-modification and Defender operational logging"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — enumeration of installed AV/EDR (process/service/registry queries for known security-product names) is detectable via API/command-line telemetry but is common in benign software too"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — broad recursive extension-based file enumeration by a non-indexer process is detectable via file-access auditing and API telemetry, but resembles legitimate search/indexing and needs behavioral context"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "medium — keylogging via low-level keyboard hooks / GetAsyncKeyState and raw-input registration is detectable via API-hook and behavioral EDR telemetry, but modern StrongPity variants emphasize file collection over keylogging, so confidence in this component's continued use is lower"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "medium — bursty automated reads/copies of many document files by a single non-office process are detectable via file-access-rate analytics and process-behavior baselining"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium — local staging of an archive plus multiple hidden .sft fragments in a working directory is detectable via file-write telemetry and hidden-attribute/entropy heuristics"
+    },
+    {
+      "technique_id": "T1560.003",
+      "technique_name": "Archive Collected Data: Archive via Custom Method",
+      "tactic": "collection",
+      "rationale": "medium — the custom .sft archive format with its N/O-prefixed fragments is a distinctive host artifact detectable via file-format/entropy heuristics and YARA-style content matching, but requires targeted file inspection"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — inbound file writes following C2 connections by the malware process are detectable via correlated network + file-creation telemetry, but blend with normal update traffic without a known-bad C2"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP(S) beaconing to unknown external hosts is detectable via proxy/DNS + network analytics; fidelity is high only when the specific C2 domains/ports are known/blocklisted"
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Encrypted Channel: Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — TLS to unusual hosts/ports is detectable via JA3/JARM fingerprinting and cert anomalies, but payload contents are opaque; detection leans on metadata and the non-standard port"
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "rationale": "high — TLS/HTTPS traffic on TCP 1402 (a non-standard HTTPS port) to external hosts is a crisp network detection via port/protocol-mismatch analytics and egress monitoring"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound data transfer to the C2 (especially over the non-standard port 1402) is detectable via egress-volume analytics correlated with the malware process, though TLS hides content"
+    },
+    {
+      "technique_id": "T1020",
+      "technique_name": "Automated Exfiltration",
+      "tactic": "exfiltration",
+      "rationale": "medium — periodic automated egress bursts from a single host process are detectable via network-behavior baselining, but require correlation with the staging/collection activity"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration is off-victim; intel/hunt candidate via typosquat/brand monitoring, passive DNS and certificate-transparency tracking around impersonated vendors"
+    },
+    {
+      "technique_id": "T1584.004",
+      "technique_name": "Compromise Infrastructure: Server",
+      "tactic": "resource-development",
+      "rationale": "low — adversary C2 layering is off-victim infrastructure; intel/hunt candidate via infrastructure clustering and pivoting on TLS certs/ports"
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim staging; intel/hunt candidate via monitoring of spoofed download pages and lookalike sites impersonating security/utility vendors"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim hosting; intel/hunt candidate via retro-hunting known trojanized-installer hashes on download telemetry"
+    },
+    {
+      "technique_id": "T1587.002",
+      "technique_name": "Develop Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "rationale": "low — certificate creation is off-victim; the resulting signature is observable on-host (see T1553.002). Intel/hunt candidate via certificate pivoting"
+    },
+    {
+      "technique_id": "T1587.003",
+      "technique_name": "Develop Capabilities: Digital Certificates",
+      "tactic": "resource-development",
+      "rationale": "low — off-victim certificate provisioning; intel/hunt candidate via TLS-certificate clustering and JA3/JARM fingerprinting of C2"
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "rationale": "low — the redirect/delivery happens off-victim (attacker sites/ISP path); intel/hunt candidate via web-proxy and download-source analysis. The trojanized-installer EXECUTION that follows is where host detection lands (see T1204.002)"
+    },
+    {
+      "technique_id": "T1659",
+      "technique_name": "Content Injection",
+      "tactic": "initial-access",
+      "rationale": "low — ISP/on-path manipulation is off the victim endpoint and largely invisible to host telemetry; hunt candidate via TLS-downgrade/plain-HTTP download anomalies, hash mismatch of downloaded installers vs vendor-published hashes, and unexpected redirect chains"
+    },
+    {
+      "technique_id": "T1557",
+      "technique_name": "Adversary-in-the-Middle",
+      "tactic": "credential-access",
+      "rationale": "low — on-path/ISP MitM is not observable on the victim host; hunt/intel candidate via download-integrity verification and monitoring for unexpected certificate/redirect behavior"
+    },
+    {
+      "technique_id": "T1564.003",
+      "technique_name": "Hide Artifacts: Hidden Window",
+      "tactic": "stealth",
+      "rationale": "low — hidden-window execution leaves little discrete signal; hunt candidate combined with process-lineage and persistence context"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "low — process enumeration is ubiquitous and low-signal; hunt candidate only in tight process-lineage windows"
+    },
+    {
+      "technique_id": "T1680",
+      "technique_name": "Local Storage Discovery",
+      "tactic": "discovery",
+      "rationale": "low — drive/volume enumeration is low-signal and common; hunt candidate combined with subsequent collection activity"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "low — network-config queries are common admin/telemetry actions; low standalone detection value, hunt-only"
+    },
+    {
+      "technique_id": "T1090.003",
+      "technique_name": "Proxy: Multi-hop Proxy",
+      "tactic": "command-and-control",
+      "rationale": "low — the multi-hop relay is on adversary-controlled infrastructure and not visible from the victim; hunt/intel candidate via infrastructure mapping of the C2 tiers"
+    }
+  ],
+  "summary": {
+    "total": 38,
+    "detection": 24,
+    "hunt": 14
+  }
+}

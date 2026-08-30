@@ -1,0 +1,47 @@
+title: Cavern Manticore Web/Exchange Service Spawning Shell (Log4Shell/ProxyShell Exploitation)
+id: 3f8a1c2d-4b5e-4a6f-8c1d-2e3f4a5b6c71
+status: experimental
+description: |
+    Detects exploitation of internet-facing applications by Cavern Manticore (DEV-0270 / Cobalt Mirage /
+    TunnelVision) via anomalous child processes spawned by web/appliance service processes
+    (T1190 Exploit Public-Facing Application). The actor rapidly weaponizes Log4Shell
+    (CVE-2021-44228 / CVE-2021-45046) against VMware Horizon (ws_TomcatService.exe) and Exchange
+    ProxyShell/ProxyLogon (w3wp.exe), causing the web tier to spawn command interpreters and LOLBins.
+    Keys on the process-lineage anomaly of a web-server/Tomcat process launching a shell or living-off-the-land binary.
+references:
+    - https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.initial-access
+    - attack.t1190
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\ws_TomcatService.exe'
+            - '\tomcat9.exe'
+            - '\w3wp.exe'
+            - '\UMWorkerProcess.exe'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\bitsadmin.exe'
+            - '\certutil.exe'
+            - '\whoami.exe'
+            - '\net.exe'
+            - '\net1.exe'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Legitimate web applications or Exchange management scripts that intentionally shell out; validate the
+      command line and confirm it corresponds to sanctioned automation before dismissing
+level: high

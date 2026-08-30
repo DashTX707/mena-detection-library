@@ -1,0 +1,60 @@
+title: SideWinder C2 Communication to Look-Alike Government and Port Domains
+id: 9e3efd25-9e4b-4a1d-8c26-2b3c4d5e6f70
+status: experimental
+description: |
+    Detects outbound network connections to SideWinder (Rattlesnake / APT-C-17) command-and-
+    control and staging infrastructure - typosquatted / look-alike domains impersonating
+    regional governments, ministries and port authorities used to host lures and to run the
+    StealerBot encrypted C2 channel over HTTP/HTTPS. These domains are high-fidelity selectors;
+    the rule anchors on the outbound-connection behavior. Note SideWinder rotates infrastructure
+    aggressively (new variants often within five hours), so treat the domain list as a decaying
+    supplement and prioritise the behavioral rules in this pack.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1573.001
+    - mena-detection-library.sidewinder
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: true
+        DestinationHostname|endswith:
+            - 'portdedjibouti.live'
+            - 'mofa-gov-sa.direct888.net'
+            - 'depo-govpk.com'
+            - 'pncert.info'
+            - 'pmd-office.info'
+            - 'pmd-offc.info'
+            - 'ms-office.app'
+            - 'ms-office.pro'
+            - 'document-viewer.info'
+            - 'document-viewer.live'
+            - 'documentviewer.info'
+            - 'd0cumentview.info'
+            - 'dirctt888.info'
+            - 'dirctt888.com'
+            - 'dirctt88.info'
+            - 'directt88.com'
+            - 'defencearmy.pro'
+            - 'mod-kh.info'
+            - 'modpak.info'
+            - 'session-out.com'
+            - 'zeltech.live'
+            - 'ziptec.info'
+            - 'crontec.site'
+            - 'mteron.info'
+            - 'mevron.tech'
+            - 'veorey.live'
+            - 'debcon.live'
+            - 'aliyum.email'
+    condition: selection
+falsepositives:
+    - Minimal - these are dedicated actor look-alike domains; a match warrants immediate investigation
+level: high

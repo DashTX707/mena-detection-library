@@ -1,0 +1,604 @@
+{
+  "report_title": "CopyKittens (Slayer Kitten) — Operation Wilted Tulip Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "ClearSky & Trend Micro 'Operation Wilted Tulip: Exposing a cyber espionage apparatus' (July 2017, https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf); ClearSky 'CopyKittens Attack Group' (November 2015, https://www.clearskysec.com/copykitten-jpost/); MITRE ATT&CK Group CopyKittens G0052 (https://attack.mitre.org/groups/G0052/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "CopyKittens",
+    "mitre_id": "",
+    "mitre_canonical_name": "CopyKittens",
+    "aliases": [
+      "CopyKittens",
+      "Slayer Kitten",
+      "MITRE ATT&CK Group G0052"
+    ],
+    "related_clusters": [
+      "Iran-nexus cyber-espionage cluster (frequently discussed alongside, but distinct from, Rocket Kitten/Ajax Security Team)",
+      "Matryoshka RAT operators",
+      "Operation Wilted Tulip campaign infrastructure"
+    ],
+    "attribution": "Iran-nexus state-aligned cyber-espionage group operating since at least 2013, assessed by ClearSky and Trend Micro to act in support of Iranian state interests. Attribution to Iran is based on convergence of victimology (Iranian regional adversaries and diaspora/dissident-relevant targets), Persian-language artifacts, operational timezone, and infrastructure/tooling overlap. The group is characterized as technically unsophisticated but persistent — heavily reliant on copied/public code and open-source offensive tooling (hence the 'CopyKittens' name). Attribution to the Iranian state is assessed at medium-to-high confidence; the reporting is single-vendor-cluster (ClearSky/Trend Micro) primary research rather than a government advisory.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Israel",
+      "Saudi Arabia",
+      "Turkey",
+      "Jordan"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Germany"
+    ],
+    "targeted_sectors": [
+      "Government",
+      "Defense",
+      "Academia / research",
+      "Information technology / IT services",
+      "Municipalities",
+      "Journalists and media",
+      "Foreign-affairs ministries / diplomatic"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Operation Wilted Tulip",
+        "date": "2013 to 2017 (exposed July 2017)",
+        "summary": "Multi-year cyber-espionage campaign against government, defense, academic, IT and media targets across Israel, Saudi Arabia, Turkey, the U.S., Jordan and Germany. Initial access via strategic web compromise (watering holes on legitimate news/organization sites, including the Jerusalem Post), spearphishing with weaponized Office documents/links, and fake news/persona websites. Post-exploitation used the self-developed Matryoshka RAT (DNS-based C2 and DNS-tunnel exfiltration), the TDTESS backdoor (Windows service persistence, HTTP reverse shell), the Vminst lateral-movement tool, the NetSrv Cobalt Strike loader, the ZPP archiver, and public tools Cobalt Strike, Empire, Mimikatz, Metasploit and NBTScanner. Extensive typosquatting/CDN-masquerading C2 infrastructure (fake Akamai, Google/gstatic, Cloudflare, Twitter, Facebook, McAfee, DigiCert domains).",
+        "source_url": "https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"
+      },
+      {
+        "name": "CopyKittens Attack Group (ClearSky 2015)",
+        "date": "2013 to 2015",
+        "summary": "Earlier ClearSky exposure of the group's espionage against Israeli and regional targets, including compromise of the Jerusalem Post and use of the first-generation Matryoshka RAT, DNS-based C2, and social-engineering lures themed around news and government topics. Established the group's reliance on copied code and DNS-tunneling command and control.",
+        "source_url": "https://www.clearskysec.com/copykitten-jpost/"
+      }
+    ]
+  },
+  "threat_actors": ["CopyKittens", "Slayer Kitten"],
+  "targeted_regions": ["Israel", "Saudi Arabia", "Turkey", "Jordan", "United States", "Germany"],
+  "targeted_sectors": ["Government", "Defense", "Academia", "Information technology", "Municipalities", "Journalists / media", "Diplomatic / foreign affairs"],
+  "malware": [
+    "Matryoshka RAT (v1 and v2) — self-developed, DNS-based C2 and DNS-tunnel exfiltration",
+    "TDTESS backdoor — Windows service persistence, HTTP reverse shell with basic auth",
+    "Vminst — lateral movement tool",
+    "NetSrv — Cobalt Strike loader",
+    "ZPP — file compression/archiving console utility"
+  ],
+  "tooling_observed": [
+    "Matryoshka RAT (v1/v2)",
+    "TDTESS backdoor",
+    "Vminst",
+    "NetSrv (Cobalt Strike loader)",
+    "ZPP archiver",
+    "Cobalt Strike",
+    "Empire (PowerShell post-exploitation)",
+    "Mimikatz",
+    "Metasploit / Meterpreter",
+    "NBTScanner",
+    "rundll32.exe (LOLBin execution host)",
+    "Ionic.Zip / DotNetZip (bundled archiving library)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors registered large numbers of typosquatting/masquerading domains impersonating legitimate CDNs, security vendors and services to host C2 and blend malicious traffic — e.g. alkamaihd.com/.net (fake Akamai), akamaitechnology.tech, cloudflare-statics.com, gstatic.online/ssl-gstatic.online (fake Google), twiter-statics.info, fbstatic-a.space, mcafee-analyzer.com, digicert.online, windefender.org, cortana-search.com.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — adversary domain registration is off-victim; intel/hunt candidate via passive DNS, newly-registered-domain and typosquat/lookalike monitoring against brand strings (akamai, cloudflare, gstatic, twiter, fbstatic)",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1584.004",
+      "technique_name": "Compromise Infrastructure: Server",
+      "tactic": "resource-development",
+      "procedure_description": "Actors compromised legitimate third-party websites (including news outlets such as the Jerusalem Post and other organizational sites) to stage watering-hole redirects and host malicious content.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — compromise of third-party servers is off-victim from the perspective of the espionage target; intel/hunt candidate via web-defacement/injected-script monitoring on watched publisher sites",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://www.clearskysec.com/copykitten-jpost/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors developed custom malware including the Matryoshka RAT (v1 and v2), the TDTESS backdoor, the Vminst lateral-movement tool, the NetSrv Cobalt Strike loader and the ZPP archiver — frequently assembled from copied/public code.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)", "TDTESS backdoor", "Vminst", "NetSrv (Cobalt Strike loader)", "ZPP archiver"],
+      "detection_feasibility": "low — capability development is off-victim; intel candidate via malware-family clustering and code-reuse tracking",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1587.003",
+      "technique_name": "Develop Capabilities: Digital Certificates",
+      "tactic": "resource-development",
+      "procedure_description": "Actors used code-signing digital certificates to sign malware and used SSL/TLS certificates on masquerading C2 domains to increase apparent legitimacy of their infrastructure.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — certificate acquisition is off-victim; intel/hunt candidate via certificate-transparency monitoring and code-signing-certificate reputation tracking",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Actors created fake personas and social-media accounts and fake news/organization websites to support social-engineering and lure delivery.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — actor-controlled personas are off-victim; intel/brand-monitoring candidate",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "Actors obtained and operationalized publicly available offensive tools — Cobalt Strike, the Empire PowerShell post-exploitation framework, Mimikatz, Metasploit/Meterpreter, and NBTScanner — a defining characteristic of the group (reliance on copied/public tooling).",
+      "observed_tooling": ["Cobalt Strike", "Empire (PowerShell post-exploitation)", "Mimikatz", "Metasploit / Meterpreter", "NBTScanner"],
+      "detection_feasibility": "low — tool acquisition is off-endpoint; downstream tool use is where detection lands (intel/hunt candidate)",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Actors used strategic web compromise (watering-hole) attacks — injecting malicious redirect/exploit code into legitimate websites (e.g. news outlets) so that visitors from targeted organizations were profiled and served exploits/malware.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — drive-by redirects and exploit delivery are detectable at the victim via web-proxy/browser telemetry and IDS on anomalous redirects to attacker CDN-lookalike domains, though the injected code lives on third-party sites",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://www.clearskysec.com/copykitten-jpost/"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Actors sent spearphishing emails carrying weaponized Office documents (macro-enabled and exploit-laden) themed around news, government and defense topics to deliver first-stage payloads.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — malicious attachments are detectable at the mail gateway and via document-spawns-script/child-process telemetry (Word/Excel spawning rundll32/powershell), though initial lure content varies",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Actors sent spearphishing emails containing links to attacker-controlled fake websites and CDN-masquerading domains that delivered malware or harvested credentials.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — links to newly-registered lookalike domains are detectable at mail/proxy layers via URL reputation and lookalike-domain analytics",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Infection depended on a user opening a weaponized document and enabling macros (or running a delivered executable), which then executed the first-stage loader; one lure chain exploited CVE-2017-0199 in Office/WordPad.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — user opening a malicious document is detectable via office-application child-process creation and mark-of-the-web/enable-macro telemetry",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "stealth",
+      "procedure_description": "Actors used rundll32.exe to proxy-execute malicious DLL payloads (including Matryoshka components and Meterpreter injection), abusing the signed Windows binary to launch code and evade application controls.",
+      "observed_tooling": ["rundll32.exe (LOLBin execution host)", "Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "high — rundll32.exe executing DLLs from unusual paths, with anomalous exports/command lines, or as a child of Office is a well-characterized, high-fidelity detection via process-creation and command-line telemetry",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "procedure_description": "Actors used PowerShell — including the Empire framework and Cobalt Strike PowerShell payloads — for post-exploitation execution, staging and command execution.",
+      "observed_tooling": ["Empire (PowerShell post-exploitation)", "Cobalt Strike"],
+      "detection_feasibility": "high — Empire/Cobalt Strike PowerShell exhibits characteristic encoded/downloader command lines detectable via script-block and module logging plus known-framework signatures",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "tactic": "persistence",
+      "procedure_description": "The TDTESS backdoor installs itself as a Windows service to achieve persistence and run with elevated privileges, calling out to its C2 for instructions.",
+      "observed_tooling": ["TDTESS backdoor"],
+      "detection_feasibility": "high — new service installation (Event ID 7045 / 4697) for an unsigned or anomalous binary is directly observable and high-fidelity, especially correlated with the TDTESS on-disk artifacts",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "Matryoshka RAT establishes persistence via registry Run keys / autostart entries so the implant re-launches at logon.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "high — creation/modification of Run-key autostart values pointing to implant paths is directly observable via registry-modification auditing and autoruns baselining",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "Actors created scheduled tasks to persist and re-launch implant components (Matryoshka and loader payloads) across reboots.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); tasks launching payloads from user/temp paths are high-fidelity when baselined",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "procedure_description": "Actors signed malware with code-signing certificates to subvert trust controls and reduce detection/warning prompts on execution.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — signed malware defeats naive signature trust, but signer reputation, certificate-transparency correlation and revoked/unusual-issuer analytics make it detectable in mature environments",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1564.003",
+      "technique_name": "Hide Artifacts: Hidden Window",
+      "tactic": "stealth",
+      "procedure_description": "Actors ran components with hidden windows to conceal execution from the interactive user.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — hidden-window flags (e.g. PowerShell -WindowStyle Hidden, ShowWindow SW_HIDE) are detectable in command-line and API telemetry but require correlation to reduce noise",
+      "sources": ["https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "stealth",
+      "procedure_description": "Matryoshka injects a Meterpreter payload/shellcode into a running process (via rundll32-loaded components) to execute in the context of a legitimate process.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)", "Metasploit / Meterpreter", "rundll32.exe (LOLBin execution host)"],
+      "detection_feasibility": "medium — cross-process memory writes and remote-thread creation are detectable via EDR API telemetry, though injection is common and needs behavioral correlation",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "Implants read and modify registry keys for persistence and configuration storage.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "medium — registry writes to autostart/config locations are observable via registry auditing but blend with legitimate activity absent baselining",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Implants decode/deobfuscate embedded configuration, staged payloads and DNS-tunneled data at runtime.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "low — in-memory decode leaves little discrete signal; hunt candidate via memory forensics and payload-staging correlation",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Actors obfuscated payloads and encoded data within DNS queries/responses (Matryoshka DNS tunneling) to hinder analysis and evade content inspection.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "medium — abnormally long/high-entropy DNS labels and encoded payloads are detectable via DNS analytics and entropy heuristics",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Actors named C2 domains and hosts to impersonate trusted CDNs and services (Akamai, Google/gstatic, Cloudflare, Twitter, Facebook, McAfee, DigiCert, Windows Defender) and used update-themed hostnames (winupdate64, javaupdate, mswordupdate17) so traffic and artifacts appear benign.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — lookalike/typosquat hostnames (alkamaihd, twiter-statics, cloudflare-statics, gstatic.online) resolving to non-CDN infrastructure are detectable via DNS/proxy analytics and ASN/reputation mismatch",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "Matryoshka RAT records keystrokes to capture credentials and other sensitive typed data.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "low — user-mode keylogging generates little discrete host signal; hunt candidate via implant behavioral correlation and hook/API telemetry",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "Actors used Mimikatz to dump credentials from LSASS memory on compromised hosts to enable privilege escalation and lateral movement.",
+      "observed_tooling": ["Mimikatz"],
+      "detection_feasibility": "high — process access to lsass.exe and Mimikatz signatures/command lines are highly observable via EDR process-access and image-load telemetry",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1046",
+      "technique_name": "Network Service Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors used NBTScanner to enumerate NetBIOS/network services and identify hosts on the internal network for lateral movement.",
+      "observed_tooling": ["NBTScanner"],
+      "detection_feasibility": "medium — NBTScanner and NetBIOS sweep bursts are detectable via connection-fanout/east-west network analytics and known-scanner process signatures",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Actors enumerated remote hosts on the internal network (via NBTScanner and native commands) to map lateral-movement targets.",
+      "observed_tooling": ["NBTScanner"],
+      "detection_feasibility": "medium — host-enumeration commands and NetBIOS resolution bursts are detectable in command-line/network logs but common; value from recon-burst process-lineage correlation",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Matryoshka and loader components collect system information (OS, host configuration) for profiling and to tailor follow-on payloads.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "low — system-info queries are ubiquitous and low-signal; hunt candidate only within a tight recon-burst window",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Implants enumerate running processes to select injection targets and detect analysis/security tooling.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "low — process enumeration is common and low-signal; hunt candidate via process-lineage correlation",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "Matryoshka RAT captures screenshots of the victim desktop for espionage collection.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "low — screen capture generates little discrete signal; hunt candidate via implant behavioral correlation",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Matryoshka RAT collects and uploads files of interest from the local system, and steals stored passwords.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "low — local file collection is common; suspicious mainly via staging patterns and process-lineage context (hunt candidate)",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "collection",
+      "procedure_description": "Actors used the ZPP console compression utility (and bundled Ionic.Zip/DotNetZip) to archive collected data prior to exfiltration.",
+      "observed_tooling": ["ZPP archiver", "Ionic.Zip / DotNetZip (bundled archiving library)"],
+      "detection_feasibility": "medium — archive-utility execution producing large/compressed outputs before egress is detectable via process command-line and file-write telemetry",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1560.003",
+      "technique_name": "Archive Collected Data: Archive via Custom Method",
+      "tactic": "collection",
+      "procedure_description": "Actors used a custom archiving/compression method (ZPP) to bundle data with a self-developed routine rather than a standard off-the-shelf tool.",
+      "observed_tooling": ["ZPP archiver"],
+      "detection_feasibility": "low — custom archiving leaves nonstandard artifacts that evade signature-based archive detection; hunt candidate via file-format/entropy analysis of staged output",
+      "sources": ["https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Actors staged collected and archived data locally (temp/working directories) prior to exfiltration.",
+      "observed_tooling": ["ZPP archiver"],
+      "detection_feasibility": "medium — creation of archive files in staging directories preceding egress is detectable via file-write and access-pattern telemetry with baselining",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "procedure_description": "Actors used the Vminst tool and SMB/admin-share access to move laterally and deploy implants to additional hosts after harvesting credentials.",
+      "observed_tooling": ["Vminst", "Mimikatz"],
+      "detection_feasibility": "medium — admin-share access (ADMIN$/C$), remote file writes and Type-3 logons (Event ID 5140/4624) are detectable via SMB and authentication telemetry, though they blend with legitimate administration",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1071.004",
+      "technique_name": "Application Layer Protocol: DNS",
+      "tactic": "command-and-control",
+      "procedure_description": "Signature behavior: the Matryoshka RAT uses DNS as its command-and-control channel, encoding commands and data within DNS queries and responses to attacker nameservers (e.g. nameserver.win, dnsserv.host, gtld-servers.services / .solutions / .zone lookalikes, gsvr-static.co staged subdomains).",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "medium — DNS C2 is detectable via DNS analytics (high query volume to a single domain, abnormally long/high-entropy labels, TXT-record beaconing), but well-tuned DNS tunneling that mimics CDN nameserver traffic can blend — hunt-leaning candidate",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://www.clearskysec.com/copykitten-jpost/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "The TDTESS backdoor communicates with its C2 over HTTP, periodically calling the server for new instructions using HTTP basic authentication; Cobalt Strike/NetSrv beacons also use HTTP(S).",
+      "observed_tooling": ["TDTESS backdoor", "NetSrv (Cobalt Strike loader)", "Cobalt Strike"],
+      "detection_feasibility": "medium — HTTP beaconing with basic-auth headers and Cobalt Strike default profiles is detectable via proxy/TLS-metadata and JA3/beacon-interval analytics, though maskable via malleable profiles",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Data Encoding: Standard Encoding",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors encode C2 data (including within DNS tunneling) using standard encoding schemes to embed commands and exfiltrated data in protocol fields.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "medium — encoded blobs in DNS labels/HTTP fields are detectable via entropy and pattern analytics on C2 channels",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The TDTESS backdoor and Matryoshka RAT can download and execute additional files/payloads on the compromised host from C2.",
+      "observed_tooling": ["TDTESS backdoor", "Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "medium — downloads of secondary payloads following C2 contact are detectable via correlated network-fetch-then-file-write-then-execute telemetry",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1090",
+      "technique_name": "Proxy",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors routed and relayed C2 through intermediary infrastructure and CDN-masquerading domains to obscure the true C2 source.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — proxying via lookalike infrastructure is detectable when the lookalike domains/ASNs are baselined and correlated with process activity, but generic proxying blends with normal traffic",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://attack.mitre.org/groups/G0052/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Matryoshka RAT exfiltrates collected files, passwords, screenshots and keystrokes back through its established C2 channel.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "medium — exfiltration over the existing C2 channel is detectable via outbound-volume anomalies on the C2 flow, though it hides within established beaconing",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf"]
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "procedure_description": "Matryoshka uses DNS as an exfiltration channel, tunneling stolen data out inside DNS queries (a non-web, non-primary-C2 protocol) to blend with normal name-resolution traffic.",
+      "observed_tooling": ["Matryoshka RAT (v1/v2)"],
+      "detection_feasibility": "medium — DNS-tunnel exfiltration is detectable via per-domain query-volume, label-length and entropy analytics, but tuned tunneling that mimics CDN nameserver traffic can blend — hunt-leaning candidate",
+      "sources": ["https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf", "https://www.clearskysec.com/copykitten-jpost/"]
+    }
+  ],
+  "detection_signals": [
+    "rundll32.exe executing DLLs from user/temp/Downloads paths or as a child of an Office application (Matryoshka / Meterpreter proxy execution)",
+    "New Windows service installed for an unsigned or anomalous binary (TDTESS backdoor) — Event ID 7045 / 4697",
+    "Registry Run-key and scheduled-task autostart entries pointing to implant paths (Matryoshka persistence) — Event ID 4698 and registry auditing",
+    "Mimikatz LSASS access / credential dumping — process access to lsass.exe and known Mimikatz command lines",
+    "Empire and Cobalt Strike PowerShell payloads — encoded/downloader command lines via script-block and module logging",
+    "NBTScanner execution and NetBIOS sweep bursts on internal segments",
+    "DNS C2/tunneling to attacker nameservers — abnormally long/high-entropy DNS labels, high query volume to a single domain, TXT-record beaconing (Matryoshka)",
+    "HTTP beaconing with basic-auth headers and periodic call-outs (TDTESS backdoor); Cobalt Strike default/NetSrv beacon profiles",
+    "DNS resolution of CDN/service lookalike domains that do NOT map to the legitimate provider's ASN — alkamaihd[.]com/.net, akamaitechnology[.]tech, cloudflare-statics[.]com, gstatic[.]online, ssl-gstatic[.]online, twiter-statics[.]info, fbstatic-a[.]space, mcafee-analyzer[.]com, digicert[.]online, windefender[.]org, cortana-search[.]com",
+    "Update-themed masquerade hostnames beaconing: winupdate64[.]com/net/org, javaupdate[.]co, javaupdator[.]com, mswordupdate17[.]com, windowkernel[.]com, windowskernel14[.]com, win-update[.]com",
+    "Office document opening then spawning rundll32/powershell; CVE-2017-0199 exploit documents",
+    "Watering-hole redirects from legitimate news/organization sites to attacker CDN-lookalike domains",
+    "Archive-utility (ZPP / DotNetZip) output staged locally immediately before outbound DNS/HTTP data egress"
+  ],
+  "iocs": {
+    "ips": [
+      "104.200.128.161",
+      "104.200.128.173",
+      "104.200.128.183",
+      "104.200.128.195",
+      "104.200.128.205",
+      "104.40.211.100",
+      "107.181.160.138",
+      "107.181.174.21",
+      "141.105.67.58",
+      "141.105.69.69",
+      "146.0.73.109",
+      "146.0.73.110",
+      "146.0.73.111",
+      "185.118.65.230",
+      "185.118.66.114",
+      "185.92.73.194",
+      "188.120.224.198",
+      "188.120.247.151",
+      "217.12.201.240",
+      "217.12.218.242",
+      "31.192.105.16",
+      "31.192.105.17",
+      "31.192.105.28",
+      "5.34.180.252",
+      "5.34.181.13",
+      "62.109.2.52",
+      "80.179.42.37",
+      "80.179.42.44",
+      "86.105.18.5",
+      "93.190.138.137"
+    ],
+    "domains": [
+      "alkamaihd.com",
+      "alkamaihd.net",
+      "akamaitechnology.com",
+      "akamaitechnology.tech",
+      "akamitechnology.com",
+      "cloudflare-statics.com",
+      "cloudflare-analyse.com",
+      "gstatic.online",
+      "ssl-gstatic.online",
+      "gsvr-static.co",
+      "twiter-statics.info",
+      "img.twiter-statics.info",
+      "fb-statics.com",
+      "fbstatic-a.space",
+      "fbstatic-akamaihd.com",
+      "mcafee-analyzer.com",
+      "digicert.online",
+      "symcd.xyz",
+      "windefender.org",
+      "cortana-search.com",
+      "winfeedback.net",
+      "win-update.com",
+      "winupdate64.com",
+      "winupdate64.net",
+      "winupdate64.org",
+      "windowkernel.com",
+      "windowskernel14.com",
+      "main.windowskernel14.com",
+      "javaupdate.co",
+      "javaupdator.com",
+      "mswordupdate17.com",
+      "c.mswordupdate17.com",
+      "wheatherserviceapi.info",
+      "wethearservice.com",
+      "outlook360.net",
+      "outlook360.org",
+      "ipresolver.org",
+      "intelchip.org",
+      "cissco.net",
+      "nameserver.win",
+      "nsserver.host",
+      "dnsserv.host",
+      "updatedrivers.org",
+      "labs-cloudfront.com",
+      "f-tqn.com",
+      "cloud-analyzer.com",
+      "chromeupdates.online",
+      "cyburguide.com",
+      "fdgdsg.xyz",
+      "gtld-servers.services",
+      "gtld-servers.solutions",
+      "gtld-servers.zone",
+      "qoldenlines.net",
+      "mandalasanati.info",
+      "ynet.link",
+      "israelnewsagency.link",
+      "news-bbc.press",
+      "fetchnews-agency.news-bbc.press",
+      "primeminister-goverment-techcenter.tech",
+      "doucbleclick.tech",
+      "googlusercontent.center",
+      "gmailtagmanager.com",
+      "cdninstagram.center",
+      "azurewebsites.tech"
+    ],
+    "emails": [],
+    "hashes": [
+      "0feb0b50b99f0b303a5081ffb3c4446d",
+      "1ca03f92f71d5ecb5dbf71b14d48495c",
+      "1fba1876c88203a2ae6a59ce0b5da2a1",
+      "3676914af9fd575deb9901a8b625f032",
+      "435a93978fa50f55a64c788002da58a5",
+      "4a3d93c0a74aaabeb801593741587a02",
+      "62f8f45c5f10647af0040f965a3ea96d",
+      "871efc9ecd8a446a7aa06351604a9bf4",
+      "8b702ba2b2bd65c3ad47117515f0669c",
+      "a60a32f21ac1a2ec33135a650aa8dc71",
+      "ac29659dc10b2811372c83675ff57d23",
+      "b34721e53599286a1093c90a9dd0b789",
+      "bd38cab32b3b8b64e5d5d3df36f7c55a",
+      "d2c117d18cb05140373713859803a0d6",
+      "e319f3fb40957a5ff13695306dd9de25",
+      "1c43ed17acc07680924f2ec476d281c8c5fd6b4a",
+      "1f867be812087722010f12028beeaf376043e5d7",
+      "22fd59c534b9b8f5cd69e967cc51de098627b582",
+      "3c0ecb46d65dd57c33df5f6547f8fffb3e15722d",
+      "8968f439ef26f3fcded4387a67ea5f56ce24a003",
+      "026e9e1cb1a9c2bc0631726cacdb208e704235666042543e766fbd4555bd6950",
+      "165f8db9c6e2ca79260b159b4618a496e1ed6730d800798d51d38f07b3653952",
+      "1f6e267a9815ef88476fb8bedcffe614bc342b89b4c80eae90e9aca78ff1eab8",
+      "43fbf0cc6ac9f238ecdd2d186de397bc689ff7fcc8c219a7e3f46a15755618dc",
+      "7ad65e39b79ad56c02a90dfab8090392ec5ffed10a8e276b86ec9b1f2524ad31",
+      "8c8496390c3ad048f2a0a4031edfcdac819ee840d32951b9a1a9337a2dcbea25",
+      "9e5ab438deb327e26266c27891b3573c302113b8d239abc7f9aaa7eff9c4f7bb",
+      "a4adbea4fcbb242f7eac48ddbf13c814d5eec9220f7dce01b2cc8b56a806cd37",
+      "b01e955a34da8698fae11bf17e3f79a054449f938257284155aeca9a2d3815dd",
+      "f4aaac7d6aafc426d1adbe3b845a26c4110f7c9e54145444a8668718b84cbdb0"
+    ],
+    "cves": [
+      "CVE-2017-0199"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Primary sources are ClearSky & Trend Micro 'Operation Wilted Tulip' (July 2017) and ClearSky's earlier 'CopyKittens Attack Group' (Nov 2015), enriched with MITRE ATT&CK CopyKittens G0052. This is single-vendor-cluster primary research (ClearSky/Trend Micro) rather than a government advisory, so overall confidence is 'medium'; Iran-nexus attribution is medium-to-high per the reporting (victimology + Persian-language/timezone artifacts + infrastructure clustering). actor.mitre_id intentionally left empty per tasking (public MITRE group id G0052 is cited only in source/aliases, not as the actor id). ATT&CK normalization to THIS environment's bundled dataset: defense-evasion techniques use the env tactic slug 'stealth' (T1218.011 Rundll32, T1553.002 Code Signing, T1564.003 Hidden Window, T1055 Process Injection, T1112 Modify Registry, T1140, T1027, T1036.005); scheduled task uses T1053.005. Every technique_id was validated as a key in attack_dump.json (697 techniques) before inclusion — zero invalid IDs. Substitution note: T1656 Impersonation is ABSENT from this env's bundled dataset, so the fake-news/fake-persona social-engineering behavior is captured via T1585.001 (Establish Accounts) and T1583.001 (Acquire Domains) at resource-development instead. STRONGEST DETECTION SURFACE (detect-leaning, medium/high feasibility): T1218.011 rundll32 proxy execution, T1543.003 TDTESS Windows service, T1547.001/T1053.005 Matryoshka autostart persistence, T1003.001 Mimikatz LSASS, T1059.001 Empire/Cobalt Strike PowerShell, T1046 NBTScanner. HUNT-leaning (low feasibility, blends/off-victim): T1071.004/T1048.003 Matryoshka DNS C2 and DNS-tunnel exfiltration (blends with CDN nameserver traffic, off-victim staging infrastructure), T1090 proxy via CDN-lookalike infrastructure, T1583.001/T1584.004/T1585.001/T1587.x resource-development, T1056.001 keylogging, T1113 screen capture, T1560.003 custom archiving. IOCs are drawn verbatim from the Operation Wilted Tulip report appendices: a representative subset of 30 IPs, 64 C2/masquerading domains (typosquats impersonating Akamai/Google/Cloudflare/Twitter/Facebook/McAfee/DigiCert plus update-themed and DNS-tunnel nameserver domains) and 30 sample hashes (MD5/SHA1/SHA256) selected from the ~53 MD5 / 15 SHA1 / 27 SHA256 in the report; the full IOC set is larger in the source appendix. Legitimate/reference domains cited in the report body (fireeye.com, metasploit.com, checkpoint.com, censys.io, sqlmap.org, acunetix.com, bsi.bund.de, victim mfa.* diplomatic domains, and genuine CDN entries) were deliberately excluded as non-IOC. CVE-2017-0199 (Office/WordPad HTA execution) was the one exploited vulnerability enumerated. No YARA rules were present verbatim in the source, so yara_rules is empty (per rules, none are authored from scratch)."
+}

@@ -1,0 +1,44 @@
+title: SideWinder Loader Registry Run Key Persistence
+id: e383427a-e390-4f62-817b-708192a3b4c5
+status: experimental
+description: |
+    Detects creation or modification of a registry Run/RunOnce autostart value whose data
+    points at a user-writable path or a proxy execution binary, consistent with the SideWinder
+    (Rattlesnake / APT-C-17) ModuleInstaller establishing persistence for the Backdoor Loader
+    so StealerBot survives reboots. The actor rotates persistence mechanisms when behavioral
+    detections occur, so this rule keys on the autostart write pointing to AppData/ProgramData/
+    Temp or to mshta/rundll32/regsvr32/a DLL rather than on a fixed value name.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1547.001
+    - attack.t1112
+    - mena-detection-library.sidewinder
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_runkey:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+            - '\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run\'
+    selection_payload:
+        Details|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+            - 'mshta'
+            - 'rundll32'
+            - 'regsvr32'
+            - '.dll'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate applications that install a Run key pointing to a per-user AppData install location - baseline known software installers
+level: high

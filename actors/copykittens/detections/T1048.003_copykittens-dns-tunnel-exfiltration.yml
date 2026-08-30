@@ -1,0 +1,43 @@
+title: CopyKittens Matryoshka DNS-Tunnel Exfiltration via High-Entropy Labels
+id: 28c36351-9fe8-4096-a4c2-6d27e1ad4db5
+status: experimental
+description: |
+    Detects DNS-tunnel exfiltration by the CopyKittens (Slayer Kitten, G0052) Matryoshka RAT, which
+    encodes commands and stolen data inside abnormally long DNS labels to attacker nameservers
+    (T1048.003 Exfiltration Over Unencrypted Non-C2 Protocol, T1027 Obfuscated Files or Information,
+    T1132.001 Standard Encoding). Anchors on DNS-query telemetry (Sysmon EID 22) for very long
+    subdomain labels under the actor tunnel domains, characteristic of encoded data smuggled in the
+    left-most label.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://www.clearskysec.com/copykitten-jpost/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.stealth
+    - attack.command-and-control
+    - attack.t1048.003
+    - attack.t1027
+    - attack.t1132.001
+    - mena-detection-library.copykittens
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection_tunnel_domain:
+        QueryName|endswith:
+            - 'nameserver.win'
+            - 'nsserver.host'
+            - 'dnsserv.host'
+            - 'gtld-servers.services'
+            - 'gtld-servers.solutions'
+            - 'gtld-servers.zone'
+            - 'gsvr-static.co'
+    selection_long_label:
+        QueryName|re: '^[A-Za-z0-9+/=_-]{30,}\.'
+    condition: selection_tunnel_domain or selection_long_label
+falsepositives:
+    - Some CDNs, anti-spam and endpoint-security products use long encoded DNS labels - baseline the
+      apex domain, its resolved ASN and per-host query volume before dismissing the long-label heuristic
+level: medium

@@ -1,0 +1,30 @@
+title: StrongPity SFT Archive Deletion After Exfiltration
+id: 4a7e9c21-3b58-4d16-8f90-2c1d0a6b5e37
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM indicator removal where the exfiltration component deletes the
+    hidden .sft archive fragments from disk after sending them to the C2 (T1070.004 Indicator Removal:
+    File Deletion). The create-then-delete lifecycle of .sft files around a network egress event is a
+    strong anti-forensic signal. Anchored on file-delete telemetry (Sysmon Event ID 23/26) for the
+    actor-specific .sft artifact; best correlated with the T1027.013 staging write and non-standard-port
+    C2 rules.
+references:
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.strongpity
+logsource:
+    category: file_delete
+    product: windows
+detection:
+    selection:
+        TargetFilename|endswith: '.sft'
+    condition: selection
+falsepositives:
+    - Unrelated software that legitimately uses the .sft extension may delete such files - confirm the
+      deleting process and whether a matching .sft write and egress preceded the deletion before
+      dismissing
+level: high

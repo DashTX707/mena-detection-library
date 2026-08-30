@@ -1,0 +1,34 @@
+title: StrongPity File Searcher Config DLL Load For Document Collection
+id: 3e9c1b70-5a48-4d29-8f61-2b7c0a1d6e53
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM loading its File Searcher component libraries (prst.dll / wrlck.dll),
+    which drive recursive extension-based document enumeration and automated collection using their
+    encrypted .cab configs (T1083 File and Directory Discovery, T1119 Automated Collection). The File
+    Searcher recursively walks the file system for documents of interest and probes for encryption /
+    remote-admin tools (putty.exe, filezilla.exe, winscp.exe, mstsc.exe, mRemoteNG.exe). Anchored on the
+    module-load behavior of these actor-specific searcher DLLs, which precedes the bursty collection.
+references:
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+    - https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.collection
+    - attack.t1083
+    - attack.t1119
+    - mena-detection-library.strongpity
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection:
+        ImageLoaded|endswith:
+            - '\prst.dll'
+            - '\wrlck.dll'
+    condition: selection
+falsepositives:
+    - These DLL names are actor-specific and unlikely to be legitimate - confirm the loading process, the
+      DLL path and signature, and any co-located .cab config before dismissing
+level: high

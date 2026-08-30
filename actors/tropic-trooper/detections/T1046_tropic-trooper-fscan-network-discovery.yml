@@ -1,0 +1,43 @@
+title: Tropic Trooper Fscan Internal Network Service Discovery and Exploitation
+id: a1c3e58f-9b2d-4674-8e0a-3f1c7d5b2a49
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) running Fscan to enumerate and exploit the internal
+    network after establishing a web-shell foothold (T1046 Network Service Discovery, T1210 Exploitation
+    of Remote Services). Fscan performs live-host, port and service scanning and carries built-in
+    exploit checks used to identify lateral-movement targets. Keys on Fscan process execution and its
+    characteristic command-line flags (-h target range, -p port list, -np/-nobr). Anchor on the tool's
+    invocation pattern rather than a single hash.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.lateral-movement
+    - attack.t1046
+    - attack.t1210
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith: '\fscan.exe'
+    selection_orig:
+        OriginalFileName: 'fscan.exe'
+    selection_cmd:
+        CommandLine|contains|all:
+            - ' -h '
+            - ' -p '
+    selection_cmd_flags:
+        CommandLine|contains:
+            - ' -nobr'
+            - ' -nopoc'
+            - ' -np -no'
+    condition: selection_img or selection_orig or (selection_cmd and selection_cmd_flags)
+falsepositives:
+    - Authorized internal vulnerability scanning - restrict Fscan to sanctioned scanner hosts and
+      correlate with change/scan schedules; execution from a web server or workstation is the actor signal
+level: high

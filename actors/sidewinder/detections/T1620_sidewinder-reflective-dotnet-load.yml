@@ -1,0 +1,38 @@
+title: SideWinder Reflective .NET Assembly Loading by Script Host
+id: c1612058-c17e-4d40-af59-5e6f708192a3
+status: experimental
+description: |
+    Detects a script host (mshta.exe, wscript.exe, cscript.exe) loading the .NET CLR runtime
+    modules, indicating in-memory execution of a managed assembly. SideWinder (Rattlesnake /
+    APT-C-17) has its obfuscated JavaScript stage Base64-decode a serialized .NET
+    ModuleInstaller and subsequent StealerBot components and load/execute them directly in
+    memory rather than writing PE files to disk, reducing on-disk artifacts. Script
+    interpreters loading clr.dll/mscoree.dll is anomalous and characteristic of reflective
+    loading via the JavaScript-to-.NET bridge.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1620
+    - mena-detection-library.sidewinder
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+    selection_clr:
+        ImageLoaded|endswith:
+            - '\clr.dll'
+            - '\clrjit.dll'
+            - '\mscoree.dll'
+            - '\mscorlib.ni.dll'
+    condition: all of selection_*
+falsepositives:
+    - Rare legitimate enterprise scripts that host managed code via a script engine - baseline per environment
+level: high

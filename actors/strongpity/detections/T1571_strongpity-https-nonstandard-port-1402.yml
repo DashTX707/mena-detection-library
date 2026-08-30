@@ -1,0 +1,31 @@
+title: StrongPity Outbound HTTPS Over Non-Standard TCP Port 1402
+id: 5f1b8c30-2d97-4a64-8e19-3c7d0a2b6f51
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM first-tier command-and-control which uses TLS/HTTPS over the unusual
+    TCP port 1402 rather than 443 (T1571 Non-Standard Port, T1573.002 Encrypted Channel: Asymmetric
+    Cryptography, T1071.001 Web Protocols). An initiated outbound connection to port 1402 to an external
+    host is a crisp network signal of the StrongPity encrypted C2 channel. Anchored on the egress
+    connection behavior to the non-standard port; pairs with the SFT staging and exfil-egress rules.
+references:
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1571
+    - attack.t1573.002
+    - attack.t1071.001
+    - mena-detection-library.strongpity
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort: 1402
+    condition: selection
+falsepositives:
+    - A small number of legitimate applications use TCP 1402 - baseline expected internal destinations
+      and confirm the initiating process and external destination before dismissing
+level: high

@@ -1,0 +1,41 @@
+title: CopyKittens Mimikatz LSASS Memory Credential Access
+id: 5f028634-7408-4d25-9915-e6e3a1096d6d
+status: experimental
+description: |
+    Detects credential dumping from LSASS memory as performed by CopyKittens (Slayer Kitten, G0052) using
+    Mimikatz in Operation Wilted Tulip (T1003.001 LSASS Memory). Anchors on a process opening lsass.exe
+    with the high-permission access mask (0x1010 / 0x1410 / 0x1438 read+query used to read process
+    memory) via Sysmon process-access (EID 10), and supplements with characteristic Mimikatz command
+    lines. Excludes common benign LSASS readers.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://attack.mitre.org/groups/G0052/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+    - mena-detection-library.copykittens
+logsource:
+    category: process_access
+    product: windows
+detection:
+    selection_target:
+        TargetImage|endswith: '\lsass.exe'
+        GrantedAccess:
+            - '0x1010'
+            - '0x1410'
+            - '0x1438'
+            - '0x143a'
+            - '0x1fffff'
+    filter_benign:
+        SourceImage|endswith:
+            - '\wininit.exe'
+            - '\Windows\System32\lsass.exe'
+            - '\MsMpEng.exe'
+            - '\wmiprvse.exe'
+    condition: selection_target and not filter_benign
+falsepositives:
+    - EDR/AV and backup agents can read LSASS - baseline the source image, its path and signature against
+      the environment's known LSASS readers before dismissing
+level: high

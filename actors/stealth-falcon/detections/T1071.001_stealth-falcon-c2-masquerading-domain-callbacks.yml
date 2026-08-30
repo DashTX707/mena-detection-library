@@ -1,0 +1,50 @@
+title: Stealth Falcon C2 Callbacks to Masquerading CDN/Cache Domains
+id: 8c3e1d97-6b40-4f52-a9d8-2e5c7b1a4f36
+status: experimental
+description: |
+    Detects DNS resolution of Stealth Falcon / Win32/StealthFalcon command-and-control domains that
+    masquerade as CDN/cache/search/discovery services (T1071.001 Web Protocols, T1573.001 Symmetric
+    Cryptography). C2 traffic is carried over HTTP(S)/BITS and protected with RC4 to the actor's
+    lookalike domains. Keys on DNS queries to the documented C2 domains from the pack IOC set; anchor
+    is the resolution behavior of an endpoint to attacker-controlled masquerading infrastructure.
+references:
+    - https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/
+    - https://citizenlab.ca/2016/05/stealth-falcon/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - attack.t1573.001
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: dns_query
+    product: windows
+detection:
+    selection:
+        QueryName|endswith:
+            - 'footballtimes.info'
+            - 'vegetableportfolio.com'
+            - 'windowsearchcache.com'
+            - 'electricalweb.org'
+            - 'upnpdiscover.org'
+            - 'adhostingcache.com'
+            - 'adhostingcaches.com'
+            - 'simpleadbanners.com'
+            - 'clickstatistic.com'
+            - 'bestairlinepricetags.com'
+            - 'fasttravelclearance.com'
+            - 'yeastarr.com'
+            - 'amnkeysvc.com'
+            - 'amnkeysvcs.com'
+            - 'optimizedimghosting.com'
+            - 'incapsulawebcache.com'
+            - 'edgecacheimagehosting.com'
+            - 'ministrynewschannel.com'
+            - 'ministrynewsinfo.com'
+            - 'airlineadverts.com'
+    condition: selection
+falsepositives:
+    - These domains are attacker-registered lookalikes with no legitimate business use; any resolution
+      warrants investigation. Retire entries as infrastructure is sinkholed/expires
+level: high

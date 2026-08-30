@@ -1,0 +1,39 @@
+title: Volatile Cedar Pass-the-Hash NTLM Network Logon
+id: 9a83c943-baf9-4fdf-81c4-b09264de039d
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar pass-the-hash lateral movement (T1550.002 Use Alternate
+    Authentication Material: Pass the Hash). After harvesting credential material from the initially
+    compromised public-facing server, operators reuse NTLM hashes to authenticate to additional
+    systems. The technique surfaces as a Type-3 (network) logon that used NTLM authentication with
+    seclogo/NtLmSsp characteristics that are anomalous for the account - keyed here on Event ID 4624
+    LogonType 3, authentication package NTLM, and a non-machine, non-anonymous account. This is a
+    subtle signal that blends with admin activity; correlate with source-host anomalies and the
+    PsExec service-install rule for higher confidence.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1550.002
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 3
+        AuthenticationPackageName: 'NTLM'
+    filter_machine:
+        TargetUserName|endswith: '$'
+    filter_anon:
+        TargetUserName:
+            - 'ANONYMOUS LOGON'
+            - '-'
+    condition: selection and not 1 of filter_*
+falsepositives:
+    - Legitimate NTLM network logons in environments that still rely on NTLM (file shares, legacy apps,
+      admin tooling) - this rule is best used as a correlation/RBA contributor, not a standalone alert; baseline per account
+level: low

@@ -1,0 +1,43 @@
+title: Stealth Falcon RC4 Config Under HKCU Shell Extensions Registry Values
+id: 5a0d7f28-8c41-4e62-9b3a-1d6e4c2f8a93
+status: experimental
+description: |
+    Detects Stealth Falcon / Win32/StealthFalcon storing or reading its RC4-encrypted configuration
+    under HKCU\Software\Microsoft\Windows\CurrentVersion\Shell Extensions using filename-prefixed
+    values (T1112 Modify Registry, T1012 Query Registry, T1027.013 Encrypted/Encoded File). The
+    backdoor writes high-entropy blobs to values suffixed -MRUData/-MRUList (RC4 C2 domains),
+    -FontDisposition (victim ID), -IconDisposition (C2 selection), -IconPosition (sleep interval),
+    -PopupPosition (failed-connection counter), and reads them each cycle. Keys on the specific value
+    suffixes under the Shell Extensions key - the legitimate Shell Extensions subkey does not hold
+    these value names.
+references:
+    - https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/
+    - https://attack.mitre.org/groups/G0038/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.discovery
+    - attack.t1112
+    - attack.t1027.013
+    - attack.t1012
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains: '\Software\Microsoft\Windows\CurrentVersion\Shell Extensions\'
+    selection_value:
+        TargetObject|endswith:
+            - '-MRUData'
+            - '-MRUList'
+            - '-FontDisposition'
+            - '-IconDisposition'
+            - '-IconPosition'
+            - '-PopupPosition'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate Shell Extensions values do not use these malware filename-prefixed suffixes; investigate
+      any match, correlating the writing process and the value entropy
+level: high

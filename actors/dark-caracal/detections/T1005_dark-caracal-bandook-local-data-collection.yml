@@ -1,0 +1,49 @@
+title: Dark Caracal Bandook Local Data Collection From User Folders
+id: ff812273-cd62-4ef4-9c58-e8b937db165f
+status: experimental
+description: |
+    Detects staging/archiving of user document and picture folders by an anomalous RAT host process.
+    On Windows, Dark Caracal / Bandook extracted the complete contents of the Pictures folder and
+    other local files for exfiltration (T1005 Data from Local System). Keys on an archive/copy
+    operation targeting the user's Pictures/Documents/Desktop folders driven by the hollowed
+    iexplore.exe or a user-path loader - for example Compress-Archive or a recursive copy of those
+    profile folders by a process that is not a normal file-management or backup tool.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1005
+    - mena-detection-library.dark-caracal
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        - Image|endswith:
+              - '\powershell.exe'
+              - '\pwsh.exe'
+              - '\cmd.exe'
+              - '\xcopy.exe'
+              - '\robocopy.exe'
+        - ParentImage|endswith: '\iexplore.exe'
+    selection_target:
+        CommandLine|contains:
+            - '\Pictures'
+            - '\Documents'
+            - '\Desktop'
+    selection_action:
+        CommandLine|contains:
+            - 'Compress-Archive'
+            - 'copy'
+            - 'xcopy'
+            - 'robocopy'
+            - '.zip'
+            - '-Recurse'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate backup or file-sync software copying user folders - baseline approved backup tools
+      and scope to non-interactive/RAT-parented executions
+level: medium

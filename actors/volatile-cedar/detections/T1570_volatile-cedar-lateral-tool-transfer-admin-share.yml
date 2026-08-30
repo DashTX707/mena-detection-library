@@ -1,0 +1,45 @@
+title: Volatile Cedar Lateral Tool Transfer via Admin Share Executable Write
+id: a39ebc71-f2a1-4e0f-8817-21599569865b
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar lateral tool transfer (T1570). Operators move the
+    Explosive implant and supporting tooling from the initially compromised web server to other
+    internal hosts over SMB during lateral movement, frequently in the same operation as PsExec
+    execution. Keys on the Windows security "network share object accessed" event (Event ID 5145) for
+    a write-access request to an executable/DLL/script object on an administrative share (ADMIN$,
+    C$). Requires object-access auditing for file shares; provides east-west visibility into staged
+    tool drops.
+references:
+    - https://blog.checkpoint.com/security/volatilecedar/
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1570
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_event:
+        EventID: 5145
+        ShareName|contains:
+            - 'ADMIN$'
+            - 'C$'
+    selection_exe:
+        RelativeTargetName|endswith:
+            - '.exe'
+            - '.dll'
+            - '.bat'
+            - '.ps1'
+            - '.jsp'
+    selection_write:
+        AccessMask|contains:
+            - '0x2'
+            - '0x100'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate administrative software deployment, patching or backup jobs that write executables
+      over admin shares - correlate with the source host and account and known deployment tooling
+level: medium

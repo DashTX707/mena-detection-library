@@ -1,0 +1,39 @@
+title: Tropic Trooper SMB/Admin-Share Lateral Movement
+id: 62a8c14f-3d9b-47e5-8a1c-9f2e6b4d7c53
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) moving laterally to additional Windows hosts over
+    SMB after harvesting credentials (T1021.002 Remote Services: SMB/Windows Admin Shares). The actor
+    uses admin-share remote execution to distribute the loader and tooling. Keys on Security-log
+    network-share access events (Event ID 5140) to the default administrative shares (ADMIN$, C$) over a
+    Type-3 network logon. Anchor on remote access to the administrative shares; this is expected from
+    management tooling, so correlate with the source host and subsequent service installs.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.002
+    - mena-detection-library.tropic-trooper
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 5140
+        ShareName|contains:
+            - 'Admin$'
+            - 'C$'
+    filter_localhost:
+        IpAddress:
+            - '127.0.0.1'
+            - '::1'
+            - '-'
+    condition: selection and not filter_localhost
+falsepositives:
+    - Administrative tooling, patch deployment and backup agents routinely access ADMIN$/C$ - baseline
+      authorized management source hosts and accounts; unexpected source hosts writing to admin shares
+      followed by 7045 service installs are the actor signal
+level: medium

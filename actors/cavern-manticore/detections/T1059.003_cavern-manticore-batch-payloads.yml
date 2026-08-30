@@ -1,0 +1,34 @@
+title: Cavern Manticore Named Batch Script Execution (wininet/setup/nvContainerRecovery)
+id: 2d4f6a88-1b3c-4d5e-9f7a-8b6c5d4e3f24
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / Cobalt Mirage) executing its named .bat scripts via the Windows
+    command shell (T1059.003 Windows Command Shell). Observed batch files include wininet.bat (scheduled-task
+    payload), nvContainerRecovery.bat, and setup.bat (BitLocker encryption setup). Keys on cmd.exe launching
+    these actor-specific batch file names.
+references:
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        Image|endswith:
+            - '\cmd.exe'
+    selection_bat:
+        CommandLine|contains:
+            - 'wininet.bat'
+            - 'nvContainerRecovery.bat'
+            - 'setup.bat'
+    condition: selection_cmd and selection_bat
+falsepositives:
+    - setup.bat is a generic file name and may appear in legitimate software installers; confirm the file
+      path, contents and creating process (web/exploit lineage) before dismissing
+level: high

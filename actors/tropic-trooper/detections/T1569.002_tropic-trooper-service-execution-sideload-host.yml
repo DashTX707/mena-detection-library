@@ -1,0 +1,41 @@
+title: Tropic Trooper Service Execution of Side-Load Host Binary
+id: c58f3a1d-6b29-4e74-9f8a-2c1d7e4b5a63
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) executing its payload through the Service Control
+    Manager (T1569.002 System Services: Service Execution). The malicious WinStore service causes
+    services.exe to launch the DLL side-load host binary (inst.exe / WinStore.exe / colorcpl.exe) from a
+    non-standard path, which then side-loads the Crowdoor loader. Keys on the process lineage
+    services.exe -> host binary running out of a branding/Public data directory. A service-launched
+    binary executing from a user-writable data folder is the durable behavioral signal.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1569.002
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\services.exe'
+    selection_image:
+        Image|endswith:
+            - '\inst.exe'
+            - '\WinStore.exe'
+            - '\colorcpl.exe'
+    selection_path:
+        Image|contains:
+            - '\branding\data\'
+            - '\Public\Music\data\'
+            - '\Users\Public\'
+    condition: selection_parent and (selection_image or selection_path)
+falsepositives:
+    - Legitimate services launch signed binaries from system paths - a service starting inst.exe,
+      WinStore.exe or colorcpl.exe from a branding or Public data folder is anomalous; validate the
+      service name and binary signature
+level: high

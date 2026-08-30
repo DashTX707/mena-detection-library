@@ -1,0 +1,235 @@
+{
+  "actor": "Infy (Prince of Persia)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — inbound weaponized Office/archive attachments are observable at the mail gateway and endpoint (attachment type, macro presence, SFX execution), but lure content and sender infrastructure are largely off-endpoint and require mail-security correlation"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — user execution of an SFX/document dropper is detectable via process-creation lineage (Office/SFX spawning child processes, writes to temp) but depends on endpoint telemetry and baselining"
+    },
+    {
+      "technique_id": "T1137.001",
+      "technique_name": "Office Template Macros",
+      "tactic": "execution",
+      "rationale": "high — Office application spawning child processes and writing/executing a dropped file (fwupdate.temp) on document close is a high-fidelity macro-execution signal via process-lineage and Office child-process telemetry"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Visual Basic",
+      "tactic": "execution",
+      "rationale": "high — VBA macro activity is capturable via VBA/AMSI and Office macro logging, and the resulting file-drop-and-execute chain is observable in process telemetry"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation/modification of HKCU/HKLM Run keys pointing to loader binaries in user-writable paths is directly observable via registry-modification auditing (Sysmon EID 13) and autostart baselining"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational); a task launching helper.exe from a user-writable path is a strong, specific detection candidate"
+    },
+    {
+      "technique_id": "T1543.003",
+      "technique_name": "Windows Service",
+      "tactic": "persistence",
+      "rationale": "medium — new service installation (Event ID 7045) for an unknown binary is detectable via service-install telemetry but requires baselining to separate from legitimate software"
+    },
+    {
+      "technique_id": "T1218.011",
+      "technique_name": "Rundll32",
+      "tactic": "stealth",
+      "rationale": "high — rundll32.exe loading a DLL from a non-standard user-writable path (SnailDriver directory) with an unusual export is detectable via process-creation command-line and module-load (Sysmon EID 7) telemetry"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "DLL",
+      "tactic": "stealth",
+      "rationale": "medium — DLL hijack/side-load is detectable via module-load telemetry and signature/path anomalies, but requires image-load instrumentation and baselining of legitimate DLL search paths"
+    },
+    {
+      "technique_id": "T1036.002",
+      "technique_name": "Right-to-Left Override",
+      "tactic": "stealth",
+      "rationale": "medium — filename/extension masquerading and decoy files are detectable via file-name/extension anomaly and MOTW/attachment inspection, but overlap with benign content"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — filesystem/registry probing of AV product paths and enumeration of security products is detectable via file-access and process-behavior telemetry, but is subtle and needs correlation"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — password-protected/encrypted archive creation and high-entropy dropped files are detectable via file-entropy and archive-utility telemetry, but require dedicated scanning"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Keylogging",
+      "tactic": "collection",
+      "rationale": "medium — keylogging hooks are hard to see directly, but the created keystroke-log artifact files and their staging/exfiltration are detectable via file-write and process-behavior telemetry"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium — screenshot capture leaves image artifacts written to disk that, together with process behavior, are detectable via file-write telemetry and screen-capture API monitoring where instrumented"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "medium — microphone-access and recorded-audio file artifacts are detectable via file-write telemetry and audio-device API monitoring where available"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "medium — access to browser credential stores (Login Data / logins.json / vault files) is detectable via file-access and process telemetry when browser credential-store paths are monitored"
+    },
+    {
+      "technique_id": "T1539",
+      "technique_name": "Steal Web Session Cookie",
+      "tactic": "credential-access",
+      "rationale": "medium — reads of browser cookie databases are detectable via file-access telemetry on known cookie-store paths, correlated with the collecting process"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — targeted document collection by extension is detectable via file-access patterns and staging behavior, but blends with legitimate file usage without process-lineage correlation"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "medium — automated, periodic collection produces recurring file-write and staging patterns detectable via behavioral analytics, but requires baselining"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium — creation of password-protected staging archives before egress is detectable via file-write and archive-utility telemetry, especially when correlated with subsequent C2 upload"
+    },
+    {
+      "technique_id": "T1560.001",
+      "technique_name": "Archive via Utility",
+      "tactic": "collection",
+      "rationale": "medium — archive creation with password protection preceding network egress is detectable via process command-line and file-write telemetry"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — periodic HTTP(S) beaconing (fixed ~5-minute interval, POST to actor domains/IPs, signature-file fetch) is detectable via proxy/DNS/network telemetry and beacon-interval analytics, and pairs with the actor's C2 domain/IP IOCs"
+    },
+    {
+      "technique_id": "T1568.002",
+      "technique_name": "Domain Generation Algorithms",
+      "tactic": "command-and-control",
+      "rationale": "high — DGA-style lookups (short random-hex .space/.site/.win domains, high NXDOMAIN rates, low-reputation newly-registered domains) are detectable via DNS analytics and are a strong hunt-to-detect pivot for this actor"
+    },
+    {
+      "technique_id": "T1573.002",
+      "technique_name": "Asymmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — self-signed/anomalous TLS certificates and signature-file fetches over HTTPS are detectable via TLS/JA3 fingerprinting and certificate-anomaly analytics, but require TLS-metadata visibility"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — staged payload download following an initial beacon is detectable via file-write-after-network-download correlation and proxy telemetry, but depends on endpoint+network visibility"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound POST bodies of collected data to actor C2 are detectable via egress-volume anomalies and DLP/proxy correlation with the beaconing process, especially against known C2 IOCs"
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "rationale": "high — outbound FTP from a workstation to external servers (the actor's FTP IPs) is anomalous in most enterprises and detectable via network/proxy telemetry and egress-policy monitoring"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "System Checks",
+      "tactic": "stealth",
+      "rationale": "low — in-memory window-enumeration and environment checks leave little discrete host telemetry; hunt candidate via memory/behavioral analysis rather than event logs"
+    },
+    {
+      "technique_id": "T1010",
+      "technique_name": "Application Window Discovery",
+      "tactic": "discovery",
+      "rationale": "low — window enumeration is an in-process API behavior with minimal log footprint; hunt/behavioral candidate only"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — runtime string decoding is in-memory and largely invisible to standard logs; hunt candidate via memory/YARA analysis"
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "rationale": "low — clipboard reads are a common API with negligible log footprint; hunt candidate via behavioral correlation with keylog artifacts"
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "rationale": "low — removable-media enumeration is a common OS behavior with weak signal; hunt candidate via correlation with subsequent file collection from removable volumes"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — host-profiling API calls are common and low-signal; hunt candidate, meaningful mainly when correlated with beacon activity"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "low — process enumeration is ubiquitous and low-fidelity; hunt candidate only in tight process-lineage windows"
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Language Discovery",
+      "tactic": "discovery",
+      "rationale": "low — locale/keyboard-language queries are benign OS calls with negligible detection value; hunt/behavioral only"
+    },
+    {
+      "technique_id": "T1587.003",
+      "technique_name": "Digital Certificates",
+      "tactic": "resource-development",
+      "rationale": "low — certificate/key provisioning happens off-victim on adversary infrastructure; intel/hunt candidate via certificate-transparency and infrastructure tracking"
+    },
+    {
+      "technique_id": "T1132.001",
+      "technique_name": "Standard Encoding",
+      "tactic": "command-and-control",
+      "rationale": "low — encoded C2 content is opaque without deep protocol/decoder analysis; hunt candidate via traffic-pattern and decoder-based inspection"
+    }
+  ],
+  "summary": {
+    "total": 37,
+    "detection": 27,
+    "hunt": 10
+  }
+}

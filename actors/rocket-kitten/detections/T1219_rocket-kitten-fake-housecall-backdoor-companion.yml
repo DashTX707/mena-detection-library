@@ -1,0 +1,39 @@
+title: Rocket Kitten Fake HouseCall Backdoor and wsnd.exe Companion Uploader
+id: 86812c5a-203f-488e-a633-21873eb71a51
+status: experimental
+description: |
+    Detects execution of Rocket Kitten backdoor / tool-transfer artifacts from a user temp path:
+    the fake Trend Micro HouseCall installer (HousecallLauncher.exe) that establishes a backdoor
+    to C2 84.11.146.62 (T1219 remote access tools), and the separately delivered companion
+    uploader binary (wsnd.exe) dropped alongside the CWoolger keylogger to replace its built-in
+    uploader (T1105 ingress tool transfer). Keys on these actor-specific executables running from
+    Temp/AppData - a genuine Trend Micro HouseCall runs from its installed program path, not
+    %TEMP%.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1219
+    - attack.t1105
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith:
+            - '\HousecallLauncher.exe'
+            - '\wsnd.exe'
+    selection_path:
+        Image|contains:
+            - '\Temp\'
+            - '\AppData\Local\Temp'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate Trend Micro HouseCall run from its official installer directory (not %TEMP%);
+      validate the file signer, parent process and network destination before dismissing
+level: high

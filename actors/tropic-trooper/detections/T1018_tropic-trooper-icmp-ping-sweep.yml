@@ -1,0 +1,39 @@
+title: Tropic Trooper i.bat ICMP Ping-Sweep Remote System Discovery
+id: 3e8b2d17-6c4a-49f2-8b7d-1a5c9e3f4b26
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) enumerating reachable internal hosts with an ICMP
+    ping sweep (T1018 Remote System Discovery). The actor drops i.bat, which loops ping.exe across an
+    address range and redirects results to a text file for targeting. Keys on ping.exe spawned by a
+    batch/shell parent with single-echo flags and output redirection, and on the i.bat script name in
+    the parent command line. A burst of ping.exe executions from cmd.exe writing to a results file is
+    the durable behavioral signal.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1018
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ping:
+        Image|endswith: '\PING.EXE'
+        ParentImage|endswith:
+            - '\cmd.exe'
+            - '\w3wp.exe'
+    selection_flags:
+        CommandLine|contains:
+            - ' -n 1 '
+            - ' -w '
+    selection_bat:
+        ParentCommandLine|contains: 'i.bat'
+    condition: (selection_ping and selection_flags) or selection_bat
+falsepositives:
+    - Administrative connectivity checks and monitoring scripts use ping - a scripted sweep across many
+      hosts writing to a results file, especially spawned by a web server process, is the actor signal
+level: medium

@@ -1,0 +1,46 @@
+title: Dark Caracal Office Remote-Template Fetch to URL Shortener
+id: 52370127-307f-4443-bf7a-60c2a6d9c186
+status: experimental
+description: |
+    Detects a Microsoft Office application (winword.exe/excel.exe/powerpnt.exe) initiating an
+    outbound network connection to a URL-shortening service on document open. Dark Caracal's 2020
+    Bandook infection chain abuses the Office external-template feature (T1221 Template Injection):
+    the lure document itself is macro-free at rest and, when opened, fetches remote VBA macros
+    through TinyURL/Bitly redirects that resolve to actor payload hosting (T1566.002 Spearphishing
+    Link redirect). An Office productivity process reaching a link shortener at open time is
+    anomalous and is a strong lineage signal for remote-template macro delivery.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.initial-access
+    - attack.t1221
+    - attack.t1566.002
+    - mena-detection-library.dark-caracal
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_office:
+        Image|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+    selection_shortener:
+        DestinationHostname|contains:
+            - 'tinyurl.com'
+            - 'bit.ly'
+            - 'bitly.com'
+            - 'j.mp'
+            - 'cutt.ly'
+            - 'is.gd'
+            - 'rebrand.ly'
+    condition: all of selection_*
+falsepositives:
+    - Documents that legitimately embed shortened links which the user manually opens (the anchor
+      here is the Office process itself making the connection at open time, not a browser)
+    - Enterprise add-ins that resolve shortened links - baseline and allowlist per environment
+level: high

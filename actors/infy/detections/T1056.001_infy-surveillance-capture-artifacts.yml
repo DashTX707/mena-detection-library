@@ -1,0 +1,52 @@
+title: Infy/Tonnerre Surveillance Artifacts (Keylog/Screenshot/Audio) Written by Loader
+id: 9a1b3c5d-7e2f-4a68-8b0c-1d3e5f7a9bda
+status: experimental
+description: |
+    Detects Infy / Infy M / Tonnerre surveillance-collection artifacts (T1056.001 Input Capture:
+    Keylogging, T1113 Screen Capture, T1123 Audio Capture). All generations keylog, and Infy M/Tonnerre
+    capture screenshots and record microphone audio for espionage of dissidents and diplomatic targets.
+    Keys on the actor's loader/implant processes (rundll32, helper.exe, fwupdate.temp) writing keystroke
+    logs, screenshot images or recorded-audio files into the SnailDriver/temp staging area. Image/audio
+    or keylog files being written by a non-media loader process is the durable behavioral signal.
+references:
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1056.001
+    - attack.t1113
+    - attack.t1123
+    - mena-detection-library.infy
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\rundll32.exe'
+            - '\helper.exe'
+            - '\fwupdate.temp'
+    selection_artifact:
+        TargetFilename|endswith:
+            - '.bmp'
+            - '.jpg'
+            - '.jpeg'
+            - '.png'
+            - '.wav'
+            - '.mp3'
+            - '.klg'
+            - '.log'
+    selection_stage:
+        TargetFilename|contains:
+            - 'SnailDriver'
+            - '\ProgramData\'
+            - '\AppData\'
+            - '\Temp\'
+    condition: selection_proc and selection_artifact and selection_stage
+falsepositives:
+    - Legitimate applications invoked via rundll32 that cache images/logs under AppData - baseline
+      expected writers; screenshot/audio/keylog artifacts written by a loader in the SnailDriver staging
+      directory is the actor pattern
+level: high

@@ -1,0 +1,53 @@
+title: Infy/Foudre/Tonnerre HTTP C2 Beaconing and POST Exfiltration
+id: 5c7e9a1b-3d2f-4e68-8a0c-6b8d0f2a4c0d
+status: experimental
+description: |
+    Detects Infy / Foudre / Tonnerre HTTP(S) command-and-control and exfiltration (T1071.001 Application
+    Layer Protocol: Web Protocols, T1041 Exfiltration Over C2 Channel). Infy checks in to its HTTP C2 on
+    fixed ~5-minute intervals and POSTs system information; Foudre uses HTTP POST for exfiltration with an
+    HTTP-200 connectivity check to google.com immediately before beaconing; Tonnerre POSTs built-in
+    collections. Keys on HTTP requests to the actor's known C2 hostnames and on POST traffic to those
+    hosts. Anchor on the beaconing/POST behavior to known first-party C2 hosts; pair with beacon-interval
+    analytics (fixed ~300s cadence) for durable coverage as the IOC list decays.
+references:
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1071.001
+    - attack.t1041
+    - mena-detection-library.infy
+logsource:
+    category: proxy
+detection:
+    selection_c2_hosts:
+        c-uri|contains:
+            - 'updateserver1.com'
+            - 'updateserver3.com'
+            - 'bestupdateserver.com'
+            - 'bestupdateserver2.com'
+            - 'safehostonline.com'
+            - 'short-url20.com'
+            - 'bestwebstat.com'
+            - 'youripinfo.com'
+            - 'fastupdate.net'
+            - 'box4054.net'
+    selection_post_exfil:
+        cs-method: 'POST'
+        cs-host|contains:
+            - 'updateserver'
+            - 'bestupdateserver'
+            - 'safehostonline'
+            - '.space'
+            - '.site'
+            - '.win'
+    condition: selection_c2_hosts or selection_post_exfil
+falsepositives:
+    - Security-research or threat-intel validation traffic deliberately reaching these hosts - confirm
+      the requesting host is not an analyst/sandbox
+    - Domain/host list is IOC-based and decays - pair with fixed-interval beacon analytics for durable
+      coverage
+level: high

@@ -1,0 +1,57 @@
+title: Dark Caracal Bandook Raw TCP C2 and Exfiltration to Actor Domains
+id: 9b7e5227-5607-4620-ac90-395d9d10ff12
+status: experimental
+description: |
+    Detects outbound sessions from an anomalous RAT host process to known Dark Caracal / Bandook C2
+    domains. Bandook supports raw TCP-socket C2 (command @0002) in addition to HTTP payloads
+    (T1095 Non-Application Layer Protocol), encrypts C2 traffic with AES-CFB using a hardcoded IV
+    (T1573.001 Encrypted Channel: Symmetric Cryptography), and uploads collected files, screenshots,
+    keystrokes and media back over that same channel (command @0006, T1041 Exfiltration Over C2
+    Channel). Keys on a network connection to the listed actor C2 hostnames, especially from
+    iexplore.exe (hollowed) or a user-path loader.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.exfiltration
+    - attack.t1095
+    - attack.t1573.001
+    - attack.t1041
+    - mena-detection-library.dark-caracal
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationHostname|contains:
+            - 'ntsclouds.com'
+            - 'jtoolbox.org'
+            - 'idcmht.com'
+            - 'htname.info'
+            - 'vdscloud.net'
+            - 'mainsrv.top'
+            - 'olex.live'
+            - 'branchesv.com'
+            - 'megawoc.com'
+            - 'fikofiko.top'
+            - 'p2020.club'
+            - 'pronews.icu'
+            - '2ndprog.monster'
+            - 'ercuc.com'
+            - 'tancredis.com'
+            - 'mbcde.net'
+            - 'nopejohn.com'
+            - 'horizongb.com'
+            - 'ewsdocs.com'
+            - 'raysdoor.com'
+            - 'vsimperial.com'
+            - 'mxtms.com'
+    condition: selection
+falsepositives:
+    - Minimal - these are actor-attributed C2 domains; any hit warrants investigation. Revalidate
+      the domain list periodically as infrastructure is sinkholed or reassigned
+level: high

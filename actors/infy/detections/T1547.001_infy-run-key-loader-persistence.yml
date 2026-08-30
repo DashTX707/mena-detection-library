@@ -1,0 +1,42 @@
+title: Infy/Foudre Run-Key Loader Persistence
+id: b91c3d5e-7f28-4a16-9c0b-3e5d7a9f1b63
+status: experimental
+description: |
+    Detects Infy / Foudre / Tonnerre autostart persistence (T1547.001 Registry Run Keys / Startup
+    Folder). Across generations the malware writes its loader to an autostart Run key: Infy writes
+    itself to the autorun key and activates after reboot, the Foudre loader writes itself to the Run key
+    (staged under %ALLUSERSPROFILE%\AppData\SnailDriver V<version>), and Tonnerre also establishes a Run
+    key. Keys on registry-set events for a Run key whose value references a user-writable loader path,
+    rundll32 invocation, or the SnailDriver staging directory. A Run key pointing at a DLL loaded via
+    rundll32 from ProgramData/AppData is the durable actor signal.
+references:
+    - https://unit42.paloaltonetworks.com/unit42-prince-persia-ride-lightning-infy-returns-foudre/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.infy
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\CurrentVersion\Run\'
+            - '\CurrentVersion\RunOnce\'
+    selection_value:
+        Details|contains:
+            - 'SnailDriver'
+            - 'rundll32'
+            - '\ProgramData\'
+            - '\AppData\'
+            - 'fwupdate'
+            - 'helper.exe'
+    condition: selection_key and selection_value
+falsepositives:
+    - Legitimate software registering autostart entries under AppData/ProgramData - baseline expected
+      Run-key values per host; a rundll32/DLL loader pointed at a SnailDriver or temp path is the actor
+      pattern
+level: high

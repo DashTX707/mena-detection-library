@@ -1,0 +1,34 @@
+title: Cavern Manticore Root Certificate Installation via PowerShell/certutil
+id: b4d6f802-5c7e-4a9b-8d0f-1c3e5a7b9d54
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270) installing a custom root CA certificate to facilitate trusted
+    communications and evade inspection (T1553.004 Subvert Trust Controls: Install Root Certificate). The
+    actor imports a certificate into the machine Root store via PowerShell Import-Certificate
+    (-CertStoreLocation Cert:\LocalMachine\Root) or certutil -addstore Root. Keys on those root-store import
+    command lines.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1553.004
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        CommandLine|contains|all:
+            - 'Import-Certificate'
+            - 'LocalMachine\Root'
+    selection_certutil:
+        Image|endswith: '\certutil.exe'
+        CommandLine|contains: '-addstore'
+        CommandLine|contains: 'root'
+    condition: selection_ps or selection_certutil
+falsepositives:
+    - Enterprise PKI/MDM deployment of internal root CAs is legitimate; correlate with the certificate
+      subject/thumbprint and whether the deployment was expected before dismissing
+level: medium

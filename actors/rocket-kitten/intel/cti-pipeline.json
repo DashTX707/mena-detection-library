@@ -1,0 +1,500 @@
+{
+  "report_title": "Rocket Kitten (Group 41 / Operation Woolen-Goldfish / Thamar Reservoir / Ajax-adjacent) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Check Point 'Rocket Kitten: A Campaign With 9 Lives' (2015-11, https://blog.checkpoint.com/research/rocket-kitten-a-campaign-with-9-lives/ ; report PDF https://blog.checkpoint.com/wp-content/uploads/2015/11/rocket-kitten-report.pdf); Trend Micro 'Operation Woolen-GoldFish: When Kittens Go Phishing' (2015-03, https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf); Trend Micro 'The Spy Kittens Are Back: Rocket Kitten 2' (2015-09, https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf); ClearSky 'Thamar Reservoir' (2015-06, https://www.clearskysec.com/thamar-reservoir/ , PDF https://www.clearskysec.com/wp-content/uploads/2015/06/Thamar-Reservoir-public1.pdf); MITRE ATT&CK Group 'Ajax Security Team' G0130 (Rocket Kitten cluster, https://attack.mitre.org/groups/G0130/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "Rocket Kitten",
+    "mitre_id": "",
+    "mitre_canonical_name": "Ajax Security Team (Rocket Kitten cluster)",
+    "aliases": [
+      "Rocket Kitten",
+      "Group 41",
+      "Operation Woolen-Goldfish",
+      "Woolen-GoldFish",
+      "Thamar Reservoir (campaign)",
+      "TEMP.Beanie",
+      "Wool3n.H4t / Woole3n.H4t (operator handle)",
+      "Ajax Security Team (MITRE G0130 cluster alias)",
+      "Flying Kitten (adjacent/overlapping)",
+      "Operation Saffron Rose (adjacent/overlapping)"
+    ],
+    "related_clusters": [
+      "Charming Kitten (distinct but frequently confused Iran-nexus espionage cluster; separate actor)",
+      "Ajax Security Team / Flying Kitten / Operation Saffron Rose (MITRE folds Rocket Kitten and these into G0130; infrastructure/persona overlap, honestly noted as adjacent not identical)",
+      "Thamar Reservoir (ClearSky-tracked campaign attributed to this group)"
+    ],
+    "attribution": "Iran-nexus cyber-espionage group, assessed as aligned with / operating on behalf of the Islamic Revolutionary Guard Corps (IRGC). Attribution rests on convergence of: Farsi-language artifacts and operator handles (Wool3n.H4t / 'Masoud_pk', 'Yaser'), targeting sets of clear Iranian state interest (Israeli defense and academia, Saudi Arabia, and Iranian dissidents/journalists/human-rights activists at home and in diaspora), Iranian hosting/registration pivots (an inactive Iran-hosted blog for Wool3n.H4t; use of the free Iranian AV-scanning service av.zerodays.ir to pre-test samples), and re-use of the same custom GHOLE/CWoolger tooling and personas across campaigns. MITRE tracks the cluster under Ajax Security Team (G0130). Overlaps with Flying Kitten / Operation Saffron Rose are acknowledged honestly as adjacent (shared code/persona lineage), and Rocket Kitten is DISTINCT from Charming Kitten despite frequent conflation. Sophistication is moderate: mature enough targeting/social-engineering but amateur tooling (macro delivery, plaintext-then-weakly-encrypted FTP credentials, leaked debug PDB paths).",
+    "attribution_confidence": "medium-high",
+    "targeted_regions_mena": [
+      "Israel",
+      "Saudi Arabia",
+      "Iran (domestic dissidents, academics, journalists)",
+      "United Arab Emirates",
+      "Yemen",
+      "Iraq"
+    ],
+    "targeted_regions_global": [
+      "United States",
+      "Europe (Germany, and European government/NATO-adjacent officials)",
+      "Iranian diaspora (worldwide)"
+    ],
+    "targeted_sectors": [
+      "Defense / defense-industrial base",
+      "Academia / scientists / scholars / research institutes",
+      "Government / ministry officials",
+      "Media / journalists",
+      "Human-rights activists and dissidents",
+      "Nuclear / missile / policy experts"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Operation Woolen-GoldFish / The GHOLE Campaign",
+        "date": "2014 to early 2015",
+        "summary": "Spear-phishing of Israeli and European targets with malicious Microsoft Office (Excel/PowerPoint) attachments and OneDrive-hosted decoys. Opening the Office file and enabling a VBA macro drops and executes a GHOLE backdoor DLL (a modified Core Impact agent) that beacons over HTTP to a hard-coded C2 IP (e.g. 83.170.33.60) using GET /index.php?c=&r=&u=&t= with a 256-bit key. A OneDrive link delivered 'Iran's Missiles Program.ppt.exe' (PowerPoint icon, double extension) which drops a benign decoy and silently installs the CWoolger (TSPY_WOOLERG) keylogger. Attribution artifacts include the operator handle Wool3n.H4t and PDB path C:\\Users\\Wool3n.H4t\\...\\CWoolger\\Release\\CWoolger.pdb.",
+        "source_url": "https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"
+      },
+      {
+        "name": "The Spy Kittens Are Back (Rocket Kitten 2)",
+        "date": "May to September 2015",
+        "summary": "Continued Middle East espionage. New TSPY_WOOLERG keylogger variants (debug strings 'D:\\Yaser Logers\\...') add a basic encryption layer over the previously plaintext hard-coded FTP credentials and exfiltrate keystroke logs via FTP to 107.6.172.54/woolen/ (earlier 107.6.181.116). Heavy persona/social-engineering: fake Facebook profiles (e.g. 'mah.asf.xxx'), impersonation of a security researcher via a spoofed sender clearsky.cybersec.group@gmail.com, and a fake Trend Micro HouseCall installer (HousecallLauncher.exe) beaconing to 84.11.146.62.",
+        "source_url": "https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"
+      },
+      {
+        "name": "Thamar Reservoir",
+        "date": "2014 to 2015 (activity as recent as Oct 2015)",
+        "summary": "ClearSky-tracked campaign (named for target Thamar E. Gindin) using coordinated spear-phishing, fake-login credential-harvesting pages spoofing webmail/portal logins, and phone/email social-engineering with tailored fake identities against Middle East scholars, scientists, journalists and activists. Overlapping infrastructure and GHOLE malware tie it to Rocket Kitten.",
+        "source_url": "https://www.clearskysec.com/thamar-reservoir/"
+      },
+      {
+        "name": "Rocket Kitten: A Campaign With 9 Lives (operational database exposure)",
+        "date": "2015 (activity through Oct 2015)",
+        "summary": "Check Point/ClearSky obtained the group's target-management database, revealing ~1,600 targets: scholars, scientists, CEOs, ministry officials, education institutes, media/journalists and human-rights activists across the Middle East, Europe and the US. Confirmed persona-driven spear-phishing, phishing domains and a phishing server, and minimal tooling/domain changes even after public exposure.",
+        "source_url": "https://blog.checkpoint.com/research/rocket-kitten-a-campaign-with-9-lives/"
+      }
+    ]
+  },
+  "threat_actors": ["Rocket Kitten", "Group 41", "Operation Woolen-Goldfish", "Thamar Reservoir", "Wool3n.H4t", "Ajax Security Team (cluster)"],
+  "targeted_regions": ["Israel", "Saudi Arabia", "Iran", "United Arab Emirates", "United States", "Europe", "Iranian diaspora"],
+  "targeted_sectors": ["Defense", "Academia / research", "Government", "Media / journalists", "Human-rights activists / dissidents", "Nuclear / missile / policy experts"],
+  "malware": [
+    "GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)",
+    "CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)",
+    "X2KM_DROPPR (malicious macro Office-document dropper)",
+    "MPKBot (Rocket Kitten implant family)",
+    "Fake Trend Micro HouseCall installer (HousecallLauncher.exe backdoor installer)"
+  ],
+  "tooling_observed": [
+    "Malicious Microsoft Office (Excel / PowerPoint) documents with VBA macros",
+    "VBScript (wsc.vbs) persistence installer",
+    "Microsoft OneDrive (payload hosting)",
+    "Fake login / credential-harvesting web pages (webmail and portal spoofs)",
+    "Fake social-media profiles (Facebook) and webmail personas",
+    "Core Impact Pro (commercial pentest tool, modified into GHOLE)",
+    "FTP (hard-coded credentials for keylog exfiltration)",
+    "av.zerodays.ir (free Iranian AV multiscanner, used to pre-test detection)",
+    "URL-shortened / OneDrive links in phishing"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1589",
+      "technique_name": "Gather Victim Identity Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors research individual targets (names, roles, email addresses, phone numbers, professional interests) to craft highly tailored spear-phishing lures and fake identities; the recovered operational database held ~1,600 profiled targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — victim-side profiling and OSINT occur off-victim and are not endpoint-observable; intel/hunt candidate via targeted-user awareness and external exposure monitoring",
+      "sources": ["https://blog.checkpoint.com/research/rocket-kitten-a-campaign-with-9-lives/", "https://www.clearskysec.com/thamar-reservoir/"]
+    },
+    {
+      "technique_id": "T1591",
+      "technique_name": "Gather Victim Org Information",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors identify and prioritize target organizations of Iranian state interest — Israeli defense and academic institutions, ministries, research institutes, media outlets and human-rights NGOs — to focus espionage collection.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — organizational targeting research is off-victim; intel candidate only",
+      "sources": ["https://blog.checkpoint.com/research/rocket-kitten-a-campaign-with-9-lives/"]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Actors create fake social-media personas (e.g. Facebook profiles communicating in perfect Farsi/Hebrew) to build rapport with targets; when a profile is taken down they recreate it (e.g. 'mah.asf.xxx' where xxx is a random number). One fake profile even sent a friend request to a ClearSky researcher.",
+      "observed_tooling": ["Fake social-media profiles (Facebook) and webmail personas"],
+      "detection_feasibility": "low — actor-controlled social accounts are off-victim; brand/impersonation-monitoring and user-reporting candidate",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1585.002",
+      "technique_name": "Establish Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register webmail persona accounts to correspond with targets and send lures (e.g. a Yahoo account '[name]_asf@yahoo.com', and a Gmail sender clearsky.cybersec.group@gmail.com impersonating the ClearSky research group).",
+      "observed_tooling": ["Fake social-media profiles (Facebook) and webmail personas"],
+      "detection_feasibility": "low — attacker-controlled sender accounts are off-victim; inbound-mail sender/impersonation analytics apply at delivery time",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1586.002",
+      "technique_name": "Compromise Accounts: Email Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Actors impersonate real, recognizable people (a known Israeli engineer, a defense-field figure) and are assessed to have compromised at least one such person's computer to steal genuine documents (identical file metadata) subsequently reused as authentic-looking lures against other Israeli targets.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — compromise/impersonation of a third party's identity and mailbox is off the defender's network; intel/hunt candidate",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Actors register phishing/look-alike domains and operate a phishing server for credential-harvesting fake-login pages; the group made only minimal changes to these domains even after public exposure.",
+      "observed_tooling": ["Fake login / credential-harvesting web pages (webmail and portal spoofs)"],
+      "detection_feasibility": "low — adversary domain registration is off-victim; intel/hunt candidate via newly-registered/look-alike-domain monitoring",
+      "sources": ["https://blog.checkpoint.com/research/rocket-kitten-a-campaign-with-9-lives/", "https://www.clearskysec.com/thamar-reservoir/"]
+    },
+    {
+      "technique_id": "T1583.006",
+      "technique_name": "Acquire Infrastructure: Web Services",
+      "tactic": "resource-development",
+      "procedure_description": "Actors abuse legitimate cloud/web services — notably Microsoft OneDrive to host malicious payloads — to bypass email attachment scanning, and used the free Iranian multiscanner av.zerodays.ir to pre-test their samples' detection.",
+      "observed_tooling": ["Microsoft OneDrive (payload hosting)", "av.zerodays.ir (free Iranian AV multiscanner, used to pre-test detection)"],
+      "detection_feasibility": "low — off-victim staging on third-party services; intel/hunt candidate",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors upload malicious executables to cloud storage for delivery — e.g. an archive containing 'Iran's Missiles Program.ppt.exe' (PowerPoint icon, double extension) staged on a OneDrive link sent to targets.",
+      "observed_tooling": ["Microsoft OneDrive (payload hosting)"],
+      "detection_feasibility": "low — payload staged on attacker-controlled cloud is off-victim until delivery; intel/hunt candidate",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Actors developed the custom CWoolger keylogger (TSPY_WOOLERG); leaked PDB debug paths (C:\\Users\\Wool3n.H4t\\...\\CWoolger\\Release\\CWoolger.pdb and D:\\Yaser Logers\\...) tie authorship to the operator handles Wool3n.H4t and Yaser.",
+      "observed_tooling": ["CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)"],
+      "detection_feasibility": "low — malware development is off-victim; the compiled artifact's runtime behavior is where detection lands — intel candidate",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "Actors obtain and repurpose commercial/off-the-shelf tooling — the GHOLE backdoor is a modified Core Impact Pro pentest agent.",
+      "observed_tooling": ["Core Impact Pro (commercial pentest tool, modified into GHOLE)"],
+      "detection_feasibility": "low — tool acquisition is off-endpoint; downstream deployment is where detection lands — intel candidate",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector: tailored spear-phishing emails carrying malicious Microsoft Office attachments (Excel spreadsheets, PowerPoint, or PDF decoys) themed to the target's professional interests; opening the file and enabling macros drops the GHOLE backdoor.",
+      "observed_tooling": ["Malicious Microsoft Office (Excel / PowerPoint) documents with VBA macros"],
+      "detection_feasibility": "medium — inbound Office attachments with macros are inspectable at the mail gateway/sandbox; endpoint detection lands at the macro-execution stage rather than delivery",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://www.clearskysec.com/thamar-reservoir/"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Actors send links (including OneDrive links) that lead to a malicious executable disguised with a PowerPoint icon ('Iran's Missiles Program.ppt.exe'), and links to fake-login credential-harvesting pages, storing payloads online to bypass email attachment detection.",
+      "observed_tooling": ["Microsoft OneDrive (payload hosting)", "Fake login / credential-harvesting web pages (webmail and portal spoofs)"],
+      "detection_feasibility": "medium — outbound clicks to newly-seen cloud/look-alike URLs are detectable at proxy/mail-URL-rewrite, though attribution requires infrastructure context",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://www.clearskysec.com/thamar-reservoir/"]
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "procedure_description": "Actors initiate contact and deliver lures via non-email services — fake Facebook profiles and social-media messaging — building trust in Farsi/Hebrew before delivering malicious files or links.",
+      "observed_tooling": ["Fake social-media profiles (Facebook) and webmail personas"],
+      "detection_feasibility": "low — third-party social-platform contact is off-victim and outside enterprise telemetry; user-awareness/hunt candidate",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Compromise requires the user to open the Office attachment and enable the embedded macro (which drops/executes the GHOLE DLL), or to run the disguised '.ppt.exe' which drops a benign decoy while silently installing the CWoolger keylogger.",
+      "observed_tooling": ["Malicious Microsoft Office (Excel / PowerPoint) documents with VBA macros", "GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)"],
+      "detection_feasibility": "high — Office applications (winword/excel/powerpnt) spawning script/dropper child processes and writing a DLL/EXE, and execution of double-extension .ppt.exe, are high-fidelity endpoint signals via process-lineage and image-load telemetry",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "Targets are induced to click OneDrive/phishing links; in one analyzed case attackers replied in Hebrew to confirm an email's authenticity, convincing the target to proceed.",
+      "observed_tooling": ["Microsoft OneDrive (payload hosting)"],
+      "detection_feasibility": "medium — link-click to file-download followed by execution is reconstructable from proxy + endpoint telemetry, but the click itself blends with normal browsing",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1137.001",
+      "technique_name": "Office Application Startup: Office Template Macros",
+      "tactic": "execution",
+      "procedure_description": "Malicious Office documents embed VBA macros that, when enabled, drop the GHOLE backdoor DLL to disk and execute it; the delivery documents are detected as X2KM_DROPPR.",
+      "observed_tooling": ["Malicious Microsoft Office (Excel / PowerPoint) documents with VBA macros", "X2KM_DROPPR (malicious macro Office-document dropper)"],
+      "detection_feasibility": "high — VBA macro execution that writes and launches a PE is detectable via Office macro-runtime (AMSI), VBA-project inspection and Office-spawns-child-process rules",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "Delivery uses VBA macros in Office files, and the CWoolger keylogger drops a VBScript 'wsc.vbs' in %TEMP% that installs its persistence mechanism.",
+      "observed_tooling": ["VBScript (wsc.vbs) persistence installer"],
+      "detection_feasibility": "high — creation/execution of wsc.vbs in %TEMP% via wscript/cscript and macro VBA activity are captured by script-block/AMSI and process-creation logging",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "The CWoolger keylogger copies itself to %TEMP%\\NTSuser.exe, creates a 'woolger' mutex, and its wsc.vbs installs a Startup-folder shortcut named 'WinDefender' (using the Notepad icon) that launches the malware at logon.",
+      "observed_tooling": ["CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)", "VBScript (wsc.vbs) persistence installer"],
+      "detection_feasibility": "high — a new Startup-folder shortcut named 'WinDefender' pointing to %TEMP%\\NTSuser.exe (and the 'woolger' mutex) are actor-specific, high-fidelity persistence detections via file/registry and process telemetry",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "procedure_description": "Persistence is implemented as a .lnk shortcut ('WinDefender', spoofing the Notepad icon) placed in the Startup folder that resolves to the keylogger binary in %TEMP%.",
+      "observed_tooling": ["VBScript (wsc.vbs) persistence installer"],
+      "detection_feasibility": "high — creation of a Startup .lnk whose target resides in %TEMP% is a rare, high-fidelity signal via file-creation and shortcut-target auditing",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "CWoolger enables keylogging via the SetWindowsHookExW API and records all keystrokes to %TEMP%\\wlg.dat (later variants %TEMP%\\AdobeARM.log / %TEMP%\\AdobeARMM.log) in a '[Window Title] - [Application Name] ([Language])' + context format, using SetTimer to schedule uploads.",
+      "observed_tooling": ["CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)"],
+      "detection_feasibility": "high — creation/growth of %TEMP% log files named wlg.dat / AdobeARM.log / AdobeARMM.log by a non-Adobe process, plus SetWindowsHookExW keyboard hooks from an unsigned %TEMP% binary, are strong host detections",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "procedure_description": "Actors operate fake-login / credential-harvesting web pages (spoofing webmail and institutional portal logins) linked from spear-phishing messages to capture target account credentials; a dedicated phishing server supported this.",
+      "observed_tooling": ["Fake login / credential-harvesting web pages (webmail and portal spoofs)"],
+      "detection_feasibility": "low — the harvesting page is off-victim adversary infrastructure; hunt candidate via mail-URL/proxy telemetry to look-alike login domains and impossible-travel logons after credential theft",
+      "sources": ["https://www.clearskysec.com/thamar-reservoir/", "https://blog.checkpoint.com/research/rocket-kitten-a-campaign-with-9-lives/"]
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "procedure_description": "Fake login pages mimicking legitimate webmail/portal sign-in forms capture the credentials entered by targets, feeding the group's account-compromise objectives.",
+      "observed_tooling": ["Fake login / credential-harvesting web pages (webmail and portal spoofs)"],
+      "detection_feasibility": "low — credential capture occurs on attacker-hosted pages outside defender telemetry; hunt via post-theft anomalous-authentication analytics",
+      "sources": ["https://www.clearskysec.com/thamar-reservoir/"]
+    },
+    {
+      "technique_id": "T1036.008",
+      "technique_name": "Masquerading: Masquerade File Type",
+      "tactic": "stealth",
+      "procedure_description": "The delivery executable uses a double extension and spoofed icon ('Iran's Missiles Program.ppt.exe' with a PowerPoint icon) to appear as a document, and the GHOLE DLL exports a benign-looking function named 'function' instead of the telltale 'gholee' to evade detection.",
+      "observed_tooling": ["GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)"],
+      "detection_feasibility": "medium — double-extension executables with document icons and PE files masquerading as .ppt are detectable via file-type/extension-mismatch and icon-resource heuristics, but need scanning coverage",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Malware and its artifacts adopt legitimate-looking names to blend in: keylogger drops as NTUSER.dat{GUID}.exe and %TEMP%\\NTSuser.exe, persists as 'WinDefender', logs to AdobeARM.log/AdobeARMM.log, and one installer masquerades as Trend Micro HouseCall (HousecallLauncher.exe).",
+      "observed_tooling": ["CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)", "Fake Trend Micro HouseCall installer (HousecallLauncher.exe backdoor installer)"],
+      "detection_feasibility": "medium — names mimicking system/AV/Adobe artifacts (NTUSER.dat*.exe, NTSuser.exe, WinDefender, AdobeARM*.log, HousecallLauncher.exe) in %TEMP%/startup are detectable via name/path/signer baselining",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Later CWoolger variants add a basic encryption layer to hide the hard-coded FTP credentials (earlier versions stored them in clear text); GHOLE carries a 256-byte (2,048-bit) key used to obfuscate network communications.",
+      "observed_tooling": ["CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)", "GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)"],
+      "detection_feasibility": "medium — embedded high-entropy blobs/keys and encoded credential strings are detectable via static/entropy analysis, but require sample-level inspection",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf", "https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "defense-impairment",
+      "procedure_description": "Some Rocket Kitten malware places its payload in memory and erases traces of the malware from the file system after execution to hinder forensic recovery.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — self-deletion after in-memory load leaves little discrete signal; hunt via memory-resident/fileless detection and short-lived-file telemetry",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Captured keystroke data is staged locally in %TEMP% (wlg.dat / AdobeARM.log / AdobeARMM.log) and, once a log exceeds ~3,000 bytes, queued for upload; log files are renamed LOG_(UserName)_[timestamp] prior to exfiltration.",
+      "observed_tooling": ["CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)"],
+      "detection_feasibility": "medium — growth of specific %TEMP% log files and their rename to a LOG_username_timestamp pattern before egress are detectable via file-write and file-rename telemetry",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Beyond keystrokes, actors steal documents from compromised systems — e.g. genuine files harvested from an impersonated engineer's computer were reused as lures — supporting espionage collection on victim endpoints.",
+      "observed_tooling": ["GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)"],
+      "detection_feasibility": "medium — local document collection is common; suspicious mainly in a backdoor/keylogger process-lineage and staging context",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "GHOLE beacons over HTTP to a hard-coded C2 IP using GET requests of the form /index.php?c=<8-byte id>&r=<5-7 byte>&u=1&t=<time>, with variants /index.php?c=%s&r=%lx and /index.php?c=%s&r=%x usable as network IOCs.",
+      "observed_tooling": ["GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)"],
+      "detection_feasibility": "high — the distinctive /index.php?c=&r=&u=&t= URI pattern to hard-coded C2 IPs is a strong network-detection/IDS signature via proxy and TLS/HTTP metadata",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "GHOLE uses a hard-coded 256-byte (2,048-bit) symmetric key to encrypt its command-and-control network communications.",
+      "observed_tooling": ["GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)"],
+      "detection_feasibility": "medium — custom-encrypted C2 defeats content inspection but is detectable via the embedded key/algorithm in samples and via beacon-timing/destination analytics",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Actors retrieve secondary payloads/decoys from attacker-controlled cloud (OneDrive) after initial link click; some keylogger versions removed the built-in uploader in favor of a separately delivered companion binary (wsnd.exe) placed in the same folder.",
+      "observed_tooling": ["Microsoft OneDrive (payload hosting)"],
+      "detection_feasibility": "medium — download of executables from cloud storage followed by execution, and appearance of companion binaries (wsnd.exe) alongside the keylogger, are detectable via proxy + file-creation telemetry",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Tools",
+      "tactic": "command-and-control",
+      "procedure_description": "GHOLE is a modified Core Impact Pro agent providing remote control/backdoor access to infected hosts; a fake Trend Micro HouseCall installer establishes a further backdoor connection to C2 84.11.146.62.",
+      "observed_tooling": ["GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)", "Fake Trend Micro HouseCall installer (HousecallLauncher.exe backdoor installer)"],
+      "detection_feasibility": "medium — the modified Core Impact agent and fake-HouseCall installer are detectable via sample signatures/hashes and their fixed C2 destinations, though a custom agent is less name-recognizable than commodity RMM",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "GHOLE exfiltrates collected data to its operators over its HTTP/encrypted C2 channel to hard-coded C2 IP addresses (e.g. 83.170.33.60).",
+      "observed_tooling": ["GHOLE / Gholee (BKDR_GHOLE / TROJ_GHOLE, backdoor; modified Core Impact agent)"],
+      "detection_feasibility": "medium — outbound data to the fixed C2 IPs correlated with the GHOLE URI pattern is detectable at the network egress, but volume alone is subtle",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf"]
+    },
+    {
+      "technique_id": "T1048.003",
+      "technique_name": "Exfiltration Over Alternative Protocol: Exfiltration Over Unencrypted Non-C2 Protocol",
+      "tactic": "exfiltration",
+      "procedure_description": "The CWoolger keylogger exfiltrates staged keystroke logs over FTP using hard-coded credentials to attacker FTP servers (107.6.172.54/woolen/, earlier 107.6.181.116), calling an uploadToCnC function once a log exceeds ~3,000 bytes.",
+      "observed_tooling": ["CWoolger / TSPY_WOOLERG (keylogger, aka Woolen-Goldfish keylogger)", "FTP (hard-coded credentials for keylog exfiltration)"],
+      "detection_feasibility": "high — outbound FTP from a workstation to the hard-coded exfil IPs, uploading LOG_username_timestamp files to a /woolen/ path, is a strong network-detection opportunity via flow/proxy logging and destination-IP blocklists",
+      "sources": ["https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf", "https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf"]
+    }
+  ],
+  "detection_signals": [
+    "Microsoft Office application (excel/powerpnt/winword) spawning a script or dropping/loading a DLL or EXE — GHOLE macro chain (delivery docs detected as X2KM_DROPPR)",
+    "Execution of a double-extension file with a document icon (e.g. *.ppt.exe) that drops a benign decoy and a hidden payload",
+    "Creation of %TEMP%\\NTSuser.exe or NTUSER.dat{GUID}.exe; mutex named 'woolger'; VBScript %TEMP%\\wsc.vbs installing persistence",
+    "New Startup-folder shortcut named 'WinDefender' (Notepad icon) whose target resides in %TEMP% — CWoolger persistence",
+    "Creation/growth of keystroke-log files %TEMP%\\wlg.dat, %TEMP%\\AdobeARM.log, or %TEMP%\\AdobeARMM.log by a non-Adobe process; use of SetWindowsHookExW keyboard hooks from an unsigned %TEMP% binary",
+    "Rename of local log files to LOG_(UserName)_YYYY_MM_DD_HH_MM_SS immediately before an outbound transfer",
+    "Outbound FTP uploads to 107.6.172.54 (/woolen/ path) or 107.6.181.116 carrying LOG_* files",
+    "HTTP GET requests matching /index.php?c=<8chars>&r=<5-7chars>&u=1&t= (and /index.php?c=%s&r=%lx , /index.php?c=%s&r=%x) to hard-coded C2 IPs — GHOLE beacon",
+    "Connections to GHOLE/backdoor C2 IPs 83.170.33.60, 83.170.33.37, 83.170.43.67, 83.170.33.80, 84.11.26.230, 84.11.75.220, 84.11.146.55, 84.11.146.62",
+    "Execution of a file masquerading as Trend Micro HouseCall (HousecallLauncher.exe) beaconing to 84.11.146.62",
+    "Presence of any GHOLE/WOOLERG/X2KM_DROPPR sample hash (see iocs.hashes)",
+    "Inbound spear-phishing with OneDrive links to executable payloads, or links to look-alike webmail/portal login pages (credential harvesting)",
+    "Post-phishing anomalous webmail/portal authentication (impossible travel, new device) consistent with harvested-credential reuse"
+  ],
+  "iocs": {
+    "ips": [
+      "83.170.33.60",
+      "83.170.33.37",
+      "83.170.43.67",
+      "83.170.33.80",
+      "84.11.26.230",
+      "84.11.75.220",
+      "84.11.146.55",
+      "84.11.146.62",
+      "107.6.181.116",
+      "107.6.172.54"
+    ],
+    "domains": [],
+    "emails": [
+      "clearsky.cybersec.group@gmail.com"
+    ],
+    "hashes": [
+      "8074ed48b99968f5d36a494cdeb9f80685beb0f5",
+      "e6964d467bd99e20bfef556d4ad663934407fd7b",
+      "fd8793ce4ca23988562794b098b9ed20754f8a90",
+      "6e30d3ef2cd0856ff28adce4cc012853840f6440",
+      "07a77f8b9f0fcc93504dfba2d7d9d26246e5878f",
+      "25d3688763e33eac1428622411d6dda1ec13dd43",
+      "729f9ce76f20822f48dac827c37024fe4ab8ff70",
+      "86222ef166474e53f1eb6d7e6701713834e6fee7",
+      "476489f75fed479f19bac02c79ce1befc62a6633",
+      "c1edf6e3a271cf06030cc46cbd90074488c05564",
+      "c6db3e7e723f20ed3bcf4c53fc4748e9591f4c40",
+      "cabdfe7e9920aeaa5eaca7f5415d97f564cdec11",
+      "ce03790d1df81165d092e89a077c495b75a14013",
+      "e8dbcde49c7f760165ebb0cb3452e4f1c24981f5",
+      "efd1c6a926095d36108177045db9ad21df926a6e",
+      "fa5b587ceb5d17f26fe580aca6c02ff2e20ad3c4",
+      "fe3436294f302a93fbac389291dd20b41b038cba",
+      "ffead364ae7a692afec91740d24649396e0fa981",
+      "0b0cdf47363fd27bccbfba6d47b842e44a365723",
+      "02b04563ef430797051aa13e48971d3490c80636",
+      "7ad0eb113bc575363a058f4bf21dbab8c8f7073a",
+      "7fef48e1303e40110798dfec929ad88f1ad4fbd8",
+      "22f6a61aa2d490b6a3bc36e93240d05b1e9b956a",
+      "37ad0e426f4c423385f1609561422a947a956398",
+      "47b1c9caabe3ae681934a33cd6f3a1b311fd7f9f",
+      "53340f9a49bc21a9e7267173566f4640376147d9",
+      "58045d7a565f174df8efc0de98d6882675fbb07f",
+      "62172eee1a4591bde2658175dd5b8652d5aead2a",
+      "788d881f3bb2c82e685a98d8f405f375c0ac2162",
+      "2627cdc3324375e6f41f93597a352573e45c0f1e",
+      "4711f063a0c67fb11c05efdb40424377799efafd",
+      "6571f2b9a0aea89f45899b256458da78ac51e6bb",
+      "9579e65e3ae6f03ff7d362be05f9beca07a8b1b3",
+      "a9245de692c16f90747388c09e9d02c3ee34577e",
+      "ad6c9b003285e01fc6a02148917e95c780c7d751",
+      "ae18bb317909e16f765ba2e88c3d72d648db2798",
+      "c727b8c43943986a888a0428ae7161ff001bf603",
+      "e2728cabb35c210599e248d0da9791991e38eb41",
+      "ec692cf82aef16cf61574b5d15e5c5f8135df288",
+      "ed5615ffb5578f1adee66f571ec65a992c033a50",
+      "0f4bf1d89d080ed318597754e6d3930f8eec49b0",
+      "2c3edde41e9386bafef248b71974659543a3d774",
+      "0482fc2e332918456b9c97d8a9590781095b2b53",
+      "1a999a131144afe8cb7316ebb842da4f38101ac5",
+      "f51de6c25ff8e1d9783ed5ac13a53d1c0ea3ef33",
+      "a42f1ad2360833baedd2d5f59354c4fc3820c475",
+      "d5b2b30fe2d4759c199e3659d561a50f88a7fb2e",
+      "5d334e0cb4ff58859e91f9e7f1c451ffdc7544c3",
+      "db2b8f49b4e76c2f538a3a6b222c35547c802cef",
+      "29968b0c4157f226761073333ff2e82b588ddf8e",
+      "eeb67e663b2fa980c6b228fc2e04304c8992401d",
+      "c8096078f0f6c3fbb6d82c5b00211802168f9cba",
+      "af364ff503da71875b6d7c401a1e98e31450a561",
+      "46a995df8d9918ca0793404110904479b6adcb9f",
+      "64ba130e627dd85c85d6534e769d239080e068dd",
+      "457f54e9a0f32f2648f95a8e339d9fd9aed23fa7"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Primary sources are three peer-corroborated 2015 vendor reports with concrete IOC appendices (Trend Micro Operation Woolen-GoldFish; Trend Micro The Spy Kittens Are Back / Rocket Kitten 2; ClearSky Thamar Reservoir) plus Check Point 'Rocket Kitten: A Campaign With 9 Lives', enriched by MITRE ATT&CK Ajax Security Team G0130 (the cluster MITRE uses for Rocket Kitten). Report confidence is 'high' on the technical TTPs/IOCs (multiple independent primary sources with raw hashes/IPs); actor attribution to an IRGC-aligned Iran-nexus group is set to 'medium-high' per tasking, honestly reflecting the convergence-based (not smoking-gun) case and the deliberate note that Rocket Kitten overlaps with Ajax/Flying Kitten/Saffron Rose and is DISTINCT from Charming Kitten. actor.mitre_id intentionally left empty per spec (public MITRE id G0130 cited only in source/aliases/notes; the task-supplied 'G0048' is INCORRECT — in this environment and public MITRE G0048 = RTM, an unrelated Russian banking-crime group — so it was not used). ATT&CK normalization: this env has no 'defense-evasion' tactic, so evasion techniques use slug 'stealth'; File Deletion (T1070.004) placed under 'defense-impairment' per env tactic conventions; every technique_id was validated as a key in the bundled attack_dump.json (697 techniques) before inclusion — zero invalid IDs, no substitutions were required. STRONGEST DETECTION SURFACE (detect candidates, medium/high): T1204.002 Office-spawns-dropper macro chain, T1137.001/T1059.005 VBA+wsc.vbs, T1547.001/T1547.009 'WinDefender' Startup .lnk to %TEMP%\\NTSuser.exe (mutex 'woolger'), T1056.001 keylog to wlg.dat/AdobeARM.log, T1071.001 GHOLE /index.php?c=&r=&u=&t= beacon, T1048.003 FTP keylog exfil to 107.6.172.54//woolen//, T1219 GHOLE/fake-HouseCall backdoors, sample hashes. HUNT-leaning (low, off-victim/social): T1589/T1591 recon, T1585.001/.002/T1586.002 personas & impersonation, T1583.001/.006/T1608.001/T1587.001/T1588.002 infra & tooling, T1566.003 social-platform delivery, T1598.003/T1056.003 fake-login credential harvesting, T1070.004 self-deletion. IOC scope decisions: iocs.domains left EMPTY deliberately — the Woolen-Goldfish/Spy Kittens reports hard-code C2 as IP addresses (no C2 domains), and the Check Point/ClearSky phishing-domain lists could not be extracted verbatim from their PDFs in this session, so no domain is asserted rather than risk a hallucinated/legit-CDN value; the free Iranian scanner av.zerodays.ir and old WHOIS-pivot domains (livenetsat.com, joinebiz.com) are actor-adjacent attribution artifacts, NOT C2, and are intentionally excluded from iocs. Hashes are SHA1 taken verbatim from the Trend Micro appendices (GHOLE/BKDR_GHOLE/TROJ_GHOLE backdoors, X2KM_DROPPR macro droppers, TSPY_WOOLERG/CWoolger keylogger variants, fake HouseCall installer af364ff5..., NTUSER.dat{GUID}.exe dropper 64ba130e..., and companion FILE2 457f54e9...). CVEs empty: Rocket Kitten relied on social-engineering/macro user-execution, not exploited CVEs, in the cited reporting."
+}

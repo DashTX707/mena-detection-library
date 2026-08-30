@@ -1,0 +1,43 @@
+title: Cavern Manticore PowerShell Download Cradle to Staged Payloads
+id: 7c9e2a11-3d4f-4b5a-8e6c-9d0a1b2c3d43
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / TunnelVision) using PowerShell download cradles to pull tooling
+    and payloads onto victim hosts (T1059.001 PowerShell, T1105 Ingress Tool Transfer). The actor invokes
+    System.Net.WebClient / DownloadString / DownloadFile / Invoke-WebRequest to retrieve staged archives
+    (pxy.zip, pxy.rar, 23.zip, rsf.exe, netscan_portable_v621.zip) from actor-controlled domains and a
+    GitHub account (protections20). Keys on the PowerShell network-download behavior, with actor
+    infrastructure and staged file names as high-confidence enrichment.
+references:
+    - https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.command-and-control
+    - attack.t1059.001
+    - attack.t1105
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_download:
+        CommandLine|contains:
+            - 'Net.WebClient'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'DownloadData'
+            - 'Invoke-WebRequest'
+            - 'iwr '
+            - 'Start-BitsTransfer'
+    condition: selection_ps and selection_download
+falsepositives:
+    - Administrative or software-deployment scripts that legitimately download content with WebClient/
+      Invoke-WebRequest; scope by destination host and downloaded file name/path before dismissing
+level: medium

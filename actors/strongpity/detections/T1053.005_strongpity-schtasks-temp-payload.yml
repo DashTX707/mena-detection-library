@@ -1,0 +1,35 @@
+title: StrongPity Scheduled Task Creation Pointing At Temp Payload
+id: 5c9f2d81-4a63-47b8-9e15-3d7c0b2a6f19
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM persistence via a scheduled task created by a dropped binary that
+    launches a payload from a %temp%, AppData or lang_ staging directory (T1053.005 Scheduled Task).
+    Keys on schtasks.exe create commands whose action path references these user-writable staging
+    locations. Legitimate scheduled tasks rarely execute binaries from per-user temp folders, making the
+    combination a strong persistence signal.
+references:
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+    - https://attack.mitre.org/software/S0491/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.strongpity
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_tool:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_path:
+        CommandLine|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\lang_'
+    condition: all of selection_*
+falsepositives:
+    - Some legitimate software registers tasks that run helper binaries from AppData - confirm the task
+      name, the target binary and the invoking parent process before dismissing
+level: high

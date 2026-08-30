@@ -1,0 +1,40 @@
+title: CopyKittens Matryoshka Meterpreter Remote-Thread Process Injection
+id: 6851b425-ac44-4b74-b1aa-107aed860f05
+status: experimental
+description: |
+    Detects cross-process code injection via a remote thread as performed by the CopyKittens (Slayer
+    Kitten, G0052) Matryoshka RAT to run a Meterpreter payload inside a legitimate process (T1055 Process
+    Injection). Anchors on Sysmon CreateRemoteThread (EID 8) where a rundll32/loader source creates a
+    thread in another process with a start address not backed by a named module (StartModule empty), a
+    hallmark of shellcode injection.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1055
+    - mena-detection-library.copykittens
+logsource:
+    category: create_remote_thread
+    product: windows
+detection:
+    selection_src:
+        SourceImage|endswith:
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\powershell.exe'
+            - '\mshta.exe'
+    selection_shellcode:
+        StartModule: null
+    filter_system:
+        TargetImage|endswith:
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\powershell.exe'
+            - '\mshta.exe'
+    condition: selection_src and selection_shellcode and not filter_system
+falsepositives:
+    - Some debuggers, injectors used by legitimate software and AV components create remote threads -
+      baseline the source/target image pair and the thread start address before dismissing
+level: high

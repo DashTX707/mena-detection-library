@@ -1,0 +1,37 @@
+title: Tropic Trooper WinStore Registry Run-Key Persistence Fallback
+id: 1b9d7c46-3e82-4a15-8f7b-5c2a9d1e6f34
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) fallback persistence via a registry Run key
+    (T1547.001 Boot or Logon Autostart Execution: Registry Run Keys). When Windows service creation is
+    not possible, the Crowdoor loader writes an auto-start value named WinStore under
+    HKCU\Software\Microsoft\Windows\CurrentVersion\Run referencing the payload in a non-standard path.
+    Keys on registry-set events creating a Run value named WinStore and/or a Run value whose data points
+    at a branding/Public data directory. Requires Sysmon EID 13 (or equivalent) registry-modification
+    telemetry.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_runkey:
+        TargetObject|contains: '\Software\Microsoft\Windows\CurrentVersion\Run\'
+    selection_name:
+        TargetObject|endswith: '\WinStore'
+    selection_data:
+        Details|contains:
+            - '\branding\data\'
+            - '\Public\Music\data\'
+    condition: selection_runkey and (selection_name or selection_data)
+falsepositives:
+    - Genuine Microsoft Store components do not install a WinStore Run value pointing at a branding or
+      Public data path - validate the referenced binary before dismissing
+level: high

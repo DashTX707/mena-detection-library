@@ -1,0 +1,41 @@
+title: CopyKittens Scheduled Task Persistence Launching Payload from User Path
+id: ea127eef-0967-4182-af48-cac4d8389229
+status: experimental
+description: |
+    Detects creation of a scheduled task that launches an implant component from a user-writable path or
+    via a LOLBin, as used by CopyKittens (Slayer Kitten, G0052) to persist and re-launch Matryoshka and
+    loader payloads across reboots (T1053.005 Scheduled Task). Anchors on Task Scheduler operational
+    task-registration (Event ID 4698 / 4702) plus a task action referencing temp/appdata paths or a
+    scripting host.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1053.005
+    - mena-detection-library.copykittens
+logsource:
+    product: windows
+    service: taskscheduler
+detection:
+    selection_create:
+        EventID:
+            - 4698
+            - 4702
+    selection_action:
+        TaskContent|contains:
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Windows\Temp\'
+            - '\Temp\'
+            - 'powershell'
+            - 'rundll32'
+            - 'regsvr32'
+            - 'mshta'
+    condition: all of selection_*
+falsepositives:
+    - Software updaters and management agents register scheduled tasks - baseline the task action target,
+      trigger and creating account before dismissing
+level: medium

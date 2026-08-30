@@ -1,0 +1,35 @@
+title: Cavern Manticore SoftPerfect Network Scanner Execution (netscan)
+id: 5e7a9c12-3b4d-4f6a-9d8f-1c0e2a4b6d98
+status: experimental
+description: |
+    Detects Cavern Manticore (Cobalt Mirage / TunnelVision) running SoftPerfect Network Scanner to enumerate
+    internal hosts and services (including RDP/3389) prior to lateral movement (T1046 Network Service
+    Discovery). The actor deploys netscan from staged archives (netscan_portable_v621.zip) and observed
+    binaries netscan.exe / netscanold.exe. Keys on the scanner process name/original file name and its
+    staged archive.
+references:
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+    - https://www.sentinelone.com/labs/log4j2-in-the-wild-iranian-aligned-threat-actor-tunnelvision-actively-exploiting-vmware-horizon/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1046
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_image:
+        - Image|endswith:
+            - '\netscan.exe'
+            - '\netscanold.exe'
+        - OriginalFileName: 'netscan.exe'
+        - Description|contains: 'SoftPerfect Network Scanner'
+    selection_archive:
+        CommandLine|contains: 'netscan_portable'
+    condition: selection_image or selection_archive
+falsepositives:
+    - Network administrators may legitimately use SoftPerfect Network Scanner; confirm the running user,
+      host and whether internal scanning is sanctioned for that account
+level: medium

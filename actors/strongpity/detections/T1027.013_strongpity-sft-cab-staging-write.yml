@@ -1,0 +1,37 @@
+title: StrongPity Hidden SFT Archive And Encrypted CAB Config File Write
+id: 8f1c3a62-5d94-4b07-9e28-1a6b3c0d7f52
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM local staging and custom archiving where collected documents are
+    zipped and XOR-encrypted into hidden high-entropy .sft files, and encrypted configuration is stored
+    in prst.cab / wrlck.cab blobs, written into the malware working directory (T1027.013
+    Encrypted/Encoded File, T1074.001 Local Data Staging, T1560.003 Archive via Custom Method). The .sft
+    extension and the named .cab config artifacts are distinctive host indicators of the StrongPity
+    collect-then-exfil chain. Anchored on the file-write behavior of these bespoke archive/config files.
+references:
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+    - https://securelist.com/on-the-strongpity-waterhole-attacks-targeting-italian-and-belgian-encryption-users/76147/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.collection
+    - attack.t1027.013
+    - attack.t1074.001
+    - attack.t1560.003
+    - mena-detection-library.strongpity
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_sft:
+        TargetFilename|endswith: '.sft'
+    selection_cab:
+        TargetFilename|endswith:
+            - '\prst.cab'
+            - '\wrlck.cab'
+    condition: 1 of selection_*
+falsepositives:
+    - The .sft extension is used by a few unrelated applications - confirm the writing process, the
+      hidden attribute and file entropy, and co-located staged documents before dismissing
+level: high

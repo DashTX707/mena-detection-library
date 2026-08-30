@@ -1,0 +1,37 @@
+title: Rocket Kitten Keylog Local Staging Rename to LOG_username_timestamp
+id: 4b0739f5-a472-4100-a7f9-b670b8a68891
+status: experimental
+description: |
+    Detects the local data-staging step of Rocket Kitten's CWoolger keylogger. Captured keystroke
+    data is staged in %TEMP% and, once a log exceeds ~3000 bytes, the file is renamed to a
+    LOG_(UserName)_YYYY_MM_DD_HH_MM_SS pattern immediately before FTP exfiltration (T1074.001 local
+    data staging; the staged keystroke/document content is T1005 data from local system). Keys on
+    creation of a file whose name matches the actor's LOG_<user>_<timestamp> staging convention in
+    a user temp path - a distinctive, high-fidelity artifact.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://documents.trendmicro.com/assets/wp/wp-the-spy-kittens-are-back.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1074.001
+    - attack.t1005
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_temp:
+        TargetFilename|contains:
+            - '\Temp\'
+            - '\AppData\Local\Temp'
+    selection_pattern:
+        TargetFilename|re: '(?i)\\LOG_.+_\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}'
+    condition: all of selection_*
+falsepositives:
+    - Applications that legitimately produce timestamped LOG_ files under Temp - the precise
+      LOG_(user)_YYYY_MM_DD_HH_MM_SS shape correlated with keylog artifacts and outbound FTP is
+      the discriminator; validate the writing process
+level: high

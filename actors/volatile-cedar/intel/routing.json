@@ -1,0 +1,193 @@
+{
+  "actor": "Volatile Cedar (Lebanese Cedar)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1190",
+      "technique_name": "Exploit Public-Facing Application",
+      "tactic": "initial-access",
+      "rationale": "high — exploitation of these specific CVEs and SQLi on internet-facing Atlassian/Oracle servers is a strong detection surface: WAF/exploit signatures, anomalous requests to vulnerable endpoints, web-server error/access logs, and post-exploit child processes spawned by the web/app server (java/w3wp spawning cmd) plus version/patch-state monitoring"
+    },
+    {
+      "technique_id": "T1505.003",
+      "technique_name": "Server Software Component: Web Shell",
+      "tactic": "persistence",
+      "rationale": "high — web-shell files (Caterpillar/ASPXSpy-derived JSP, modified file-browser) written into Atlassian/Oracle/IIS web roots are detectable via file-integrity monitoring, web-shell YARA/signature scanning, and anomalous POSTs to newly created server-side script files; the web/app-server process spawning command interpreters is a further high-fidelity signal"
+    },
+    {
+      "technique_id": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "tactic": "execution",
+      "rationale": "medium — command execution spawned by a web/application-server process (java, w3wp, tomcat) is detectable via process-lineage telemetry, but the individual commands are common and need parent-process context"
+    },
+    {
+      "technique_id": "T1129",
+      "technique_name": "Shared Modules",
+      "tactic": "execution",
+      "rationale": "medium — the main-binary-plus-companion-DLL load pattern is observable via module-load (image-load) telemetry when the DLL is unsigned/anomalous, but requires a known-bad DLL or path baseline"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "persistence",
+      "rationale": "medium — an unsigned/unusual companion DLL loaded from the same directory as the Explosive main binary is detectable via image-load and signature-mismatch telemetry, but the RAT does not clearly abuse a signed host binary, so confidence is moderate"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — ipconfig is benign in isolation; suspicious when spawned by a web-server process in a short recon burst — detectable via command-line + parent-process correlation"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — whoami executed as a child of a web/app-server process is a recognizable post-exploitation recon signal via process-lineage telemetry"
+    },
+    {
+      "technique_id": "T1069.002",
+      "technique_name": "Permission Groups Discovery: Domain Groups",
+      "tactic": "discovery",
+      "rationale": "medium — 'net group /domain' spawned by a web-server process is detectable via command-line logging with parent-process context; common admin tool otherwise"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — host enumeration is common; meaningful mainly inside a web-shell-driven recon burst"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — file/directory browsing via a web shell is detectable through the web shell's own request patterns and web-server access logs, but blends with legitimate file access absent web-shell context"
+    },
+    {
+      "technique_id": "T1018",
+      "technique_name": "Remote System Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — internal host enumeration is detectable via command-line logging and connection-fanout analytics, but is common admin behavior"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "medium — keylogging is detectable via API-hook/keyboard-hook behavioral telemetry and the RAT's process/C2 behavior, but the keylogging primitive itself leaves limited discrete host signal without EDR behavioral analytics"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium — screen-capture API usage by an untrusted process is detectable via EDR behavioral telemetry; corroborated by the RAT's distinctive C2, but not high-fidelity on its own"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — local data collection is common; suspicious mainly via staging patterns and web-shell/RAT process context"
+    },
+    {
+      "technique_id": "T1003",
+      "technique_name": "OS Credential Dumping",
+      "tactic": "credential-access",
+      "rationale": "medium — credential harvesting/dumping is detectable via process-access to credential stores and known-tool signatures, but the reports do not name the specific dumping tool, lowering fidelity"
+    },
+    {
+      "technique_id": "T1550.002",
+      "technique_name": "Use Alternate Authentication Material: Pass the Hash",
+      "tactic": "lateral-movement",
+      "rationale": "medium — pass-the-hash is detectable via NTLM Type-3 logon anomalies and mismatched credential-source analytics, but is subtle and blends with admin activity"
+    },
+    {
+      "technique_id": "T1021.002",
+      "technique_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "lateral-movement",
+      "rationale": "medium — PsExec service creation and ADMIN$/C$ access are detectable via remote service-install (Event ID 7045), 5140 share access and Type-3 logons, but PsExec is also legitimately used by admins"
+    },
+    {
+      "technique_id": "T1570",
+      "technique_name": "Lateral Tool Transfer",
+      "tactic": "lateral-movement",
+      "rationale": "medium — internal SMB/admin-share file transfers of executables are detectable via file-write-over-network and share-access telemetry, but require east-west visibility"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — the RAT's HTTP beaconing with a distinctive User-Agent and fixed URI structure to known C2 hosts is a strong network-detection surface via proxy/DNS/IDS signatures and JA3/UA anomaly analytics (exact User-Agent string not asserted here as it was not verifiable from a primary source)"
+    },
+    {
+      "technique_id": "T1008",
+      "technique_name": "Fallback Channels",
+      "tactic": "command-and-control",
+      "rationale": "medium — fallback behavior manifests as bursts of failed connections followed by resolution of algorithmic domains, detectable via DNS/NX-domain analytics, but requires baselining"
+    },
+    {
+      "technique_id": "T1568.002",
+      "technique_name": "Dynamic Resolution: Domain Generation Algorithms",
+      "tactic": "command-and-control",
+      "rationale": "medium — DGA beaconing is detectable via DNS analytics (high-entropy domain names, NXDOMAIN bursts, algorithmic patterns), though generic DGA detection needs tuning to this family"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — implant self-update pulls executable content from C2/update servers, detectable via proxy file-download + subsequent binary-replacement telemetry when the update endpoints are known/blocklisted"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1595.002",
+      "technique_name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "reconnaissance",
+      "rationale": "low — vulnerability probing of internet-facing servers happens off-victim at the perimeter and rarely attributes cleanly to this actor; hunt/intel candidate via external attack-surface monitoring and WAF/edge scan-pattern review"
+    },
+    {
+      "technique_id": "T1595.001",
+      "technique_name": "Active Scanning: Scanning IP Blocks",
+      "tactic": "reconnaissance",
+      "rationale": "low — off-victim internet scanning is not endpoint-observable; intel/hunt candidate only"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware development occurs off-victim; intel candidate. Detection lands on the deployed implant's host/network behaviors, not its development"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain registration is off-victim; intel/hunt candidate via infrastructure tracking and passive DNS. On-victim detection is via resolution/connection to these domains (see C2 techniques)"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "low — local staging of small espionage artifacts leaves little discrete signal; hunt candidate via file-write telemetry in RAT working directories"
+    },
+    {
+      "technique_id": "T1573",
+      "technique_name": "Encrypted Channel",
+      "tactic": "command-and-control",
+      "rationale": "low — payload encryption defeats content inspection; detection shifts to metadata/beacon-cadence and known C2 endpoints rather than the encryption itself (hunt-leaning)"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — obfuscation reduces static-signature efficacy; detection relies on behavioral/dynamic analysis rather than the obfuscation itself (hunt-leaning)"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — runtime deobfuscation is internal to the process and hard to observe directly; hunt candidate via memory/behavioral analysis"
+    }
+  ],
+  "summary": {
+    "total": 30,
+    "detection": 22,
+    "hunt": 8
+  }
+}

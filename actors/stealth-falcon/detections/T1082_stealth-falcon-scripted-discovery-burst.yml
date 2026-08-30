@@ -1,0 +1,52 @@
+title: Stealth Falcon Scripted Host and Network Discovery Burst
+id: 4d7a2c58-9e31-4b64-8f0c-1a6d3e5b7c94
+status: experimental
+description: |
+    Detects the Stealth Falcon (FruityArmor) backdoor's profiling/reconnaissance stage where native
+    discovery utilities are launched from a script host or PowerShell in the implant lineage
+    (T1082 System Information Discovery, T1016 Network Configuration Discovery, T1033 System Owner/User
+    Discovery, T1057 Process Discovery, T1047 Windows Management Instrumentation). Stage One profiles
+    the host (incl. .NET version via WMI) to pick a follow-on payload. Keys on discovery/WMI commands
+    whose parent is wscript/cscript/powershell/mshta or an Office app - abnormal recon lineage.
+references:
+    - https://citizenlab.ca/2016/05/stealth-falcon/
+    - https://attack.mitre.org/groups/G0038/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.discovery
+    - attack.t1047
+    - attack.t1082
+    - attack.t1016
+    - attack.t1033
+    - attack.t1057
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\mshta.exe'
+            - '\winword.exe'
+            - '\excel.exe'
+    selection_discovery:
+        Image|endswith:
+            - '\systeminfo.exe'
+            - '\ipconfig.exe'
+            - '\whoami.exe'
+            - '\tasklist.exe'
+            - '\net.exe'
+            - '\nltest.exe'
+            - '\wmic.exe'
+            - '\query.exe'
+    condition: all of selection_*
+falsepositives:
+    - Logon scripts and admin automation can spawn discovery utilities from script hosts - correlate
+      with the wider process chain and whether the parent originated from a document or loader
+level: medium

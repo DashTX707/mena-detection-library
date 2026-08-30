@@ -1,0 +1,40 @@
+title: Dark Caracal Bandook File and Drive Enumeration Burst
+id: e2a09b4a-6d5b-45f8-938b-0823de9c89c4
+status: experimental
+description: |
+    Detects drive and file/directory enumeration commands spawned by an anomalous RAT host process.
+    Bandook enumerates connected drives (command @0004, mapping storage and removable media,
+    T1120 Peripheral Device Discovery) and produces recursive file listings from default Windows
+    directories to locate data for exfiltration (command @0005, T1083 File and Directory Discovery).
+    Keys on drive/file enumeration utilities (wmic logicaldisk, fsutil fsinfo drives, recursive dir)
+    spawned by the hollowed iexplore.exe or a user-path loader rather than an interactive shell.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1083
+    - attack.t1120
+    - mena-detection-library.dark-caracal
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\iexplore.exe'
+    selection_enum:
+        - CommandLine|contains:
+              - 'logicaldisk'
+              - 'fsutil fsinfo drives'
+              - 'wmic logicaldisk get'
+        - CommandLine|contains|all:
+              - 'dir '
+              - '/s'
+    condition: all of selection_*
+falsepositives:
+    - Enumeration by legitimate administrative scripts - the anchor is an iexplore.exe parent
+      spawning enumeration commands, which is not normal browser behavior
+level: medium

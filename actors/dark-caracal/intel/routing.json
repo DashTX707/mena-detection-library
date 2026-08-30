@@ -1,0 +1,259 @@
+{
+  "actor": "Dark Caracal",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — inbound ZIP-wrapped macro-enabled documents and their detonation behavior (Word spawning macro/network activity) are detectable at the mail gateway and via office-child-process telemetry"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — outbound document-template fetches to URL shorteners are detectable via proxy/DNS logs correlated with Office processes, but shortener use blends with benign traffic"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — user-opened lure documents/executables are detectable via office-application child-process spawning and execution of files masquerading as Flash/Office/PDF, but depend on the user action"
+    },
+    {
+      "technique_id": "T1221",
+      "technique_name": "Template Injection",
+      "tactic": "stealth",
+      "rationale": "medium — remote-template loads (settings.xml.rels referencing an external URL) and Office reaching out to shortener/remote hosts on document open are detectable via document inspection and office-network telemetry"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "medium — VBA macro execution spawning script/PowerShell children is detectable via office-macro and child-process telemetry (AMSI, Sysmon EID 1)"
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "rationale": "high — PowerShell script-block/module logging (EID 4104) captures the fmx.ps1 loader, base64 decoding of sdmc.jpg, cloud downloads and RC4 image reconstruction; Word/Office spawning powershell.exe is a strong lineage signal"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — cmd.exe spawned by Office/loader processes to stage payloads is detectable via process-creation and command-line telemetry"
+    },
+    {
+      "technique_id": "T1059.006",
+      "technique_name": "Command and Scripting Interpreter: Python",
+      "tactic": "execution",
+      "rationale": "medium — a Python interpreter/.pyc executing from an unusual path under a RAT process is detectable via process-lineage and image-load telemetry, but requires Python-runtime presence"
+    },
+    {
+      "technique_id": "T1218.001",
+      "technique_name": "System Binary Proxy Execution: Compiled HTML File",
+      "tactic": "stealth",
+      "rationale": "high — hh.exe processing a .chm that spawns a shell/downloader is a rare, high-fidelity behavior detectable via process-lineage (hh.exe -> cmd/powershell) telemetry"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation/modification of CurrentVersion\\Run values (Sysmon EID 13, autoruns) pointing to loader/RAT paths is a directly observable, high-fidelity persistence signal"
+    },
+    {
+      "technique_id": "T1543.001",
+      "technique_name": "Create or Modify System Process: Launch Agent",
+      "tactic": "persistence",
+      "rationale": "medium — new/unusual LaunchAgent plists invoking java are detectable via file-integrity monitoring on LaunchAgents and endpoint telemetry, but require macOS visibility"
+    },
+    {
+      "technique_id": "T1547.013",
+      "technique_name": "Boot or Logon Autostart Execution: XDG Autostart Entries",
+      "tactic": "persistence",
+      "rationale": "medium — new .desktop autostart entries invoking java from a user path are detectable via file-integrity monitoring on ~/.config/autostart, but require Linux endpoint visibility"
+    },
+    {
+      "technique_id": "T1055.012",
+      "technique_name": "Process Injection: Process Hollowing",
+      "tactic": "stealth",
+      "rationale": "high — the hollowing sequence (CreateProcess suspended, unmap, WriteProcessMemory, SetThreadContext/ResumeThread) into iexplore.exe, and iexplore.exe with anomalous network/parentage, are detectable via EDR process-injection and image/memory telemetry"
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "rationale": "medium — UPX-packed sections and packer signatures are detectable via static scanning and entropy analysis, but packing alone is common and requires corroboration"
+    },
+    {
+      "technique_id": "T1027.003",
+      "technique_name": "Obfuscated Files or Information: Steganography",
+      "tactic": "stealth",
+      "rationale": "medium — PowerShell reading pixel data from a PNG to reconstruct code is detectable via script-block logging and anomalous image-parsing behavior, but the images themselves are valid and evade content filters"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy encoded/encrypted artifacts are detectable via entropy and decoding heuristics, but require dedicated file inspection"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — runtime base64/RC4 decoding by PowerShell is visible in script-block logs (FromBase64String, byte-array XOR/RC4 patterns), but decoding is common and needs context"
+    },
+    {
+      "technique_id": "T1553.002",
+      "technique_name": "Subvert Trust Controls: Code Signing",
+      "tactic": "stealth",
+      "rationale": "medium — a valid signature reduces alerting, but the specific abused signer/thumbprint can be watchlisted and signed-but-anomalous binaries flagged via signer-reputation and behavioral analytics"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "rationale": "medium — deletion of just-downloaded staging files shortly after execution is detectable via file-creation/deletion telemetry correlated with the PowerShell loader, but is a brief window"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — file/directory enumeration is common; meaningful mainly within the RAT's process lineage and recon burst"
+    },
+    {
+      "technique_id": "T1016.001",
+      "technique_name": "System Network Configuration Discovery: Internet Connection Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — outbound requests to public-IP-lookup services shortly after implant start are detectable via proxy/DNS telemetry correlated with the RAT process"
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — drive/device enumeration by a non-system process is detectable in behavioral telemetry but is low-signal without process context"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — bulk reads/staging of user document and picture folders by a RAT are detectable on Windows via file-access telemetry; the Android/Pallas PII collection is a mobile-threat-defense hunt candidate"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "high — repeated screen-capture API usage (BitBlt/GDI) by a non-interactive process is detectable via EDR behavioral analytics"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "high — low-level keyboard hooks (SetWindowsHookEx) and keylog buffer files created by a RAT are detectable via EDR API-hooking and file-write telemetry"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "medium — microphone-access APIs invoked by a background process are detectable on Windows via EDR; the Android/Pallas audio recording is a mobile hunt candidate"
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "rationale": "medium — webcam-device access by a non-conferencing process is detectable on Windows via EDR device-access telemetry; Android camera capture is a mobile hunt candidate"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — the distinctive Base64+'&&&&'-suffixed HTTP payloads and beacons to the listed C2 domains are detectable via network/proxy inspection and IDS signatures"
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "rationale": "medium — raw TCP sessions to actor C2 on non-standard ports are detectable via netflow/egress anomaly analytics but lack protocol-layer signatures"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — encryption hides content, but the hardcoded AES-CFB IV (0123456789123456) is a strong hunt/attribution pivot for sample and traffic analysis"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — payload downloads following PowerShell/RAT activity, with subsequent file writes and execution, are detectable via process+network+file telemetry"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound data transfers to actor C2 over the RAT channel are detectable via egress-volume anomaly analytics tied to the C2 destinations, but blend into the encrypted channel"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration is off-victim; intel/hunt candidate via passive DNS, registrar/WHOIS pivoting and infrastructure clustering on shared registrars and TLD patterns"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — capability development is off-victim; intel candidate via sample clustering and code/config reuse (AES-CFB IV, command opcodes)"
+    },
+    {
+      "technique_id": "T1588.003",
+      "technique_name": "Obtain Capabilities: Code Signing Certificates",
+      "tactic": "resource-development",
+      "rationale": "low — certificate acquisition is off-victim; intel/hunt candidate via certificate-transparency and signer-reputation tracking (the downstream signed binary is where endpoint detection lands)"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — payload staging on legitimate cloud hosting is off-victim and blends with normal cloud traffic; hunt candidate via egress to cloud-hosting following macro/PowerShell activity"
+    },
+    {
+      "technique_id": "T1608.004",
+      "technique_name": "Stage Capabilities: Drive-by Target",
+      "tactic": "resource-development",
+      "rationale": "low — adversary-controlled distribution site is off-victim; intel/hunt candidate via infrastructure tracking and app-store/sideload telemetry (mobile)"
+    },
+    {
+      "technique_id": "T1566.003",
+      "technique_name": "Phishing: Spearphishing via Service",
+      "tactic": "initial-access",
+      "rationale": "low — social-media/messaging delivery occurs off enterprise telemetry; intel/hunt candidate via user reporting and brand/persona monitoring (mobile-centric)"
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "rationale": "low — mobile sideload/watering-hole delivery is largely outside enterprise endpoint telemetry; hunt candidate via mobile-threat-defense and web-filtering (mobile)"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "low — link-driven mobile app installation is outside standard enterprise endpoint telemetry; hunt/intel candidate (mobile)"
+    },
+    {
+      "technique_id": "T1106",
+      "technique_name": "Native API",
+      "tactic": "execution",
+      "rationale": "low — direct API use is ubiquitous and only meaningful in combination with the injection/hollowing sequence; hunt candidate via API-sequence/behavioral analytics"
+    }
+  ],
+  "summary": {
+    "total": 41,
+    "detection": 32,
+    "hunt": 9
+  }
+}

@@ -1,0 +1,40 @@
+title: SideWinder Downloader Anti-Sandbox System Memory Check
+id: 27c786be-27d4-43a6-85bf-b4c5d6e7f809
+status: experimental
+description: |
+    Detects a script host or freshly spawned process querying total physical memory / system
+    hardware via WMI, a behavior the SideWinder (Rattlesnake / APT-C-17) Downloader Module
+    performs to avoid detonating in analysis environments - it verifies installed RAM is
+    greater than ~950 MB (and probes for nlssorting.dll) before proceeding. On its own this
+    is low-signal; it is meaningful when correlated with the mshta/.NET-loader lineage, so the
+    rule scopes the query to scripting/LOLBIN hosts.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.discovery
+    - attack.t1497.001
+    - mena-detection-library.sidewinder
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\wmic.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cscript.exe'
+            - '\wscript.exe'
+            - '\mshta.exe'
+    selection_query:
+        CommandLine|contains:
+            - 'TotalPhysicalMemory'
+            - 'Win32_ComputerSystem'
+            - 'nlssorting'
+    condition: all of selection_*
+falsepositives:
+    - Inventory scripts and hardware-audit tooling that legitimately query Win32_ComputerSystem / total memory - baseline per environment
+level: medium

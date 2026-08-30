@@ -1,0 +1,37 @@
+title: StrongPity Help Manager Run Key Persistence To Temp Staging Folder
+id: a1b8e3f0-2c5d-4e69-9f37-8b4a1d0c7e52
+status: experimental
+description: |
+    Detects StrongPity2 (PROMETHIUM) persistence via an HKCU CurrentVersion\Run value named
+    'Help Manager' pointing at the main component (wmpsvn32.exe) staged in a %temp%\lang_<hex>-<suffix>
+    folder (T1547.001 Registry Run Keys, T1036.004 Masquerade Task or Service). Keys on registry
+    modification of a Run key where either the value name is the actor-specific 'Help Manager' string or
+    the value data references a lang_ / temp staging path. Legitimate Run entries do not point into
+    per-user temp staging folders, making this a high-fidelity autorun signal.
+references:
+    - https://www.welivesecurity.com/2017/12/08/strongpity-like-spyware-replaces-finfisher/
+    - https://attack.mitre.org/software/S0491/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1547.001
+    - attack.t1036.004
+    - mena-detection-library.strongpity
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_runkey:
+        TargetObject|contains: '\Software\Microsoft\Windows\CurrentVersion\Run\'
+    selection_value:
+        - TargetObject|endswith: '\Help Manager'
+        - Details|contains:
+            - '\lang_'
+            - '\Temp\'
+    condition: all of selection_*
+falsepositives:
+    - Legitimate software occasionally creates Run entries in AppData - confirm the target binary name,
+      signature and the lang_ folder naming pattern before dismissing
+level: high

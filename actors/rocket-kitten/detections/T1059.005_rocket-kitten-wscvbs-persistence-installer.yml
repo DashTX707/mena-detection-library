@@ -1,0 +1,38 @@
+title: Rocket Kitten CWoolger wsc.vbs VBScript Persistence Installer
+id: ab1d773c-9ead-4fb2-9a6c-35373317498d
+status: experimental
+description: |
+    Detects execution of the VBScript persistence installer used by Rocket Kitten's CWoolger
+    (TSPY_WOOLERG) keylogger. The keylogger drops a script 'wsc.vbs' into %TEMP% and runs it via
+    wscript/cscript to install its Startup-folder persistence (the 'WinDefender' shortcut). Keys
+    on a Windows script host executing a .vbs from a user temp path (T1059.005 Visual Basic). The
+    wsc.vbs name combined with a Temp/AppData source path is a rare, high-fidelity signal.
+references:
+    - https://documents.trendmicro.com/assets/wp/wp-operation-woolen-goldfish.pdf
+    - https://attack.mitre.org/groups/G0130/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.rocket-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_host:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+    selection_script:
+        CommandLine|contains: 'wsc.vbs'
+    selection_temp:
+        CommandLine|contains:
+            - '\Temp\'
+            - '\AppData\Local\Temp'
+            - '%TEMP%'
+    condition: selection_host and selection_script and selection_temp
+falsepositives:
+    - Legitimate administrative or software-installer VBScripts happening to be named wsc.vbs and
+      run from a temp directory - confirm the script content and the process that wrote it
+level: high

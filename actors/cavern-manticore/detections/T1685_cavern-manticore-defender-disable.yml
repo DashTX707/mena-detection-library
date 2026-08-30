@@ -1,0 +1,36 @@
+title: Cavern Manticore Microsoft Defender Real-Time Protection Tampering
+id: 0a2c4e68-1b3d-4f5a-8c7e-9d0f1a2b3c43
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270) disabling Microsoft Defender Antivirus so its tooling and encryption
+    can run unimpeded (T1685 Disable or Modify Tools). The actor disables real-time protection via PowerShell
+    Set-MpPreference (-DisableRealtimeMonitoring / -DisableIOAVProtection / -DisableScriptScanning) and via
+    the DisableAntiSpyware registry value. Keys on those Defender-tamper command lines.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_setmp:
+        CommandLine|contains: 'Set-MpPreference'
+        CommandLine|contains:
+            - 'DisableRealtimeMonitoring'
+            - 'DisableIOAVProtection'
+            - 'DisableScriptScanning'
+            - 'DisableBehaviorMonitoring'
+    selection_reg:
+        CommandLine|contains|all:
+            - 'DisableAntiSpyware'
+            - '/d 1'
+    condition: selection_setmp or selection_reg
+falsepositives:
+    - Administrators or endpoint-management tooling may temporarily adjust Defender settings; disabling
+      real-time monitoring on a production server is high-risk - validate against change control
+level: high

@@ -1,0 +1,44 @@
+title: Tropic Trooper Neo-reGeorg and FRP Internal Proxy/Tunneling
+id: 9f3c7a25-4b1e-48d6-9c2a-7e1b5d3f8a64
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) command-and-control tunneling and internal proxying
+    (T1090.001 Proxy: Internal Proxy, T1572 Protocol Tunneling). The actor deploys Neo-reGeorg as a
+    SOCKS5 web-shell proxy on compromised web servers and uses FRP (fast reverse proxy, delivered in the
+    Swor bundle) to tunnel C2 and pivot traffic out of the network. Keys on FRP client execution and its
+    characteristic config flags, and on the Neo-reGeorg tunnel handler being fetched/written or invoked.
+    Anchor on the tunneling tool's invocation pattern.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1090.001
+    - attack.t1572
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_frp_img:
+        Image|endswith:
+            - '\frpc.exe'
+            - '\frps.exe'
+    selection_frp_cmd:
+        CommandLine|contains:
+            - 'frpc.ini'
+            - 'StcpProxy'
+            - 'server_addr'
+            - '[common]'
+    selection_neoregeorg:
+        CommandLine|contains:
+            - 'neoreg'
+            - 'tunnel.aspx'
+            - 'Neo-reGeorg'
+    condition: selection_frp_img or (selection_frp_cmd and selection_neoregeorg) or selection_frp_cmd or selection_neoregeorg
+falsepositives:
+    - Sanctioned reverse-proxy or tunneling tools used by network/dev teams - allowlist authorized
+      deployments; appearance of frpc/Neo-reGeorg on a web/DC server is the actor signal
+level: high

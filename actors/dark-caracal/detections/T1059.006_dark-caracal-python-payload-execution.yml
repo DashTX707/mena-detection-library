@@ -1,0 +1,39 @@
+title: Dark Caracal Bandook Python Payload Execution
+id: a4f67025-5272-49c0-a99b-fe7319dbe186
+status: experimental
+description: |
+    Detects a Python interpreter executing a compiled bytecode payload from a user-writable path
+    under an anomalous parent. The full ~120-command Bandook build supports execution of Python
+    payloads such as a bundled dpx.pyc (T1059.006 Python). Keys on python.exe/pythonw.exe running a
+    .pyc/.py from a user-writable location (Public/AppData/Temp/ProgramData) or spawned by the
+    hollowed iexplore.exe host, which is anomalous outside developer workstations.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.006
+    - mena-detection-library.dark-caracal
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_py:
+        Image|endswith:
+            - '\python.exe'
+            - '\pythonw.exe'
+    selection_context:
+        - CommandLine|contains:
+              - '.pyc'
+              - '\Users\Public\'
+              - '\AppData\'
+              - '\ProgramData\'
+              - '\Temp\'
+        - ParentImage|endswith: '\iexplore.exe'
+    condition: all of selection_*
+falsepositives:
+    - Developer workstations and legitimate Python-based tooling - scope out known Python
+      installation paths and interactive developer sessions
+level: medium

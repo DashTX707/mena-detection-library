@@ -1,0 +1,46 @@
+title: SideWinder Script Host Writing Encoded Payload to User-Writable Path
+id: 49e9a8d0-49f6-45c8-87d1-d6e7f8091a2b
+status: experimental
+description: |
+    Detects a script host or proxy execution LOLBIN (mshta/wscript/cscript/rundll32) writing a
+    generically-named data/blob file into a user-writable directory, a proxy for the SideWinder
+    (Rattlesnake / APT-C-17) chain staging Base64-encoded and encrypted components on disk - the
+    serialized .NET Downloader Module and the encrypted StealerBot implant later decrypted by
+    the Backdoor Loader. Anchors on the writing process plus write location because encoded/
+    encrypted blob content is only distinguishable by entropy scanning at rest.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1027.013
+    - mena-detection-library.sidewinder
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\mshta.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+    selection_ext:
+        TargetFilename|endswith:
+            - '.txt'
+            - '.dat'
+            - '.tmp'
+            - '.log'
+            - '.bin'
+    selection_path:
+        TargetFilename|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Temp\'
+            - '\Users\Public\'
+    condition: all of selection_*
+falsepositives:
+    - Logging or cache files written by legitimate scripts under AppData/Temp - baseline per environment and pair with entropy scanning of the dropped file
+level: medium

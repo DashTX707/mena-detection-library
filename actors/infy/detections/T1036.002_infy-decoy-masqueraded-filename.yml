@@ -1,0 +1,41 @@
+title: Infy Decoy/Masqueraded Executable Filename (Double-Extension / RTLO)
+id: 4b6d8f0a-2c1e-4a37-9b8c-0d2e4f6a8ca7
+status: experimental
+description: |
+    Detects Infy (Prince of Persia) filename masquerading used to disguise executable droppers as benign
+    media/document files (T1036.002 Masquerading: Right-to-Left Override). Infy uses deceptive filenames,
+    fake readme/image/video decoys, and misleading extensions so victims run an executable believing it
+    is a document or media file. Keys on file-creation of executable/scripting artifacts whose names use
+    a document/media extension immediately followed by an executable extension (double-extension), a
+    pattern also produced by Right-to-Left-Override tricks. Correlate with a mail/archive parent process.
+references:
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+    - https://unit42.paloaltonetworks.com/unit42-prince-of-persia-game-over/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1036.002
+    - mena-detection-library.infy
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        TargetFilename|endswith:
+            - '.pdf.exe'
+            - '.doc.exe'
+            - '.docx.exe'
+            - '.xls.exe'
+            - '.ppt.exe'
+            - '.txt.exe'
+            - '.jpg.exe'
+            - '.jpg.scr'
+            - '.pdf.scr'
+            - '.doc.scr'
+    condition: selection
+falsepositives:
+    - Rare legitimate self-extractors or naming that includes a document token before .exe - a media or
+      document extension directly preceding an executable extension is almost always deceptive; validate
+      the writing process and origin
+level: medium

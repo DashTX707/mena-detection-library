@@ -1,0 +1,40 @@
+title: Dark Caracal Bandook HTTP C2 Base64 '&&&&' Marker
+id: 1e519f01-9eb9-4598-902d-8dd5a2c6ce46
+status: experimental
+description: |
+    Detects Dark Caracal / Bandook command-and-control over web protocols. Bandook communicates with
+    its C2 using HTTP-style payloads that are Base64-encoded and suffixed with the distinctive marker
+    string '&&&&' (T1071.001 Application Layer Protocol: Web Protocols). Keys on the '&&&&' marker
+    appearing in the request URI/query in proxy/web telemetry, optionally corroborated by requests to
+    the known Bandook C2 hostnames. The marker is a high-fidelity protocol fingerprint for this RAT.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.dark-caracal
+logsource:
+    category: proxy
+detection:
+    selection_marker:
+        c-uri|contains: '&&&&'
+    selection_c2:
+        c-uri|contains:
+            - 'ntsclouds.com'
+            - 'jtoolbox.org'
+            - 'mainsrv.top'
+            - 'olex.live'
+            - 'megawoc.com'
+            - 'fikofiko.top'
+            - 'p2020.club'
+            - 'mbcde.net'
+            - 'horizongb.com'
+            - 'branchesv.com'
+    condition: selection_marker or selection_c2
+falsepositives:
+    - The '&&&&' sequence could appear in benign query strings - corroborate with the destination
+      host reputation and the requesting host; the C2 hostname list is high fidelity
+level: high

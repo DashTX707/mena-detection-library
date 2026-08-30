@@ -1,0 +1,37 @@
+title: Cavern Manticore Domain/Exchange Account Discovery (Get-Recipient / net user /domain)
+id: 1c3e5a70-9b2d-4f4a-8c6e-0d8f0a2c4e87
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270) enumerating domain and mailbox accounts on compromised Exchange
+    (T1087.002 Account Discovery: Domain Account). The actor runs Exchange PowerShell
+    Get-Recipient | Select Name -ExpandProperty EmailAddresses ... | Select SmtpAddress to harvest mailbox
+    addresses, and net user /domain / net group /domain to enumerate directory accounts. Keys on those
+    account-enumeration command lines.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1087.002
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_getrecipient:
+        CommandLine|contains|all:
+            - 'Get-Recipient'
+            - 'EmailAddresses'
+    selection_netdomain:
+        Image|endswith:
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - 'user /domain'
+            - 'group /domain'
+    condition: selection_getrecipient or selection_netdomain
+falsepositives:
+    - Exchange administrators legitimately run Get-Recipient, and net /domain queries are common in AD
+      management; baseline expected admin hosts/accounts and correlate with preceding compromise activity
+level: medium

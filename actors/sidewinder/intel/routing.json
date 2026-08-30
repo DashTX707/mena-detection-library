@@ -1,0 +1,289 @@
+{
+  "actor": "SideWinder (Rattlesnake)",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "high — inbound documents with remote-template references / equation-editor objects and region-specific government/port lures are detectable at the mail gateway and sandbox via attachment inspection, template-injection detection and sender/lure analytics"
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — links/LNK-in-ZIP are detectable at the mail gateway and via detonation, but geofenced servers frequently withhold the payload from sandboxes, limiting verdicts"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — Office spawning child processes (e.g. EQNEDT32.EXE, mshta.exe) after a user opens a document is detectable via process-lineage telemetry, but the open action itself is user-driven"
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "rationale": "medium — LNK execution spawning mshta.exe with a remote URL is detectable via process-creation command-line telemetry"
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "rationale": "high — EQNEDT32.EXE spawning mshta.exe / making outbound network connections is a well-known, high-fidelity exploit signature detectable via process-lineage and EDR; the Equation Editor should not launch children"
+    },
+    {
+      "technique_id": "T1218.005",
+      "technique_name": "System Binary Proxy Execution: Mshta",
+      "tactic": "execution",
+      "rationale": "high — mshta.exe launched with a remote URL, spawned by Office/EQNEDT32/LNK, and making outbound HTTP requests is a strong, actor-relevant detection via process command-line and network telemetry"
+    },
+    {
+      "technique_id": "T1059.007",
+      "technique_name": "Command and Scripting Interpreter: JavaScript",
+      "tactic": "execution",
+      "rationale": "medium — script-heavy execution under mshta and manipulation of the COMPLUS_Version environment variable are detectable via command-line/environment and script-block telemetry, but obfuscation limits static verdicts"
+    },
+    {
+      "technique_id": "T1559.002",
+      "technique_name": "Inter-Process Communication: Dynamic Data Exchange",
+      "tactic": "execution",
+      "rationale": "medium — DDE-driven child processes from Office are detectable via process-lineage, though this vector is largely superseded by the CVE-2017-11882 equation-editor chain in recent MENA activity"
+    },
+    {
+      "technique_id": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "tactic": "stealth",
+      "rationale": "medium — in-memory .NET assembly loading is detectable via CLR/AMSI and memory-scan telemetry, but is stealthier than file-based execution and needs runtime instrumentation"
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "stealth",
+      "rationale": "high — a signed application loading an unsigned/anomalous DLL by these names from an unusual path is detectable via module-load (Sysmon EID 7) and signature/path-mismatch telemetry; frequent name rotation argues for behavioral (load-location) rather than name-only rules"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation/modification of Run-key autostart entries pointing to the loader/host binary is detectable via registry-modification telemetry (Sysmon EID 13) and autoruns baselining"
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "rationale": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and detectable when it launches the loader/host binary from an unusual path"
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "rationale": "medium — registry writes to autostart and config locations are detectable via registry-modification telemetry, but blend with legitimate software installs without baselining"
+    },
+    {
+      "technique_id": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "tactic": "privilege-escalation",
+      "rationale": "high — common UAC-bypass primitives (auto-elevating COM/fodhelper/eventvwr-style hijacks) are detectable via registry-hijack and anomalous elevated-process-lineage telemetry"
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "stealth",
+      "rationale": "medium — sandbox-check logic is visible on sample analysis but leaves little live host signal; primarily a hunt/sample-analysis indicator"
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy/obfuscated script content and control-flow-flattened assemblies are detectable via entropy/heuristic and script-block analytics but generate analyst overhead"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "medium — high-entropy encrypted blobs and Base64 payloads are detectable via file-entropy analytics but require dedicated scanning"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — legitimately-named DLLs in unexpected paths and signature-vs-name mismatches are detectable via path/hash baselining, but name rotation reduces static-signature value"
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "high — WMI queries against SecurityCenter2 / AntiVirusProduct and rapid enumeration of many security-product process names are detectable via WMI-activity and process-access telemetry, and are characteristic of this chain"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — bulk process enumeration is common but suspicious when tightly correlated with the mshta/.NET-loader lineage"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — system-info collection is routine and noisy; meaningful mainly within the loader process-lineage window"
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — network-config discovery commands (ipconfig, route) are detectable via command-line telemetry but common; value from recon-burst correlation"
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — whoami / user-context queries are detectable in command-line logs but common; meaningful in recon-burst context"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — file/directory enumeration is common and noisy; meaningful mainly within a tight process-lineage window"
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — software/framework enumeration is detectable via registry-read and WMI telemetry but blends with legitimate activity"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium — screen capture leaves little discrete signal; detectable mainly via API-behavior heuristics in EDR and correlation with the implant process"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "medium — keylogging is detectable via low-level keyboard-hook API behavior in EDR but is not always distinctive without implant correlation"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "medium — automated bulk file access/staging is detectable via file-access and process I/O telemetry, but needs baselining to separate from legitimate use"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — local data collection is common; suspicious mainly via staging patterns and implant process-lineage"
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "rationale": "medium — creation of local staging files/directories preceding egress is detectable via file-write telemetry with baselining"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "high — access to browser credential stores (Login Data SQLite, DPAPI decryption) is detectable via file-access and process-behavior telemetry in EDR"
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "rationale": "high — access to lsass.exe memory for Windows credential theft is highly observable via EDR process-access telemetry"
+    },
+    {
+      "technique_id": "T1056.002",
+      "technique_name": "Input Capture: GUI Input Capture",
+      "tactic": "credential-access",
+      "rationale": "medium — spoofed credential-prompt GUIs are hard to detect directly; observable via anomalous process spawning a credential dialog and correlation with the implant"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "high — outbound HTTP/HTTPS to the enumerated C2/look-alike domains is detectable via proxy/DNS telemetry and domain bl:ocklisting; DNS/proxy logs are the primary network detection surface"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "high — remote payload retrieval by mshta.exe and the .NET loader, and file writes following those downloads, are detectable via network + process/file telemetry"
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "rationale": "medium — encrypted C2 defeats payload inspection; detectable via JA3/JA4 TLS fingerprinting, beacon-timing analytics and destination reputation rather than content"
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Software",
+      "tactic": "command-and-control",
+      "rationale": "medium — implant-provided reverse shells are detectable via anomalous outbound connections and interactive-command process-lineage from the implant, but there is no third-party RMM binary to signature"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — exfiltration over the C2 channel is detectable via outbound-volume anomalies and destination reputation, though encryption hides content"
+    },
+    {
+      "technique_id": "T1020",
+      "technique_name": "Automated Exfiltration",
+      "tactic": "exfiltration",
+      "rationale": "medium — periodic automated egress is detectable via beacon-plus-transfer timing analytics, but blends with normal encrypted traffic without baselining"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "rationale": "low — reconnaissance/targeting messaging is largely off-victim and observable only at the email gateway when links are present; hunt candidate via mail-gateway URL and lure-theme analytics"
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware development happens off-victim on adversary infrastructure; intel/hunt candidate tracked via sample clustering and family evolution"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration is off-victim; hunt/intel candidate via newly-registered-domain and brand-impersonation monitoring for organization/port names"
+    },
+    {
+      "technique_id": "T1608.002",
+      "technique_name": "Stage Capabilities: Upload Tool",
+      "tactic": "resource-development",
+      "rationale": "low — geofenced/off-victim staging defeats sandbox retrieval and is not endpoint-observable; hunt/intel candidate via infrastructure tracking and retrieval from in-region sensors"
+    },
+    {
+      "technique_id": "T1497.003",
+      "technique_name": "Virtualization/Sandbox Evasion: Time Based Evasion",
+      "tactic": "stealth",
+      "rationale": "low — evasion designed to defeat automated analysis leaves minimal host telemetry; hunt/intel candidate via in-region detonation and infrastructure analysis"
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "rationale": "low — in-memory decode/decrypt routines leave little discrete host signal; primarily a sample-analysis characteristic"
+    },
+    {
+      "technique_id": "T1124",
+      "technique_name": "System Time Discovery",
+      "tactic": "discovery",
+      "rationale": "low — system-time queries are ubiquitous and low-signal; not a practical standalone detection"
+    }
+  ],
+  "summary": {
+    "total": 46,
+    "detection": 39,
+    "hunt": 7
+  }
+}

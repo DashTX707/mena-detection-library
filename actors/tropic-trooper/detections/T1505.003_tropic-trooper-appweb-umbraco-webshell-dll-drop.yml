@@ -1,0 +1,38 @@
+title: Tropic Trooper App_Web Umbraco Web Shell DLL Dropped to ASP.NET Temp Tree
+id: 9c1f8a72-4e35-4b90-8d2c-6f7a1b3e4c58
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) deploying its China Chopper Umbraco web shell
+    (T1505.003 Server Software Component: Web Shell). The actor writes a compiled .NET module named
+    App_Web_{8-char}.dll into the ASP.NET Temporary Files tree
+    (c:\microsoft.net\framework64\v4.0.30319\temporary asp.net files\root\...) to persist durable
+    command execution on the compromised Umbraco/IIS server. Keys on file creation of App_Web_*.dll
+    inside the Temporary ASP.NET Files directory. While ASP.NET legitimately compiles App_Web_*.dll
+    modules, a new/unexpected one correlated with w3wp shell activity or web root changes is
+    high-fidelity. Best paired with file-integrity monitoring on the web root.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1505.003
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        TargetFilename|contains: '\Temporary ASP.NET Files\'
+        TargetFilename|contains|all:
+            - '\App_Web_'
+        TargetFilename|endswith: '.dll'
+    filter_iis_worker:
+        Image|endswith: '\w3wp.exe'
+    condition: selection and filter_iis_worker
+falsepositives:
+    - Normal ASP.NET runtime compilation produces App_Web_*.dll files - correlate with unexpected web
+      root modifications, web shell request patterns, or w3wp spawning shells to separate benign
+      recompilation from a planted module
+level: medium

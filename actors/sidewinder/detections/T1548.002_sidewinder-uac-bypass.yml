@@ -1,0 +1,33 @@
+title: SideWinder UAC Bypass via Auto-Elevating COM Handler Registry Hijack
+id: 05a5649c-05b2-4184-a39d-92a3b4c5d6e7
+status: experimental
+description: |
+    Detects registry hijacks of the shell open command keys abused by common UAC-bypass
+    primitives (fodhelper/ms-settings, eventvwr/mscfile, and exefile/Folder handler hijacks).
+    SideWinder (Rattlesnake / APT-C-17) StealerBot includes functionality to escalate
+    privileges by bypassing Windows User Account Control; these bypasses plant a command in a
+    user-writable Classes key that an auto-elevating trusted binary then executes elevated.
+references:
+    - https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.privilege-escalation
+    - attack.stealth
+    - attack.t1548.002
+    - mena-detection-library.sidewinder
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection:
+        TargetObject|contains:
+            - '\Software\Classes\ms-settings\Shell\Open\command'
+            - '\Software\Classes\ms-settings\CurVer'
+            - '\Software\Classes\mscfile\Shell\Open\command'
+            - '\Software\Classes\exefile\shell\open\command'
+            - '\Software\Classes\Folder\shell\open\command'
+    condition: selection
+falsepositives:
+    - Legitimate software registering protocol/file handlers under HKCU Classes - rare for these specific auto-elevating keys; validate the written command
+level: high

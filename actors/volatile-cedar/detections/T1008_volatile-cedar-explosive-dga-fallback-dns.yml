@@ -1,0 +1,37 @@
+title: Volatile Cedar Explosive RAT DGA Fallback DNS Behavior
+id: 61f83c04-023d-41b4-bcea-f2eff50e37ad
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar Explosive RAT fallback command-and-control behavior
+    (T1008 Fallback Channels, T1568.002 Dynamic Resolution: Domain Generation Algorithms). Explosive
+    uses hardcoded static updater C2 as its primary channel; when it cannot reach the hardcoded C2 it
+    falls back to a DGA and cycles through algorithmically generated domains to re-establish
+    communications (this DGA infrastructure was sinkholed by Kaspersky). Keys on the DNS symptom of
+    the fallback loop: a single host generating a burst of NXDOMAIN responses for many distinct
+    high-character-count domains in a short window - the signature of an implant cycling DGA
+    candidates. This rule keys per-event on a failed (NXDOMAIN) resolution of a long, high-entropy
+    algorithmically generated domain label; apply volume/burst thresholding per source host at the
+    SIEM/correlation layer to suppress isolated benign NXDOMAINs. Requires DNS query/response logging.
+references:
+    - https://securelist.com/sinkholing-volatile-cedar-dga-infrastructure/69421/
+    - https://www.clearskysec.com/wp-content/uploads/2021/01/Lebanese-Cedar-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1008
+    - attack.t1568.002
+    - mena-detection-library.volatile-cedar
+logsource:
+    product: windows
+    category: dns_query
+detection:
+    selection_nxdomain:
+        QueryStatus: 9003
+    selection_dga:
+        QueryName|re: '^[a-z0-9]{12,}\.(com|net|info|org|biz|xyz)$'
+    condition: all of selection_*
+falsepositives:
+    - Misconfigured applications, browsers with search-domain suffixing, or endpoint security agents
+      that generate many NXDOMAIN lookups - baseline per host and exclude known noisy resolvers before alerting
+level: medium

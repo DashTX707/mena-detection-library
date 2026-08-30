@@ -1,0 +1,38 @@
+title: Cavern Manticore Tooling Masquerading as Legitimate Windows Binaries
+id: 3e5a7c90-2b4d-4f6a-9c8e-0d1f3a5b7c65
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / Cobalt Mirage) masquerading tooling under legitimate Windows binary
+    names (T1036.005 Match Legitimate Resource Name or Location). The FRPC client is dropped as audio.exe and
+    reverse-proxy/payloads masquerade as dllhost.exe, task_update.exe, user.exe and CacheTask - typically run
+    from non-standard paths. Keys on the name/location mismatch: signed-system-looking names executing from
+    user-writable or non-System32 directories.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_names:
+        Image|endswith:
+            - '\dllhost.exe'
+            - '\audio.exe'
+            - '\task_update.exe'
+            - '\user.exe'
+    filter_legit_paths:
+        Image|contains:
+            - ':\Windows\System32\'
+            - ':\Windows\SysWOW64\'
+            - ':\Windows\WinSxS\'
+    condition: selection_names and not filter_legit_paths
+falsepositives:
+    - audio.exe / task_update.exe / user.exe may be shipped by some third-party software; validate the file
+      signature, hash and full path - genuine dllhost.exe only runs from System32/SysWOW64
+level: medium

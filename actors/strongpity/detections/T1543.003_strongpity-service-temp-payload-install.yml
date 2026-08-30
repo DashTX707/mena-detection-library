@@ -1,0 +1,37 @@
+title: StrongPity Windows Service Install From Temp or AppData Path
+id: 7d2e4c19-6b83-4f57-8a12-9e0d3c1b6f24
+status: experimental
+description: |
+    Detects StrongPity / PROMETHIUM persistence and service-based execution where the dropper installs
+    a Windows service whose ImagePath resolves to a %temp%, AppData or lang_ staging directory
+    (T1543.003 Create or Modify System Process: Windows Service, T1569.002 Service Execution). Legitimate
+    services almost never run from these user-writable staging paths, so a service-install event
+    (System Event ID 7045) with such an ImagePath is a strong persistence signal. Anchored on the
+    service-creation behavior plus the anomalous image path used by StrongPity droppers.
+references:
+    - https://attack.mitre.org/software/S0491/
+    - https://www.bitdefender.com/files/News/CaseStudies/study/353/Bitdefender-Whitepaper-StrongPity-APT.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.execution
+    - attack.t1543.003
+    - attack.t1569.002
+    - mena-detection-library.strongpity
+logsource:
+    product: windows
+    service: system
+detection:
+    selection_event:
+        EventID: 7045
+    selection_path:
+        ImagePath|contains:
+            - '\Temp\'
+            - '\AppData\'
+            - '\lang_'
+    condition: all of selection_*
+falsepositives:
+    - A small number of legitimate installers stage a service binary in AppData - confirm the service
+      name, the signing status of the ImagePath binary and the creating process before dismissing
+level: high

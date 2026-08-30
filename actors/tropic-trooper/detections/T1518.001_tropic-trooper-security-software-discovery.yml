@@ -1,0 +1,51 @@
+title: Tropic Trooper Security Software Discovery
+id: 5c9f4a28-1e7b-4d63-9f2a-8c1d6b3e5a74
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) enumerating installed antivirus/EDR products before
+    deploying the Crowdoor loader (T1518.001 Software Discovery: Security Software Discovery). Keys on
+    command lines that list services/processes/products (tasklist, sc query, net start, wmic, Get-Service)
+    combined with references to well-known security-product names. Anchor on the query verb plus the
+    security-product term rather than on process name alone, since these utilities are also used
+    routinely by admins.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.discovery
+    - attack.t1518.001
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_query:
+        Image|endswith:
+            - '\tasklist.exe'
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+            - '\wmic.exe'
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_product:
+        CommandLine|contains:
+            - 'WinDefend'
+            - 'MsMpEng'
+            - 'Sense'
+            - 'CrowdStrike'
+            - 'CSFalcon'
+            - 'SentinelOne'
+            - 'Sophos'
+            - 'Kaspersky'
+            - 'Symantec'
+            - 'CylanceSvc'
+            - 'McAfee'
+    condition: selection_query and selection_product
+falsepositives:
+    - IT administrators and inventory/monitoring tools legitimately query security-product state -
+      baseline expected management hosts and accounts, and correlate with adjacent web-shell or
+      side-load activity
+level: medium

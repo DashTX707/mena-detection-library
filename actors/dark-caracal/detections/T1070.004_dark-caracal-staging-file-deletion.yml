@@ -1,0 +1,35 @@
+title: Dark Caracal Bandook Staging File Deletion by PowerShell
+id: 8f275e39-84df-48d7-9a05-fd6de44047d6
+status: experimental
+description: |
+    Detects deletion of the Dark Caracal / Bandook staging files shortly after execution. After
+    reconstructing and running the payload, the loader deletes the downloaded ZIP and its extracted
+    components (a.png/b.png/untitled.png/sdmc.jpg/fmx.ps1) from the Public folder to remove evidence
+    (T1070.004 Indicator Removal: File Deletion), then displays a benign decoy draft.docx. Keys on a
+    file_delete event for these actor-specific staging filenames, especially when the deleting
+    process is powershell.exe or the loader.
+references:
+    - https://research.checkpoint.com/2020/bandook-signed-delivered/
+    - https://attack.mitre.org/groups/G0070/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1070.004
+    - mena-detection-library.dark-caracal
+logsource:
+    category: file_delete
+    product: windows
+detection:
+    selection:
+        TargetFilename|endswith:
+            - '\a.png'
+            - '\b.png'
+            - '\untitled.png'
+            - '\sdmc.jpg'
+            - '\fmx.ps1'
+    condition: selection
+falsepositives:
+    - Routine cleanup of similarly named image files - the actor context comes from these specific
+      staging names being created then deleted in Users\Public within a short window
+level: medium

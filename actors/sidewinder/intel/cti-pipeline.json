@@ -1,0 +1,597 @@
+{
+  "report_title": "SideWinder (Rattlesnake / T-APT-04 / APT-C-17 / Razor Tiger / BabyElephant) Actor Intelligence Pack — Stage-1 CTI Extraction (Middle East & Africa Expansion 2023–2025)",
+  "source": "Kaspersky/Securelist 'SideWinder APT updates its toolset and targets nuclear sector' (2024-10-15, https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/); Kaspersky press release 'Kaspersky identifies SideWinder APT expanding attacks with new espionage tool' (StealerBot; https://www.kaspersky.com/about/press-releases/kaspersky-identifies-sidewinder-apt-expanding-attacks-with-new-espionage-tool); BlackBerry Threat Research 'SideWinder Uses Server-Side Polymorphism to Target Maritime Facilities' (2024-07); The Hacker News coverage (2024-10 https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html, 2025-03 https://thehackernews.com/2025/03/sidewinder-apt-targets-maritime-nuclear.html); MITRE ATT&CK Group Sidewinder G0121 (https://attack.mitre.org/groups/G0121/)",
+  "publication_date": "2026-08-30",
+  "actor": {
+    "name": "SideWinder",
+    "mitre_id": "",
+    "mitre_canonical_name": "Sidewinder",
+    "aliases": [
+      "Rattlesnake",
+      "T-APT-04",
+      "APT-C-17",
+      "Razor Tiger",
+      "BabyElephant",
+      "Hardcore Nationalist (HN2)",
+      "MITRE ATT&CK G0121"
+    ],
+    "related_clusters": [
+      "StealerBot modular post-exploitation toolkit (bespoke, actor-exclusive)",
+      "WarHawk backdoor (earlier South Asia campaigns)",
+      "ModuleInstaller / Backdoor Loader multi-stage chain"
+    ],
+    "attribution": "India-nexus, suspected state-aligned espionage actor active since at least 2012, historically focused on Pakistan, China, Nepal, Afghanistan and the wider South Asia region against government, military and diplomatic targets. Assessed India-aligned by multiple vendors (Kaspersky, BlackBerry, Trend Micro) on the basis of targeting (persistent focus on Pakistani and Chinese military/diplomatic entities), lure content, and operational tempo; the nexus is a medium-high-confidence assessment rather than a government-confirmed attribution, and no vendor claims a specific sponsoring entity. From 2023 into 2024–2025 the group markedly EXPANDED beyond South Asia into the Middle East and Africa, adding maritime/port authorities, nuclear energy agencies, government/diplomatic, logistics, energy and telecom targets across Egypt, the UAE, Saudi Arabia, Djibouti, Jordan, Bahrain and the wider region — the reason for inclusion in the MENA Detection Library.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Egypt",
+      "United Arab Emirates",
+      "Saudi Arabia",
+      "Djibouti",
+      "Jordan",
+      "Bahrain",
+      "Turkey",
+      "Algeria",
+      "Morocco"
+    ],
+    "targeted_regions_global": [
+      "Pakistan",
+      "China",
+      "Nepal",
+      "Afghanistan",
+      "Bangladesh",
+      "Sri Lanka",
+      "Maldives",
+      "Myanmar",
+      "Nepal",
+      "Cambodia",
+      "Vietnam",
+      "Malaysia",
+      "Indonesia",
+      "Bulgaria",
+      "Rwanda",
+      "Uganda",
+      "India"
+    ],
+    "targeted_sectors": [
+      "Maritime / ports / port authorities / logistics",
+      "Government and diplomatic entities",
+      "Military and defense",
+      "Nuclear energy / nuclear power plants / energy",
+      "Telecommunications",
+      "Financial institutions",
+      "IT service providers and consulting",
+      "Universities / academia",
+      "Oil trading"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Middle East & Africa expansion — StealerBot espionage campaign",
+        "date": "2023–2024 (documented by Kaspersky October 2024)",
+        "summary": "SideWinder expanded operations into the Middle East and Africa, hitting government, military, logistics, infrastructure, telecom, financial, university and oil-trading entities across Djibouti, Egypt, the UAE, Saudi Arabia, Jordan, Turkey, Bangladesh and Southeast Asia. Spear-phishing emails delivered weaponized DOCX/RTF documents (and ZIP-packed LNK files) exploiting CVE-2017-11882 in the Microsoft Office Equation Editor to launch a multi-stage mshta.exe → obfuscated JavaScript → .NET ModuleInstaller downloader → Backdoor Loader (DLL side-loading) chain culminating in the in-memory StealerBot implant. Lure documents impersonated real regional entities (e.g. Saudi MOFA, Pakistani government bodies) and port authorities.",
+        "source_url": "https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"
+      },
+      {
+        "name": "Maritime / port-authority targeting (Mediterranean, Red Sea, Indian Ocean)",
+        "date": "2024 (BlackBerry July 2024; Kaspersky October 2024)",
+        "summary": "SideWinder intensified attacks on maritime facilities and port authorities, including the first observed strikes on maritime targets in the Mediterranean. Lure documents falsified communications from specific ports (e.g. the Port of Alexandria, Egypt) and referenced port authorities and maritime infrastructure across Egypt, Djibouti, the UAE and South/Southeast Asia. BlackBerry documented server-side polymorphism — the delivery server mutates the payload per request — layered with spear-phishing, document exploitation and DLL side-loading.",
+        "source_url": "https://www.darkreading.com/cyberattacks-data-breaches/sidewinder-intensifies-attacks-maritime-sector"
+      },
+      {
+        "name": "Nuclear-sector and critical-infrastructure targeting with updated toolset",
+        "date": "H2 2024 – 2025 (Securelist / The Hacker News March 2025)",
+        "summary": "SideWinder broadened targeting to entities associated with nuclear energy, using lure documents referencing nuclear power plants and nuclear energy agencies, alongside continued maritime, telecom, real-estate and hospitality targeting. Operators demonstrated aggressive operational security: when tools were detected they produced new modified malware variants — often in under five hours — and rotated file names, paths, persistence mechanisms and loading techniques to evade behavioral detection.",
+        "source_url": "https://thehackernews.com/2025/03/sidewinder-apt-targets-maritime-nuclear.html"
+      }
+    ]
+  },
+  "threat_actors": ["SideWinder", "Rattlesnake", "T-APT-04", "APT-C-17", "Razor Tiger", "BabyElephant"],
+  "targeted_regions": ["Egypt", "United Arab Emirates", "Saudi Arabia", "Djibouti", "Jordan", "Bahrain", "Turkey", "Pakistan", "South Asia", "Southeast Asia", "Africa"],
+  "targeted_sectors": ["Maritime / ports / logistics", "Government / diplomatic", "Military / defense", "Nuclear energy / energy", "Telecommunications", "Financial institutions", "IT / consulting", "Universities", "Oil trading"],
+  "malware": [
+    "StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)",
+    "ModuleInstaller (.NET downloader — establishes persistence, loads Backdoor Loader, retrieves next-stage components)",
+    "Backdoor Loader (DLL side-loaded module that decrypts and loads StealerBot in memory)",
+    "WarHawk (earlier SideWinder backdoor from South Asia operations)"
+  ],
+  "tooling_observed": [
+    "mshta.exe (LOLBIN, remote HTA execution)",
+    "Microsoft Office Equation Editor exploit (CVE-2017-11882)",
+    "Remote template injection (DOCX -> RTF)",
+    "Obfuscated JavaScript downloader (mshtml.RunHTMLApplication)",
+    "COMPLUS_Version .NET runtime manipulation",
+    "WMI (security-solution enumeration)",
+    "Legitimate signed applications abused for DLL side-loading (propsys.dll, vsstrace.dll, JetCfg.dll, policymanager.dll, winmm.dll, xmllite.dll, dcntel.dll, UxTheme.dll variants)",
+    "Server-side polymorphism / geofenced staging infrastructure",
+    "Look-alike / typosquatted government and port-authority domains"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1598.003",
+      "technique_name": "Phishing for Information: Spearphishing Link",
+      "tactic": "reconnaissance",
+      "procedure_description": "SideWinder sends spear-phishing messages containing links, and uses lure themes tailored to the victim (government, maritime/port authority, nuclear-agency topics) to profile and engage targets before delivering payloads.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — reconnaissance/targeting messaging is largely off-victim and observable only at the email gateway when links are present; hunt candidate via mail-gateway URL and lure-theme analytics",
+      "sources": ["https://attack.mitre.org/groups/G0121/", "https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1587.001",
+      "technique_name": "Develop Capabilities: Malware",
+      "tactic": "resource-development",
+      "procedure_description": "SideWinder develops and continuously maintains its own bespoke tooling — the StealerBot modular toolkit, the ModuleInstaller .NET downloader and the Backdoor Loader — regenerating new modified malware variants (often within hours) when a version is detected.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)", "ModuleInstaller (.NET downloader — establishes persistence, loads Backdoor Loader, retrieves next-stage components)"],
+      "detection_feasibility": "low — malware development happens off-victim on adversary infrastructure; intel/hunt candidate tracked via sample clustering and family evolution",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/", "https://thehackernews.com/2025/03/sidewinder-apt-targets-maritime-nuclear.html"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "SideWinder registers large numbers of look-alike / typosquatted domains impersonating regional governments, ministries and port authorities (e.g. mofa-gov-sa.direct888[.]net masquerading as the Saudi Ministry of Foreign Affairs, depo-govpk[.]com, portdedjibouti[.]live, pncert[.]info) to host lures and staging/C2.",
+      "observed_tooling": ["Look-alike / typosquatted government and port-authority domains"],
+      "detection_feasibility": "low — domain registration is off-victim; hunt/intel candidate via newly-registered-domain and brand-impersonation monitoring for organization/port names",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/", "https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1608.002",
+      "technique_name": "Stage Capabilities: Upload Tool",
+      "tactic": "resource-development",
+      "procedure_description": "SideWinder stages next-stage payloads (HTA/JavaScript, .NET modules) on attacker-controlled servers and uses server-side polymorphism plus geofencing so the staging server only serves the malicious payload to requests originating from targeted countries/victims, returning benign content otherwise.",
+      "observed_tooling": ["Server-side polymorphism / geofenced staging infrastructure"],
+      "detection_feasibility": "low — geofenced/off-victim staging defeats sandbox retrieval and is not endpoint-observable; hunt/intel candidate via infrastructure tracking and retrieval from in-region sensors",
+      "sources": ["https://www.darkreading.com/cyberattacks-data-breaches/sidewinder-intensifies-attacks-maritime-sector", "https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Primary initial-access vector: spear-phishing emails carrying weaponized Microsoft Office documents (DOCX/RTF) or ZIP archives, with lures impersonating government bodies, port authorities (e.g. Port of Alexandria) and nuclear-energy agencies relevant to the target's region and sector.",
+      "observed_tooling": ["Remote template injection (DOCX -> RTF)"],
+      "detection_feasibility": "high — inbound documents with remote-template references / equation-editor objects and region-specific government/port lures are detectable at the mail gateway and sandbox via attachment inspection, template-injection detection and sender/lure analytics",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "SideWinder also delivers ZIP archives containing Windows LNK shortcut files, or links that fetch a malicious HTA hosted on an attacker-controlled website; opening the LNK invokes mshta.exe against the remote JavaScript payload.",
+      "observed_tooling": ["mshta.exe (LOLBIN, remote HTA execution)"],
+      "detection_feasibility": "medium — links/LNK-in-ZIP are detectable at the mail gateway and via detonation, but geofenced servers frequently withhold the payload from sandboxes, limiting verdicts",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Infection requires the victim to open the malicious Office document, triggering remote template injection and the CVE-2017-11882 exploit.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — Office spawning child processes (e.g. EQNEDT32.EXE, mshta.exe) after a user opens a document is detectable via process-lineage telemetry, but the open action itself is user-driven",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1204.001",
+      "technique_name": "User Execution: Malicious Link",
+      "tactic": "execution",
+      "procedure_description": "In the LNK/link delivery variant the victim must click a link or launch the shortcut file, which runs mshta.exe against the attacker-hosted JavaScript.",
+      "observed_tooling": ["mshta.exe (LOLBIN, remote HTA execution)"],
+      "detection_feasibility": "medium — LNK execution spawning mshta.exe with a remote URL is detectable via process-creation command-line telemetry",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "procedure_description": "Weaponized documents exploit CVE-2017-11882 in the Microsoft Office Equation Editor (EQNEDT32.EXE) to execute embedded shellcode, which launches mshta.exe to retrieve the next stage from a remote server.",
+      "observed_tooling": ["Microsoft Office Equation Editor exploit (CVE-2017-11882)"],
+      "detection_feasibility": "high — EQNEDT32.EXE spawning mshta.exe / making outbound network connections is a well-known, high-fidelity exploit signature detectable via process-lineage and EDR; the Equation Editor should not launch children",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1218.005",
+      "technique_name": "System Binary Proxy Execution: Mshta",
+      "tactic": "execution",
+      "procedure_description": "Both the exploit and LNK chains invoke the signed Windows LOLBIN mshta.exe to download and execute a remote HTA/JavaScript payload (via mshtml.RunHTMLApplication), proxying execution through a trusted binary.",
+      "observed_tooling": ["mshta.exe (LOLBIN, remote HTA execution)"],
+      "detection_feasibility": "high — mshta.exe launched with a remote URL, spawned by Office/EQNEDT32/LNK, and making outbound HTTP requests is a strong, actor-relevant detection via process command-line and network telemetry",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1059.007",
+      "technique_name": "Command and Scripting Interpreter: JavaScript",
+      "tactic": "execution",
+      "procedure_description": "A heavily obfuscated JavaScript file executed via mshta enumerates installed .NET Framework versions, sets the COMPLUS_Version environment variable, decodes a Base64 .NET serialized Downloader Module (ModuleInstaller) and loads it directly into memory.",
+      "observed_tooling": ["Obfuscated JavaScript downloader (mshtml.RunHTMLApplication)", "COMPLUS_Version .NET runtime manipulation"],
+      "detection_feasibility": "medium — script-heavy execution under mshta and manipulation of the COMPLUS_Version environment variable are detectable via command-line/environment and script-block telemetry, but obfuscation limits static verdicts",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1559.002",
+      "technique_name": "Inter-Process Communication: Dynamic Data Exchange",
+      "tactic": "execution",
+      "procedure_description": "SideWinder has historically abused Microsoft Office Dynamic Data Exchange (DDE) in weaponized documents to execute code on victim hosts.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — DDE-driven child processes from Office are detectable via process-lineage, though this vector is largely superseded by the CVE-2017-11882 equation-editor chain in recent MENA activity",
+      "sources": ["https://attack.mitre.org/groups/G0121/"]
+    },
+    {
+      "technique_id": "T1620",
+      "technique_name": "Reflective Code Loading",
+      "tactic": "stealth",
+      "procedure_description": "The Base64-decoded .NET Downloader Module (ModuleInstaller) and subsequent StealerBot components are loaded and executed directly in memory rather than written to disk as PE files, reducing on-disk artifacts.",
+      "observed_tooling": ["Obfuscated JavaScript downloader (mshtml.RunHTMLApplication)"],
+      "detection_feasibility": "medium — in-memory .NET assembly loading is detectable via CLR/AMSI and memory-scan telemetry, but is stealthier than file-based execution and needs runtime instrumentation",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1574.001",
+      "technique_name": "Hijack Execution Flow: DLL",
+      "tactic": "stealth",
+      "procedure_description": "The chain uses DLL side-loading: a legitimate signed application loads a malicious 'Backdoor Loader' DLL (observed variants named propsys.dll, vsstrace.dll, JetCfg.dll, policymanager.dll, winmm.dll, xmllite.dll, dcntel.dll, UxTheme.dll) that decrypts and loads StealerBot in memory. Loader file names and host applications are rotated when detected.",
+      "observed_tooling": ["Legitimate signed applications abused for DLL side-loading (propsys.dll, vsstrace.dll, JetCfg.dll, policymanager.dll, winmm.dll, xmllite.dll, dcntel.dll, UxTheme.dll variants)", "Backdoor Loader (DLL side-loaded module that decrypts and loads StealerBot in memory)"],
+      "detection_feasibility": "high — a signed application loading an unsigned/anomalous DLL by these names from an unusual path is detectable via module-load (Sysmon EID 7) and signature/path-mismatch telemetry; frequent name rotation argues for behavioral (load-location) rather than name-only rules",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "The ModuleInstaller downloader establishes persistence for the Backdoor Loader on the host so StealerBot survives reboots; persistence mechanisms (registry Run key vs. other autostart) are rotated when behavioral detections occur.",
+      "observed_tooling": ["ModuleInstaller (.NET downloader — establishes persistence, loads Backdoor Loader, retrieves next-stage components)"],
+      "detection_feasibility": "high — creation/modification of Run-key autostart entries pointing to the loader/host binary is detectable via registry-modification telemetry (Sysmon EID 13) and autoruns baselining",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/", "https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "procedure_description": "As an alternate persistence mechanism the loader chain can register a scheduled task to relaunch the malicious loader; SideWinder switches between autostart persistence methods to evade behavioral detection.",
+      "observed_tooling": ["ModuleInstaller (.NET downloader — establishes persistence, loads Backdoor Loader, retrieves next-stage components)"],
+      "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and detectable when it launches the loader/host binary from an unusual path",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "tactic": "stealth",
+      "procedure_description": "ModuleInstaller/StealerBot write configuration and persistence data to the registry and modify registry values as part of installation and to store loader configuration.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — registry writes to autostart and config locations are detectable via registry-modification telemetry, but blend with legitimate software installs without baselining",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "tactic": "privilege-escalation",
+      "procedure_description": "StealerBot includes functionality to escalate privileges by bypassing Windows User Account Control (UAC).",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "high — common UAC-bypass primitives (auto-elevating COM/fodhelper/eventvwr-style hijacks) are detectable via registry-hijack and anomalous elevated-process-lineage telemetry",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1497.001",
+      "technique_name": "Virtualization/Sandbox Evasion: System Checks",
+      "tactic": "stealth",
+      "procedure_description": "The Downloader Module performs anti-sandbox/anti-analysis system checks, including verifying installed RAM is greater than ~950 MB and detecting whether nlssorting.dll is loaded, to avoid executing in analysis environments.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — sandbox-check logic is visible on sample analysis but leaves little live host signal; primarily a hunt/sample-analysis indicator",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1497.003",
+      "technique_name": "Virtualization/Sandbox Evasion: Time Based Evasion",
+      "tactic": "stealth",
+      "procedure_description": "SideWinder combines geofenced/server-side delivery with environmental checks so payloads only detonate on genuine in-region victims and withhold from sandboxes and out-of-scope requests.",
+      "observed_tooling": ["Server-side polymorphism / geofenced staging infrastructure"],
+      "detection_feasibility": "low — evasion designed to defeat automated analysis leaves minimal host telemetry; hunt/intel candidate via in-region detonation and infrastructure analysis",
+      "sources": ["https://www.darkreading.com/cyberattacks-data-breaches/sidewinder-intensifies-attacks-maritime-sector"]
+    },
+    {
+      "technique_id": "T1027.010",
+      "technique_name": "Obfuscated Files or Information: Command Obfuscation",
+      "tactic": "stealth",
+      "procedure_description": "The JavaScript stage is heavily obfuscated and the .NET modules use control-flow flattening to hinder static and dynamic analysis.",
+      "observed_tooling": ["Obfuscated JavaScript downloader (mshtml.RunHTMLApplication)"],
+      "detection_feasibility": "medium — high-entropy/obfuscated script content and control-flow-flattened assemblies are detectable via entropy/heuristic and script-block analytics but generate analyst overhead",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Payloads are Base64-encoded and encrypted at multiple stages (serialized .NET Downloader Module, the StealerBot implant decrypted by the Backdoor Loader) to evade static detection and store components on disk in encrypted form.",
+      "observed_tooling": ["Backdoor Loader (DLL side-loaded module that decrypts and loads StealerBot in memory)"],
+      "detection_feasibility": "medium — high-entropy encrypted blobs and Base64 payloads are detectable via file-entropy analytics but require dedicated scanning",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "Each stage decodes/decrypts the next: JavaScript Base64-decodes the serialized .NET module, and the Backdoor Loader decrypts the StealerBot implant before loading it into memory.",
+      "observed_tooling": ["Backdoor Loader (DLL side-loaded module that decrypts and loads StealerBot in memory)"],
+      "detection_feasibility": "low — in-memory decode/decrypt routines leave little discrete host signal; primarily a sample-analysis characteristic",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Side-loaded malicious DLLs adopt the names of legitimate system libraries (propsys.dll, winmm.dll, xmllite.dll, UxTheme.dll, etc.) and staging/C2 domains impersonate real ministries and port authorities to blend malicious activity with legitimate resources.",
+      "observed_tooling": ["Legitimate signed applications abused for DLL side-loading (propsys.dll, vsstrace.dll, JetCfg.dll, policymanager.dll, winmm.dll, xmllite.dll, dcntel.dll, UxTheme.dll variants)"],
+      "detection_feasibility": "medium — legitimately-named DLLs in unexpected paths and signature-vs-name mismatches are detectable via path/hash baselining, but name rotation reduces static-signature value",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The Downloader Module uses WMI queries to enumerate installed antivirus/security products (reading AV productState values) and checks running processes against a list of ~137 security-tool process names, then adapts its execution/persistence path accordingly.",
+      "observed_tooling": ["WMI (security-solution enumeration)"],
+      "detection_feasibility": "high — WMI queries against SecurityCenter2 / AntiVirusProduct and rapid enumeration of many security-product process names are detectable via WMI-activity and process-access telemetry, and are characteristic of this chain",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The loader enumerates running processes (comparing against its ~137-entry security-tool list) to fingerprint the defensive environment before deploying the backdoor.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — bulk process enumeration is common but suspicious when tightly correlated with the mshta/.NET-loader lineage",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The Downloader Module and StealerBot collect host system information (OS/.NET Framework versions, RAM size, loaded modules) to guide staging and evasion.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — system-info collection is routine and noisy; meaningful mainly within the loader process-lineage window",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "tactic": "discovery",
+      "procedure_description": "StealerBot gathers network configuration information from compromised hosts as part of its host-reconnaissance modules.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — network-config discovery commands (ipconfig, route) are detectable via command-line telemetry but common; value from recon-burst correlation",
+      "sources": ["https://attack.mitre.org/groups/G0121/"]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "procedure_description": "SideWinder tooling identifies the current user/owner of the compromised host to support targeting and credential-theft decisions.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — whoami / user-context queries are detectable in command-line logs but common; meaningful in recon-burst context",
+      "sources": ["https://attack.mitre.org/groups/G0121/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "StealerBot enumerates files and directories on the compromised host to locate documents and data of espionage interest prior to exfiltration.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — file/directory enumeration is common and noisy; meaningful mainly within a tight process-lineage window",
+      "sources": ["https://attack.mitre.org/groups/G0121/", "https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1124",
+      "technique_name": "System Time Discovery",
+      "tactic": "discovery",
+      "procedure_description": "SideWinder tooling queries system time as part of environment fingerprinting.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — system-time queries are ubiquitous and low-signal; not a practical standalone detection",
+      "sources": ["https://attack.mitre.org/groups/G0121/"]
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Beyond security products, the loader enumerates installed .NET Framework versions and other software to select compatible execution paths.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — software/framework enumeration is detectable via registry-read and WMI telemetry but blends with legitimate activity",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "StealerBot includes a module that captures screenshots of the victim's desktop for espionage.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — screen capture leaves little discrete signal; detectable mainly via API-behavior heuristics in EDR and correlation with the implant process",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "StealerBot logs keystrokes on the compromised host to capture credentials and sensitive input.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — keylogging is detectable via low-level keyboard-hook API behavior in EDR but is not always distinctive without implant correlation",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "StealerBot's file-stealer module automatically collects files of interest from the host (and connected media) for exfiltration.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — automated bulk file access/staging is detectable via file-access and process I/O telemetry, but needs baselining to separate from legitimate use",
+      "sources": ["https://attack.mitre.org/groups/G0121/", "https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "StealerBot steals documents and sensitive files from the local system for espionage purposes.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — local data collection is common; suspicious mainly via staging patterns and implant process-lineage",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1074.001",
+      "technique_name": "Data Staged: Local Data Staging",
+      "tactic": "collection",
+      "procedure_description": "Collected files, screenshots and keylog data are staged locally by StealerBot before exfiltration to C2.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — creation of local staging files/directories preceding egress is detectable via file-write telemetry with baselining",
+      "sources": ["https://attack.mitre.org/groups/G0121/"]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "A StealerBot module steals saved passwords from web browsers on the compromised host.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "high — access to browser credential stores (Login Data SQLite, DPAPI decryption) is detectable via file-access and process-behavior telemetry in EDR",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "procedure_description": "StealerBot includes functionality to steal Windows account credentials (including intercepting RDP credentials and harvesting Windows/system credential material) from the compromised host.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "high — access to lsass.exe memory for Windows credential theft is highly observable via EDR process-access telemetry",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1056.002",
+      "technique_name": "Input Capture: GUI Input Capture",
+      "tactic": "credential-access",
+      "procedure_description": "StealerBot includes a phishing/credential-capture module that presents a fake Windows credential prompt to trick the victim into entering their password.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — spoofed credential-prompt GUIs are hard to detect directly; observable via anomalous process spawning a credential dialog and correlation with the implant",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "StealerBot and the loader chain communicate with attacker-controlled C2 servers over HTTP/HTTPS to retrieve modules/commands and exfiltrate data, using look-alike domains (e.g. portdedjibouti[.]live, mofa-gov-sa.direct888[.]net, depo-govpk[.]com).",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "high — outbound HTTP/HTTPS to the enumerated C2/look-alike domains is detectable via proxy/DNS telemetry and domain bl:ocklisting; DNS/proxy logs are the primary network detection surface",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The multi-stage chain repeatedly retrieves next-stage components from remote servers — mshta fetches the HTA/JavaScript, ModuleInstaller downloads the Backdoor Loader and StealerBot modules, and StealerBot can pull additional payloads via a C++ downloader.",
+      "observed_tooling": ["mshta.exe (LOLBIN, remote HTA execution)", "ModuleInstaller (.NET downloader — establishes persistence, loads Backdoor Loader, retrieves next-stage components)"],
+      "detection_feasibility": "high — remote payload retrieval by mshta.exe and the .NET loader, and file writes following those downloads, are detectable via network + process/file telemetry",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1573.001",
+      "technique_name": "Encrypted Channel: Symmetric Cryptography",
+      "tactic": "command-and-control",
+      "procedure_description": "StealerBot encrypts its C2 communications, obscuring commands and exfiltrated data on the wire.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — encrypted C2 defeats payload inspection; detectable via JA3/JA4 TLS fingerprinting, beacon-timing analytics and destination reputation rather than content",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1219",
+      "technique_name": "Remote Access Software",
+      "tactic": "command-and-control",
+      "procedure_description": "StealerBot provides an interactive reverse-shell module giving operators hands-on-keyboard remote control of the compromised host.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — implant-provided reverse shells are detectable via anomalous outbound connections and interactive-command process-lineage from the implant, but there is no third-party RMM binary to signature",
+      "sources": ["https://thehackernews.com/2024/10/sidewinder-apt-strikes-middle-east-and.html"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Collected files, keystrokes, screenshots and credentials are exfiltrated to SideWinder C2 servers over the implant's encrypted command-and-control channel.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — exfiltration over the C2 channel is detectable via outbound-volume anomalies and destination reputation, though encryption hides content",
+      "sources": ["https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/"]
+    },
+    {
+      "technique_id": "T1020",
+      "technique_name": "Automated Exfiltration",
+      "tactic": "exfiltration",
+      "procedure_description": "StealerBot automatically exfiltrates the data collected by its modules to C2 without per-file operator interaction.",
+      "observed_tooling": ["StealerBot (modular .NET post-exploitation / espionage toolkit — Trojan.Loader orchestrator plus keylogger, screenshot, file stealer, browser/RDP/Windows credential theft, reverse shell, phishing/credential-capture and downloader modules)"],
+      "detection_feasibility": "medium — periodic automated egress is detectable via beacon-plus-transfer timing analytics, but blends with normal encrypted traffic without baselining",
+      "sources": ["https://attack.mitre.org/groups/G0121/"]
+    }
+  ],
+  "detection_signals": [
+    "Microsoft Office / EQNEDT32.EXE (Equation Editor) spawning mshta.exe or making outbound network connections — CVE-2017-11882 exploitation, a high-fidelity signature",
+    "mshta.exe launched with a remote URL and spawned by Office, EQNEDT32.EXE, or a .LNK file, making outbound HTTP requests to attacker infrastructure",
+    "Inbound Office documents using remote template injection (DOCX referencing a remote RTF) or containing equation-editor OLE objects; ZIP archives containing .LNK shortcut files; region/sector lures impersonating governments and port authorities (Port of Alexandria, Saudi MOFA, Djibouti port)",
+    "Obfuscated JavaScript under mshta manipulating the COMPLUS_Version environment variable and loading a Base64 .NET assembly in memory",
+    "Signed legitimate application side-loading an anomalous DLL by names propsys.dll / vsstrace.dll / JetCfg.dll / policymanager.dll / winmm.dll / xmllite.dll / dcntel.dll / UxTheme.dll from an unusual path (module-load / signature-path mismatch) — prefer load-location behavior over name because SideWinder rotates loader names",
+    "WMI queries against SecurityCenter2 / AntiVirusProduct (reading AV productState) and rapid enumeration of ~137 security-tool process names by a freshly-spawned .NET process",
+    "Anti-sandbox checks: process verifying installed RAM > ~950 MB and probing for nlssorting.dll before proceeding",
+    "Registry Run-key or scheduled-task autostart entries pointing at the Backdoor Loader / side-load host binary (persistence rotated when detected)",
+    "Access to lsass.exe memory and to browser credential stores (Login Data), plus a spoofed Windows credential prompt, originating from the StealerBot implant process",
+    "Outbound HTTP/HTTPS (often TLS-encrypted) to the enumerated C2 / look-alike domains — DNS and proxy logs are the primary network detection surface; note rapid infra rotation (new variants in <5 hours)",
+    "New malware variants / renamed loader files and paths appearing within hours of a prior detection on the same host or peer hosts (SideWinder's rapid re-tooling behavior)"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [
+      "pmd-office.info",
+      "modpak.info",
+      "dirctt888.info",
+      "modpak-info.services",
+      "pmd-offc.info",
+      "dowmloade.org",
+      "dirctt888.com",
+      "portdedjibouti.live",
+      "mods.email",
+      "dowmload.co",
+      "downl0ad.org",
+      "d0wnlaod.com",
+      "d0wnlaod.org",
+      "dirctt88.info",
+      "directt88.com",
+      "file-dwnld.org",
+      "defencearmy.pro",
+      "document-viewer.info",
+      "aliyum.email",
+      "d0cumentview.info",
+      "debcon.live",
+      "document-viewer.live",
+      "documentviewer.info",
+      "ms-office.app",
+      "ms-office.pro",
+      "pncert.info",
+      "session-out.com",
+      "zeltech.live",
+      "ziptec.info",
+      "depo-govpk.com",
+      "crontec.site",
+      "mteron.info",
+      "mevron.tech",
+      "veorey.live",
+      "mod-kh.info",
+      "mofa-gov-sa.direct888.net"
+    ],
+    "emails": [],
+    "hashes": [
+      "e9726519487ba9e4e5589a8a5ec2f933",
+      "d36a67468d01c4cb789cd6794fb8bc70",
+      "313f9bbe6dac3edc09fe9ac081950673",
+      "bd8043127abe3f5cfa61bd2174f54c60",
+      "e0bce049c71bc81afe172cd30be4d2b7",
+      "872c2ddf6467b1220ee83dca0e118214",
+      "3d9961991e7ae6ad2bae09c475a1bce8",
+      "a694ccdb82b061c26c35f612d68ed1c2",
+      "f42ba43f7328cbc9ce85b2482809ff1c",
+      "0216ffc6fb679bdf4ea6ee7051213c1e",
+      "433480f7d8642076a8b3793948da5efe"
+    ],
+    "cves": [
+      "CVE-2017-11882"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "high",
+  "notes": "Primary sources are Kaspersky/Securelist's October 2024 technical report and StealerBot press release, BlackBerry's July 2024 maritime research (server-side polymorphism), and corroborating The Hacker News / Dark Reading / Security Affairs coverage, enriched with MITRE ATT&CK Sidewinder G0121 for well-documented technique baseline. Confidence in the TTP/IOC extraction is high (multiple independent primary vendor reports with concrete IOC appendices); the India-nexus ATTRIBUTION itself is a medium-confidence vendor assessment (targeting/lure-based, no government confirmation, no named sponsor), reflected in actor.attribution_confidence='medium'. actor.mitre_id intentionally left empty per tasking; MITRE group id G0121 is cited only in source/aliases/notes. MENA RELEVANCE: 2023–2025 expansion into the Middle East & Africa — maritime/ports (Port of Alexandria Egypt, Djibouti port, UAE), government/diplomatic (Saudi MOFA impersonation), nuclear/energy agencies, telecom and logistics across Egypt, UAE, Saudi Arabia, Djibouti, Jordan, Bahrain, Turkey and the wider region. ATT&CK normalization to THIS environment's bundled (reorganized) dataset: Defense-Evasion techniques use the env tactic slug 'stealth'; DLL side-loading uses T1574.001 ('DLL', as T1574.002 is absent in this env); Scheduled Task uses T1053.005; Encrypted/Encoded File uses T1027.013. Every technique_id was validated as a key in the bundled attack_dump.json (697 techniques) before inclusion — zero invalid IDs. STRONGEST DETECTION SURFACE (detect candidates, high feasibility): T1203/T1218.005 EQNEDT32->mshta exploit chain, T1574.001 side-loaded Backdoor Loader, T1547.001/T1053.005 loader persistence, T1518.001 WMI AV enumeration + 137-process check, T1555.003/T1003.001 browser+LSASS credential theft, T1071.001/T1105 C2 retrieval to look-alike domains, T1548.002 UAC bypass. HUNT-leaning (low feasibility, off-victim / evasion-designed): T1608.002/T1497.003 geofenced & server-side-polymorphic staging, T1583.001 look-alike domain acquisition, T1587.001 malware development, T1598.003 targeting messaging, T1140 in-memory decode. IOCs are taken verbatim from the Securelist October 2024 appendix (MD5 sample hashes for weaponized Office documents and Backdoor Loaders; C2 look-alike domains) plus the Saudi-MOFA-impersonating domain from The Hacker News reporting; defanging brackets removed for raw machine-readable values, and vendor/CDN/legitimate domains excluded. No malicious IP indicators are placed in iocs.ips because the cited report bodies enumerated domain rather than IP indicators; the actor rotates infrastructure aggressively (new variants often in under five hours), so hash/domain IOCs are short-lived and the behavioral TTPs above are the durable detection basis. No YARA rules were present in the cited report bodies, so yara_rules is empty (per policy, rules are extracted verbatim only, never authored)."
+}

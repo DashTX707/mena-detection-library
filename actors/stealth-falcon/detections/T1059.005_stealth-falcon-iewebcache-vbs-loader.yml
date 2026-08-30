@@ -1,0 +1,35 @@
+title: Stealth Falcon IEWebCache.vbs VBScript Loader Execution
+id: 7c1a9e63-2b84-4f10-8d6e-3a5b7c9d1e42
+status: experimental
+description: |
+    Detects execution of the Stealth Falcon (FruityArmor) VBScript loader IEWebCache.vbs (T1059.005
+    Visual Basic). The 2016 Citizen Lab implant wrote a .vbs loader carrying Base64-encoded PowerShell
+    to disk and had it executed by wscript/cscript (driven by the 'IE Web Cache' scheduled task) to
+    launch the backdoor stages. Keys on wscript/cscript running the actor-specific IEWebCache.vbs
+    filename, or any .vbs launched from a user-writable path - behavior consistent with the loader.
+references:
+    - https://citizenlab.ca/2016/05/stealth-falcon/
+    - https://attack.mitre.org/groups/G0038/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_interp:
+        Image|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+    selection_named:
+        CommandLine|contains: 'IEWebCache.vbs'
+    selection_userwritable:
+        CommandLine|re: '(?i)\\(users|appdata|temp|programdata|public)\\[^ ]+\.vbs'
+    condition: selection_interp and (selection_named or selection_userwritable)
+falsepositives:
+    - Legitimate administrative or vendor VBScripts run from user-writable paths - validate the script
+      contents and the parent process before dismissing
+level: high

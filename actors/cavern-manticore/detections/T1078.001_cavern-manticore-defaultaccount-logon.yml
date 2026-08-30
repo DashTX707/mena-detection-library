@@ -1,0 +1,38 @@
+title: Cavern Manticore Logon Using DefaultAccount/DefaultUser Backdoor Identity
+id: 8b0d2f46-5a7c-4e9b-a1c3-6d8f0a2c4e18
+status: experimental
+description: |
+    Detects Cavern Manticore (Cobalt Mirage / DEV-0270) authenticating with the normally-dormant built-in
+    DefaultAccount or the actor-created DefaultUser identity (T1078.001 Valid Accounts: Default Accounts).
+    The actor repurposes these default-looking accounts to blend malicious interactive/RDP logons with
+    legitimate activity. Keys on successful logon events (Event ID 4624) for these account names, which are
+    anomalous because the built-in DefaultAccount is disabled and never interactively used in normal operation.
+references:
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.t1078.001
+    - mena-detection-library.cavern-manticore
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_event:
+        EventID: 4624
+    selection_account:
+        TargetUserName:
+            - 'DefaultAccount'
+            - 'DefaultUser'
+    selection_type:
+        LogonType:
+            - 2
+            - 7
+            - 10
+    condition: all of selection_*
+falsepositives:
+    - The built-in DefaultAccount is used non-interactively by Windows for specific system scenarios; an
+      interactive (type 2/7/10) logon by it is abnormal - validate the source host and time before dismissing
+level: high

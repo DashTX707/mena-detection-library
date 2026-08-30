@@ -1,0 +1,49 @@
+title: Stealth Falcon Base64-Encoded PowerShell Launched From Script Loader or Office
+id: 9d2f4a17-5c60-4b83-a1e9-2b7c8d3f6a54
+status: experimental
+description: |
+    Detects the Stealth Falcon (FruityArmor) PowerShell backdoor stage where Base64-encoded PowerShell
+    is invoked from the VBScript loader (IEWebCache.vbs) or an Office parent (T1059.001 PowerShell,
+    T1027.010 Command Obfuscation, T1140 Deobfuscate/Decode). The loader embeds Base64 PowerShell that
+    is decoded and executed at runtime; keys on powershell.exe with an encoded-command / FromBase64String
+    argument whose parent is wscript/cscript/mshta or an Office application - a lineage that is abnormal
+    for legitimate encoded PowerShell.
+references:
+    - https://citizenlab.ca/2016/05/stealth-falcon/
+    - https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.execution
+    - attack.stealth
+    - attack.t1059.001
+    - attack.t1027.010
+    - attack.t1140
+    - mena-detection-library.stealth-falcon
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_ps:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_encoding:
+        CommandLine|contains:
+            - ' -enc'
+            - ' -EncodedCommand'
+            - ' -e '
+            - 'FromBase64String'
+            - '::FromBase64'
+    selection_parent:
+        ParentImage|endswith:
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\winword.exe'
+            - '\excel.exe'
+    condition: all of selection_*
+falsepositives:
+    - Management tooling that legitimately runs encoded PowerShell - unusual when the parent is a script
+      host or Office application; validate the decoded payload
+level: high

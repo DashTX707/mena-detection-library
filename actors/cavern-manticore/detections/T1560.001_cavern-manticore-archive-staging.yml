@@ -1,0 +1,38 @@
+title: Cavern Manticore Archive Staging via Utility (pxy/23/netscan archives)
+id: 4a6c8e00-7b9d-4f1a-b3c5-8d0f2a4c6e54
+status: experimental
+description: |
+    Detects Cavern Manticore (Cobalt Mirage) staging tooling and collected data into archives on compromised
+    hosts (T1560.001 Archive Collected Data: Archive via Utility). Observed staging archives include pxy.zip,
+    pxy.rar, 23.zip and netscan_portable_v621.zip. Keys on archive-utility (rar/7z/WinRAR) command lines that
+    create archives, with the actor-specific archive names as high-confidence enrichment.
+references:
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1560.001
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_util:
+        Image|endswith:
+            - '\rar.exe'
+            - '\winrar.exe'
+            - '\7z.exe'
+            - '\7za.exe'
+        CommandLine|contains: ' a '
+    selection_named:
+        CommandLine|contains:
+            - 'pxy.zip'
+            - 'pxy.rar'
+            - '23.zip'
+            - 'netscan_portable'
+    condition: selection_util or selection_named
+falsepositives:
+    - Archive creation is common in backups and legitimate file transfer; prioritize when the archive name
+      matches the actor set or the archiving directly precedes an outbound transfer/tunnel
+level: medium

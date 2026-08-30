@@ -1,0 +1,51 @@
+title: Infy Automated Document Collection by Extension into Staging Directory
+id: 6d8f0a2c-4b1e-4c37-9d0a-8f0b2d4e6feb
+status: experimental
+description: |
+    Detects Infy / Tonnerre automated document harvesting (T1005 Data from Local System, T1119 Automated
+    Collection). Infy selectively harvests documents by extension (.doc/.docx/.xls/.xlsx/.ppt/.pptx/.pdf/
+    .zip/.rar/.7z) from monitored folders, and the implants automatically and continuously copy
+    documents without per-item operator interaction; Tonnerre steals files from predefined folders. Keys
+    on the actor's loader/implant processes (rundll32/helper.exe/fwupdate.temp) writing copies of
+    document files into the SnailDriver/temp staging area. Recurring document copies of many extensions
+    into a staging directory by a loader process is the durable signal.
+references:
+    - https://unit42.paloaltonetworks.com/prince-of-persia-infy-malware-active-in-decade-of-targeted-attacks/
+    - https://research.checkpoint.com/2021/after-lightning-comes-thunder/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1005
+    - attack.t1119
+    - mena-detection-library.infy
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_proc:
+        Image|endswith:
+            - '\rundll32.exe'
+            - '\helper.exe'
+            - '\fwupdate.temp'
+    selection_doc:
+        TargetFilename|endswith:
+            - '.doc'
+            - '.docx'
+            - '.xls'
+            - '.xlsx'
+            - '.ppt'
+            - '.pptx'
+            - '.pdf'
+    selection_stage:
+        TargetFilename|contains:
+            - 'SnailDriver'
+            - '\ProgramData\'
+            - '\AppData\'
+            - '\Temp\'
+    condition: selection_proc and selection_doc and selection_stage
+falsepositives:
+    - Legitimate applications caching documents under AppData/Temp - baseline expected writers; a loader
+      process copying many document extensions into a SnailDriver/temp staging directory is the actor
+      pattern, especially when followed by archive+upload activity
+level: medium

@@ -1,0 +1,50 @@
+title: Tropic Trooper Archiving Collected Data Prior to Exfiltration
+id: 4a1f8c63-9d2e-4b57-8c1a-6f3e2d9b4a71
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) compressing collected internal documents and data
+    before exfiltration over its HTTPS C2 (T1560 Archive Collected Data). Consistent with Earth Centaur
+    tradecraft, the actor gathers documents (flight schedules, financial planning) and personal data and
+    archives them for staging. Keys on archive-utility execution (rar, 7z, WinRAR, tar) with
+    compress/add flags, especially with a password switch, run on servers where such archiving is not
+    routine. Anchor on the archive-creation command pattern; correlate with prior discovery/collection
+    and subsequent egress.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://www.trendmicro.com/en_us/research/21/l/collecting-in-the-dark-tropic-trooper-targets-transportation-and-government-organizations.html
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.collection
+    - attack.t1560
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_rar:
+        Image|endswith:
+            - '\rar.exe'
+            - '\winrar.exe'
+        CommandLine|contains: ' a '
+    selection_7z:
+        Image|endswith:
+            - '\7z.exe'
+            - '\7za.exe'
+        CommandLine|contains: ' a '
+    selection_pw:
+        CommandLine|contains:
+            - ' -p'
+            - ' -hp'
+    selection_tar:
+        Image|endswith: '\tar.exe'
+        CommandLine|contains:
+            - ' -c'
+            - ' cvf'
+    condition: ((selection_rar or selection_7z) and selection_pw) or (selection_rar or selection_7z) or selection_tar
+falsepositives:
+    - Backup jobs and administrators legitimately create archives - baseline expected archiving on the
+      host; password-protected archives of document trees on a compromised server preceding egress are
+      the actor signal
+level: medium

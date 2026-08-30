@@ -1,0 +1,54 @@
+title: Tropic Trooper Disabling or Bypassing Endpoint Security Tools
+id: d47b1e93-8a2c-4f56-9b0d-2e7c4a1f3b68
+status: experimental
+description: |
+    Detects Tropic Trooper (KeyBoy / Earth Centaur) impairing endpoint defenses (T1685 Disable or Modify
+    Tools). The actor's Swor bundle packages ElevationStation and evasion tooling to bypass endpoint
+    controls, and it tunes tooling to evade security products during the intrusion. Keys on command-line
+    execution that stops or disables well-known security services (sc stop / sc config start=disabled,
+    net stop) targeting AV/EDR service names, and on Set-MpPreference disabling Microsoft Defender
+    real-time protection. Best paired with EDR tamper-protection and security-product health telemetry
+    that independently flags an agent going silent. Deploy alert-only first and baseline maintenance
+    windows.
+references:
+    - https://securelist.com/new-tropic-trooper-web-shell-infection/113737/
+    - https://attack.mitre.org/groups/G0081/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.defense-impairment
+    - attack.t1685
+    - mena-detection-library.tropic-trooper
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_sc:
+        Image|endswith:
+            - '\sc.exe'
+            - '\net.exe'
+            - '\net1.exe'
+        CommandLine|contains:
+            - 'stop'
+            - 'start= disabled'
+            - 'start=disabled'
+            - 'delete'
+    selection_target:
+        CommandLine|contains:
+            - 'WinDefend'
+            - 'MsMpSvc'
+            - 'Sense'
+            - 'SentinelAgent'
+            - 'CSFalcon'
+            - 'CrowdStrike'
+            - 'Sophos'
+    selection_defender:
+        CommandLine|contains|all:
+            - 'Set-MpPreference'
+            - 'DisableRealtimeMonitoring'
+            - '$true'
+    condition: (selection_sc and selection_target) or selection_defender
+falsepositives:
+    - Sanctioned maintenance where administrators stop a security agent - correlate with change
+      management and restrict to authorized maintenance windows
+level: high

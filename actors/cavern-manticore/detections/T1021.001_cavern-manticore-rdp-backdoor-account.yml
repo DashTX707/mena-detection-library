@@ -1,0 +1,34 @@
+title: Cavern Manticore RDP Lateral Movement Using Backdoor Accounts
+id: 2f4a6c80-1b3d-4e5a-9c7f-8d0a2c4e6f10
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / Cobalt Mirage) moving laterally and deploying tooling (e.g. dropping
+    DiskCryptor on workstations) over interactive RDP sessions using its backdoor identities (T1021.001
+    Remote Services: RDP). Keys on RemoteInteractive (Type 10) logons by the actor-created accounts
+    (DefaultAccount, DefaultUser, MSSQL). The backdoor-account context raises fidelity above generic admin RDP.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+    - mena-detection-library.cavern-manticore
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_event:
+        EventID: 4624
+        LogonType: 10
+    selection_account:
+        TargetUserName:
+            - 'DefaultAccount'
+            - 'DefaultUser'
+            - 'MSSQL'
+    condition: all of selection_*
+falsepositives:
+    - A service/admin account legitimately named MSSQL could theoretically RDP; RemoteInteractive logons by
+      these default-looking accounts are abnormal - validate the source IP and destination host
+level: medium

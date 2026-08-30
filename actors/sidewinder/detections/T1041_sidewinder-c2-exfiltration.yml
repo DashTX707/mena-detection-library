@@ -1,0 +1,48 @@
+title: SideWinder StealerBot Automated Exfiltration Over C2 Channel
+id: b05f1f47-b06d-4c3f-8e48-4d5e6f708192
+status: experimental
+description: |
+    Detects a process running from a user-writable directory initiating outbound connections to
+    external (non-RFC1918) destinations over web ports, the network footprint of the SideWinder
+    (Rattlesnake / APT-C-17) StealerBot implant automatically exfiltrating collected files,
+    keystrokes, screenshots and credentials to C2 over its encrypted channel. Anchors on the
+    implant-lineage process making external web connections; pair with outbound-volume and
+    beacon-timing analytics for higher confidence, since encryption hides content.
+references:
+    - https://securelist.com/sidewinder-apt-updates-its-toolset-and-targets-nuclear-sector/115847/
+    - https://attack.mitre.org/groups/G0121/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - attack.t1020
+    - mena-detection-library.sidewinder
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection_proc:
+        Image|contains:
+            - '\AppData\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Temp\'
+    selection_net:
+        Initiated: true
+        DestinationPort:
+            - 80
+            - 443
+            - 8080
+            - 8443
+    filter_private:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+            - '127.0.0.0/8'
+            - '169.254.0.0/16'
+    condition: selection_proc and selection_net and not filter_private
+falsepositives:
+    - Portable legitimate applications installed under a user profile that make external web connections (updaters, cloud sync) - allowlist by signed image and destination
+level: medium

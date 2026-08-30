@@ -1,0 +1,45 @@
+title: CopyKittens Matryoshka RAT Registry Run-Key Autostart Persistence
+id: 0a4e6819-902f-4c29-8bde-e9e1df82fc17
+status: experimental
+description: |
+    Detects registry Run-key / autostart writes pointing to an implant path in a user-writable location,
+    as used by the CopyKittens (Slayer Kitten, G0052) Matryoshka RAT to re-launch at logon (T1547.001
+    Registry Run Keys, T1112 Modify Registry). Anchors on a registry set to a Run / RunOnce key whose
+    value references a temp/appdata/programdata path or a LOLBin (rundll32/regsvr32/powershell). Keys on
+    Sysmon registry-set (EID 13) telemetry.
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1547.001
+    - attack.t1112
+    - mena-detection-library.copykittens
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_key:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+            - '\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\Startup'
+            - '\CurrentVersion\Policies\Explorer\Run\'
+    selection_val:
+        Details|contains:
+            - '\AppData\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+            - '\Windows\Temp\'
+            - '\Temp\'
+            - 'rundll32'
+            - 'regsvr32'
+            - 'powershell'
+            - 'mshta'
+    condition: selection_key and selection_val
+falsepositives:
+    - Legitimate software registering autostart entries from ProgramData/AppData - baseline the value
+      data (target binary and export) and the writing process before dismissing
+level: high

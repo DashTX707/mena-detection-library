@@ -1,0 +1,38 @@
+title: Stealth Falcon IE Web Cache Scheduled Task Persistence and Masquerade
+id: 1e6b8c34-4a72-4d59-b0f7-3c8d1a5e9b27
+status: experimental
+description: |
+    Detects Stealth Falcon (FruityArmor) persistence via the 'IE Web Cache' scheduled task
+    (T1053.005 Scheduled Task, T1036.005 Masquerading). The 2016 implant created a task named
+    'IE Web Cache' running hourly to launch the VBS/PowerShell loader; the Win32/StealthFalcon
+    backdoor schedules a DLL task at each user login. The name masquerades as a benign IE cache
+    maintenance task. Keys on Task Scheduler operational logging (Event ID 4698 creation) and the
+    actor-specific task name, or a created task whose action launches wscript/rundll32 on a loader.
+references:
+    - https://citizenlab.ca/2016/05/stealth-falcon/
+    - https://www.welivesecurity.com/2019/09/09/backdoor-stealth-falcon-group/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.persistence
+    - attack.stealth
+    - attack.t1053.005
+    - attack.t1036.005
+    - mena-detection-library.stealth-falcon
+logsource:
+    product: windows
+    service: taskscheduler
+detection:
+    selection_event:
+        EventID:
+            - 4698
+            - 4702
+    selection_name:
+        TaskName|contains:
+            - 'IE Web Cache'
+            - 'IEWebCache'
+    condition: all of selection_*
+falsepositives:
+    - Windows and Internet Explorer maintenance tasks are system-created and not user-created scheduled
+      tasks under this name - validate the task action and the creating account before dismissing
+level: high

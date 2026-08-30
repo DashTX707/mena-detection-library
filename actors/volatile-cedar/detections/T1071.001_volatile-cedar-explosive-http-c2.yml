@@ -1,0 +1,39 @@
+title: Volatile Cedar Explosive RAT HTTP C2 Beacon (Distinctive URI and Known C2)
+id: 566e3d93-98c6-4672-9de8-4abb1e7d3f8a
+status: experimental
+description: |
+    Detects Volatile Cedar / Lebanese Cedar Explosive RAT command-and-control over HTTP(S)
+    (T1071.001 Web Protocols). Explosive beacons to hardcoded static C2 with a structured URI
+    pattern; Kaspersky observed check-ins to the static C2 edortntexplore[.]info at a
+    /micro/data/index.php?micro= style URI. Keys on the distinctive URI structure and on connections
+    to the known static C2 domain and IP set. Anchor is the URI/host behavior rather than a single
+    IOC so the rule survives infrastructure rotation on the URI branch. No specific User-Agent string
+    is asserted (the reported value could not be verified from a primary source).
+references:
+    - https://blog.checkpoint.com/security/volatilecedar/
+    - https://securelist.com/sinkholing-volatile-cedar-dga-infrastructure/69421/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.volatile-cedar
+logsource:
+    category: proxy
+detection:
+    selection_uri:
+        cs-uri-stem|contains: '/micro/data/index.php'
+        c-uri-query|contains: 'micro='
+    selection_host:
+        cs-host:
+            - 'edortntexplore.info'
+            - '68.65.122.109'
+            - '74.208.73.149'
+            - '191.101.5.183'
+            - '198.101.242.72'
+            - '169.50.13.61'
+    condition: 1 of selection_*
+falsepositives:
+    - Unlikely for the known-C2 host list; the URI branch could in principle collide with a benign
+      application that uses a /micro/data/index.php path - validate the destination reputation
+level: high

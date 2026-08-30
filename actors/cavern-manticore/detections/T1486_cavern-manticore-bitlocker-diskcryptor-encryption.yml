@@ -1,0 +1,40 @@
+title: Cavern Manticore BitLocker/DiskCryptor Full-Disk Encryption for Extortion
+id: b6d8f012-3c5e-4a7b-9d0f-2c4e6a8b0d43
+status: experimental
+description: |
+    Detects Cavern Manticore (DEV-0270 / Cobalt Mirage) signature impact behavior: abusing native BitLocker
+    on servers and open-source DiskCryptor on workstations to encrypt drives for extortion, rendering hosts
+    inoperable and blocking recovery (T1486 Data Encrypted for Impact, T1490 Inhibit System Recovery). The
+    actor enables BitLocker via manage-bde -on / Enable-BitLocker (from setup.bat) and installs/launches the
+    DiskCryptor driver (dcrypt). Keys on the encryption-enable command lines and DiskCryptor execution.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2022/09/07/profiling-dev-0270-phosphorus-ransomware-operations/
+    - https://www.secureworks.com/blog/cobalt-mirage-conducts-ransomware-operations-in-us
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.impact
+    - attack.t1486
+    - attack.t1490
+    - mena-detection-library.cavern-manticore
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_bitlocker:
+        - CommandLine|contains|all:
+            - 'manage-bde'
+            - '-on'
+        - CommandLine|contains: 'Enable-BitLocker'
+    selection_diskcryptor:
+        - Image|endswith:
+            - '\dcrypt.exe'
+            - '\dcinst.exe'
+        - CommandLine|contains: 'dcrypt'
+        - OriginalFileName: 'dcrypt.exe'
+    condition: selection_bitlocker or selection_diskcryptor
+falsepositives:
+    - Legitimate BitLocker enablement occurs during provisioning/compliance; on servers not normally
+      encrypted, or when driven by setup.bat / a compromise chain, treat as high-severity - validate against
+      change control and check for missing/withheld recovery keys
+level: high

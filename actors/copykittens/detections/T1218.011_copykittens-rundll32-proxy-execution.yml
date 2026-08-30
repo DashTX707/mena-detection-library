@@ -1,0 +1,44 @@
+title: CopyKittens Rundll32 Proxy Execution of Payload DLL from Unusual Path
+id: 9a383d5b-e723-4030-a0df-aa4c70260c35
+status: experimental
+description: |
+    Detects CopyKittens (Slayer Kitten, G0052) proxy-executing malicious DLLs through the signed
+    Windows binary rundll32.exe (T1218.011), as observed in Operation Wilted Tulip to launch
+    Matryoshka RAT components and Meterpreter injection. Anchors on rundll32.exe loading a DLL from a
+    user-writable/temp/download path, from an Office parent, or invoking a bare/anomalous export, which
+    is atypical of the handful of legitimate rundll32 system entry points. Keys on process-creation
+    command-line telemetry (Sysmon EID 1 / Security 4688).
+references:
+    - https://www.clearskysec.com/wp-content/uploads/2017/07/Operation_Wilted_Tulip.pdf
+    - https://attack.mitre.org/groups/G0052/
+author: mena-detection-library
+date: 2026-08-30
+tags:
+    - attack.stealth
+    - attack.t1218.011
+    - mena-detection-library.copykittens
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith: '\rundll32.exe'
+    selection_susp_path:
+        CommandLine|contains:
+            - '\Users\Public\'
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Downloads\'
+            - '\ProgramData\'
+            - '\Windows\Temp\'
+    selection_office_parent:
+        ParentImage|endswith:
+            - '\winword.exe'
+            - '\excel.exe'
+            - '\powerpnt.exe'
+            - '\outlook.exe'
+    condition: selection_img and (selection_susp_path or selection_office_parent)
+falsepositives:
+    - Third-party installers and management agents that legitimately invoke rundll32 with DLLs from
+      ProgramData - baseline the DLL path, export name and parent process before dismissing
+level: high
