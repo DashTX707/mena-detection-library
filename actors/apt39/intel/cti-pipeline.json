@@ -66,14 +66,60 @@
       }
     ]
   },
-  "threat_actors": ["APT39", "Chafer", "Remix Kitten", "Rana Intelligence Computing"],
-  "targeted_regions": ["Iran", "Saudi Arabia", "UAE", "Kuwait", "Qatar", "Bahrain", "Turkey", "United States", "Europe"],
-  "targeted_sectors": ["Telecommunications", "Travel & tourism / hospitality", "Academia", "Government", "Technology", "Aviation"],
+  "threat_actors": [
+    "APT39",
+    "Chafer",
+    "Remix Kitten",
+    "Rana Intelligence Computing"
+  ],
+  "targeted_regions": [
+    "Iran",
+    "Saudi Arabia",
+    "UAE",
+    "Kuwait",
+    "Qatar",
+    "Bahrain",
+    "Turkey",
+    "United States",
+    "Europe"
+  ],
+  "targeted_sectors": [
+    "Telecommunications",
+    "Travel & tourism / hospitality",
+    "Academia",
+    "Government",
+    "Technology",
+    "Aviation"
+  ],
   "malware": [
-    "Remexi", "Cadelspy", "ANTAK (web shell)", "ASPXSpy (web shell)", "POWBAT", "POWERSTATS-adjacent", "SEAWEED", "CACHEMONEY", "Mimikatz-derived credential stealers", "custom keyloggers", "custom screenshot tools"
+    "Remexi",
+    "Cadelspy",
+    "ANTAK (web shell)",
+    "ASPXSpy (web shell)",
+    "POWBAT",
+    "POWERSTATS-adjacent",
+    "SEAWEED",
+    "CACHEMONEY",
+    "Mimikatz-derived credential stealers",
+    "custom keyloggers",
+    "custom screenshot tools"
   ],
   "tooling_observed": [
-    "Mimikatz", "ProcDump", "Windows Credential Editor (WCE)", "PsExec", "PLINK", "Remote Desktop Protocol (RDP)", "SQL injection tooling", "certutil", "BITSAdmin", "net.exe", "ipconfig", "nbtscan", "AutoIt", "custom SQL/webshell tooling", "smartftp / winrar (archiving)"
+    "Mimikatz",
+    "ProcDump",
+    "Windows Credential Editor (WCE)",
+    "PsExec",
+    "PLINK",
+    "Remote Desktop Protocol (RDP)",
+    "SQL injection tooling",
+    "certutil",
+    "BITSAdmin",
+    "net.exe",
+    "ipconfig",
+    "nbtscan",
+    "AutoIt",
+    "custom SQL/webshell tooling",
+    "smartftp / winrar (archiving)"
   ],
   "ttps": [
     {
@@ -81,18 +127,29 @@
       "technique_name": "OS Credential Dumping",
       "tactic": "credential-access",
       "procedure_description": "APT39 has used credential-dumping tools such as Mimikatz, ProcDump, and Windows Credential Editor to steal credentials from compromised hosts.",
-      "observed_tooling": ["Mimikatz", "ProcDump", "Windows Credential Editor (WCE)"],
+      "observed_tooling": [
+        "Mimikatz",
+        "ProcDump",
+        "Windows Credential Editor (WCE)"
+      ],
       "detection_feasibility": "high — execution of Mimikatz/ProcDump/WCE and process access to credential stores is highly observable in EDR and process-access telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1003.001",
       "technique_name": "OS Credential Dumping: LSASS Memory",
       "tactic": "credential-access",
       "procedure_description": "APT39 has used ProcDump and Mimikatz to dump LSASS memory to extract credentials.",
-      "observed_tooling": ["ProcDump", "Mimikatz"],
+      "observed_tooling": [
+        "ProcDump",
+        "Mimikatz"
+      ],
       "detection_feasibility": "high — process access to lsass.exe (handle open, ProcDump -ma lsass) and Mimikatz signatures are strong, well-covered detections",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1005",
@@ -101,52 +158,74 @@
       "procedure_description": "APT39 has collected data and files of interest (PII, travel/movement records, documents) from compromised local systems as part of its personal-information tracking mission.",
       "observed_tooling": [],
       "detection_feasibility": "medium — bulk local file collection is common; suspicious mainly via staging/archiving lineage and access to unusual document stores",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1012",
       "technique_name": "Query Registry",
       "tactic": "discovery",
       "procedure_description": "APT39 has queried the Windows registry to gather system and configuration information on compromised hosts.",
-      "observed_tooling": ["reg.exe"],
+      "observed_tooling": [
+        "reg.exe"
+      ],
       "detection_feasibility": "medium — reg query is common; value comes from watching sensitive keys in a recon-burst/process-lineage context",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1018",
       "technique_name": "Remote System Discovery",
       "tactic": "discovery",
       "procedure_description": "APT39 has used tools such as nbtscan and custom scripts to identify remote systems on the victim network prior to lateral movement.",
-      "observed_tooling": ["nbtscan"],
+      "observed_tooling": [
+        "nbtscan"
+      ],
       "detection_feasibility": "medium — remote-host enumeration (nbtscan/ping sweeps) is detectable via connection-fanout analytics and known-tool execution signatures",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1021.001",
       "technique_name": "Remote Services: Remote Desktop Protocol",
       "tactic": "lateral-movement",
       "procedure_description": "APT39 has used RDP with stolen credentials for lateral movement within compromised environments.",
-      "observed_tooling": ["Remote Desktop Protocol (RDP)"],
+      "observed_tooling": [
+        "Remote Desktop Protocol (RDP)"
+      ],
       "detection_feasibility": "medium — RDP lateral movement is detectable via 4624 type-10 logons, internal-RDP fanout, and impossible-travel analytics; a strong detection surface given APT39's reliance on valid-account RDP",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1021.002",
       "technique_name": "Remote Services: SMB/Windows Admin Shares",
       "tactic": "lateral-movement",
       "procedure_description": "APT39 has used PsExec and SMB/admin shares (e.g. ADMIN$, C$) to move laterally and execute payloads on remote hosts.",
-      "observed_tooling": ["PsExec"],
+      "observed_tooling": [
+        "PsExec"
+      ],
       "detection_feasibility": "high — SMB admin-share access and PsExec service creation (7045/5145) are strongly detectable in Windows and network telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1021.004",
       "technique_name": "Remote Services: SSH",
       "tactic": "lateral-movement",
       "procedure_description": "APT39 has used SSH (including PLINK) to access and move between compromised systems.",
-      "observed_tooling": ["PLINK"],
+      "observed_tooling": [
+        "PLINK"
+      ],
       "detection_feasibility": "medium — SSH client execution and outbound SSH from unusual hosts are detectable via process + network telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1027.002",
@@ -155,7 +234,9 @@
       "procedure_description": "APT39 has used packers/crypters to obfuscate malware payloads and hinder static analysis and signature detection.",
       "observed_tooling": [],
       "detection_feasibility": "medium — packed binaries are detectable via entropy/section anomalies and packer signatures but require dedicated static scanning",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1027.013",
@@ -164,16 +245,22 @@
       "procedure_description": "APT39 has encrypted and encoded payloads and staged data (including base64) to evade detection and inspection.",
       "observed_tooling": [],
       "detection_feasibility": "medium — high-entropy/encoded files are detectable via file-entropy analytics but require dedicated scanning",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1033",
       "technique_name": "System Owner/User Discovery",
       "tactic": "discovery",
       "procedure_description": "APT39 has run whoami and similar commands to identify the current user and privilege context on compromised systems.",
-      "observed_tooling": ["whoami"],
+      "observed_tooling": [
+        "whoami"
+      ],
       "detection_feasibility": "medium — whoami is common; value is in process-lineage correlation (spawned by script host / web shell)",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1036.005",
@@ -182,7 +269,9 @@
       "procedure_description": "APT39 has named malware and tools to masquerade as legitimate files/processes and placed them in plausible locations to blend in.",
       "observed_tooling": [],
       "detection_feasibility": "medium — legit-looking names in non-standard paths are detectable via path/name baselining and signature-vs-name mismatch",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1041",
@@ -191,43 +280,61 @@
       "procedure_description": "APT39 has exfiltrated stolen data (credentials, PII, documents) back to attacker infrastructure over its established command-and-control channels.",
       "observed_tooling": [],
       "detection_feasibility": "low — exfil embedded in the C2 channel blends with beacon traffic; hunt on outbound volume anomalies and long-lived sessions",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1046",
       "technique_name": "Network Service Discovery",
       "tactic": "discovery",
       "procedure_description": "APT39 has scanned victim networks to identify open ports and reachable services prior to lateral movement.",
-      "observed_tooling": ["nbtscan"],
+      "observed_tooling": [
+        "nbtscan"
+      ],
       "detection_feasibility": "medium — scanning bursts are detectable via network/connection-fanout analytics and known-tool signatures",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1053.005",
       "technique_name": "Scheduled Task/Job: Scheduled Task",
       "tactic": "persistence",
       "procedure_description": "APT39 has created scheduled tasks to establish persistence and to execute payloads on compromised systems.",
-      "observed_tooling": ["schtasks.exe"],
+      "observed_tooling": [
+        "schtasks.exe"
+      ],
       "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable, especially with script/executable actions",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1056",
       "technique_name": "Input Capture",
       "tactic": "collection",
       "procedure_description": "APT39 has captured user input using keyloggers and related tooling to monitor targeted individuals.",
-      "observed_tooling": ["custom keyloggers"],
+      "observed_tooling": [
+        "custom keyloggers"
+      ],
       "detection_feasibility": "low — input-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1056.001",
       "technique_name": "Input Capture: Keylogging",
       "tactic": "credential-access",
       "procedure_description": "APT39 has deployed custom keyloggers to capture keystrokes and harvest credentials and monitor persons of interest.",
-      "observed_tooling": ["custom keyloggers"],
+      "observed_tooling": [
+        "custom keyloggers"
+      ],
       "detection_feasibility": "low — keystroke-hooking leaves little discrete log signal; behavioral/EDR hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1059",
@@ -236,25 +343,36 @@
       "procedure_description": "APT39 has used various command and scripting interpreters for execution on compromised hosts.",
       "observed_tooling": [],
       "detection_feasibility": "medium — generic parent; value comes from specific interpreter sub-techniques with process-lineage context",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1059.001",
       "technique_name": "Command and Scripting Interpreter: PowerShell",
       "tactic": "execution",
       "procedure_description": "APT39 has used PowerShell (including POWBAT/POWERSTATS-adjacent tooling) to execute commands and stage payloads.",
-      "observed_tooling": ["POWBAT"],
+      "observed_tooling": [
+        "POWBAT"
+      ],
       "detection_feasibility": "high — script-block/module logging and suspicious PowerShell parenting are core, well-covered detections",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1059.005",
       "technique_name": "Command and Scripting Interpreter: Visual Basic",
       "tactic": "execution",
       "procedure_description": "APT39 has used Visual Basic scripts and macros in delivery documents to execute payloads.",
-      "observed_tooling": ["wscript.exe", "cscript.exe"],
+      "observed_tooling": [
+        "wscript.exe",
+        "cscript.exe"
+      ],
       "detection_feasibility": "high — wscript/cscript executing VBS, especially spawned by Office, is a strong detectable signal",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1059.006",
@@ -263,16 +381,22 @@
       "procedure_description": "APT39 has used Python-based tooling/scripts for execution on compromised systems.",
       "observed_tooling": [],
       "detection_feasibility": "medium — python.exe execution in enterprise contexts is detectable via process telemetry and unusual interpreter presence on non-dev hosts",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1059.010",
       "technique_name": "Command and Scripting Interpreter: AutoHotKey & AutoIT",
       "tactic": "execution",
       "procedure_description": "APT39 has used AutoIt-based scripting for execution and to automate malicious tasks.",
-      "observed_tooling": ["AutoIt"],
+      "observed_tooling": [
+        "AutoIt"
+      ],
       "detection_feasibility": "medium — AutoIt/AutoHotKey interpreter execution is detectable via process telemetry and is unusual in most enterprise baselines",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1070.004",
@@ -281,16 +405,23 @@
       "procedure_description": "APT39 has deleted tools, logs, and payload files after use to remove forensic artifacts.",
       "observed_tooling": [],
       "detection_feasibility": "medium — file deletion is detectable via file-system audit / EDR delete events but is noisy and needs correlation with prior payload writes",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1071.001",
       "technique_name": "Application Layer Protocol: Web Protocols",
       "tactic": "command-and-control",
       "procedure_description": "APT39 has used HTTP/HTTPS-based C2 for its backdoors (e.g. Remexi and web-shell interaction).",
-      "observed_tooling": ["Remexi", "ASPXSpy (web shell)"],
+      "observed_tooling": [
+        "Remexi",
+        "ASPXSpy (web shell)"
+      ],
       "detection_feasibility": "medium — HTTP(S) C2 is detectable via proxy/beacon analytics and URI/JA3 anomalies but blends with normal web traffic",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1071.004",
@@ -299,16 +430,22 @@
       "procedure_description": "APT39 has used DNS as a command-and-control channel for certain tooling.",
       "observed_tooling": [],
       "detection_feasibility": "medium — DNS-based C2 is detectable via query-length/entropy/volume analytics and NXDOMAIN patterns, but requires full DNS logging that is frequently under-instrumented",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1074.001",
       "technique_name": "Data Staged: Local Data Staging",
       "tactic": "collection",
       "procedure_description": "APT39 has staged collected data locally (often archived) prior to exfiltration.",
-      "observed_tooling": ["winrar"],
+      "observed_tooling": [
+        "winrar"
+      ],
       "detection_feasibility": "medium — local staging is common; suspicious when tied to archiving utilities writing large archives to temp/staging paths",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1078",
@@ -317,16 +454,23 @@
       "procedure_description": "APT39 has used stolen/valid credentials to access systems and remote services (RDP, VPN, OWA), blending in with legitimate activity — a core APT39 access and persistence pattern.",
       "observed_tooling": [],
       "detection_feasibility": "medium — valid-account abuse is detectable via anomalous logon analytics (impossible travel, new host/time, first-seen device) but blends with legitimate use; a strong identity-monitoring detection surface for APT39",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1083",
       "technique_name": "File and Directory Discovery",
       "tactic": "discovery",
       "procedure_description": "APT39 has enumerated files and directories to locate data of interest and stage collection.",
-      "observed_tooling": ["dir", "cmd.exe"],
+      "observed_tooling": [
+        "dir",
+        "cmd.exe"
+      ],
       "detection_feasibility": "low — file/directory enumeration is ubiquitous; better as a hunt in tight recon-burst lineage context",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1090.001",
@@ -335,7 +479,9 @@
       "procedure_description": "APT39 has used internal proxies/relays to route C2 traffic between compromised hosts inside victim networks.",
       "observed_tooling": [],
       "detection_feasibility": "low — internal proxy relays are subtle; hunt on unexpected host-to-host relay patterns and internal listeners",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1090.002",
@@ -344,7 +490,9 @@
       "procedure_description": "APT39 has routed C2 through external proxy infrastructure to obscure the true destination of traffic.",
       "observed_tooling": [],
       "detection_feasibility": "low — external proxy chains are off-victim; hunt on connections to known proxy/anonymization endpoints",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1102.002",
@@ -353,16 +501,23 @@
       "procedure_description": "APT39 has used legitimate web services for bidirectional C2 communication to blend with normal traffic.",
       "observed_tooling": [],
       "detection_feasibility": "low — legitimate-web-service C2 blends with sanctioned SaaS traffic; hunt on anomalous automation patterns to those services",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1105",
       "technique_name": "Ingress Tool Transfer",
       "tactic": "command-and-control",
       "procedure_description": "APT39 has downloaded additional tools and payloads onto compromised systems, including via certutil and BITS.",
-      "observed_tooling": ["certutil", "BITSAdmin"],
+      "observed_tooling": [
+        "certutil",
+        "BITSAdmin"
+      ],
       "detection_feasibility": "high — remote downloads via certutil/BITS and unexpected inbound file writes are strongly detectable in process + network telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1110",
@@ -371,16 +526,22 @@
       "procedure_description": "APT39 has used brute-force and credential-guessing techniques to obtain account credentials.",
       "observed_tooling": [],
       "detection_feasibility": "medium — brute force is detectable via authentication-failure spikes (4625) and lockout telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1113",
       "technique_name": "Screen Capture",
       "tactic": "collection",
       "procedure_description": "APT39 has used custom tools to capture screenshots of targeted users' desktops as part of surveillance.",
-      "observed_tooling": ["custom screenshot tools"],
+      "observed_tooling": [
+        "custom screenshot tools"
+      ],
       "detection_feasibility": "low — screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1115",
@@ -389,52 +550,74 @@
       "procedure_description": "APT39 has collected clipboard data from compromised systems as part of its information-gathering.",
       "observed_tooling": [],
       "detection_feasibility": "low — clipboard-capture leaves little discrete log signal; behavioral/EDR hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1135",
       "technique_name": "Network Share Discovery",
       "tactic": "discovery",
       "procedure_description": "APT39 has enumerated network shares to identify accessible data repositories for collection and lateral movement.",
-      "observed_tooling": ["net.exe"],
+      "observed_tooling": [
+        "net.exe"
+      ],
       "detection_feasibility": "medium — 'net view' / share enumeration is detectable via command-line logging in recon-burst context",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1136.001",
       "technique_name": "Create Account: Local Account",
       "tactic": "persistence",
       "procedure_description": "APT39 has created local accounts on compromised systems to maintain persistent access.",
-      "observed_tooling": ["net.exe"],
+      "observed_tooling": [
+        "net.exe"
+      ],
       "detection_feasibility": "high — local account creation is logged (Event ID 4720) and is a high-fidelity persistence detection",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1140",
       "technique_name": "Deobfuscate/Decode Files or Information",
       "tactic": "stealth",
       "procedure_description": "APT39 has decoded/deobfuscated payloads and staged data at runtime (including base64 decoding via certutil/scripts).",
-      "observed_tooling": ["certutil"],
+      "observed_tooling": [
+        "certutil"
+      ],
       "detection_feasibility": "high — 'certutil -decode' and script-based decode routines are directly observable in command-line and script-block logging",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1190",
       "technique_name": "Exploit Public-Facing Application",
       "tactic": "initial-access",
       "procedure_description": "APT39 (Chafer) has used SQL injection against public-facing web/database servers as an initial-access vector, frequently followed by web-shell deployment.",
-      "observed_tooling": ["SQL injection tooling"],
+      "observed_tooling": [
+        "SQL injection tooling"
+      ],
       "detection_feasibility": "medium — SQLi and public-app exploitation are detectable via WAF/web-server logs and anomalous DB-to-webserver process behavior; the SQLi-to-webshell chain is a signature APT39 pattern warranting targeted web-tier monitoring",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1197",
       "technique_name": "BITS Jobs",
       "tactic": "stealth",
       "procedure_description": "APT39 has used Background Intelligent Transfer Service (BITS) jobs to download/transfer files while evading detection.",
-      "observed_tooling": ["BITSAdmin"],
+      "observed_tooling": [
+        "BITSAdmin"
+      ],
       "detection_feasibility": "medium — BITS jobs are detectable via BITS-Client operational logs and bitsadmin/PowerShell BITS cmdlet command-lines, but require targeted logging",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1204.001",
@@ -443,7 +626,9 @@
       "procedure_description": "APT39 has relied on targets clicking malicious links delivered via spear-phishing to achieve execution.",
       "observed_tooling": [],
       "detection_feasibility": "medium — malicious-link clicks are detectable via email/URL-gateway and proxy logs; endpoint signal is indirect",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1204.002",
@@ -452,16 +637,24 @@
       "procedure_description": "APT39 has relied on targets opening malicious attachments (often macro-enabled documents) to execute payloads.",
       "observed_tooling": [],
       "detection_feasibility": "high — Office apps spawning script/child processes after macro enablement is a core detectable behavior",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1505.003",
       "technique_name": "Server Software Component: Web Shell",
       "tactic": "persistence",
       "procedure_description": "APT39 has deployed web shells (ANTAK and ASPXSpy) on Internet-facing IIS/web servers, often following SQL injection, to maintain persistent remote access and execute commands.",
-      "observed_tooling": ["ANTAK (web shell)", "ASPXSpy (web shell)"],
+      "observed_tooling": [
+        "ANTAK (web shell)",
+        "ASPXSpy (web shell)"
+      ],
       "detection_feasibility": "high — web shells are detectable via web-server worker processes (w3wp.exe) spawning cmd/powershell, new/modified .aspx files in web roots, and anomalous IIS request patterns; ANTAK/ASPXSpy web-shell use is a signature APT39 tradecraft and a prime detection surface",
-      "sources": ["https://attack.mitre.org/groups/G0087/", "https://www.cisa.gov/news-events/analysis-reports/ar20-259a"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/",
+        "https://www.cisa.gov/news-events/analysis-reports/ar20-259a"
+      ]
     },
     {
       "technique_id": "T1546.010",
@@ -470,7 +663,9 @@
       "procedure_description": "APT39 has abused the AppInit_DLLs registry mechanism to load malicious DLLs for persistence.",
       "observed_tooling": [],
       "detection_feasibility": "high — modification of HKLM\\...\\Windows\\AppInit_DLLs is a rare, high-fidelity registry-modification detection",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1547.001",
@@ -479,7 +674,9 @@
       "procedure_description": "APT39 has established persistence via Registry Run keys and Startup-folder entries to auto-execute malware at logon.",
       "observed_tooling": [],
       "detection_feasibility": "high — Run-key writes and Startup-folder drops are detectable via registry-modification and file-creation telemetry (Autoruns-class monitoring)",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1547.009",
@@ -488,7 +685,9 @@
       "procedure_description": "APT39 has modified/created shortcut (.lnk) files to establish persistence and trigger payload execution.",
       "observed_tooling": [],
       "detection_feasibility": "medium — malicious .lnk creation/modification in startup/user paths is detectable via file-creation telemetry and shortcut-target analysis",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1553.006",
@@ -497,7 +696,9 @@
       "procedure_description": "APT39 has modified code-signing/driver-signature enforcement policy to allow unsigned or attacker-controlled code to load.",
       "observed_tooling": [],
       "detection_feasibility": "medium — signing-policy/DSE modifications (bcdedit testsigning, registry policy changes) are detectable via command-line and registry telemetry but require targeted rules",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1555",
@@ -506,16 +707,22 @@
       "procedure_description": "APT39 has harvested stored credentials from password stores on compromised systems.",
       "observed_tooling": [],
       "detection_feasibility": "medium — credential-store access is detectable mainly via known-tool execution signatures and file/vault access telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1560.001",
       "technique_name": "Archive Collected Data: Archive via Utility",
       "tactic": "collection",
       "procedure_description": "APT39 has archived collected data with utilities (e.g. WinRAR) prior to exfiltration.",
-      "observed_tooling": ["winrar"],
+      "observed_tooling": [
+        "winrar"
+      ],
       "detection_feasibility": "medium — archiving-utility execution producing large archives in staging paths is detectable via process + file-creation telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1566.001",
@@ -524,7 +731,9 @@
       "procedure_description": "APT39 has sent spear-phishing emails with malicious attachments (often macro documents) to targeted individuals for initial access.",
       "observed_tooling": [],
       "detection_feasibility": "medium — attachment-based spearphishing is detectable via mail sandboxing and macro-content analysis at the gateway",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1566.002",
@@ -533,25 +742,39 @@
       "procedure_description": "APT39 has sent spear-phishing emails with malicious links to credential-harvesting or malware-delivery pages.",
       "observed_tooling": [],
       "detection_feasibility": "medium — link-based spearphishing is detectable via URL rewriting/detonation and proxy telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1569.002",
       "technique_name": "System Services: Service Execution",
       "tactic": "execution",
       "procedure_description": "APT39 has executed payloads by creating/starting Windows services (including via PsExec) on local and remote hosts.",
-      "observed_tooling": ["PsExec"],
+      "observed_tooling": [
+        "PsExec"
+      ],
       "detection_feasibility": "high — service creation/execution (Event ID 7045 / 4697) is strongly detectable, especially with anomalous binary paths",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     },
     {
       "technique_id": "T1588.002",
       "technique_name": "Obtain Capabilities: Tool",
       "tactic": "resource-development",
       "procedure_description": "APT39 has obtained and used publicly available tools including Mimikatz, ProcDump, Windows Credential Editor, PsExec, and PLINK.",
-      "observed_tooling": ["Mimikatz", "ProcDump", "Windows Credential Editor (WCE)", "PsExec", "PLINK"],
+      "observed_tooling": [
+        "Mimikatz",
+        "ProcDump",
+        "Windows Credential Editor (WCE)",
+        "PsExec",
+        "PLINK"
+      ],
       "detection_feasibility": "low — tool acquisition itself is off-endpoint; downstream use is where detection lands — this entry is a hunt/intel candidate",
-      "sources": ["https://attack.mitre.org/groups/G0087/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0087/"
+      ]
     }
   ],
   "detection_signals": [
@@ -569,10 +792,47 @@
     "Archiving utilities (WinRAR) producing large archives in temp/staging paths prior to outbound transfer (collection/exfil staging)"
   ],
   "iocs": {
-    "ips": [],
-    "domains": [],
+    "ips": [
+      "185.165.116.47"
+    ],
+    "domains": [
+      "saveingone.com"
+    ],
     "emails": [],
-    "hashes": [],
+    "hashes": [
+      "0d6d385354584264e2b37ff3a199ea04",
+      "2f01092e9cd49448b0de7da48e545682",
+      "3153abb3ee1acea396b0f7b77c0162c9",
+      "3f3f39bacfe115df5b55c9ab06b93aeb",
+      "426351383dfe8f88a0959a9d5e8c43c7",
+      "43124f6d418b086f3107a8cb708c3d2b",
+      "45045fa9d428f29e8a3a988048e3aff1",
+      "46506fa669ec116da3d967c36eab7ba7",
+      "486aa8849c173450911f886116f4b5d6",
+      "4d8e2fdb16877f693d8e90410f90a164",
+      "50ded657ff5a1c80d736fe3b80beb87f",
+      "54c166c313c684eaa54c0c861cc34987",
+      "59c2c1c6451417f054efaee32416c652",
+      "6269e8ae9d86c648c15e41c7d89509ab",
+      "66cb23c223ec4d78d683292d1b928fbf",
+      "8f848b67af0d6ad3dd3419c9d11c28c1",
+      "91e1793bd5f3f274ddb22b47662cb860",
+      "9e98ecf93ca86751dbdb7049f6d24e9b",
+      "9f7c280b20d021f0a0984d1ad0aeba41",
+      "b15196f34a69e6579532c69fefad7ac6",
+      "ce456b20f6cb4d5d74f00d976e2e7a91",
+      "d363ecffbe6a0a62546051fc383399f4",
+      "d661d2dd1c28efd4b4f7c9c70f763354",
+      "dbc67d46cb7b6aa7406c979b248421c4",
+      "de8986682ab25d98448e688506250b94",
+      "e169c4d3430c8342d809055dc5f3373e",
+      "e998fa518523ccc092c4167718b069cb",
+      "eee655c5522267d63314a0b20162d619",
+      "f3d2c6084f09433a87f248726de288e0",
+      "fc105956b5b2d33411b2c0e362abb6b3",
+      "fcc61b3a0277c47748a185dccccad5d8",
+      "a1481b251328b50d268b815debd614f539039e6e7012c90b66daee717712d524"
+    ],
     "cves": []
   },
   "yara_rules": [],

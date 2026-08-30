@@ -25,14 +25,14 @@ _See the [MENA Threat Actor Tracker](https://github.com/DashTX707/MENA-Threat-Ac
 - [`navigator-layer.json`](navigator-layer.json) — ATT&CK Navigator heatmap (red=detection, orange=hunt)
 - [`detections/`](detections/) — Sigma rules covering the 43 detection-lane techniques, validated clean
 - [`hunts/`](hunts/) — hunt hypotheses covering the 10 hunt-lane techniques
-- [`iocs/`](iocs/) — **0 publicly-sourced indicators**
+- [`iocs/`](iocs/) — **34 publicly-sourced indicators**
 - [`intel/`](intel/) — pipeline provenance (`cti-pipeline.json`, `routing.json`)
 
 ## Coverage snapshot
 
 - TTPs mapped: **53** across 11 tactics
 - Lane split: **43 detection / 10 hunt**
-- IOCs: **0**
+- IOCs: **34**
 
 ## Provenance
 
