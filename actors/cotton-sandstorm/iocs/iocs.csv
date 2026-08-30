@@ -1,44 +1,44 @@
-value,type,context,source
-45[.]140[.]146[.]139,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]84[.]0[.]237,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]140[.]146[.]197,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]140[.]146[.]137,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]84[.]0[.]254,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]142[.]212[.]21,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]140[.]146[.]108,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]140[.]146[.]208,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-85[.]206[.]170[.]160-85[.]206[.]170[.]191,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-85[.]206[.]167[.]224-85[.]206[.]167[.]255,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-85[.]206[.]169[.]64-85[.]206[.]169[.]79,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-85[.]206[.]169[.]80-85[.]206[.]169[.]95,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-213[.]109[.]147[.]63,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-146[.]19[.]254[.]61,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-31[.]42[.]177[.]114,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]143[.]167[.]87,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]143[.]166[.]233,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-45[.]120[.]177[.]8,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-5[.]230[.]56[.]148,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-77[.]91[.]74[.]158,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-195[.]26[.]87[.]80,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-213[.]109[.]147[.]97,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-185[.]110[.]188[.]112,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-onlinelive[.]info,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-zeusistalking[.]io,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-zeusistalking[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-zeusistalking[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-rgud-group[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-rgud-group[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-cyberflood[.]io,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-cybercourt[.]io,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-pro-today[.]org,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-il-cert[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-connect[.]il-cert[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-Contact-hstg[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-server-speed[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-vps-agent[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-alqassam[.]ps,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-almaq[.]org,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf
-4431b2a4d7758907f81fb1a0c1e36b2ce03e08d43123b1c398487770afd20727,hash,Cotton Sandstorm sample hash,https://www.ic3.gov/CSA/2024/241030.pdf
-6f765dda126e830c6cd2c7938dbb970d03be728e82c00388903a4ef3f9ecc853,hash,Cotton Sandstorm sample hash,https://www.ic3.gov/CSA/2024/241030.pdf
-info@vps-agent.net,email,Cotton Sandstorm actor email,https://www.ic3.gov/CSA/2024/241030.pdf
-CVE-2023-38831,cve,Exploited by Cotton Sandstorm,https://www.ic3.gov/CSA/2024/241030.pdf
+value,type,context,source,date
+45[.]140[.]146[.]139,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]84[.]0[.]237,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]140[.]146[.]197,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]140[.]146[.]137,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]84[.]0[.]254,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]142[.]212[.]21,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]140[.]146[.]108,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]140[.]146[.]208,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+85[.]206[.]170[.]160-85[.]206[.]170[.]191,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+85[.]206[.]167[.]224-85[.]206[.]167[.]255,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+85[.]206[.]169[.]64-85[.]206[.]169[.]79,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+85[.]206[.]169[.]80-85[.]206[.]169[.]95,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+213[.]109[.]147[.]63,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+146[.]19[.]254[.]61,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+31[.]42[.]177[.]114,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]143[.]167[.]87,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]143[.]166[.]233,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+45[.]120[.]177[.]8,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+5[.]230[.]56[.]148,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+77[.]91[.]74[.]158,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+195[.]26[.]87[.]80,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+213[.]109[.]147[.]97,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+185[.]110[.]188[.]112,ip,Cotton Sandstorm operational IP (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+onlinelive[.]info,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+zeusistalking[.]io,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+zeusistalking[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+zeusistalking[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+rgud-group[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+rgud-group[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+cyberflood[.]io,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+cybercourt[.]io,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+pro-today[.]org,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+il-cert[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+connect[.]il-cert[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+Contact-hstg[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+server-speed[.]com,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+vps-agent[.]net,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+alqassam[.]ps,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+almaq[.]org,domain,Cotton Sandstorm C2/masquerading domain (defanged),https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+4431b2a4d7758907f81fb1a0c1e36b2ce03e08d43123b1c398487770afd20727,hash,Cotton Sandstorm sample hash,https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+6f765dda126e830c6cd2c7938dbb970d03be728e82c00388903a4ef3f9ecc853,hash,Cotton Sandstorm sample hash,https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+info@vps-agent.net,email,Cotton Sandstorm actor email,https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30
+CVE-2023-38831,cve,Exploited by Cotton Sandstorm,https://www.ic3.gov/CSA/2024/241030.pdf,2024-10-30

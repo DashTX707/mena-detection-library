@@ -1,9 +1,9 @@
-value,type,context,source
-192[.]52[.]166[.]76,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/
-108[.]62[.]118[.]240,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/
-102[.]129[.]215[.]40,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/
-76[.]8[.]60[.]64,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/
-alsalam[[.]]ddns[[.]]net,domain,APT33 masquerading/C2 domain (defanged),https://attack.mitre.org/groups/G0064/
-ngaaksa[[.]]ga,domain,APT33 masquerading/C2 domain (defanged),https://attack.mitre.org/groups/G0064/
-boeing[[.]]servehttp[[.]]com,domain,APT33 masquerading/C2 domain (defanged),https://attack.mitre.org/groups/G0064/
-CVE-2017-11774,cve,Exploited by APT33 (e.g. Outlook CVE-2017-11774),https://attack.mitre.org/groups/G0064/
+value,type,context,source,date
+192[.]52[.]166[.]76,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/,2023-09-14
+108[.]62[.]118[.]240,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/,2023-09-14
+102[.]129[.]215[.]40,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/,2023-09-14
+76[.]8[.]60[.]64,ip,APT33/Peach Sandstorm operational IP (defanged),https://attack.mitre.org/groups/G0064/,2023-09-14
+alsalam[[.]]ddns[[.]]net,domain,APT33 masquerading/C2 domain (defanged),https://attack.mitre.org/groups/G0064/,2023-09-14
+ngaaksa[[.]]ga,domain,APT33 masquerading/C2 domain (defanged),https://attack.mitre.org/groups/G0064/,2023-09-14
+boeing[[.]]servehttp[[.]]com,domain,APT33 masquerading/C2 domain (defanged),https://attack.mitre.org/groups/G0064/,2023-09-14
+CVE-2017-11774,cve,Exploited by APT33 (e.g. Outlook CVE-2017-11774),https://attack.mitre.org/groups/G0064/,2023-09-14

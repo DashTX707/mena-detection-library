@@ -1,26 +1,26 @@
-value,type,context,source
-138[.]68[.]90[.]19,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-167[.]99[.]202[.]130,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-78[.]141[.]238[.]182,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-51[.]16[.]51[.]81,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-51[.]20[.]138[.]134,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-134[.]209[.]30[.]220,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-13[.]53[.]124[.]246,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-18[.]134[.]0[.]66,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-193[.]149[.]190[.]248,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-45[.]76[.]65[.]42,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-206[.]71[.]148[.]78,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-193[.]149[.]187[.]41,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-api[.]gupdate[.]net,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-githubapp[.]net,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-login[.]forticloud[.]online,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-fortigate[.]forticloud[.]online,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-cloud[.]sophos[.]one,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-files[.]catbox[.]moe,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-ngrok[.]io,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-CVE-2019-19781,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-CVE-2023-3519,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-CVE-2022-1388,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-CVE-2024-21887,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-CVE-2024-3400,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
-CVE-2024-24919,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a
+value,type,context,source,date
+138[.]68[.]90[.]19,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+167[.]99[.]202[.]130,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+78[.]141[.]238[.]182,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+51[.]16[.]51[.]81,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+51[.]20[.]138[.]134,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+134[.]209[.]30[.]220,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+13[.]53[.]124[.]246,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+18[.]134[.]0[.]66,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+193[.]149[.]190[.]248,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+45[.]76[.]65[.]42,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+206[.]71[.]148[.]78,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+193[.]149[.]187[.]41,ip,Pioneer Kitten operational IP (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+api[.]gupdate[.]net,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+githubapp[.]net,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+login[.]forticloud[.]online,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+fortigate[.]forticloud[.]online,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+cloud[.]sophos[.]one,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+files[.]catbox[.]moe,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+ngrok[.]io,domain,Pioneer Kitten C2/masquerading domain (defanged),https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+CVE-2019-19781,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+CVE-2023-3519,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+CVE-2022-1388,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+CVE-2024-21887,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+CVE-2024-3400,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
+CVE-2024-24919,cve,Exploited by Pioneer Kitten,https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-241a,2024-08-28
