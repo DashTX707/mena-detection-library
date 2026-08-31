@@ -1,0 +1,32 @@
+title: Ferocious Kitten MarkiRAT Exfiltration to uploadx.php
+id: a3d6c0e4-5b8d-4f2a-8c3d-4f7b1c2e6a8c
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT exfiltration stage (T1041), which uploads collected files
+    (documents, the keystroke log 'nfo', screenshot 'scr.jpg') to the C2 via HTTP POST to
+    /up/uploadx.php?u=[computername]_[username]. Keys on outbound requests to the uploadx.php endpoint,
+    with higher fidelity when combined with the known C2 domains.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: proxy
+detection:
+    selection_uri:
+        c-uri|contains: '/up/uploadx.php'
+    selection_domains:
+        c-uri|contains:
+            - 'updatei.com'
+            - 'com-view.space'
+            - 'com-view.org'
+    selection_post:
+        cs-method: 'POST'
+    condition: selection_uri and (selection_domains or selection_post)
+falsepositives:
+    - Unrelated applications posting to a path named uploadx.php - constrained by the actor domains and POST method
+level: high

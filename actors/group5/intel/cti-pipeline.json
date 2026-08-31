@@ -1,0 +1,230 @@
+{
+  "report_title": "Group5 (Iranian-nexus, suspected) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Citizen Lab 'Group5: Syria and the Iranian Connection' (2016-08-02, https://citizenlab.ca/2016/08/group5-syria/); MITRE ATT&CK Group Group5 G0043 (https://attack.mitre.org/groups/G0043/)",
+  "publication_date": "2026-08-31",
+  "actor": {
+    "name": "Group5",
+    "mitre_id": "",
+    "mitre_canonical_name": "Group5",
+    "aliases": [
+      "Group5"
+    ],
+    "related_clusters": [
+      "PAC Crypt / 'Mr. Tekide' (Iranian crypter developer whose tooling was used; not an actor cluster, an infrastructure/tooling overlap)",
+      "Ashiyane Digital Security Team / ADST (Iranian forum community 'Mr. Tekide' was associated with)"
+    ],
+    "attribution": "Suspected Iranian nexus. Citizen Lab explicitly frames the Iran connection as an assessment built on convergent-but-circumstantial indicators, NOT a definitive state attribution: operator access to the staging site from Iranian IP space (37.137.131.70, Rightel Communication mobile network), a Persian-language mailer hosted on the malware site, an Iran-based hosting provider (Hostnegar / hostnegar.com), and use of the Iranian-authored 'PAC Crypt' crypter whose debug PDB strings expose the developer alias 'mr.tekide' (linked to crypter.ir / crypting.org and the Ashiyane Digital Security Team). No link to a specific Iranian government entity was established; the operation could be state-linked, contractor, or independent. MITRE ATT&CK records the group as having 'a suspected Iranian nexus, though this attribution is not definite.'",
+    "attribution_confidence": "low",
+    "targeted_regions_mena": [
+      "Syria",
+      "Iran (operator origin / theming, not victim)"
+    ],
+    "targeted_regions_global": [],
+    "targeted_sectors": [
+      "Syrian opposition (political activists, negotiators, war-crimes documentarians)",
+      "Civil society / dissidents"
+    ],
+    "key_campaigns": [
+      {
+        "name": "assadcrimes.info — Syrian opposition targeting campaign",
+        "date": "October 2015 to May 2016 (site parked May 4, 2016)",
+        "summary": "A staged malware operation against individuals connected to the Syrian opposition. The actor registered assadcrimes.info (June 2015) — falsely using the identity of Noura Al-Ameer, a former Syrian National Council Vice President and war-crimes documentarian who was herself a target — and populated it with scraped Syrian opposition and human-rights content (Ghouta chemical-attack imagery, Iran-Saudi tensions, Assad war-crimes themes) as a watering hole. Targets were approached via spearphishing (starting with an email to Al-Ameer on 2015-10-03) delivering malicious PPSX PowerPoint slideshows exploiting CVE-2014-4114, and via the site's fake Adobe Flash Player update page serving decoy droppers. Payloads were the commodity RATs njRAT and NanoCore (Windows) and DroidJack (Android), obfuscated with the Iranian 'PAC Crypt' crypter. Operational-security failures — unprotected public web logs, PDB debug strings, and operator logins from Iranian IPs — enabled the attribution assessment. Only 2 of 16 unique file hashes were detected by AV at analysis time (~12.5%), consistent with a low-volume, targeted operation.",
+        "source_url": "https://citizenlab.ca/2016/08/group5-syria/"
+      }
+    ]
+  },
+  "threat_actors": ["Group5"],
+  "targeted_regions": ["Syria"],
+  "targeted_sectors": ["Syrian opposition", "Civil society", "Activists / dissidents"],
+  "malware": [
+    "njRAT (S0385) — commodity Windows RAT",
+    "NanoCore (S0336) — commodity Windows RAT (dropped as dwm.exe)",
+    "DroidJack — Android RAT (SandroRAT lineage), delivered as adobe_flash_player.apk",
+    "PAC Crypt — .NET crypter/packer stub ('Mr. Tekide')",
+    ".NET first-stage downloader (delivered as putty.exe)"
+  ],
+  "tooling_observed": [
+    "njRAT",
+    "NanoCore",
+    "DroidJack",
+    "PAC Crypt crypter (mr.tekide)",
+    "Malicious PPSX PowerPoint slideshows (CVE-2014-4114)",
+    "Fake Adobe Flash Player update page",
+    "Persian-language web mailer"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "Group5 registered the domain assadcrimes.info (June 2015) to stage its watering-hole/malware site, falsely registering it under the stolen identity of Syrian opposition figure Noura Al-Ameer. The domain was hosted on the Iran-based provider Hostnegar (hostnegar.com) on shared hosting IP 212.7.195.171.",
+      "observed_tooling": ["Fake Adobe Flash Player update page"],
+      "detection_feasibility": "low — domain registration and hosting acquisition occur off-victim; hunt/intel candidate via WHOIS/passive-DNS monitoring and identity-abuse tracking, not endpoint telemetry",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "Group5 relied entirely on off-the-shelf/commodity capabilities rather than bespoke malware: the njRAT and NanoCore Windows RATs, the DroidJack Android RAT (SandroRAT lineage), and the Iranian-authored 'PAC Crypt' crypter (developer alias 'mr.tekide') used to pack the payloads for AV evasion.",
+      "observed_tooling": ["njRAT", "NanoCore", "DroidJack", "PAC Crypt crypter (mr.tekide)"],
+      "detection_feasibility": "low — capability acquisition is off-victim; the downstream execution of each RAT is where detection lands. Intel/hunt candidate via crypter/PDB-string and commodity-RAT family tracking",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/", "https://attack.mitre.org/groups/G0043/"]
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "procedure_description": "Group5 staged multiple malware variants on its actor-controlled watering-hole site assadcrimes.info, including malicious PPSX documents and Windows/Android droppers reachable via a fake Adobe Flash Player update download page, making payloads available for victim delivery.",
+      "observed_tooling": ["Fake Adobe Flash Player update page", "njRAT", "NanoCore"],
+      "detection_feasibility": "low — malware staging on adversary infrastructure is off-victim; hunt/intel candidate via URL/content monitoring of known actor domains",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Group5 delivered malicious PowerPoint slideshow (PPSX) attachments to Syrian opposition targets via email — the campaign opened with a 2015-10-03 spearphishing email to Noura Al-Ameer. The PPSX files embedded OLE Package objects triggered on animation to drop and execute the RAT payloads, themed around Syrian conflict / Assad war-crimes content.",
+      "observed_tooling": ["Malicious PPSX PowerPoint slideshows (CVE-2014-4114)"],
+      "detection_feasibility": "medium — inbound PPSX/PPT attachments with embedded OLE Package objects are detectable via email-gateway attachment inspection and endpoint child-process spawning from POWERPNT.EXE, but require content-level visibility",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "procedure_description": "Group5 operated assadcrimes.info as a watering hole seeded with scraped Syrian opposition and human-rights content to draw in targets, presenting a fake Adobe Flash Player update notification page whose HTML triggered download of decoy droppers carrying the RAT payloads.",
+      "observed_tooling": ["Fake Adobe Flash Player update page"],
+      "detection_feasibility": "medium — fake-update lures and drive-by download chains are detectable via proxy/DNS reputation on the actor domain and browser-spawned executable-download telemetry, but the specific one-off site limits generalizable signatures",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "procedure_description": "Group5's PPSX documents exploited CVE-2014-4114 (the 'Sandworm'/OLE Package Manager vulnerability in Microsoft Office/PowerPoint) to silently drop and execute embedded malicious code when the slideshow was opened.",
+      "observed_tooling": ["Malicious PPSX PowerPoint slideshows (CVE-2014-4114)"],
+      "detection_feasibility": "medium — CVE-2014-4114 exploitation is detectable via patch-state monitoring and anomalous child processes / file writes from POWERPNT.EXE (e.g. INF/OLE package execution), but is dated and requires Office process visibility",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Group5 relied on targets opening decoy-themed dropper files delivered from the watering hole or by email — e.g. 'alshohadaa alatfal.exe' (a decoy referencing child martyrs) and a first-stage .NET downloader masquerading as putty.exe — to gain execution of the njRAT/NanoCore payloads.",
+      "observed_tooling": ["njRAT", "NanoCore", ".NET first-stage downloader (delivered as putty.exe)"],
+      "detection_feasibility": "medium — execution of user-opened droppers with decoy names/icons is detectable via endpoint process-creation telemetry and mark-of-the-web/downloaded-executable launches, but depends on user action and endpoint coverage",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Group5 used a multi-stage delivery chain in which a first-stage .NET downloader (delivered as putty.exe) retrieved and installed the second-stage NanoCore RAT (dropped as dwm.exe) onto the victim host.",
+      "observed_tooling": [".NET first-stage downloader (delivered as putty.exe)", "NanoCore"],
+      "detection_feasibility": "medium — second-stage payload retrieval is detectable via process-spawned outbound connections and new-executable file writes, but the commodity single-server C2 gives limited network signature",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Group5 named its payloads after legitimate software to blend in: the first-stage downloader was delivered as putty.exe (impersonating the PuTTY SSH client) and the NanoCore RAT was dropped as dwm.exe (impersonating the Windows Desktop Window Manager). Decoy documents also used Syrian-opposition-plausible filenames.",
+      "observed_tooling": ["NanoCore", ".NET first-stage downloader (delivered as putty.exe)"],
+      "detection_feasibility": "medium — binaries named putty.exe/dwm.exe running from unexpected paths or with wrong signatures/hashes are detectable via name-vs-path/signature baselining, but require endpoint image-metadata visibility",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "procedure_description": "Group5 obfuscated its RAT payloads with the 'PAC Crypt' crypter, which Base64-encoded the PE file, embedded it in the resource section, applied AES encryption, and wrapped it in a .NET packer stub to evade static AV detection. The crypter was compiled in debug mode, leaving PDB strings ('paccryptnano core dehgani-vds', 'paccrypt11njratmalii') exposing the 'mr.tekide' developer alias.",
+      "observed_tooling": ["PAC Crypt crypter (mr.tekide)", "njRAT", "NanoCore"],
+      "detection_feasibility": "low — the packing itself is designed to defeat static signatures; hunt candidate via crypter-stub/YARA and PDB-string artifacts, with behavioral detection deferred to runtime RAT activity. This is one of the four techniques MITRE attributes to G0043",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/", "https://attack.mitre.org/groups/G0043/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "Group5's njRAT and NanoCore RATs provided keystroke-logging and password-capture capability against infected Syrian opposition targets. Listed by MITRE ATT&CK as a Group5 technique.",
+      "observed_tooling": ["njRAT", "NanoCore"],
+      "detection_feasibility": "low — RAT keylogging leaves little discrete host signal; hunt candidate via keyboard-hook/API-callback and RAT-process behavioral telemetry rather than a specific event",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/", "https://attack.mitre.org/groups/G0043/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "Group5's njRAT and NanoCore RATs allowed operators to watch the victim's screen / capture screenshots as part of surveillance of Syrian opposition figures. Listed by MITRE ATT&CK as a Group5 technique.",
+      "observed_tooling": ["njRAT", "NanoCore"],
+      "detection_feasibility": "low — RAT screen capture is difficult to distinguish from legitimate screen APIs; hunt candidate via RAT-process behavior correlation, not a standalone signal",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/", "https://attack.mitre.org/groups/G0043/"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "Group5's RATs (njRAT/NanoCore on Windows, DroidJack on Android) supported microphone activation to record audio and listen in on targets' surroundings.",
+      "observed_tooling": ["njRAT", "NanoCore", "DroidJack"],
+      "detection_feasibility": "low — microphone access by a RAT is hard to separate from legitimate audio use; hunt candidate via device-access/RAT-behavior telemetry",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "procedure_description": "Group5's RATs (njRAT/NanoCore on Windows, DroidJack on Android) supported webcam/camera activation to capture video and images of targets.",
+      "observed_tooling": ["njRAT", "NanoCore", "DroidJack"],
+      "detection_feasibility": "low — RAT webcam access closely mimics legitimate camera use; hunt candidate via device-access/RAT-behavior telemetry",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/"]
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "procedure_description": "Group5's RATs provided remote file-deletion capability, allowing operators to remove files (including their own artifacts) from infected systems. Listed by MITRE ATT&CK as a Group5 technique.",
+      "observed_tooling": ["njRAT", "NanoCore"],
+      "detection_feasibility": "low — individual file deletions blend with normal activity; hunt candidate via file-deletion auditing correlated with RAT process lineage",
+      "sources": ["https://citizenlab.ca/2016/08/group5-syria/", "https://attack.mitre.org/groups/G0043/"]
+    }
+  ],
+  "detection_signals": [
+    "Inbound PPSX/PPT PowerPoint slideshow attachments containing embedded OLE Package objects; POWERPNT.EXE spawning child processes or writing executables (CVE-2014-4114 exploitation)",
+    "DNS/proxy connections to assadcrimes[.]info and fake 'Adobe Flash Player update' download pages triggering executable downloads",
+    "Execution of decoy-named droppers (e.g. 'alshohadaa alatfal.exe') and binaries masquerading as putty.exe or dwm.exe from unexpected paths / with mismatched signatures",
+    "njRAT and NanoCore host artifacts and C2 beaconing to 88.198.222[.]163 on ports 8081 (NanoCore), 9999 (njRAT); DroidJack C2 on port 5555",
+    "PAC Crypt / 'mr.tekide' crypter-stub artifacts and PDB strings ('paccryptnano core dehgani-vds', 'paccrypt11njratmalii') in .NET samples",
+    "Android package adobe_flash_player.apk (DroidJack/SandroRAT) requesting contacts, SMS, location, camera, microphone, and call-log permissions then self-hiding post-install",
+    "Files matching the published MD5 hashes (see iocs.hashes) on host or in mail/proxy quarantine"
+  ],
+  "iocs": {
+    "ips": [
+      "88.198.222.163",
+      "212.7.195.171",
+      "37.137.131.70"
+    ],
+    "domains": [
+      "assadcrimes.info"
+    ],
+    "emails": [],
+    "hashes": [
+      "76F8142B4E52C671871B3DF87F10C30C",
+      "F1F84EA3229DCA0CCACB7381A2F49F99",
+      "30BB678DB3AD0140FC33ACD9803385C3",
+      "2FC276E1C06C3C78C6D7B66A141213BE",
+      "7d898530d2e77f15f5badce8d7df215e",
+      "dd5bedd915967c5efe00733cf7478cb4",
+      "a4f1f4921bb11ff9d22fad89b19b155d",
+      "6161083021b695814434450c1882f9f3",
+      "b4121c3a1892332402000ef0d587c0ee",
+      "8EBEB3F91CDA8E985A9C61BEB8CDDE9D"
+    ],
+    "cves": [
+      "CVE-2014-4114"
+    ]
+  },
+  "yara_rules": [],
+  "confidence": "low",
+  "notes": "Primary source is Citizen Lab's 'Group5: Syria and the Iranian Connection' (2016-08-02), enriched with MITRE ATT&CK Group5 (G0043). CONFIDENCE IS LOW BY DESIGN: this is a small, low-volume commodity-RAT operation against Syrian opposition civil society, and the Iranian attribution is Citizen Lab's ASSESSMENT from convergent circumstantial indicators (operator logins from Iranian IP space 37.137.131.70 / Rightel; Persian-language mailer; Iran-based Hostnegar hosting; the Iranian 'PAC Crypt' crypter and its 'mr.tekide' PDB developer alias) — NOT a definitive or state-entity attribution. MITRE concurs the nexus is 'suspected... not definite.' No node in the pipeline should treat the Iran link as settled. TTP COUNT IS INTENTIONALLY MODEST (15) and NOT padded — this actor used no custom implants, no lateral movement, no privilege escalation, and no novel persistence in the reporting; its tradecraft is delivery + commodity-RAT surveillance. The four techniques MITRE formally attributes to G0043 (T1027.013 Encrypted/Encoded File, T1056.001 Keylogging, T1070.004 File Deletion, T1113 Screen Capture) are all included; the remaining eleven are grounded directly in Citizen Lab's technical narrative (domain acquisition, commodity tooling, watering-hole staging, spearphishing PPSX, CVE-2014-4114, user-executed droppers, staged download, masquerading, ingress transfer, audio/video capture). Every technique_id was validated against this environment's bundled ATT&CK dataset before inclusion — zero invalid IDs; T1656 was checked and REJECTED because it is revoked in this dataset. Defense-evasion/anti-forensic techniques use this environment's tactic slug 'stealth'. IOCs are taken verbatim (raw, un-defanged) from Citizen Lab: C2 server 88.198.222.163 (Hetzner, Germany; NanoCore:8081, njRAT:9999, DroidJack:5555), shared web-hosting IP 212.7.195.171 (Hostnegar, Iran), operator-origin IP 37.137.131.70 (Rightel, Iran — an attribution artifact, not victim-facing infrastructure), domain assadcrimes.info, CVE-2014-4114, and the 10 published MD5 sample hashes (9 Windows + 1 Android APK 8EBEB3F91CDA8E985A9C61BEB8CDDE9D). Citizen Lab published MD5s only; no SHA1/SHA256 were provided, so none are fabricated. No YARA rules were published in the report. DETECTION POSTURE: this pack skews HUNT-heavy (low feasibility) — the RAT surveillance behaviors (keylog/screen/audio/video/file-delete) are commodity and hard to signature, while the higher-value detection surface is delivery-side: PPSX/CVE-2014-4114 attachments, the assadcrimes.info watering hole, masquerading putty.exe/dwm.exe, and the specific C2 IP/ports and file hashes (all now historical/aged, 2015-2016)."
+}

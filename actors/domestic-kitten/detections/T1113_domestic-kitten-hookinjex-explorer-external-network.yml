@@ -1,0 +1,39 @@
+title: Domestic Kitten HookInjEx Screenshot Exfil - explorer.exe External Network Connection
+id: 723c9e34-b621-4da3-9a1a-0f1cbe155fd5
+status: experimental
+description: |
+    Detects the injected HookInjEx (Rampant Kitten) code operating from inside explorer.exe making
+    outbound connections to external hosts (T1113 Screen Capture). HookInjEx captures desktop
+    screenshots and, running within the injected explorer process, exfiltrates them; explorer.exe
+    initiating connections to non-internal addresses is anomalous. Requires Sysmon Event ID 3. This is
+    a behavioural proxy for the screenshot-collection activity - HookInjEx's screen-capture API use is
+    not directly logged, so the injected-process egress is the observable surface. Pair with the
+    injection rules (T1055.001 / T1056.001) to confirm the explorer host was compromised.
+references:
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.collection
+    - attack.t1113
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\explorer.exe'
+        Initiated: 'true'
+    filter_internal:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+            - '127.0.0.0/8'
+            - '169.254.0.0/16'
+    condition: selection and not filter_internal
+falsepositives:
+    - explorer.exe legitimately reaching internet hosts for WebDAV, shell folder or cloud-storage
+      integrations - baseline expected destinations in the environment before alerting
+    - Connectivity/portal checks triggered from the shell - scope to unexpected destination hosts
+level: medium

@@ -1,0 +1,37 @@
+title: OilAlpha Non-Standard High-Port C2 Beaconing
+id: 88bddb90-b57d-495c-a3ae-76da911c98ce
+status: experimental
+description: |
+    Detects outbound connections to the uncommon high TCP ports 44414 and 44449 used by OilAlpha
+    SpyNote/SpyMax Android RAT samples to beacon to their dynamic-DNS C2 servers (T1571 Non-Standard
+    Port). The 'Cash Incentives' sample contacted ho1hm2.ddns.net on 44414 and the 'NRC Business'
+    sample reached ho1hm2.ddns.net / ho2hm1.ddns.net on 44449. Precision is raised by anchoring to
+    the known OilAlpha C2 IP set; broaden by removing the destination filter for anomaly hunting.
+references:
+    - https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1571
+    - mena-detection-library.oilalpha
+logsource:
+    category: firewall
+detection:
+    selection_port:
+        dst_port:
+            - 44414
+            - 44449
+    selection_ip:
+        dst_ip:
+            - '206.189.98.34'
+            - '176.123.21.4'
+            - '145.14.156.148'
+            - '141.255.144.8'
+            - '134.122.75.238'
+            - '141.255.145.221'
+    condition: selection_port or selection_ip
+falsepositives:
+    - Rare custom applications legitimately using these high ephemeral-range ports on internal
+      infrastructure - scope out known internal destinations before alerting
+level: high

@@ -1,0 +1,34 @@
+title: Group5 Masquerading via Spoofed dwm.exe and putty.exe
+id: 47e86bed-e438-4deb-a05f-588114d8db02
+status: experimental
+description: |
+    Detects Group5 masquerading (T1036.005) - matching a legitimate resource name to blend in.
+    Group5 dropped the NanoCore RAT as dwm.exe (impersonating the Windows Desktop Window Manager,
+    which only ever runs from System32/SysWOW64) and delivered its first-stage .NET downloader as
+    putty.exe. This rule keys on the immutable name-vs-location invariant: a process using the
+    reserved system image name dwm.exe running from any path other than the genuine System32 /
+    SysWOW64 location, which the real Desktop Window Manager never does.
+references:
+    - https://citizenlab.ca/2016/08/group5-syria/
+    - https://attack.mitre.org/groups/G0043/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.group5
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\dwm.exe'
+    filter_legit_path:
+        Image|startswith:
+            - 'C:\Windows\System32\'
+            - 'C:\Windows\SysWOW64\'
+    condition: selection and not filter_legit_path
+falsepositives:
+    - Rare third-party software that ships a binary named dwm.exe outside System32 - investigate
+      and allowlist by full path and signature if confirmed benign
+level: high

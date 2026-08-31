@@ -1,0 +1,49 @@
+title: Domestic Kitten / FurBall C2 Web Protocol Beaconing
+id: 40bf5556-f0e2-4e50-8634-f9e4d1da6b51
+status: experimental
+description: |
+    Detects HTTP command-and-control traffic to Domestic Kitten / APT-C-50 (FurBall and Rampant
+    Kitten) C2 infrastructure (T1071.001 Application Layer Protocol: Web Protocols). FurBall beacons
+    over HTTP roughly every 10 seconds to request tasking and the TelB Windows stealer uses SOAP over
+    HTTP; the Rampant Kitten Android backdoor pulls config/commands over HTTP. Keys on requests to the
+    known C2 domains. The named domains are IOCs and decay - where network egress is monitored, a
+    fixed ~10-second periodic beacon to a single external host is the more durable behavioural signal
+    and should be baselined alongside this rule.
+references:
+    - https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+    - https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: proxy
+detection:
+    selection:
+        c-uri|contains:
+            - 'firmwaresystemupdate.com'
+            - 'appsoftupdate.com'
+            - 'alarabiye.net'
+            - 'gradleservice.info'
+            - 'developerchrome.com'
+            - 'firefox-addons.com'
+            - 'cpuconfig.com'
+            - 'update-help.com'
+            - 'winchecking.com'
+            - 'endupload.com'
+            - 'picfile.net'
+    selection_host:
+        r-dns|contains:
+            - 'firmwaresystemupdate.com'
+            - 'appsoftupdate.com'
+            - 'alarabiye.net'
+            - 'gradleservice.info'
+    condition: 1 of selection*
+falsepositives:
+    - Domain re-registration/parking after takedown - validate the resolved IP against the actor IP
+      set before escalating
+    - Threat-intel detonation or sandbox egress deliberately reaching the C2 - scope by source host
+level: high

@@ -1,0 +1,39 @@
+title: Madi UPX-Packed Executable Dropped in User Directory
+id: fdb9e12f-1af8-49a2-88c8-9f3e005b9fe6
+status: experimental
+description: |
+    Detects a supplementary Madi / Mahdi artifact (T1027.002 Obfuscated Files or Information: Software
+    Packing): the Delphi downloader/infostealer binaries were packed with UPX 3.07, whose default
+    section names are 'UPX0'/'UPX1'/'UPX2'. Keys on image-load / file telemetry surfacing a UPX-packed
+    PE that was created in a user-writable directory (Temp, AppData, user profile). UPX is extremely
+    common on its own, so this rule is scoped to packed binaries in user-writable paths and should be
+    treated as low-severity context/hunt rather than a standalone high-confidence alert. RETIRED
+    campaign; behavioral/reference coverage.
+references:
+    - https://securelist.com/the-madi-campaign-part-i-5/33693/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.stealth
+    - attack.t1027.002
+    - mena-detection-library.madi
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_path:
+        TargetFilename|contains:
+            - '\Documents and Settings\'
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Downloads\'
+        TargetFilename|endswith:
+            - '.exe'
+            - '.scr'
+            - '.dll'
+    condition: selection_path
+falsepositives:
+    - Many legitimate applications and installers are UPX-packed and drop files to Temp/AppData - this
+      rule is low-specificity and intended as enrichment/hunt context; correlate with a static packer
+      check (UPX0/UPX1 section names) and unknown-provenance binaries before alerting
+level: low

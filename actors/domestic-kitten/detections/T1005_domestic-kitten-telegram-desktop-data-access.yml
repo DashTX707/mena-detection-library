@@ -1,0 +1,31 @@
+title: Domestic Kitten Telegram Desktop Data Access by Non-Telegram Process
+id: a76af9d4-1871-48c9-89e6-0bd4827d5517
+status: experimental
+description: |
+    Detects access to the Telegram Desktop local data store (the 'tdata' directory) by a process other
+    than Telegram, consistent with the TelB / TelAndExt / Python (Rampant Kitten) infostealers looting
+    Telegram Desktop session data and local documents (T1005 Data from Local System). Requires
+    object-access auditing (Windows Security Event ID 4663) with a SACL on the Telegram Desktop tdata
+    path. Telegram session theft lets the actor hijack the account without credentials.
+references:
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.collection
+    - attack.t1005
+    - mena-detection-library.domestic-kitten
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4663
+        ObjectName|contains: '\Telegram Desktop\tdata'
+    filter_telegram:
+        ProcessName|endswith: '\Telegram.exe'
+    condition: selection and not filter_telegram
+falsepositives:
+    - Backup or sync agents copying the Telegram Desktop folder - allowlist those specific processes
+    - Portable/alternate Telegram builds under a non-standard image name - confirm the process
+level: high

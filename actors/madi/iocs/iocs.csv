@@ -1,0 +1,5 @@
+value,type,context,source,date
+174[.]142[.]57[.]0/24,ip,Madi operational IP (defanged),https://securelist.com/the-madi-campaign-part-i-5/33693/,
+67[.]205[.]106[.]0/24,ip,Madi operational IP (defanged),https://securelist.com/the-madi-campaign-part-i-5/33693/,
+maja[.]in,domain,Madi C2/masquerading domain (defanged),https://securelist.com/the-madi-campaign-part-i-5/33693/,
+www[.]maja[.]in,domain,Madi C2/masquerading domain (defanged),https://securelist.com/the-madi-campaign-part-i-5/33693/,

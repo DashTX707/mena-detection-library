@@ -1,0 +1,41 @@
+title: Ferocious Kitten Telegram/Chrome Shortcut Hijack Persistence
+id: e5b8a2c6-7f0b-4d4e-8a5b-6d9f3b4c8e0a
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT shortcut-modification persistence (T1547.009). The Telegram
+    variant copies MarkiRAT as data.exe (with the Telegram icon) into the tdata directory and modifies the
+    Telegram .lnk; the Chrome variant modifies the Chrome shortcut so the payload runs when the browser is
+    launched. Two observable surfaces: (a) modification/creation of Telegram/Chrome .lnk files by a
+    non-installer process, and (b) process-lineage where Telegram/Chrome launches an unexpected child from
+    a user-writable path.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.persistence
+    - attack.t1547.009
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_lnk:
+        TargetFilename|endswith:
+            - '\Telegram.lnk'
+            - '\Google Chrome.lnk'
+            - '\Chrome.lnk'
+    filter_installer:
+        Image|endswith:
+            - '\Telegram.exe'
+            - '\Update.exe'
+            - '\setup.exe'
+            - '\msiexec.exe'
+            - '\explorer.exe'
+    selection_dataexe:
+        TargetFilename|endswith: '\data.exe'
+        TargetFilename|contains: '\tdata'
+    condition: (selection_lnk and not filter_installer) or selection_dataexe
+falsepositives:
+    - Legitimate reinstall/update of Telegram or Chrome recreating its shortcut - filtered on known installer images; tune per environment
+level: high

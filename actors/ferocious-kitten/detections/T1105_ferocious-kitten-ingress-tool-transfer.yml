@@ -1,0 +1,34 @@
+title: Ferocious Kitten MarkiRAT Ingress Tool Transfer to C2 Domains
+id: a7d0c4e8-9b2d-4f6a-8c7d-8f1b5d6e0a2c
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT ingress tool transfer (T1105) - retrieval of additional payloads
+    and components (chrome.txt, p.b, and the Android classes.dex / hr.apk) from the actor C2 infrastructure.
+    Keys on outbound HTTP requests to the known Ferocious Kitten C2 / impersonation domains and the specific
+    staging URIs. IOC-based and supplementary; pair with the behavioral bitsadmin (T1197) and dropper rules.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: proxy
+detection:
+    selection_domains:
+        c-uri|contains:
+            - 'updatei.com'
+            - 'microsoft.com-view.space'
+            - 'aparat.com-view.space'
+            - 'khabarfarsi.com-view.org'
+    selection_uris:
+        c-uri|contains:
+            - '/ddd/classes.dex'
+            - '/hr.apk'
+            - 'chrome.txt'
+    condition: selection_domains or selection_uris
+falsepositives:
+    - Unlikely - the C2 domains are typosquat impersonation domains with no legitimate use; scoped IOC list may age out
+level: high

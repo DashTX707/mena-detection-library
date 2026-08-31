@@ -1,0 +1,46 @@
+title: Madi Weaponized PowerPoint Slideshow (.pps) Spearphishing Attachment
+id: daebab76-8980-47c0-b418-6e52a3a1029c
+status: experimental
+description: |
+    Detects the Madi / Mahdi campaign delivery vector (T1566.001 Spearphishing Attachment): weaponized
+    PowerPoint slideshow (.pps / .ppsx) files delivered as email attachments that abuse PowerPoint
+    'Activated Content' effects to launch an embedded Delphi trojan downloader. Keys on PowerPoint
+    (POWERPNT.EXE) opening a .pps/.ppsx file and then spawning a child executable — the behavioral
+    signature of an activated-content payload — rather than dead network IOCs. Historical lure names
+    included 'Magic_Machine1123.pps' and 'Moses_pic1.pps'. This is a RETIRED campaign; the rule is
+    reference/behavioral coverage for the .pps-borne activated-content technique.
+references:
+    - https://securelist.com/the-madi-campaign-part-i-5/33693/
+    - https://securelist.com/the-madi-campaign-part-ii/33701/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.madi
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\POWERPNT.EXE'
+    selection_child:
+        Image|endswith:
+            - '.exe'
+            - '.scr'
+            - '.com'
+            - '.pif'
+    filter_office_children:
+        Image|endswith:
+            - '\POWERPNT.EXE'
+            - '\WINWORD.EXE'
+            - '\EXCEL.EXE'
+            - '\OUTLOOK.EXE'
+            - '\splwow64.exe'
+            - '\dw20.exe'
+            - '\dwwin.exe'
+    condition: selection_parent and selection_child and not filter_office_children
+falsepositives:
+    - Legitimate PowerPoint add-ins or macro-enabled slideshows that launch signed helper executables
+    - Enterprise document-automation tooling invoked from PowerPoint - baseline and allowlist by child image path/signer
+level: high

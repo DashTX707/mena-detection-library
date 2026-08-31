@@ -1,0 +1,44 @@
+title: Group5 Decoy-Named Dropper User Execution
+id: 2542f5e4-c543-411b-b6f2-c33612f2d762
+status: experimental
+description: |
+    Detects Group5 user execution of malicious files (T1204.002). Group5 relied on Syrian-opposition
+    targets opening decoy-themed droppers delivered from the watering hole or by email - e.g.
+    'alshohadaa alatfal.exe' (a decoy referencing child martyrs) and a first-stage .NET downloader
+    masquerading as putty.exe - to gain execution of njRAT / NanoCore. This rule keys on execution
+    of an executable launched by a shell, browser, email client, or archive tool directly from a
+    user-writable download/temp path, the behavioral pattern of a user-opened dropper.
+references:
+    - https://citizenlab.ca/2016/08/group5-syria/
+    - https://attack.mitre.org/groups/G0043/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.group5
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\explorer.exe'
+            - '\outlook.exe'
+            - '\winrar.exe'
+            - '\7zFM.exe'
+            - '\chrome.exe'
+            - '\firefox.exe'
+            - '\msedge.exe'
+    selection_path:
+        Image|endswith: '.exe'
+        Image|contains:
+            - '\Downloads\'
+            - '\AppData\Local\Temp\'
+            - '\Temp\'
+            - '\Users\Public\'
+    condition: selection_parent and selection_path
+falsepositives:
+    - Users running legitimate installers or portable apps from Downloads/Temp - correlate with
+      code-signing status and file reputation, allowlist known-good portable tooling
+level: medium

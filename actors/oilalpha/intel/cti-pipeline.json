@@ -1,0 +1,231 @@
+{
+  "report_title": "OilAlpha (Likely Pro-Houthi / Yemen-nexus Android Espionage Group) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Recorded Future Insikt Group 'OilAlpha: A Likely Pro-Houthi Group Targeting Entities Across the Arabian Peninsula' (2023-05, https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula); Recorded Future Insikt Group 'OilAlpha Malicious Applications Target Humanitarian Aid Groups Operating in Yemen' (CTA-2024-0709, 2024-07-09, https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf); secondary re-reporting: The Hacker News (https://thehackernews.com/2023/05/oilalpha-emerging-houthi-linked-cyber.html, https://thehackernews.com/2024/07/pro-houthi-group-targets-yemen-aid.html), CyberScoop (https://cyberscoop.com/oil-alpha-houthi-yemen/), The Record (https://therecord.media/pro-houthi-hackers-yemen-spyware-middle-east-militaries)",
+  "publication_date": "2026-08-31",
+  "actor": {
+    "name": "OilAlpha",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [],
+    "related_clusters": [],
+    "attribution": "Yemen-nexus. Recorded Future Insikt Group assesses OilAlpha is LIKELY a group operating in support of a pro-Houthi movement agenda; attribution is an analytic assessment, not confirmed state control. Supporting (but non-conclusive) indicators: the group's C2 and delivery infrastructure was almost exclusively associated with IP ranges of the Public Telecommunication Corporation (PTC), a Yemeni government-owned enterprise reported to be under the direct control of the Houthi authorities; near-exclusive reliance on dynamic DNS; Arabic-language lures; and victimology (humanitarian aid control, Saudi-Yemen negotiation delegates) aligned with Houthi interests. No financial motive was identified, so Insikt Group assesses the operations are highly likely surveillance/espionage-driven. Insikt Group did not attribute OilAlpha to a specific named individual or unit.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Yemen",
+      "Saudi Arabia",
+      "United Arab Emirates"
+    ],
+    "targeted_regions_global": [
+      "Broader Middle East"
+    ],
+    "targeted_sectors": [
+      "Humanitarian aid / relief organizations",
+      "Human rights organizations",
+      "Non-governmental organizations (NGOs)",
+      "Media and journalists",
+      "Development sector",
+      "Government / political representatives and negotiation delegates"
+    ],
+    "key_campaigns": [
+      {
+        "name": "OilAlpha Android RAT campaign against Arabian Peninsula entities",
+        "date": "May 2022 to 2023 (first disclosed 2023-05)",
+        "summary": "Ongoing campaign delivering malicious Android APKs via WhatsApp social engineering (Saudi Arabian phone numbers, URL link shorteners) to political/government representatives, media personalities, journalists, and humanitarian/development/NGO staff with an interest in Yemen. Spoofed apps impersonated legitimate organizations (e.g. UNICEF) and deployed SpyNote/SpyMax-family Android RATs; njRAT (Bladabindi) samples were also observed communicating with associated C2. Near-exclusive use of dynamic DNS and PTC (Yemeni, Houthi-controlled) infrastructure.",
+        "source_url": "https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula"
+      },
+      {
+        "name": "OilAlpha humanitarian-aid targeting cluster (CTA-2024-0709)",
+        "date": "Early-to-mid 2024 (samples from June 2024; disclosed 2024-07-09)",
+        "summary": "New cluster of malicious mobile applications and supporting infrastructure almost certainly tied to OilAlpha, used to target at least three globally recognized humanitarian organizations: CARE International, the Norwegian Refugee Council (NRC), and the Saudi King Salman Humanitarian Aid and Relief Centre (KSR); apps also spoofed the United Nations / World Food Programme. Samples ('Cash Incentives.apk', 'NRC Business.apk', a CARE-spoofing app) were SpyMax/SpyNote RATs contacting DDNS C2 (ho1hm2.ddns.net, ho2hm1.ddns.net, carversion.ddns.net) on TCP ports 44414/44449, requesting invasive permissions (camera, audio, SMS, contacts, storage, WiFi, location) and redirecting the victim browser to a credential-theft portal on kssnew.online spoofing NRC, CARE, and KSR login pages.",
+        "source_url": "https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"
+      }
+    ]
+  },
+  "threat_actors": ["OilAlpha"],
+  "targeted_regions": ["Yemen", "Saudi Arabia", "United Arab Emirates", "Broader Middle East"],
+  "targeted_sectors": ["Humanitarian aid", "Human rights organizations", "NGOs", "Media and journalists", "Development sector", "Government / political representatives"],
+  "malware": [
+    "SpyNote (Android RAT)",
+    "SpyMax (Android RAT, SpyNote family)",
+    "SpyC23 (Android RAT, SpyNote/SpyMax family)",
+    "njRAT (aka Bladabindi, Windows RAT)"
+  ],
+  "tooling_observed": [
+    "WhatsApp (social-engineering delivery channel)",
+    "URL link shorteners (malicious APK distribution)",
+    "Dynamic DNS providers (ddns.net, sytes.net, dynns.com, serveftp.com)",
+    "Spoofed Android applications impersonating UNICEF/UN/WFP/NRC/CARE/KSR",
+    "Fake credential-theft web portal (kssnew.online)",
+    "Public Telecommunication Corporation (PTC) Yemeni network infrastructure"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "OilAlpha engages targets directly over encrypted messengers (WhatsApp), frequently from Saudi Arabian phone numbers, and uses URL link shorteners to deliver links that lead to malicious Android APK files disguised as legitimate humanitarian, UN/UNICEF, or government applications. 'Cold-calling'/direct messaging on chat platforms is a common engagement method.",
+      "observed_tooling": ["WhatsApp (social-engineering delivery channel)", "URL link shorteners (malicious APK distribution)"],
+      "detection_feasibility": "low — WhatsApp-delivered links and mobile APK sideloading occur off enterprise network telemetry; primarily an awareness/hunt candidate (user-reported lures, mobile EMM/MDM install logs) rather than a rule-able signal",
+      "sources": ["https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula", "https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "The victim is induced to install and run a spoofed Android application (observed file names: 'Cash Incentives.apk' / arabic 'المساعدات النقدية.apk', 'NRC Business.apk', and a CARE-branded app). During execution the app prompts the user in Arabic to enable an Accessibility service labelled 'Google Services', granting the RAT elevated control.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)"],
+      "detection_feasibility": "low — APK install/execution and accessibility-service enablement are visible only on the mobile device (MDM/MTD telemetry); hunt candidate for organizations with mobile threat defense, not a server-side detection",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "procedure_description": "OilAlpha's Android apps impersonate the branding, icons, names and Arabic-language login portals of legitimate and trusted organizations — UNICEF, the United Nations, the World Food Programme, the Norwegian Refugee Council, CARE International, and the King Salman Humanitarian Aid and Relief Centre — to lower target suspicion during social engineering.",
+      "observed_tooling": ["Spoofed Android applications impersonating UNICEF/UN/WFP/NRC/CARE/KSR"],
+      "detection_feasibility": "medium — app-name/package/icon impersonation of known org brands is huntable via mobile app-inventory review and brand/lookalike-app monitoring in app stores and MDM catalogs, though enterprise endpoint visibility is limited",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf", "https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula"]
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "procedure_description": "The group registers and operates a large set of lookalike dynamic-DNS domains themed around victim organizations and the string 'version' (e.g. carversion.ddns.net, nrcversion.ddns.net, ksrversion.ddns.net, unsversion.ddns.net) plus a dedicated credential-theft domain (kssnew.online, registered ~January 2023).",
+      "observed_tooling": ["Dynamic DNS providers (ddns.net, sytes.net, dynns.com, serveftp.com)"],
+      "detection_feasibility": "low — adversary domain registration is off-victim; intel/infrastructure-tracking candidate (WHOIS, passive DNS, DDNS-provider patterns) rather than an endpoint detection",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1568",
+      "technique_name": "Dynamic Resolution",
+      "tactic": "command-and-control",
+      "procedure_description": "OilAlpha almost exclusively uses dynamic DNS for command-and-control, spread across providers ddns.net, sytes.net, dynns.com and serveftp.com. Sandbox analysis showed samples resolving DDNS C2 (e.g. ho1hm2.ddns.net -> 206.189.98.34; NRC Business.apk C2 resolving to 141.255.145.221), a consistent, attributable tradecraft trait.",
+      "observed_tooling": ["Dynamic DNS providers (ddns.net, sytes.net, dynns.com, serveftp.com)"],
+      "detection_feasibility": "medium — outbound resolution/connections to the specific OilAlpha DDNS domains, and DDNS usage broadly, are detectable via DNS and proxy/network telemetry and threat-intel domain matching where the mobile traffic transits corporate networks",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf", "https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula"]
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "procedure_description": "OilAlpha Android RAT samples beacon to their dynamic-DNS C2 servers over uncommon high TCP ports — the 'Cash Incentives' sample contacted ho1hm2.ddns.net on port 44414, and the 'NRC Business' sample was configured to reach ho1hm2.ddns.net and ho2hm1.ddns.net over port 44449.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)"],
+      "detection_feasibility": "medium — outbound connections to high non-standard ports 44414/44449 toward DDNS destinations are detectable via network flow/firewall telemetry and make a reasonable network-rule signal when combined with the DDNS domains",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "procedure_description": "OilAlpha operationalizes widely distributed commodity remote access trojans rather than bespoke malware: SpyNote/SpyMax (and SpyC23) Android RATs for mobile targets, and njRAT (Bladabindi) Windows RAT samples observed communicating with C2 infrastructure associated with the group, indicating parallel desktop operations.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)", "SpyC23 (Android RAT, SpyNote/SpyMax family)", "njRAT (aka Bladabindi, Windows RAT)"],
+      "detection_feasibility": "low — tool acquisition itself is off-endpoint; downstream RAT execution/C2 is where detection lands (this entry is an intel/hunt anchor for the SpyNote/njRAT families)",
+      "sources": ["https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula", "https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "procedure_description": "The malicious apps redirect the infected device's browser to a fake web portal hosted on kssnew.online that spoofs the login pages of NRC, CARE International (kssnew.online/care/index.php) and the King Salman Humanitarian Aid and Relief Centre. Victims are prompted to enter their username and password, which the portal harvests before any 'registration' fallback — enabling account takeover of the affected organizations.",
+      "observed_tooling": ["Fake credential-theft web portal (kssnew.online)"],
+      "detection_feasibility": "medium — connections to the credential-theft domain kssnew.online (paths /care, /page) are detectable via DNS/proxy/web telemetry and TI domain matching; the fake portal itself is huntable via urlscan/DomainTools-style monitoring",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1071",
+      "technique_name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "Installed SpyNote/SpyMax Android RATs establish an application-layer command-and-control channel back to the operator's dynamic-DNS servers to receive commands and stream collected data from the compromised handset.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)"],
+      "detection_feasibility": "medium — persistent beaconing from mobile devices to known OilAlpha DDNS C2 endpoints is detectable via network/DNS telemetry when device traffic transits monitored networks, but is limited off-network",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "procedure_description": "SpyNote/SpyMax samples request access to the device camera among their excessive permissions, enabling covert video/image capture from the compromised phone for surveillance.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)"],
+      "detection_feasibility": "low — camera access by a malicious app is observable only on-device via mobile threat defense/permission auditing; not detectable from server/network logs",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "The RATs request microphone/audio permissions on the infected Android device, allowing the operator to record ambient audio and calls as part of the espionage/surveillance mission.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)"],
+      "detection_feasibility": "low — microphone access is device-local telemetry surfaced only by MDM/MTD permission monitoring; hunt candidate on managed mobile fleets",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "SpyNote/SpyMax requests invasive permissions to SMS, contacts, WiFi state, and external storage read/write, harvesting messages, contact lists and stored files from the compromised device for exfiltration to the operator.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)"],
+      "detection_feasibility": "low — bulk on-device collection of SMS/contacts/storage is visible only through mobile threat defense; hunt candidate, not a network-rule signal",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Collected device data (SMS, contacts, media, captured audio/video and harvested credentials) is exfiltrated back to OilAlpha operators over the same RAT command-and-control channel to the dynamic-DNS C2 servers.",
+      "observed_tooling": ["SpyNote (Android RAT)", "SpyMax (Android RAT, SpyNote family)"],
+      "detection_feasibility": "low — exfiltration is bundled into the encrypted/opaque mobile RAT C2 stream and is largely off-network; hunt candidate via anomalous volume to DDNS C2 where visible",
+      "sources": ["https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf"]
+    }
+  ],
+  "detection_signals": [
+    "DNS resolution or outbound connections to OilAlpha dynamic-DNS C2 domains: ho1hm2.ddns.net, ho2hm1.ddns.net, carversion.ddns.net, nrcversion.ddns.net, nrcversionhid.sytes.net, carversionhid.sytes.net, ksrversion.ddns.net, ksrversionhid.sytes.net, unsversion.ddns.net, unsversionhid.sytes.net, midrmversion.ddns.net, coldrmversion.ddns.net, hotrmversion.ddns.net, sh1177.ddns.net, ufufw.dynns.com, golom.dynns.com, euseus.dynns.com, reportss.serveftp.com",
+    "Connections to the credential-theft domain kssnew.online (paths /care/index.php, /page) — fake NRC/CARE/KSR login portals",
+    "Outbound TCP connections to high non-standard ports 44414 and 44449 toward dynamic-DNS destinations",
+    "Traffic to/from OilAlpha C2 IPs 206.189.98.34, 176.123.21.4, 145.14.156.148, 141.255.144.8, 134.122.75.238, 141.255.145.221",
+    "Presence/installation of Android APKs matching SHA256 44cb9a9fe1ec9eb0ad20b2bbd6c4081d5c72f4bcad038077cecb4a1d13de46a6 ('Cash Incentives.apk'), bfc0226332978216a1a042c8422fb26073fca4d390c71502a5c505fab38ccb05 ('NRC Business.apk'), or 8f0bd17f682bdeb169ea0e1012c86a749a6bb466de3bed2feb2ee0e9ead1bcf9 (CARE-spoofing app)",
+    "Mobile apps impersonating UNICEF/UN/WFP/NRC/CARE/KSR that request Accessibility service enablement labelled 'Google Services' and camera/microphone/SMS/contacts/storage permissions",
+    "WhatsApp-delivered shortened links leading to APK downloads, especially from Saudi Arabian phone numbers, targeting Yemen-focused humanitarian/media/government staff",
+    "njRAT (Bladabindi) beaconing to any of the OilAlpha DDNS/IP infrastructure on Windows endpoints"
+  ],
+  "iocs": {
+    "ips": [
+      "206.189.98.34",
+      "176.123.21.4",
+      "145.14.156.148",
+      "141.255.144.8",
+      "134.122.75.238",
+      "141.255.145.221"
+    ],
+    "domains": [
+      "carversion.ddns.net",
+      "ho1hm2.ddns.net",
+      "ho2hm1.ddns.net",
+      "ksrversionhid.sytes.net",
+      "nrcversion.ddns.net",
+      "nrcversionhid.sytes.net",
+      "carversionhid.sytes.net",
+      "ksrversion.ddns.net",
+      "unsversion.ddns.net",
+      "unsversionhid.sytes.net",
+      "ufufw.dynns.com",
+      "midrmversion.ddns.net",
+      "golom.dynns.com",
+      "coldrmversion.ddns.net",
+      "reportss.serveftp.com",
+      "hotrmversion.ddns.net",
+      "sh1177.ddns.net",
+      "euseus.dynns.com",
+      "kssnew.online"
+    ],
+    "emails": [],
+    "hashes": [
+      "bfc0226332978216a1a042c8422fb26073fca4d390c71502a5c505fab38ccb05",
+      "8f0bd17f682bdeb169ea0e1012c86a749a6bb466de3bed2feb2ee0e9ead1bcf9",
+      "44cb9a9fe1ec9eb0ad20b2bbd6c4081d5c72f4bcad038077cecb4a1d13de46a6"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Primary sources are two Recorded Future Insikt Group reports (2023-05 first disclosure; CTA-2024-0709 follow-up, 2024-07-09), corroborated by secondary re-reporting (The Hacker News, CyberScoop, The Record). Insikt Group uses ICD 203 estimative language: OilAlpha is a LIKELY pro-Houthi group and the humanitarian-targeting cluster is 'almost certainly' the same actor — attribution to the Houthi movement is an analytic assessment (medium confidence), not confirmed; hence actor.attribution_confidence and top-level confidence are 'medium'. Supporting attribution signals: near-exclusive dynamic-DNS usage and infrastructure tied to Yemen's Houthi-controlled Public Telecommunication Corporation (PTC), Arabic-language lures, and Houthi-aligned victimology (control of humanitarian aid, Saudi-Yemen negotiation delegates); no financial motive identified, so activity assessed as espionage/surveillance. No MITRE ATT&CK group ID exists for OilAlpha (actor.mitre_id and mitre_canonical_name intentionally empty). aliases[] is empty — no confirmed alternate group names are published; SpyNote/SpyMax/SpyC23/njRAT are malware families (in malware[]), not actor aliases. TTP mapping note: OilAlpha operates primarily on Android; per tasking, mobile behaviors are mapped to the closest ENTERPRISE ATT&CK technique IDs (e.g. camera access -> T1125 Video Capture, mic -> T1123 Audio Capture, SMS/contacts/storage harvesting -> T1005 Data from Local System, accessibility-abused app install -> T1204.002). T1036 uses this environment's 'stealth' tactic slug for defense-evasion. The standalone 'Impersonation' behavior is folded into T1036 Masquerading / T1566.002 rather than the revoked T1656 ID. Every technique_id is a real, non-invented ATT&CK ID. STRONGEST DETECTION SURFACE (detection-candidate, medium feasibility, network-observable where mobile traffic transits monitored networks): T1568 DDNS C2 domains, T1571 non-standard ports 44414/44449, T1056.003 kssnew.online credential portal, T1071 RAT beaconing, T1036 brand-impersonating apps. HUNT-leaning (low feasibility, on-device/off-network/off-victim): T1566.002 WhatsApp lures, T1204.002 APK install, T1583.001 domain registration, T1588.002 commodity RAT acquisition, T1125/T1123/T1005/T1041 mobile collection/exfiltration. IOCs are taken verbatim from CTA-2024-0709 Appendix A (defang brackets removed for raw machine-readable values): 18 DDNS C2 domains + kssnew.online credential-theft domain, 6 IPs, and 3 SHA256 APK hashes. No YARA rules were published in the source reports (yara_rules empty). The 2023 report references self-signed TLS certificates and additional DDNS infrastructure but did not enumerate reproducible certificate fingerprints in the material reviewed, so none are asserted here."
+}

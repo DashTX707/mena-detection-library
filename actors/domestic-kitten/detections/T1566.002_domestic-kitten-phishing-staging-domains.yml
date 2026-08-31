@@ -1,0 +1,52 @@
+title: Domestic Kitten Phishing and Payload-Staging Domain Access
+id: 7797ecee-69be-4544-a210-2de858202cb9
+status: experimental
+description: |
+    Detects endpoint or proxy access to Domestic Kitten / APT-C-50 (Rampant Kitten) phishing and
+    payload-staging infrastructure (T1566.002 Spearphishing Link). The actor delivers FurBall APKs
+    and Telegram/Google credential-phishing pages via links pushed over SMS, Iranian blogs and fake
+    Telegram 'service' accounts. Keys on requests to the known copycat/staging and phishing domains
+    (translation-service clone, fake Telegram service pages, fake Microsoft/Google lure hosts). IOC
+    domains decay; treat this as a supplementary, easily-refreshed net and pair with the behavioural
+    C2 rule (T1071.001) for durable coverage.
+references:
+    - https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+    - https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.initial-access
+    - attack.t1566.002
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: proxy
+detection:
+    selection:
+        c-uri|contains:
+            - 'downloadmaghaleh.com'
+            - 'telegramreport.me'
+            - 'telegramco.org'
+            - 'telegrambots.me'
+            - 'mailgoogle.info'
+            - 'afalr-sharepoint.com'
+            - 'afalr-onedrive.com'
+            - 'telegramup.com'
+            - 'telegrambackups.com'
+            - 'telegramdesktop.com'
+    selection_host:
+        r-dns|contains:
+            - 'downloadmaghaleh.com'
+            - 'telegramreport.me'
+            - 'telegramco.org'
+            - 'telegrambots.me'
+            - 'mailgoogle.info'
+            - 'afalr-sharepoint.com'
+            - 'afalr-onedrive.com'
+    condition: 1 of selection*
+falsepositives:
+    - Security researchers, threat-intel analysts or takedown teams intentionally visiting the actor
+      infrastructure - scope by source host/user
+    - Domain re-registration or parking after takedown could produce benign hits - validate the
+      resolved IP against the actor IP set before escalating
+level: high

@@ -1,0 +1,214 @@
+{
+  "report_title": "Madi / Mahdi Cyber-Espionage Campaign — Stage-1 CTI Extraction (RETIRED, 2011–2012)",
+  "source": "Kaspersky Securelist 'The Madi Campaign – Part I' (2012-07-17, https://securelist.com/the-madi-campaign-part-i-5/33693/); Kaspersky Securelist 'The Madi Campaign – Part II' (2012-07-25, https://securelist.com/the-madi-campaign-part-ii/33701/); Seculert 'Mahdi – The Cyberwar Savior?' (2012, via https://web.archive.org/web/2012*/http://blog.seculert.com/2012/07/mahdi-cyberwar-savior.html); Kaspersky/Seculert joint press release (2012-07-17, https://www.kaspersky.com/about/press-releases/kaspersky-lab-and-seculert-announce-madi-a-newly-discovered-cyber-espionage-campaign-in-the-middle-east)",
+  "publication_date": "2026-08-31",
+  "actor": {
+    "name": "Madi",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Madi",
+      "Mahdi"
+    ],
+    "related_clusters": [],
+    "attribution": "MENA-focused cyber-espionage campaign active from approximately September 2011 through mid/late 2012, jointly discovered and sinkholed by Kaspersky Lab and the Israeli firm Seculert. Victimology (roughly 800 victims heavily concentrated in Iran, plus Israel, Afghanistan/Pakistan and the wider Middle East, targeting critical-infrastructure engineering firms, government agencies, financial institutions and academia) together with the presence of numerous Persian-language strings in the malware and the custom C# server-manager tooling led open-source analysts to speculate about an Iran-nexus. However, neither Kaspersky nor Seculert asserted a firm state sponsor: the Persian strings and Iranian victim concentration are ambiguous (an operator targeting Iran would plausibly also be Persian-literate), and no infrastructure, contractor, or government linkage was ever established. Attribution therefore remains UNCONFIRMED. The campaign is RETIRED — its command-and-control domains were sinkholed and the operation wound down in 2012; a brief resurrected variant that could operate without a live C2 was reported in September 2012, after which activity ceased. This actor is of historical/reference value only and is not currently active.",
+    "attribution_confidence": "low-medium",
+    "targeted_regions_mena": [
+      "Iran",
+      "Israel",
+      "United Arab Emirates",
+      "Saudi Arabia"
+    ],
+    "targeted_regions_global": [
+      "Afghanistan",
+      "Pakistan",
+      "United States"
+    ],
+    "targeted_sectors": [
+      "Critical infrastructure engineering firms",
+      "Government",
+      "Financial services",
+      "Academia / education",
+      "Engineering"
+    ],
+    "key_campaigns": [
+      {
+        "name": "The Madi Campaign",
+        "date": "September 2011 – July 2012 (peak downloader creation December 2011, February–March 2012, June 2012)",
+        "summary": "Info-stealing espionage operation delivered via social engineering rather than exploits. Victims received weaponized PowerPoint slideshow (.pps) files (e.g. 'Magic_Machine1123.pps', 'Moses_pic1.pps') using PowerPoint 'Activated Content' effects to run embedded Delphi trojan downloaders, and/or executables disguised with the Unicode Right-to-Left-Override (RTLO) character so a '.scr' appeared as a '.jpg'. Distracting religious imagery, news pictures, math puzzles, and missile/nuclear-explosion videos were shown to reassure the victim. The Delphi infostealer keylogged, captured screenshots (interval-based and triggered on webmail/IM/social-media activity — Gmail, Hotmail, Yahoo Mail, ICQ, Skype, Google+, Facebook), recorded audio to WAV, and retrieved ~27 data file types, exfiltrating over HTTP to a small set of C2 web servers running Microsoft IIS 7.0 with a custom C# server-manager that also served as the stolen-data drop.",
+        "source_url": "https://securelist.com/the-madi-campaign-part-i-5/33693/"
+      },
+      {
+        "name": "Mahdi resurrected variant",
+        "date": "September 2012",
+        "summary": "After the original C2 domains were sinkholed, Seculert and Kaspersky reported a new Mahdi variant with code optimizations and, notably, the ability to operate without contacting a C2 for orders — allowing operations to continue after server takedown. Anti-American / news-themed lures were added. Activity ceased shortly thereafter and the campaign is considered retired.",
+        "source_url": "https://www.securityweek.com/mahdi-malware-resurrected-cuts-ties-cc-servers/"
+      }
+    ]
+  },
+  "threat_actors": ["Madi", "Mahdi"],
+  "targeted_regions": ["Iran", "Israel", "United Arab Emirates", "Saudi Arabia", "Afghanistan", "Pakistan", "United States"],
+  "targeted_sectors": ["Critical infrastructure engineering", "Government", "Financial services", "Academia", "Engineering"],
+  "malware": [
+    "Madi / Mahdi (Delphi-compiled keylogger/infostealer trojan and its downloader)"
+  ],
+  "tooling_observed": [
+    "Delphi-compiled downloader (weaponized .pps / RTLO .scr)",
+    "Delphi-compiled infostealer backdoor (keylogger, screenshot, audio, file theft)",
+    "UPX 3.07 (executable packer)",
+    "Custom C# C2 server-manager (Microsoft IIS 7.0)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Carefully selected targets received targeted emails carrying weaponized attachments — most notably PowerPoint slideshow (.pps) files such as 'Magic_Machine1123.pps' and 'Moses_pic1.pps', and executables disguised as documents/images. Delivery relied entirely on social engineering rather than software exploits.",
+      "observed_tooling": ["Delphi-compiled downloader (weaponized .pps / RTLO .scr)"],
+      "detection_feasibility": "medium — attachment-based spearphishing is observable at the mail gateway (attachment type/name, .pps carrying macros/activated content, RTLO characters in filenames), though this campaign is retired and detection is historical/reference",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1036.002",
+      "technique_name": "Masquerading: Right-to-Left Override",
+      "tactic": "stealth",
+      "procedure_description": "Attackers abused the Unicode Right-to-Left-Override (U+202E) character in filenames so that a screensaver executable such as one ending '.scr' rendered to the victim as an image file (e.g. displayed as 'picturcs..jpg' with an image icon), tricking users into launching the payload.",
+      "observed_tooling": ["Delphi-compiled downloader (weaponized .pps / RTLO .scr)"],
+      "detection_feasibility": "medium — presence of the RTLO/U+202E character in filenames and mismatched extension/icon is a concrete, high-signal detection at the mail gateway and endpoint, but historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Execution depended on the victim opening the lure. PowerPoint 'Activated Content' effects in the .pps files automatically ran an embedded trojan downloader when the slideshow was viewed; RTLO-disguised .scr executables ran when double-clicked. Distracting imagery (religious pictures, mathematical puzzles, missile-test and nuclear-explosion videos) was displayed to reassure the user nothing malicious had happened.",
+      "observed_tooling": ["Delphi-compiled downloader (weaponized .pps / RTLO .scr)"],
+      "detection_feasibility": "medium — child processes spawned by POWERPNT.EXE / a .pps opening, or a .scr executing from a user directory, are observable in endpoint process telemetry, but this is historical for a retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "procedure_description": "The Madi binaries were packed with the legitimate UPX 3.07 packer to alter file signatures and hinder static/signature-based detection.",
+      "observed_tooling": ["UPX 3.07 (executable packer)"],
+      "detection_feasibility": "medium — UPX-packed sections are detectable via static packer heuristics/section-name analysis, but UPX is extremely common and low-specificity on its own",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "The dropped infostealer executed under the name iexplore.exe to blend in with the legitimate Internet Explorer process, running from user-profile directories such as 'c:\\Documents and Settings\\%USER%\\Templates' (droppers were staged in '...\\Printhood').",
+      "observed_tooling": ["Delphi-compiled infostealer backdoor (keylogger, screenshot, audio, file theft)"],
+      "detection_feasibility": "medium — an 'iexplore.exe' running from a Templates/Printhood user directory rather than Program Files is a name/path-mismatch detectable via process-image-path baselining, historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "The Delphi backdoor logged victim keystrokes as one of its nine core operational functions and forwarded the captured keystroke data to the C2 for retrieval.",
+      "observed_tooling": ["Delphi-compiled infostealer backdoor (keylogger, screenshot, audio, file theft)"],
+      "detection_feasibility": "low — keystroke logging via API hooking produces little discrete host signal on its own; hunt-only, and historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "The backdoor captured screenshots both on a timed interval and event-triggered — specifically when the victim interacted with webmail, instant-messaging or social-media services (Gmail, Hotmail, Yahoo Mail, ICQ, Skype, Google+, Facebook) — to record sensitive communications.",
+      "observed_tooling": ["Delphi-compiled infostealer backdoor (keylogger, screenshot, audio, file theft)"],
+      "detection_feasibility": "low — screen-capture API use is not readily distinguishable in logs; hunt-only, and historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "The backdoor recorded audio from the victim's microphone, writing recordings to disk as WAV files for later exfiltration to the C2.",
+      "observed_tooling": ["Delphi-compiled infostealer backdoor (keylogger, screenshot, audio, file theft)"],
+      "detection_feasibility": "low — microphone access and WAV file creation give minimal telemetry; hunt-only, and historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The backdoor enumerated the victim's disk structure and searched for approximately 27 different data file types (documents, contracts, images, etc.) to identify material of interest for theft.",
+      "observed_tooling": ["Delphi-compiled infostealer backdoor (keylogger, screenshot, audio, file theft)"],
+      "detection_feasibility": "low — file/directory enumeration is common and noisy; hunt-only in context, and historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "The infostealer collected sensitive files from the local system — stolen documents and contracts alongside keylogged data and screenshots — staging them for upload to the C2 servers, which doubled as stolen-data drops.",
+      "observed_tooling": ["Delphi-compiled infostealer backdoor (keylogger, screenshot, audio, file theft)"],
+      "detection_feasibility": "low — local file collection blends with legitimate use; hunt-only, and historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-ii/33701/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "Infected systems communicated with the C2 over HTTP to a small set of web servers running Microsoft IIS 7.0 hosting a custom C# server-manager. The backdoor uploaded screenshots, keylog data and stolen files and received instructions and updated modules over this channel.",
+      "observed_tooling": ["Custom C# C2 server-manager (Microsoft IIS 7.0)"],
+      "detection_feasibility": "medium — HTTP beaconing to the known Madi C2 IP ranges/hosts is observable in proxy/network logs (the campaign was sinkholed on this basis), but infrastructure is long dead — historical/reference only",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "procedure_description": "Beyond HTTP, infected hosts performed ICMP ping checks against the C2 servers as a connectivity/availability check. Later Madi downloaders hard-coded C2 IP addresses directly, avoiding DNS name resolution.",
+      "observed_tooling": ["Custom C# C2 server-manager (Microsoft IIS 7.0)"],
+      "detection_feasibility": "low — ICMP checks to a fixed host are subtle and rarely monitored; hunt-only, and historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-i-5/33693/"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "The downloader retrieved and installed additional data-stealing modules from the C2 and supported self-update and backdoor-update functionality, letting operators push new payloads and new C2 locators. The updated locator was written to a plain-text file on disk (config artifacts observed: FIE.dll, xdat.dll, SIK.dll).",
+      "observed_tooling": ["Delphi-compiled downloader (weaponized .pps / RTLO .scr)", "Custom C# C2 server-manager (Microsoft IIS 7.0)"],
+      "detection_feasibility": "medium — download of follow-on modules and creation of the plain-text locator / .dll config files (FIE.dll, xdat.dll, SIK.dll) in user directories are observable via file-creation and network telemetry, but historical for this retired campaign",
+      "sources": ["https://securelist.com/the-madi-campaign-part-ii/33701/"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Stolen data — screenshots, keylogged input, documents and contracts, WAV audio — was uploaded over the same HTTP C2 channel to the IIS 7.0 servers, which acted as stolen-data drops for the operators.",
+      "observed_tooling": ["Custom C# C2 server-manager (Microsoft IIS 7.0)"],
+      "detection_feasibility": "medium — outbound HTTP uploads to the known Madi C2 hosts are observable in proxy/egress logs, but the infrastructure is dead — historical/reference only",
+      "sources": ["https://securelist.com/the-madi-campaign-part-ii/33701/"]
+    }
+  ],
+  "detection_signals": [
+    "Weaponized PowerPoint slideshow (.pps) attachments using 'Activated Content' to spawn a child executable (e.g. POWERPNT.EXE launching an unknown process); historical lure names 'Magic_Machine1123.pps', 'Moses_pic1.pps'",
+    "Filenames containing the Right-to-Left-Override Unicode character (U+202E) causing extension/icon mismatch (e.g. a '.scr' rendered as '.jpg')",
+    "A process named iexplore.exe executing from a user-profile directory such as '...\\Templates' or a dropper staged in '...\\Printhood' (name/path masquerade)",
+    "Creation of Madi config/plaintext artifacts on disk: FIE.dll, xdat.dll, SIK.dll, and a plain-text C2-locator file",
+    "UPX 3.07-packed Delphi executables of unknown provenance",
+    "HTTP beaconing plus ICMP ping checks to hard-coded IP addresses in the 174.142.57.0/24 and 67.205.106.0/24 ranges (historical, sinkholed)",
+    "Screenshot capture triggered on webmail/IM/social-media activity (Gmail, Hotmail, Yahoo Mail, ICQ, Skype, Google+, Facebook) combined with microphone/WAV recording and keylogging on the same host"
+  ],
+  "iocs": {
+    "ips": [
+      "174.142.57.0/24",
+      "67.205.106.0/24"
+    ],
+    "domains": [
+      "maja.in",
+      "www.maja.in"
+    ],
+    "emails": [],
+    "hashes": [],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "RETIRED campaign (active ~Sept 2011 – 2012; C2 sinkholed by Kaspersky/Seculert; a C2-independent variant appeared Sept 2012, after which activity ceased). Included for historical/reference and detection-engineering study only — the infrastructure is dead, so network IOCs have no current defensive value and behavioral TTPs are the durable takeaway. ATTRIBUTION IS UNCONFIRMED (attribution_confidence 'low-medium'): open-source speculation of an Iran-nexus rests only on Persian-language strings in the malware/C2 tooling and a heavy Iranian victim concentration (~84% of victims), both of which are ambiguous; neither Kaspersky nor Seculert named a state sponsor, and no infrastructure/contractor linkage was established. actor.mitre_id and mitre_canonical_name are intentionally empty — MITRE ATT&CK has no Group entry for Madi/Mahdi. There is no MITRE Software ID for the Madi malware in this environment's dataset. ALIAS GATE: aliases limited to the actor's own names (Madi, Mahdi); no collision with existing library slugs. Every technique_id was verified against this environment's bundled ATT&CK dataset before inclusion (T1566.001, T1036.002, T1204.002, T1027.002, T1036.005, T1056.001, T1113, T1123, T1083, T1005, T1071.001, T1095, T1105, T1041) — defense-evasion techniques use this environment's tactic slug 'stealth'. IOCs: only genuinely reported indicators are included and left in raw (non-defanged) form. Kaspersky Part I documented the C2 servers as the octet ranges 174.142.57.* (three servers) and 67.205.106.* (one server) plus a later Canadian C2; the exact individual host IPs were not fully enumerated in public reporting, so the documented /24 prefixes are recorded rather than invented single addresses. The early-downloader domain maja.in (www.maja.in) is the one C2 domain explicitly named in reporting; later downloaders hard-coded IPs and avoided DNS. No file hashes are provided because the public Securelist articles did not enumerate sample hashes (hashes []); none were fabricated. No CVEs — Madi used social engineering (PowerPoint Activated Content + RTLO), not software exploits (cves []). Host config artifacts (FIE.dll, xdat.dll, SIK.dll, plaintext locator file) and lure filenames are captured in detection_signals rather than the iocs object as they are filename/behavioral artifacts, not network IOCs. STRONGEST (historical) DETECTION SURFACE: T1036.002 RTLO filenames, T1566.001/T1204.002 .pps activated-content chains, T1036.005 iexplore.exe path masquerade, T1105 config-file drops. HUNT-only behaviors (low feasibility): T1056.001 keylogging, T1113 screen capture, T1123 audio capture, T1083 file discovery, T1095 ICMP checks."
+}

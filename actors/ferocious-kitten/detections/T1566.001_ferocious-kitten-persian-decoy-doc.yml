@@ -1,0 +1,39 @@
+title: Ferocious Kitten Weaponized Word Document Spawning Child Process
+id: a1f4c8e2-3b6d-4e9a-8c17-2f5b9d0e4a6c
+status: experimental
+description: |
+    Detects the Ferocious Kitten (MarkiRAT) spearphishing-attachment delivery chain (T1566.001), in which
+    a macro-weaponized Persian-language Word document is opened and WINWORD.EXE spawns a child process
+    (script host, cmd, or a dropped PE). The endpoint only sees the decoy content on open, so this keys on
+    the observable Office child-process behavior that follows the attachment being executed by the victim.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+    - https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\WINWORD.EXE'
+    selection_child:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\powershell.exe'
+            - '\mshta.exe'
+            - '\bitsadmin.exe'
+    selection_dropped:
+        Image|contains:
+            - '\Users\Public\'
+            - '\AppData\Libs\'
+    condition: selection_parent and (selection_child or selection_dropped)
+falsepositives:
+    - Office documents that legitimately launch scripted automation or add-ins in some enterprises - baseline expected parent/child pairs
+level: high

@@ -91,8 +91,14 @@ scripts/                 helpers (validation, Navigator export)
 | [StrongPity (PROMETHIUM)](actors/strongpity/) | Türkiye-nexus · trojanized installers | ✅ published | 38 | 15 | 5 |
 | [SideWinder (Rattlesnake)](actors/sidewinder/) | India-nexus · maritime/gov | ✅ published | 46 | 20 | 4 |
 | [Tropic Trooper (KeyBoy)](actors/tropic-trooper/) | China-nexus · gov espionage | ✅ published | 35 | 18 | 5 |
+| [OilAlpha](actors/oilalpha/) | Yemen-nexus · pro-Houthi · mobile spyware | ✅ published | 13 | 5 | 4 |
+| [Domestic Kitten (APT-C-50)](actors/domestic-kitten/) | Iran-nexus · IRGC surveillance | ✅ published | 28 | 12 | 6 |
+| [Ferocious Kitten](actors/ferocious-kitten/) | Iran-nexus · MarkiRAT surveillance | ✅ published | 22 | 14 | 3 |
+| [Madi / Mahdi](actors/madi/) | Iran-nexus (unconfirmed) · retired 2012 | ✅ published | 14 | 8 | 3 |
+| [Cadelle (Cadelspy)](actors/cadelle/) | Iran-nexus · surveillance · retired | ✅ published | 8 | 2 | 3 |
+| [Group5](actors/group5/) | Iran-linked (low confidence) · Syria opposition | ✅ published | 15 | 6 | 4 |
 
-**38 actors · 1562 ATT&CK techniques · 670 Sigma detections · 227 hunt packages · 1493 sourced IOCs.**
+**44 actors · 1662 ATT&CK techniques · 717 Sigma detections · 250 hunt packages · 1660 sourced IOCs.**
 
 _More actors to follow. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one._
 

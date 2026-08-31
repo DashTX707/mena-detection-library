@@ -1,0 +1,145 @@
+{
+  "actor": "Ferocious Kitten",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — malicious Office attachments are detectable at the mail gateway and via Office child-process/macro telemetry, but the decoy is document content the endpoint only sees on open; targeting Persian-speaking individuals limits enterprise mail-flow visibility"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — WINWORD.EXE spawning script/child processes and macro-enable events are observable via process-lineage and Office macro telemetry"
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "rationale": "high — VBA macro execution that writes and launches a PE from the Public folder is detectable via macro/script-block logging, Office child-process creation, and file-write-then-execute correlation"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation of an executable named svehost.exe in the Startup folder is directly observable via file-creation monitoring of Startup paths and autoruns baselining; the masquerading name (svehost vs svchost) is a strong watchlist item"
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "rationale": "high — modification of Telegram/Chrome .lnk target paths to chain a secondary executable is detectable via shortcut-file change monitoring and process-lineage showing the browser/messenger launching an unexpected child from a user-writable path"
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "persistence",
+      "rationale": "high — bitsadmin.exe command-line execution with job name 'pdj' and BITS-Client operational-log transfer events to unexpected hosts are high-fidelity, actor-specific detections"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — file downloads following the initial foothold are detectable via proxy/DNS to the C2 domains and file-write telemetry, but HTTP downloads blend with normal traffic absent the specific IOC domains"
+    },
+    {
+      "technique_id": "T1036.002",
+      "technique_name": "Masquerading: Right-to-Left Override",
+      "tactic": "stealth",
+      "rationale": "medium — file names containing the U+202E control character are detectable via filename-scanning heuristics on downloaded/dropped files, but require tooling that inspects for the RTLO codepoint"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — names/icons that mimic legitimate binaries in user-writable locations are detectable via name/path baselining and signature-vs-name/icon mismatch, but need endpoint context"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium — the creation of a screenshot artifact named scr.jpg in the malware working directory is detectable via file-creation monitoring of the implant's repository path; the screen-capture API call itself is low-signal"
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "rationale": "medium — cmd.exe /c spawned by the MarkiRAT implant process is detectable via process-lineage (unexpected parent), though cmd.exe use itself is common and needs parent-process context"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — the fixed URI patterns (/i.php, /ech/echo.php?req=rr, /ech/rite.php) and the '3 LOK 0' response are strong network-signature candidates on proxy/IDS, but require the specific IOCs since the transport is ordinary HTTP"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound HTTP POST uploads to the /up/uploadx.php endpoint on the C2 domains are detectable via proxy/network telemetry when the IOC domains/URI are known"
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "rationale": "medium — macro code that decodes a large hex/embedded blob and writes a PE is detectable via script-block/macro content heuristics and drop-then-execute correlation"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "rationale": "low — in-memory process enumeration to fingerprint AV leaves little discrete host signal; hunt candidate via API-behavior/EDR sensor telemetry rather than a discrete event"
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "rationale": "low — process enumeration is ubiquitous and largely benign; only meaningful as a hunt in tight process-lineage context around the implant"
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Location Discovery: System Language Discovery",
+      "tactic": "discovery",
+      "rationale": "low — keyboard-layout / locale API queries are common and produce little discrete telemetry; hunt-only signal, valuable mainly as a malware-analysis triage indicator"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "low — user-mode keystroke hooking is difficult to distinguish behaviorally; hunt candidate via EDR API-hook telemetry and the 'nfo' log-file artifact rather than a reliable log event"
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "rationale": "low — clipboard reads via native APIs are not reliably logged; hunt-only, best surfaced via EDR behavioral sensors"
+    },
+    {
+      "technique_id": "T1010",
+      "technique_name": "Application Window Discovery",
+      "tactic": "discovery",
+      "rationale": "low — window-title enumeration produces no reliable discrete host event; hunt-only, of value mainly during malware analysis"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "low — directory enumeration is common and noisy; meaningful only as a hunt within the implant's process-lineage window"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — local file collection resembles normal user activity; better addressed as a hunt over access to sensitive extensions (.kdbx/.gpg/.pkr) and honeytoken files than a reliable real-time detection"
+    }
+  ],
+  "summary": {
+    "total": 22,
+    "detection": 14,
+    "hunt": 8
+  }
+}

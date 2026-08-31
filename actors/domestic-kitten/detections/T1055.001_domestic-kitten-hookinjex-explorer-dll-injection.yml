@@ -1,0 +1,37 @@
+title: Domestic Kitten HookInjEx DLL Injection into explorer.exe
+id: 07a149b6-315c-48f4-b16a-7930e4bd2637
+status: experimental
+description: |
+    Detects the HookInjEx (Rampant Kitten) stealer mapping its DLL into explorer.exe to hook the
+    Start button and run inside a trusted process (T1055.001 Process Injection: Dynamic-link Library
+    Injection). Keys on an image/module load into explorer.exe of an unsigned DLL located in a
+    user-writable directory (temp/appdata/roaming/programdata). Requires Sysmon Event ID 7 (ImageLoad)
+    with signature status. Pair with the create-remote-thread rule (T1056.001) for the injection/hook
+    installation facet of the same HookInjEx behaviour.
+references:
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.stealth
+    - attack.t1055.001
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: image_load
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\explorer.exe'
+        ImageLoaded|endswith: '.dll'
+        ImageLoaded|contains:
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+    filter_signed:
+        Signed: 'true'
+    condition: selection and not filter_signed
+falsepositives:
+    - Third-party shell extensions or add-ins that load DLLs from ProgramData/AppData into explorer -
+      baseline the specific module paths and publishers
+level: high

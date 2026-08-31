@@ -1,0 +1,39 @@
+title: Ferocious Kitten BITS Job pdj Payload Download
+id: f6c9b3d7-8a1c-4e5f-9b6c-7e0a4c5d9f1b
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT Chrome-variant BITS abuse (T1197), which uses bitsadmin to create
+    and resume a BITS job named 'pdj' that downloads chrome.txt / p.b to %PUBLIC%\AppData\Libs\p.b. Keys on
+    bitsadmin.exe command lines referencing the actor-specific 'pdj' job name, the addfile/transfer/resume
+    verbs, and the p.b staging path.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+    - https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.persistence
+    - attack.t1197
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_bits:
+        Image|endswith: '\bitsadmin.exe'
+    selection_pdj:
+        CommandLine|contains: 'pdj'
+    selection_verbs:
+        CommandLine|contains:
+            - '/addfile'
+            - '/resume'
+            - '/create'
+            - '/SetPriority'
+    selection_path:
+        CommandLine|contains:
+            - '\AppData\Libs\p.b'
+            - 'chrome.txt'
+    condition: selection_bits and (selection_pdj or selection_path) and selection_verbs
+falsepositives:
+    - Legitimate software using BITS with a coincidentally named job - the 'pdj' job name and p.b path are actor-specific and low-noise
+level: high

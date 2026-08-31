@@ -1,0 +1,33 @@
+title: Madi iexplore.exe Masquerade Running from User Profile Directory
+id: a5c0ba93-341a-4e28-a83f-636b24b2e0f7
+status: experimental
+description: |
+    Detects the Madi / Mahdi infostealer masquerade (T1036.005 Masquerading: Match Legitimate Name or
+    Location): the dropped backdoor executed as 'iexplore.exe' to blend in with Internet Explorer, but
+    ran from user-profile directories such as '...\Templates' (with droppers staged in '...\Printhood')
+    instead of Program Files. Keys on a process image named iexplore.exe whose path is NOT one of the
+    legitimate Internet Explorer install locations — a name/path mismatch that is technique-core and
+    durable. RETIRED campaign; behavioral/reference coverage.
+references:
+    - https://securelist.com/the-madi-campaign-part-i-5/33693/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.stealth
+    - attack.t1036.005
+    - mena-detection-library.madi
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\iexplore.exe'
+    filter_legit_paths:
+        Image|startswith:
+            - 'C:\Program Files\Internet Explorer\'
+            - 'C:\Program Files (x86)\Internet Explorer\'
+    condition: selection and not filter_legit_paths
+falsepositives:
+    - Portable or repackaged browser builds placed outside Program Files
+    - Software mirroring iexplore.exe into a staging location during install - baseline expected paths
+level: high

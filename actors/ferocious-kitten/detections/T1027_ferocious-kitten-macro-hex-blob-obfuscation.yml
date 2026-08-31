@@ -1,0 +1,35 @@
+title: Ferocious Kitten Macro Hex-Blob Decode Dropping PE
+id: b4e7d1f5-6c9e-4a3b-9d4e-5a8c2d3f7b9d
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT payload obfuscation (T1027): the weaponized document embeds the
+    implant as a hexadecimal blob that the VBA macro decodes at runtime into a PE (update.exe) written to
+    the Public folder, obfuscating the payload from static document inspection. Keys on the observable
+    drop-then-execute outcome - an Office process writing a PE to a Public staging path followed by its
+    execution - since the encoded blob itself is not exposed as a discrete host event. Pair with macro/
+    script-block content logging where available.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.stealth
+    - attack.t1027
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_exec:
+        ParentImage|endswith:
+            - '\WINWORD.EXE'
+            - '\EXCEL.EXE'
+            - '\POWERPNT.EXE'
+        Image|contains: '\Users\Public\'
+        Image|endswith:
+            - '.exe'
+            - '.scr'
+    condition: selection_exec
+falsepositives:
+    - Office automation legitimately launching a binary staged in a public path - uncommon; correlate with macro-enable and file-write events
+level: medium

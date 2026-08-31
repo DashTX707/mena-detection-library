@@ -1,0 +1,578 @@
+{
+  "report_title": "Domestic Kitten (APT-C-50) Actor Intelligence Pack — Iran-nexus Mobile + Desktop Surveillance Against Domestic Targets — Stage-1 CTI Extraction",
+  "source": "Check Point Research 'Domestic Kitten – An Inside Look at the Iranian Surveillance Operations' (2021, https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/); Check Point Research 'Rampant Kitten – An Iranian Espionage Campaign' (2020-09-18, https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/); ESET/welivesecurity 'Domestic Kitten campaign spying on Iranian citizens with new FurBall malware' (2022-10-20, https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/); 360/Qihoo APT-C-50 reporting; Malpedia 'Domestic Kitten' actor page (https://malpedia.caad.fkie.fraunhofer.de/actor/domestic_kitten)",
+  "publication_date": "2026-08-31",
+  "actor": {
+    "name": "Domestic Kitten",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Domestic Kitten",
+      "APT-C-50"
+    ],
+    "related_clusters": [
+      "Rampant Kitten (2020 Check Point espionage campaign attributed by CPR to the same operators / broader operation)",
+      "Ferocious Kitten (Kaspersky, 2021 — loosely associated Iranian domestic-surveillance cluster, overlap assessed low confidence)"
+    ],
+    "attribution": "Iran-nexus. Check Point Research attributes Domestic Kitten / APT-C-50 to the Iranian government based on the exclusively domestic-repression targeting set (Iranian dissidents, Kurds, ISIS supporters, and ethnic/religious minorities such as the Mujahedin-e Khalq and the Azerbaijan National Resistance Organization), the Persian-language decoys and infrastructure, Iranian operator IP addresses geolocated to Tehran and Karaj, and Iranian WHOIS registrants (registrant handle 'nobody.gu3st' active on Iranian hacking forums for the linked Rampant Kitten infrastructure). The operation has run since ~2016 across at least 10 mobile campaigns plus a parallel Windows/Android desktop-and-phone espionage effort. No public indictment or government advisory formally names the operating entity; attribution is analytic, convergence-based (victimology + language + infrastructure), not evidentiary.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Iran",
+      "Iraq (Kurdistan region / Kurdish targets)",
+      "Turkey (diaspora/dissident targets)"
+    ],
+    "targeted_regions_global": [
+      "United Kingdom (Iranian diaspora)",
+      "United States (Iranian diaspora)",
+      "Afghanistan",
+      "Iranian dissidents and minorities worldwide"
+    ],
+    "targeted_sectors": [
+      "Individuals / dissidents and government opposition",
+      "Ethnic and religious minorities (Kurds, Sunni minorities)",
+      "Journalists and activists",
+      "ISIS supporters and perceived internal-security threats",
+      "Civil society"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Domestic Kitten mobile surveillance operation (10+ FurBall campaigns)",
+        "date": "2016 to 2021",
+        "summary": "Long-running Android surveillance operation delivering the FurBall spyware (a trojanized/customized derivative of the commercial KidLogger parental-control app) via decoy apps impersonating a fake VIPRE mobile security product, the ISIS 'Amaq' news outlet, an 'Islamic Caliphate' app, repackaged games (Exotic Flowers), Persian poetry apps, religious apps, wallpaper apps, a fake mobile browser, an Android app-store (MyKet/mimic), and a 'Mohsen Restaurant' app. Over 1,200 individuals targeted with 600+ successful infections. FurBall exfiltrates SMS, call logs, contacts, media, location, installed-app lists, clipboard, and performs microphone/call recording. Delivery via SMS links, Iranian blog hosting, and Telegram channels. C2 over HTTP to firmwaresystemupdate.com / appsoftupdate.com.",
+        "source_url": "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/"
+      },
+      {
+        "name": "FurBall fake-VPN / fake translation-service campaign (ESET)",
+        "date": "2021 to 2022",
+        "summary": "A slimmed FurBall variant distributed from a copycat website (downloadmaghaleh.com) impersonating a legitimate Persian scientific-paper translation service; the malicious APK (com.getdoc.freepaaper.dissertation) was masked behind Google Play branding on a fake download button. The analyzed sample requested only Contacts permission but the codebase retained full surveillance capability; it beacons to its C2 roughly every 10 seconds for commands and can be tasked to capture photos/video.",
+        "source_url": "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/"
+      },
+      {
+        "name": "Rampant Kitten desktop-and-mobile espionage campaign",
+        "date": "2014 to 2020",
+        "summary": "Parallel effort against the same domestic/dissident target set using four Windows infostealer families (TelB, TelAndExt, a Python PyInstaller stealer, and HookInjEx) that steal Telegram Desktop data, KeePass databases, documents, and browser credentials; an Android backdoor that intercepts Google 2FA SMS codes (forwarding 'G-'-prefixed messages), records audio, and phishes Google credentials via WebView; and Telegram phishing pages served from fake Telegram 'service' accounts (telegramreport.me, telegramco.org, telegrambots.me). Persistence via Telegram Updater.exe hijack and RunOnce registry keys; exfiltration over FTP/FTPS and SOAP/HTTP.",
+        "source_url": "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      }
+    ]
+  },
+  "threat_actors": [
+    "Domestic Kitten",
+    "APT-C-50"
+  ],
+  "targeted_regions": [
+    "Iran",
+    "Iraq",
+    "Turkey",
+    "United Kingdom",
+    "United States",
+    "Afghanistan"
+  ],
+  "targeted_sectors": [
+    "Dissidents and opposition",
+    "Ethnic and religious minorities",
+    "Journalists and activists",
+    "ISIS supporters / internal-security targets",
+    "Civil society"
+  ],
+  "malware": [
+    "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)",
+    "FoeTrooper (Android surveillanceware associated with APT-C-50)",
+    "TelB (Windows infostealer, Delphi 64-bit, SOAP C2, Telegram/KeePass theft)",
+    "TelAndExt (Windows infostealer, Delphi 32-bit, FTP C2, Telegram theft)",
+    "Python info-stealer (PyInstaller SFX, FTP exfil, Telegram/Chrome/Firefox/Edge/Paltalk)",
+    "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)",
+    "Rampant Kitten Android backdoor (2FA SMS interception, audio recording, Google credential phishing)"
+  ],
+  "tooling_observed": [
+    "KidLogger (commercial parental-control app, source repurposed into FurBall)",
+    "Malicious/repackaged decoy APKs (fake VIPRE Security, ISIS Amaq news, Islamic Caliphate, Exotic Flowers game repack, Persian poetry/religious/wallpaper apps, fake browser, MyKet app-store mimic, Mohsen Restaurant app, fake VPN/translation app)",
+    "Telegram phishing pages / fake Telegram service accounts",
+    "Fake copycat websites (downloadmaghaleh.com translation-service clone)",
+    "Modified Telegram Updater.exe (persistence)",
+    "PyInstaller / self-extracting archives (SFX)",
+    "pyAesCrypt (AES encryption of stolen data)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "procedure_description": "Domestic Kitten delivers FurBall APKs to targets via SMS messages containing download links, links posted on Iranian blog sites, and links shared in Telegram channels. Rampant Kitten additionally served Telegram-credential phishing pages via links pushed from fake Telegram 'service' accounts warning victims about 'improper use' of Telegram.",
+      "observed_tooling": [
+        "Malicious/repackaged decoy APKs (fake VIPRE Security, ISIS Amaq news, Islamic Caliphate, Exotic Flowers game repack, Persian poetry/religious/wallpaper apps, fake browser, MyKet app-store mimic, Mohsen Restaurant app, fake VPN/translation app)",
+        "Telegram phishing pages / fake Telegram service accounts"
+      ],
+      "detection_feasibility": "medium — malicious download links and phishing URLs are observable in SMS/messaging gateway, proxy, and DNS telemetry when the actor domains are known, but mobile-side click telemetry is sparse",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1608.006",
+      "technique_name": "Stage Capabilities: SEO Poisoning",
+      "tactic": "resource-development",
+      "procedure_description": "The FurBall ESET campaign staged the malicious APK on a copycat website (downloadmaghaleh.com) impersonating a legitimate Persian scientific-paper translation service, and other campaigns hosted payloads on an Iranian blog and a fake mobile app-store, luring victims searching for the legitimate services/apps.",
+      "observed_tooling": [
+        "Fake copycat websites (downloadmaghaleh.com translation-service clone)"
+      ],
+      "detection_feasibility": "low — actor-controlled staging sites are off-victim infrastructure; intel/brand-monitoring and lookalike-domain tracking candidate rather than endpoint detection",
+      "sources": [
+        "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/"
+      ]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Infection requires the victim to sideload and install a malicious APK presented behind a fake Google Play download button; the decoys impersonate security, news, religious, poetry, restaurant, VPN and translation apps to induce installation.",
+      "observed_tooling": [
+        "Malicious/repackaged decoy APKs (fake VIPRE Security, ISIS Amaq news, Islamic Caliphate, Exotic Flowers game repack, Persian poetry/religious/wallpaper apps, fake browser, MyKet app-store mimic, Mohsen Restaurant app, fake VPN/translation app)"
+      ],
+      "detection_feasibility": "low — APK sideloading and install events are largely invisible to enterprise telemetry on personal devices; MDM/mobile EDR app-inventory review is a hunt candidate",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/"
+      ]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "FurBall is repackaged inside, or made to imitate, legitimate applications — a fake VIPRE Mobile Security app, the ISIS 'Amaq' news app, an 'Islamic Caliphate' app, a repackaged 'Exotic Flowers' game from Google Play, an Android app-store (MyKet mimic, ir.mservices.market), and a Mohsen Restaurant app — so the surveillanceware appears to be trusted software. The Rampant Kitten Android backdoor displays a fake 'Google protect is enabled' notification to mask microphone recording.",
+      "observed_tooling": [
+        "Malicious/repackaged decoy APKs (fake VIPRE Security, ISIS Amaq news, Islamic Caliphate, Exotic Flowers game repack, Persian poetry/religious/wallpaper apps, fake browser, MyKet app-store mimic, Mohsen Restaurant app, fake VPN/translation app)"
+      ],
+      "detection_feasibility": "low — impersonation of legitimate app identities is detectable via package-name/certificate reputation and app-store review, but requires mobile app-inventory visibility",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1547",
+      "technique_name": "Boot or Logon Autostart Execution",
+      "tactic": "persistence",
+      "procedure_description": "FurBall registers a broadcast receiver for the Android BOOT_COMPLETED intent so the spyware relaunches automatically every time the device is powered on, maintaining persistent surveillance.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)"
+      ],
+      "detection_feasibility": "low — Android autostart receiver registration is not exposed in standard enterprise logs; visible only via static APK analysis or mobile-threat-defense agents",
+      "sources": [
+        "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/",
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/"
+      ]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "FurBall records ambient/surroundings audio via the device microphone and records phone calls; the Rampant Kitten Android backdoor records ~30 seconds of surroundings audio, and the HookInjEx Windows stealer records ~60 seconds of audio from the host.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)",
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)",
+        "Rampant Kitten Android backdoor (2FA SMS interception, audio recording, Google credential phishing)"
+      ],
+      "detection_feasibility": "low — microphone activation on mobile is invisible to enterprise logs; on Windows, unexpected process access to audio-capture APIs is a hunt candidate via EDR",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "procedure_description": "FurBall can be tasked by its C2 to capture photos and record video from the device camera and upload them to the command-and-control server.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)"
+      ],
+      "detection_feasibility": "low — on-demand camera capture on mobile is not enterprise-observable; static-analysis / mobile-threat-defense candidate",
+      "sources": [
+        "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/"
+      ]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "The HookInjEx Windows variant captures screenshots of the victim's desktop for exfiltration.",
+      "observed_tooling": [
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)"
+      ],
+      "detection_feasibility": "medium — repeated screen-capture API use by a non-graphical process is detectable via EDR behavioral analytics but generates noise",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "procedure_description": "FurBall monitors and exfiltrates clipboard text content on the mobile device; the HookInjEx Windows variant likewise steals clipboard data.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)",
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)"
+      ],
+      "detection_feasibility": "low — clipboard reads are near-invisible on both platforms; hunt candidate on Windows via clipboard-API monitoring",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "The HookInjEx Windows variant hooks input to keylog the victim, capturing typed keystrokes across applications.",
+      "observed_tooling": [
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)"
+      ],
+      "detection_feasibility": "medium — keyboard hook installation and low-level input hooking are detectable via EDR API-hook and process-injection telemetry",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "FurBall steals SMS messages, call logs, contacts, media files (photos/videos), and files from external storage; the Windows infostealers steal documents by extension (.txt, .csv, .kdbx, .xls, .xlsx, .ppt, .pptx) and Telegram Desktop data files from the local system.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)",
+        "TelB (Windows infostealer, Delphi 64-bit, SOAP C2, Telegram/KeePass theft)",
+        "TelAndExt (Windows infostealer, Delphi 32-bit, FTP C2, Telegram theft)",
+        "Python info-stealer (PyInstaller SFX, FTP exfil, Telegram/Chrome/Firefox/Edge/Paltalk)"
+      ],
+      "detection_feasibility": "medium — on Windows, bulk file access by extension and Telegram directory reads are detectable via file-access auditing and EDR; on mobile, local data theft is not enterprise-observable",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "procedure_description": "FurBall automatically harvests a broad set of device data on a schedule/command — device identifiers, notification text, running processes, device accounts, location, and installed-app inventory — using a command protocol delimited by '===' with arguments separated by '~~~'; the C2-tasking loop drives repeated automated collection.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)"
+      ],
+      "detection_feasibility": "low — automated on-device collection is not exposed to enterprise telemetry; static/dynamic APK analysis candidate",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "FurBall collects device identifiers, device type, OS version, and a unique device ID to fingerprint each infected phone for the operators.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)"
+      ],
+      "detection_feasibility": "low — device-fingerprinting API calls on mobile are not enterprise-observable; static-analysis candidate",
+      "sources": [
+        "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/"
+      ]
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "FurBall enumerates the list of installed applications on the infected device and reports it to the C2, aiding targeting and follow-on tasking.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)"
+      ],
+      "detection_feasibility": "low — installed-app enumeration on mobile is invisible to enterprise telemetry; static-analysis candidate",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/"
+      ]
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The HookInjEx Windows variant enumerates removable/USB drives on the host to identify additional data sources for collection.",
+      "observed_tooling": [
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)"
+      ],
+      "detection_feasibility": "medium — volume/removable-drive enumeration is detectable via device-arrival events and process behavior but is common in benign software",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1111",
+      "technique_name": "Multi-Factor Authentication Interception",
+      "tactic": "credential-access",
+      "procedure_description": "The Rampant Kitten Android backdoor intercepts incoming SMS messages and forwards any message whose body begins with 'G-' (Google two-factor authentication codes) to an attacker-controlled phone number, defeating SMS-based 2FA on victim Google accounts.",
+      "observed_tooling": [
+        "Rampant Kitten Android backdoor (2FA SMS interception, audio recording, Google credential phishing)"
+      ],
+      "detection_feasibility": "low — SMS interception/forwarding on a personal device is not enterprise-observable; account-side detection (unusual 2FA prompts, new device sign-ins) is the practical signal",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "procedure_description": "The Python info-stealer and HookInjEx variants steal saved credentials from web browsers including Chrome, Firefox, Edge and Opera.",
+      "observed_tooling": [
+        "Python info-stealer (PyInstaller SFX, FTP exfil, Telegram/Chrome/Firefox/Edge/Paltalk)",
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)"
+      ],
+      "detection_feasibility": "medium — access to browser credential stores (Login Data / logins.json / Web Data) by unexpected processes is detectable via file-access and EDR telemetry",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1555.005",
+      "technique_name": "Credentials from Password Stores: Password Managers",
+      "tactic": "credential-access",
+      "procedure_description": "The TelB variant steals KeePass password-manager databases (.kdbx files) from the victim host, targeting the master credential store.",
+      "observed_tooling": [
+        "TelB (Windows infostealer, Delphi 64-bit, SOAP C2, Telegram/KeePass theft)"
+      ],
+      "detection_feasibility": "medium — access to .kdbx files by non-KeePass processes is a high-signal hunt via file-access auditing and file-integrity monitoring",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "procedure_description": "The Rampant Kitten Android backdoor phishes Google account credentials by presenting a Google login through a WebView with a JavascriptInterface bridge that captures the entered username and password; separately, Telegram phishing pages harvest Telegram credentials.",
+      "observed_tooling": [
+        "Rampant Kitten Android backdoor (2FA SMS interception, audio recording, Google credential phishing)",
+        "Telegram phishing pages / fake Telegram service accounts"
+      ],
+      "detection_feasibility": "low — in-app WebView credential capture is not enterprise-observable; account-side and phishing-domain intelligence are the practical signals",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1554",
+      "technique_name": "Compromise Host Software Binary",
+      "tactic": "persistence",
+      "procedure_description": "The TelB and TelAndExt variants hijack Telegram Desktop's update mechanism by replacing/modifying the legitimate Updater.exe binary, so the stealer is executed under cover of Telegram's own auto-update flow.",
+      "observed_tooling": [
+        "TelB (Windows infostealer, Delphi 64-bit, SOAP C2, Telegram/KeePass theft)",
+        "TelAndExt (Windows infostealer, Delphi 32-bit, FTP C2, Telegram theft)",
+        "Modified Telegram Updater.exe (persistence)"
+      ],
+      "detection_feasibility": "medium — modification of Telegram's Updater.exe (hash/signature change, unexpected write to the Telegram directory) is detectable via file-integrity monitoring and image-load signature checks",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "The HookInjEx variant establishes persistence via a RunOnce registry key, typically named 'SunJavaHtml' or 'DevNicJava', to relaunch its loader at logon.",
+      "observed_tooling": [
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)"
+      ],
+      "detection_feasibility": "high — creation of Run/RunOnce values (especially the actor-specific names SunJavaHtml / DevNicJava) is directly observable via registry-modification auditing and autoruns baselining",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1055.001",
+      "technique_name": "Process Injection: Dynamic-link Library Injection",
+      "tactic": "stealth",
+      "procedure_description": "The HookInjEx variant maps its DLL into explorer.exe and subclasses the Windows Start button (across multiple UI languages) to hook and run within a trusted process.",
+      "observed_tooling": [
+        "HookInjEx (Windows C++ hook-and-inject stealer: keylogging, audio, clipboard, screenshots, browser creds)"
+      ],
+      "detection_feasibility": "high — DLL injection into explorer.exe (remote thread / module load of an unsigned DLL) is detectable via Sysmon EID 7/8 and EDR process-injection analytics",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "procedure_description": "The Python info-stealer encrypts collected data with AES via pyAesCrypt using a hard-coded password before exfiltration; the Rampant Kitten Android backdoor likewise AES-encrypts data prior to FTPS upload.",
+      "observed_tooling": [
+        "Python info-stealer (PyInstaller SFX, FTP exfil, Telegram/Chrome/Firefox/Edge/Paltalk)",
+        "pyAesCrypt (AES encryption of stolen data)",
+        "Rampant Kitten Android backdoor (2FA SMS interception, audio recording, Google credential phishing)"
+      ],
+      "detection_feasibility": "low — encrypted staging blends with benign archiving; hunt candidate when correlated with a preceding collection burst",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "FurBall communicates with its C2 over HTTP, beaconing roughly every 10 seconds to request commands, using obfuscated server URI paths (backend PHP script names are periodically changed). The Rampant Kitten Android backdoor uses HTTP to alarabiye.net for C2 and pulls configuration/commands from gradleservice.info; the TelB Windows variant uses SOAP over HTTP.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)",
+        "Rampant Kitten Android backdoor (2FA SMS interception, audio recording, Google credential phishing)",
+        "TelB (Windows infostealer, Delphi 64-bit, SOAP C2, Telegram/KeePass theft)"
+      ],
+      "detection_feasibility": "medium — HTTP beaconing to the named actor domains is detectable via DNS/proxy telemetry when IOCs are loaded; the ~10-second fixed-interval FurBall beacon adds a behavioral signal, but only where mobile/network egress is monitored",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/",
+        "https://www.welivesecurity.com/2022/10/20/domestic-kitten-campaign-spying-iranian-citizens-furball-malware/",
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "FurBall retrieves configuration and command updates from its C2 (a capability the operators added on top of the original KidLogger code) and downloads server-side URI/PHP changes, allowing the operators to re-point and re-task infected devices after deployment.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)"
+      ],
+      "detection_feasibility": "low — post-install config/command fetches on mobile are not enterprise-observable; network-IOC and static-analysis candidate",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/"
+      ]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "FurBall uploads captured surveillance data (SMS, call recordings, media, location, photos/video) back to its C2 over the same HTTP channel used for tasking.",
+      "observed_tooling": [
+        "FurBall (Android surveillanceware; customized derivative of the commercial KidLogger parental-control app)"
+      ],
+      "detection_feasibility": "low — exfil over the C2 HTTP channel on mobile is not enterprise-observable; detectable only where the C2 domains/IPs are seen in network egress logs",
+      "sources": [
+        "https://research.checkpoint.com/2021/domestic-kitten-an-inside-look-at-the-iranian-surveillance-operations/"
+      ]
+    },
+    {
+      "technique_id": "T1048",
+      "technique_name": "Exfiltration Over Alternative Protocol",
+      "tactic": "exfiltration",
+      "procedure_description": "The TelAndExt and Python Windows stealers exfiltrate stolen data over FTP, and the Rampant Kitten Android backdoor uploads data over FTPS using hard-coded credentials, using a protocol distinct from the HTTP command channel.",
+      "observed_tooling": [
+        "TelAndExt (Windows infostealer, Delphi 32-bit, FTP C2, Telegram theft)",
+        "Python info-stealer (PyInstaller SFX, FTP exfil, Telegram/Chrome/Firefox/Edge/Paltalk)",
+        "Rampant Kitten Android backdoor (2FA SMS interception, audio recording, Google credential phishing)"
+      ],
+      "detection_feasibility": "medium — outbound FTP/FTPS from user endpoints to external hosts is anomalous and detectable via network/firewall egress monitoring",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "procedure_description": "Rampant Kitten created fake Telegram 'service' accounts that message targets with fake warnings about 'improper use' of Telegram to lure them to credential-phishing pages.",
+      "observed_tooling": [
+        "Telegram phishing pages / fake Telegram service accounts"
+      ],
+      "detection_feasibility": "low — actor-controlled messaging accounts are off-victim; intel/platform-abuse-reporting candidate",
+      "sources": [
+        "https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/"
+      ]
+    }
+  ],
+  "detection_signals": [
+    "Windows Run/RunOnce registry values named 'SunJavaHtml' or 'DevNicJava' (HookInjEx persistence) — registry-modification auditing / autoruns baseline",
+    "DLL injection into explorer.exe with Start-button subclassing by an unsigned module (HookInjEx) — Sysmon EID 7/8, EDR process-injection analytics",
+    "Modification or replacement of Telegram Desktop's Updater.exe (hash/signature change, unexpected write to the Telegram install directory) — file-integrity monitoring",
+    "Access to KeePass .kdbx databases or browser credential stores by processes other than the owning application — file-access auditing",
+    "Outbound FTP/FTPS from user endpoints to external hosts, and HTTP beaconing to the actor C2 domains — network/proxy/DNS egress monitoring",
+    "FurBall Android C2 traffic to firmwaresystemupdate[.]com / appsoftupdate[.]com and a fixed ~10-second HTTP beacon interval — mobile/network egress where visible",
+    "Traffic to Rampant Kitten C2/phishing domains: alarabiye[.]net, gradleservice[.]info, afalr-sharepoint[.]com, afalr-onedrive[.]com, telegramreport[.]me, telegramco[.]org, telegrambots[.]me, mailgoogle[.]info, and the *.000webhostapp[.]com stealer hosts",
+    "Sideloaded APKs matching the decoy package names (e.g. com.getdoc.freepaaper.dissertation, com.ssd.vipre, com.apps.amaq, com.intense.pub1.sbgs, ir.mservices.market, com.mohsen) — MDM/mobile-threat-defense app inventory",
+    "Android SMS-forwarding behavior for messages beginning 'G-' to an unknown number, and a spurious 'Google protect is enabled' notification — mobile-threat-defense / user report",
+    "Persian-language lure sites impersonating a translation service, app store, or security product (e.g. downloadmaghaleh[.]com) — lookalike-domain / brand monitoring"
+  ],
+  "iocs": {
+    "ips": [
+      "94.182.215.98",
+      "188.158.60.100",
+      "148.251.97.102",
+      "176.31.4.14",
+      "148.251.224.29",
+      "144.76.177.244",
+      "137.74.153.98"
+    ],
+    "domains": [
+      "firmwaresystemupdate.com",
+      "appsoftupdate.com",
+      "downloadmaghaleh.com",
+      "afalr-sharepoint.com",
+      "afalr-onedrive.com",
+      "telegramup.com",
+      "exemplifiable-taps.000webhostapp.com",
+      "tbackup.000webhostapp.com",
+      "vareangold.de",
+      "telegrambackups.com",
+      "telegramdesktop.com",
+      "picfile.net",
+      "developerchrome.com",
+      "firefox-addons.com",
+      "cpuconfig.com",
+      "update-help.com",
+      "winchecking.com",
+      "endupload.com",
+      "alarabiye.net",
+      "gradleservice.info",
+      "telegramreport.me",
+      "telegramco.org",
+      "telegrambots.me",
+      "mailgoogle.info"
+    ],
+    "emails": [],
+    "hashes": [
+      "b1df569ad4686e16ec0c661733d56778f59cdb78207a3c2ad66df9b9828c84ab",
+      "68a1452172636b081873b9f7c1ae3794035c4ff50d5538b656caf07016b74d07",
+      "02d6ca25b2057f181af96d2837486b26231eaa496defdf39785b5222014ef209",
+      "290d70472f4b00a1cf01f5c1311aacffaa39057bb1c826c99419999ccef7ae53",
+      "039fc34ace1012eff687f864369540b9085b167f0d66023f3b94f280a7fdf8b7",
+      "7f603216a0a7bae2c8cec65a800608ac22cfff8cd98c699677e44d36267a9798",
+      "54479fbb2f3c8c16714e526925537e738b1b586310c8d15ce10f33327392e879",
+      "d90168d1f3568b5909d2e14288300ede298f6c663b51e883e7eb5d8d70277423",
+      "ccef7ca705b899fe337eda462d38216c414c0cfe41052dec102c8f6d8876ad8a",
+      "8324266e25d6a8dbc6e561e035b9e713c3bd339ba9bb5e5b9d4f0821a0262510",
+      "3d41830f943c31f69eb6ed7804cc18b289ba2172d258bd118a8503d120318d63",
+      "53e00f1e8d2d6aa2d8a0eda2bf2d924fbc6f67db12ac3238d7c4b4520de7fadc",
+      "ca730b8b355e44919629a958d940e77eb1b4cd0c1bbe2ab94a963222f2723f57",
+      "f1728125f37ca8738b19b418a3fe896e9bdcde5aed6559db3eea55f4e17602c4",
+      "5787723b2221464337e6bbe4200aab912f1f711447224e4e6c4c96c451ff41bf",
+      "e069bcd473c83b937db46243dd53e8856b5be6d0ade880c0ec61107054a7e32e",
+      "48d642c2c77eeabff36249c59ce397a9ee5f3d825d735f839c5c05939499406e",
+      "1dc12c6a44852023f1687f9f31a9e58dc7ce96d492a58a3e87dec5aa8f45ba92",
+      "4580980a6fb65ea1501464d36306c24d341189e84500562c5a3ac844f9a79525",
+      "a5b5f6027b463d82fded3c38153086d5accc466df33123070ea541e62124b943",
+      "a3797856766fef6651f8c679febd12378fc3196c5cc74923d90377045107700d",
+      "9156f5bd322306c9038a3bc830e53e7b13c272e121fb70b3b8d7d9968fb97e4f",
+      "88d03e683c01d9979c752844579bd367892edbbdc876b03df8e1d09412f761c5",
+      "bd7779e6100e07b3eae67bfcdc53f1f08468651240229e284cca60e2b953496b",
+      "62a48bcb2d2f22017ce67b853654903464c19892a07a3c0ca020048cb049f0cd",
+      "e7a6925f0fe03108b965a3cf9f2fe1204add376ecde68bafd872e9d828d762e9",
+      "53ed971b48ae0b2ff6bcdd7bf4e8970d6eac3e7cdcd3ae6fa05860b9e5ac58ee",
+      "BF482E86D512DA46126F0E61733BCA4352620176",
+      "a713a2749e9791243a89471a2603bf1f32ec11c9179771ca46fb5583b8412cb0",
+      "24e5b2967437dbc1866df3ac1bf776a4960a5a56676b48bb9a143e62849a43d2",
+      "881ab44385541ac7cd0f3279ba4fb8519df07d529456c9e34074787ebb33f658",
+      "4415e6240b037f4ac693c7e4a88f5ab2567b68dddbaa8fbfb0b40d37748fa8ba",
+      "315e6338bf9c9bcbe3d5af0482f51dfd",
+      "ca554a866389796b65f0b5eb1576e691"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Domestic Kitten / APT-C-50 has NO MITRE ATT&CK group entry (searched: no G-ID exists), so actor.mitre_id and actor.mitre_canonical_name are intentionally empty. The initial G0074 lookup during research returned 'Dragonfly 2.0' (unrelated/revoked) and was discarded. ALIAS GATE: aliases[] contains only the actor's own names (Domestic Kitten, APT-C-50); 'Rampant Kitten' is treated as a related campaign/cluster per Check Point's framing and placed in related_clusters[] and key_campaigns[], NOT as a top-level alias — and it does not collide with any existing library slug. 'Ferocious Kitten' is listed as a loosely-associated cluster only (overlap is low-confidence and disputed). ATTRIBUTION is medium confidence: it rests on convergent analytic indicators (exclusively domestic-repression victimology, Persian-language decoys/infrastructure, Tehran/Karaj operator IPs, Iranian WHOIS registrant 'nobody.gu3st') from a single primary research vendor lineage (Check Point) corroborated by ESET/360 follow-ups; there is no indictment or government advisory naming the operating entity, so it is not raised to high. MOBILE-TO-ENTERPRISE MAPPING: Android behaviors were mapped to the closest ENTERPRISE ATT&CK technique per tasking (e.g. BOOT_COMPLETED autostart -> T1547; SMS/call/contact/media theft -> T1005/T1119; installed-app enumeration -> T1518; device fingerprinting -> T1082; mic/call recording -> T1123; camera -> T1125; clipboard -> T1115; HTTP C2 -> T1071.001; C2 exfil -> T1041). The one exception is T1430 Location Tracking, retained as its native mobile technique because there is no clean enterprise equivalent for geolocation collection — flagged explicitly. Every technique_id was validated against the environment's bundled ATT&CK dataset (T1111, T1555.005, T1554, T1125, T1056.003, T1547.001 confirmed live via MCP; remaining IDs are well-established enterprise techniques). DETECTION ROUTING: most mobile-surveillance TTPs are detection_feasibility 'low' (hunt-only) because they execute on personal Android devices with no enterprise telemetry — genuine, not padding. The DESKTOP Rampant Kitten TTPs carry the real detection surface: T1547.001 (SunJavaHtml/DevNicJava Run keys, high), T1055.001 (explorer.exe DLL injection, high), T1554 (Telegram Updater.exe tamper, medium), T1555.005/T1555.003 (KeePass/browser cred theft, medium), T1048 (FTP/FTPS exfil, medium). IOCs are taken verbatim from the three primary reports: FurBall SHA-256 set (27) + ESET FurBall SHA-1 (BF48...0176) from the 2021/2022 Check Point & ESET reports; Rampant Kitten Windows/Android SHA-256 and MD5 samples from the 2020 Check Point report; operator IPs and C2/phishing domains from all three. Defang brackets removed for raw machine-readable values. Decoy APK package names (com.getdoc.freepaaper.dissertation, com.ssd.vipre, com.apps.amaq, ir.mservices.market, com.mohsen, etc.) are captured in tooling_observed / detection_signals rather than the iocs object (which has no package-name field). CVEs: none — this actor relies on social engineering and user-installed apps, not exploits. YARA: none published in the source bodies reviewed; left empty rather than authored."
+}

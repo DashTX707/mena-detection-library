@@ -1,0 +1,39 @@
+title: Domestic Kitten Data Exfiltration Over FTP/FTPS
+id: a556d00b-6e9f-4b1d-ae5b-9358dd845190
+status: experimental
+description: |
+    Detects outbound FTP/FTPS connections from user endpoints consistent with Domestic Kitten /
+    Rampant Kitten exfiltration (T1048 Exfiltration Over Alternative Protocol). The TelAndExt and
+    Python infostealers exfiltrate stolen Telegram/browser/document data over FTP, and the Rampant
+    Kitten Android backdoor uploads AES-encrypted data over FTPS using hard-coded credentials, over a
+    channel distinct from the HTTP C2. Keys on outbound connections to FTP control/implicit-TLS ports
+    from an interactive workstation, where such traffic is anomalous.
+references:
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.exfiltration
+    - attack.t1048
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        Initiated: 'true'
+        DestinationPort:
+            - 21
+            - 990
+    filter_internal:
+        DestinationIp|cidr:
+            - '10.0.0.0/8'
+            - '172.16.0.0/12'
+            - '192.168.0.0/16'
+            - '127.0.0.0/8'
+    condition: selection and not filter_internal
+falsepositives:
+    - Legitimate FTP clients (FileZilla, WinSCP) used by developers/admins to reach sanctioned
+      external file servers - allowlist by Image and known destination
+    - Automated backup or file-transfer software - scope by process and destination host
+level: medium

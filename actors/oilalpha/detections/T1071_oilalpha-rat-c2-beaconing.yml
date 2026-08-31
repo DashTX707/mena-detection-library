@@ -1,0 +1,53 @@
+title: OilAlpha SpyNote/SpyMax RAT Application-Layer C2 Beaconing
+id: a2e5497b-368e-4d3e-b392-fc2d11ade338
+status: experimental
+description: |
+    Detects application-layer command-and-control traffic from OilAlpha SpyNote/SpyMax Android RATs
+    (and njRAT on Windows) to the group's known C2 endpoints (T1071 Application Layer Protocol).
+    Keys on outbound web/proxy connections to the OilAlpha dynamic-DNS C2 hostnames and their
+    resolved C2 IP addresses reported in Recorded Future CTA-2024-0709. Fires where device traffic
+    transits a monitored proxy or web gateway.
+references:
+    - https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1071
+    - mena-detection-library.oilalpha
+logsource:
+    category: proxy
+detection:
+    selection_host:
+        cs-host:
+            - 'carversion.ddns.net'
+            - 'ho1hm2.ddns.net'
+            - 'ho2hm1.ddns.net'
+            - 'ksrversionhid.sytes.net'
+            - 'nrcversion.ddns.net'
+            - 'nrcversionhid.sytes.net'
+            - 'carversionhid.sytes.net'
+            - 'ksrversion.ddns.net'
+            - 'unsversion.ddns.net'
+            - 'unsversionhid.sytes.net'
+            - 'ufufw.dynns.com'
+            - 'midrmversion.ddns.net'
+            - 'golom.dynns.com'
+            - 'coldrmversion.ddns.net'
+            - 'reportss.serveftp.com'
+            - 'hotrmversion.ddns.net'
+            - 'sh1177.ddns.net'
+            - 'euseus.dynns.com'
+    selection_ip:
+        dst_ip:
+            - '206.189.98.34'
+            - '176.123.21.4'
+            - '145.14.156.148'
+            - '141.255.144.8'
+            - '134.122.75.238'
+            - '141.255.145.221'
+    condition: 1 of selection_*
+falsepositives:
+    - None expected - dedicated OilAlpha C2 hostnames and IPs. Treat any hit as an active RAT
+      infection and isolate the source device.
+level: high

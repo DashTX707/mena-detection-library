@@ -22,7 +22,7 @@
   --detect:#0c7a68; --detect-ink:#0c7a68; --detect-fill:#0c7a68;
   --hunt:#a8631a; --hunt-ink:#a8631a; --hunt-fill:#bd7526;
   --accent:#0c7a68; --accent-ink:#095f52;
-  --iran:#8a5a2b; --pal:#2e6f4e; --dest:#a8342b; --turkey:#1f6f8b; --merc:#6d4a8f; --lebanon:#b03a5b; --uae:#4557a0; --apac:#7a7a24;
+  --iran:#8a5a2b; --pal:#2e6f4e; --dest:#a8342b; --turkey:#1f6f8b; --merc:#6d4a8f; --lebanon:#b03a5b; --uae:#4557a0; --apac:#7a7a24; --yemen:#9a6f14;
   --shadow:0 1px 2px rgba(10,20,17,.06),0 10px 26px -14px rgba(10,20,17,.22);
   --grid-line:rgba(20,28,26,.06);
   --stamp:rgba(10,16,14,.5);
@@ -35,7 +35,7 @@
     --detect:#33d6ac; --detect-ink:#3fe0b6; --detect-fill:#1fa383;
     --hunt:#e3a94a; --hunt-ink:#edb95c; --hunt-fill:#c88f37;
     --accent:#33d6ac; --accent-ink:#5be8c4;
-    --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a; --turkey:#5fb4d0; --merc:#b490d8; --lebanon:#e87ea0; --uae:#8595e0; --apac:#c4c45a;
+    --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a; --turkey:#5fb4d0; --merc:#b490d8; --lebanon:#e87ea0; --uae:#8595e0; --apac:#c4c45a; --yemen:#d8ad4a;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 42px -20px rgba(0,0,0,.75);
     --grid-line:rgba(216,230,223,.05);
     --stamp:rgba(216,230,223,.55);
@@ -48,7 +48,7 @@
   --detect:#33d6ac; --detect-ink:#3fe0b6; --detect-fill:#1fa383;
   --hunt:#e3a94a; --hunt-ink:#edb95c; --hunt-fill:#c88f37;
   --accent:#33d6ac; --accent-ink:#5be8c4;
-  --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a; --turkey:#5fb4d0; --merc:#b490d8; --lebanon:#e87ea0; --uae:#8595e0; --apac:#c4c45a;
+  --iran:#d59a5f; --pal:#6cc496; --dest:#e2685a; --turkey:#5fb4d0; --merc:#b490d8; --lebanon:#e87ea0; --uae:#8595e0; --apac:#c4c45a; --yemen:#d8ad4a;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 42px -20px rgba(0,0,0,.75);
   --grid-line:rgba(216,230,223,.05);
   --stamp:rgba(216,230,223,.55);
@@ -175,6 +175,7 @@ tr.tot-row th{font-size:13px}
 .stamp.lebanon{color:var(--lebanon);border-color:color-mix(in srgb,var(--lebanon) 55%,transparent)}
 .stamp.uae{color:var(--uae);border-color:color-mix(in srgb,var(--uae) 55%,transparent)}
 .stamp.apac{color:var(--apac);border-color:color-mix(in srgb,var(--apac) 58%,transparent)}
+.stamp.yemen{color:var(--yemen);border-color:color-mix(in srgb,var(--yemen) 58%,transparent)}
 .card h3{font-size:1.36rem;margin:8px 0 2px;letter-spacing:-.01em;font-weight:600;max-width:80%}
 .card .mid{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--muted)}
 .card .meta{margin:14px 0 0;font-size:13.5px;color:var(--muted);line-height:1.5}
@@ -268,11 +269,11 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
 
     <div class="hero-split">
       <div class="ledger" id="stats">
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="38">38</div><div class="k">actors tracked · 8 threat clusters</div></div>
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="1562">1562</div><div class="k">ATT&amp;CK techniques mapped</div></div>
-        <div class="ltab hl"><div class="tick"></div><div class="n tnum" data-to="670">670</div><div class="k">Sigma detections, CI-validated</div></div>
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="227">227</div><div class="k">hunt packages written</div></div>
-        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="1493">1493</div><div class="k">sourced, defanged IOCs</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="44">44</div><div class="k">actors tracked · 9 threat clusters</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="1662">1662</div><div class="k">ATT&amp;CK techniques mapped</div></div>
+        <div class="ltab hl"><div class="tick"></div><div class="n tnum" data-to="717">717</div><div class="k">Sigma detections, CI-validated</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="250">250</div><div class="k">hunt packages written</div></div>
+        <div class="ltab"><div class="tick"></div><div class="n tnum" data-to="1660">1660</div><div class="k">sourced, defanged IOCs</div></div>
       </div>
 
       <div class="preview-card">
@@ -316,8 +317,8 @@ footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
     <div class="sec-head">
       <div>
         <div class="sec-num">02 / ACTOR DOSSIERS</div>
-        <h2>Thirty-eight actors, eight threat clusters</h2>
-        <p>Iran-nexus espionage, credential and access brokers, OT/ICS disruption and destructive <em>wipers</em>, IRGC influence operations, Palestinian-nexus operators, Lebanon-nexus (Hezbollah &amp; GDGS) groups, a UAE-nexus surveillance actor, Türkiye-nexus operators, and external India- and China-nexus APTs that target the region — each chosen for documented, sourced MENA targeting. More to follow.</p>
+        <h2>Forty-four actors, nine threat clusters</h2>
+        <p>Iran-nexus espionage, credential and access brokers, OT/ICS disruption and destructive <em>wipers</em>, IRGC influence operations, Palestinian-nexus operators, Lebanon-nexus (Hezbollah &amp; GDGS) groups, a UAE-nexus surveillance actor, a Yemen-nexus pro-Houthi mobile-spyware operator, Türkiye-nexus operators, and external India- and China-nexus APTs that target the region — each chosen for documented, sourced MENA targeting. More to follow.</p>
       </div>
     </div>
     <div class="actors" id="cards"></div>
@@ -590,7 +591,31 @@ var ACTORS=[
  {name:"Tropic Trooper",id:"KeyBoy",cluster:"apac",clbl:"China · gov espionage",
   targ:"Middle East government (2024 campaign)", sect:"Government, transportation, healthcare",
   ttps:35,sig:18,hunts:5,iocs:29,
-  t:{"reconnaissance":[0,1],"resource-development":[0,2],"initial-access":[1,0],"execution":[2,1],"persistence":[3,0],"privilege-escalation":[1,0],"defense-evasion":[5,3],"credential-access":[1,0],"discovery":[3,2],"lateral-movement":[2,0],"collection":[1,1],"command-and-control":[5,0],"exfiltration":[1,0]}}
+  t:{"reconnaissance":[0,1],"resource-development":[0,2],"initial-access":[1,0],"execution":[2,1],"persistence":[3,0],"privilege-escalation":[1,0],"defense-evasion":[5,3],"credential-access":[1,0],"discovery":[3,2],"lateral-movement":[2,0],"collection":[1,1],"command-and-control":[5,0],"exfiltration":[1,0]}},
+ {name:"OilAlpha",id:"pro-Houthi",cluster:"yemen",clbl:"Yemen · pro-Houthi mobile spyware",
+  targ:"Yemen, Saudi Arabia, UAE", sect:"Humanitarian/NGO, human rights, media, journalists",
+  ttps:13,sig:5,hunts:4,iocs:28,
+  t:{"resource-development":[0,2],"initial-access":[0,1],"execution":[0,1],"defense-evasion":[1,0],"credential-access":[1,0],"collection":[0,3],"command-and-control":[3,0],"exfiltration":[0,1]}},
+ {name:"Domestic Kitten",id:"APT-C-50",cluster:"iran",clbl:"Iran · IRGC surveillance",
+  targ:"Iran, Iraqi Kurdistan, Turkey (diaspora)", sect:"Dissidents, ethnic minorities, journalists, activists",
+  ttps:28,sig:12,hunts:6,iocs:65,
+  t:{"resource-development":[0,2],"initial-access":[1,0],"execution":[0,1],"persistence":[2,1],"defense-evasion":[1,1],"credential-access":[2,2],"discovery":[1,2],"collection":[3,5],"command-and-control":[1,1],"exfiltration":[1,1]}},
+ {name:"Ferocious Kitten",id:"MarkiRAT",cluster:"iran",clbl:"Iran · MarkiRAT surveillance",
+  targ:"Iran (Persian-speaking dissidents)", sect:"Dissidents, civil society, journalists, regime critics",
+  ttps:22,sig:14,hunts:3,iocs:55,
+  t:{"initial-access":[1,0],"execution":[3,0],"persistence":[3,0],"defense-evasion":[3,0],"discovery":[0,5],"collection":[1,3],"command-and-control":[2,0],"exfiltration":[1,0]}},
+ {name:"Madi",id:"Mahdi",cluster:"iran",clbl:"Iran (unconfirmed) · retired 2012",
+  targ:"Iran, Israel, UAE, Saudi Arabia", sect:"Critical-infra engineering, government, finance, academia",
+  ttps:14,sig:8,hunts:3,iocs:4,
+  t:{"initial-access":[1,0],"execution":[1,0],"defense-evasion":[3,0],"discovery":[0,1],"collection":[0,4],"command-and-control":[2,1],"exfiltration":[1,0]}},
+ {name:"Cadelle",id:"Cadelspy",cluster:"iran",clbl:"Iran · surveillance, retired",
+  targ:"Iran, Saudi Arabia, Afghanistan", sect:"Iranian dissidents, anti-censorship proxy users, regional orgs",
+  ttps:8,sig:2,hunts:3,iocs:0,
+  t:{"credential-access":[1,0],"discovery":[0,3],"collection":[1,3]}},
+ {name:"Group5",id:"Syria opposition",cluster:"iran",clbl:"Iran-linked (low conf) · Syria",
+  targ:"Syria (opposition), Iran (operator origin)", sect:"Syrian opposition, activists, civil society",
+  ttps:15,sig:6,hunts:4,iocs:15,
+  t:{"resource-development":[0,3],"initial-access":[2,0],"execution":[2,0],"defense-evasion":[1,2],"collection":[0,4],"command-and-control":[1,0]}}
 ];
 
 // global max cell total for bar scaling

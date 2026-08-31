@@ -1,0 +1,61 @@
+{
+  "actor": "Cadelle",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "rationale": "medium — keylogging hook installation and the associated backdoor process behavior can surface via EDR API-hook/process telemetry and file-write patterns for keystroke logs, but keylogging itself produces limited discrete host signal without endpoint instrumentation"
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "rationale": "medium — creation of .cab archives staging heterogeneous collected data (images, audio, logs, documents) in unusual locations is observable via file-write and process command-line telemetry and makes a workable hunt for staging-before-exfil behavior"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "rationale": "low — clipboard access uses standard OS APIs and generates little distinguishing telemetry; hunt candidate via process behavior correlation on the backdoor rather than a standalone signal"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low — periodic screen/webcam capture by a background process is difficult to distinguish from legitimate software; hunt candidate via image-file staging and camera-device access correlated to the backdoor process"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "low — microphone access via standard multimedia APIs yields minimal discrete telemetry; hunt candidate via audio-file staging and microphone-device access tied to an untrusted process"
+    },
+    {
+      "technique_id": "T1010",
+      "technique_name": "Application Window Discovery",
+      "tactic": "discovery",
+      "rationale": "low — enumerating window titles uses benign Windows APIs common to legitimate software; not independently detectable, hunt only as part of backdoor process behavior"
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "rationale": "low — device-arrival monitoring and printer/peripheral enumeration use standard OS notifications common to legitimate drivers and utilities; hunt candidate via correlation with the backdoor and unexpected access to print-spool artifacts"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — system-enumeration API calls are ubiquitous and generate little distinguishing signal; hunt only within backdoor process context"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "detection": 2,
+    "hunt": 6
+  }
+}

@@ -1,0 +1,49 @@
+title: Cadelle Cadelspy .cab Archive Staging of Collected Data
+id: fe6bacd3-c0b2-4623-b5d2-df87ec00dfe4
+status: experimental
+description: |
+    Detects the pre-exfiltration data-staging behavior of Backdoor.Cadelspy (Cadelle, Iran-nexus
+    surveillance actor, ~2014-2015) which compresses collected surveillance data (keystroke logs,
+    screenshots, webcam photos, audio recordings, clipboard contents, and stolen print-spool
+    documents) into .cab archive files on the host before exfiltration (T1560 Archive Collected
+    Data). This rule keys on two observable paths: (1) creation of .cab files in user-writable
+    staging locations (user profile, Temp, ProgramData, Public) where legitimate installer/patch
+    .cab activity is uncommon, and (2) process command lines invoking makecab.exe against such
+    locations. Because Cadelspy bundles heterogeneous artifact types into a single archive, a .cab
+    appearing alongside recent screenshot/audio/keylog file writes from the same process is a strong
+    Cadelspy staging signal - correlate with the companion keylog-staging rule.
+references:
+    - https://attack.mitre.org/software/S0454/
+    - https://www.securityweek.com/apparently-linked-iran-spy-groups-target-middle-east/
+    - https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.collection
+    - attack.t1560
+    - mena-detection-library.cadelle
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_cab_file:
+        TargetFilename|endswith: '.cab'
+        TargetFilename|contains:
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+            - '\Users\'
+    filter_windows_paths:
+        TargetFilename|contains:
+            - '\Windows\'
+            - '\WinSxS\'
+            - '\Microsoft\Windows\'
+            - '\SoftwareDistribution\'
+            - '\Package Cache\'
+    condition: selection_cab_file and not filter_windows_paths
+falsepositives:
+    - Software installers, update agents, and telemetry/diagnostics tools that legitimately build or
+      drop .cab files into user or ProgramData paths - baseline and scope by the writing process
+    - Windows Error Reporting and CAB-based crash/log collection utilities
+level: medium

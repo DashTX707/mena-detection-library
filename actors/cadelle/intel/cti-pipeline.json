@@ -1,0 +1,141 @@
+{
+  "report_title": "Cadelle (Backdoor.Cadelspy) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Symantec Security Response, 'Iran-based attackers use back door threats to spy on Middle Eastern targets' (Dec 2015, original blog now offline; content preserved via SecurityWeek https://www.securityweek.com/apparently-linked-iran-spy-groups-target-middle-east/, Security Affairs https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html, and Dark Reading https://www.darkreading.com/attacks-breaches/iranian-groups-conducting-sophisticated-surveillance-on-middle-eastern-targets); MITRE ATT&CK Software Cadelspy S0454 (https://attack.mitre.org/software/S0454/)",
+  "publication_date": "2026-08-31",
+  "actor": {
+    "name": "Cadelle",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Cadelle",
+      "Backdoor.Cadelspy"
+    ],
+    "related_clusters": [
+      "Chafer / APT39 (sister group documented in the same Symantec 2015 report — covered separately as the apt39 pack). Symantec assessed Cadelle and Chafer as likely linked or working for the same entity, but they used distinct malware (Cadelspy vs Remexi) and no shared C2 infrastructure was observed. Note: MITRE ATT&CK currently attributes the Cadelspy backdoor (S0454) to APT39/G0087; this pack tracks Cadelle as the distinct actor cluster Symantec named, per tasking."
+    ],
+    "attribution": "Iran-nexus espionage/surveillance group. Symantec assessed Cadelle as Iran-based on the basis of: operational tempo aligned to the Iranian working week (Saturday–Thursday) and Iran's timezone, Solar Hijri (Persian) calendar date formats embedded in malware strings (a format common in Iran and Afghanistan), and a victimology heavily weighted toward Iranian individuals — activists, dissidents, and users of anonymous proxies to bypass government censorship. This is a targeting/tradecraft-based assessment of nation-state alignment rather than a hard technical link to a specific Iranian government entity.",
+    "attribution_confidence": "low-medium",
+    "targeted_regions_mena": [
+      "Iran",
+      "Saudi Arabia",
+      "Afghanistan"
+    ],
+    "targeted_regions_global": [
+      "United States (one victim organization)"
+    ],
+    "targeted_sectors": [
+      "Individuals (Iranian activists and dissidents)",
+      "Persian-speaking individuals using anonymizing proxies to bypass censorship",
+      "Organizations (unspecified sectors) in Iran and the Middle East"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Cadelspy surveillance campaign against Iranian dissidents and Middle Eastern organizations",
+        "date": "Command-and-control registration suggests activity as early as 2011; Symantec monitoring from July 2014 through 2015, with peak infections in September 2015 (nine organizations compromised)",
+        "summary": "Long-running espionage operation using the custom Windows backdoor Backdoor.Cadelspy (delivered via a dropper) to conduct broad surveillance of individuals and organizations. Cadelspy harvested system information, logged keystrokes, stole clipboard contents, captured window titles of open applications, recorded audio, captured screenshots and webcam photos, monitored for USB/removable storage insertion, and stole documents sent to the printer — compressing stolen data into .cab archives for exfiltration. Symantec described the malware as 'not particularly sophisticated' but effective at remaining undetected while collecting large volumes of sensitive information. Primary victims were in Saudi Arabia and Afghanistan, with a focus on tracking the movements and communications of specific Iranian individuals; one US-based organization was also affected.",
+        "source_url": "https://www.securityweek.com/apparently-linked-iran-spy-groups-target-middle-east/"
+      }
+    ]
+  },
+  "threat_actors": ["Cadelle", "Backdoor.Cadelspy"],
+  "targeted_regions": ["Iran", "Saudi Arabia", "Afghanistan", "United States"],
+  "targeted_sectors": ["Individuals (activists/dissidents)", "Organizations (Middle East)"],
+  "malware": [
+    "Backdoor.Cadelspy (Cadelspy, S0454) — Windows espionage backdoor; 32-bit and 64-bit variants observed"
+  ],
+  "tooling_observed": [
+    "Backdoor.Cadelspy (dropper-delivered Windows backdoor)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "credential-access",
+      "procedure_description": "Backdoor.Cadelspy logs keystrokes on the compromised host, capturing typed credentials, messages, and other user input as part of its broad surveillance of the target's communications and activity.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "medium — keylogging hook installation and the associated backdoor process behavior can surface via EDR API-hook/process telemetry and file-write patterns for keystroke logs, but keylogging itself produces limited discrete host signal without endpoint instrumentation",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://www.securityweek.com/apparently-linked-iran-spy-groups-target-middle-east/"]
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "procedure_description": "Cadelspy steals the contents of the Windows clipboard on infected systems, capturing copied text such as passwords, URLs, and message fragments.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "low — clipboard access uses standard OS APIs and generates little distinguishing telemetry; hunt candidate via process behavior correlation on the backdoor rather than a standalone signal",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "Cadelspy captures screenshots of the victim's desktop and also takes photos via the computer's webcam, providing visual surveillance of the user and their on-screen activity.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "low — periodic screen/webcam capture by a background process is difficult to distinguish from legitimate software; hunt candidate via image-file staging and camera-device access correlated to the backdoor process",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html"]
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "procedure_description": "Cadelspy records audio from the compromised system's microphone to eavesdrop on the victim's environment and conversations.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "low — microphone access via standard multimedia APIs yields minimal discrete telemetry; hunt candidate via audio-file staging and microphone-device access tied to an untrusted process",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html"]
+    },
+    {
+      "technique_id": "T1010",
+      "technique_name": "Application Window Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Cadelspy collects the titles of open application windows on the infected host, giving the operators context on which applications the victim is using and the content of active windows.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "low — enumerating window titles uses benign Windows APIs common to legitimate software; not independently detectable, hunt only as part of backdoor process behavior",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html"]
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Cadelspy monitors the infected computer for the insertion of USB/removable storage devices and extracts printer information, enabling it to intercept and steal documents the victim sends to the printer as well as data from attached peripherals.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "low — device-arrival monitoring and printer/peripheral enumeration use standard OS notifications common to legitimate drivers and utilities; hunt candidate via correlation with the backdoor and unexpected access to print-spool artifacts",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html"]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Cadelspy gathers system information from the compromised host (host/system details) to profile the victim environment for its operators.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "low — system-enumeration API calls are ubiquitous and generate little distinguishing signal; hunt only within backdoor process context",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html"]
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "procedure_description": "Before exfiltration, Cadelspy compresses the stolen data (keystrokes, screenshots, audio, documents, clipboard contents) into .cab archive files on the host.",
+      "observed_tooling": ["Backdoor.Cadelspy (dropper-delivered Windows backdoor)"],
+      "detection_feasibility": "medium — creation of .cab archives staging heterogeneous collected data (images, audio, logs, documents) in unusual locations is observable via file-write and process command-line telemetry and makes a workable hunt for staging-before-exfil behavior",
+      "sources": ["https://attack.mitre.org/software/S0454/", "https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html"]
+    }
+  ],
+  "detection_signals": [
+    "A single background process concurrently exhibiting keylogging, screen capture, webcam access, and microphone recording — a strong composite surveillance-backdoor behavioral signature for Cadelspy",
+    "Staging of collected data into .cab archives in unusual/user-profile locations, bundling mixed artifact types (screenshots, audio recordings, keystroke logs, stolen print documents)",
+    "Untrusted process access to the webcam and microphone devices combined with clipboard reads and window-title enumeration",
+    "Backdoor process monitoring for USB/removable-media insertion and accessing print-spool artifacts to intercept printed documents",
+    "Dropper execution establishing a persistent Windows backdoor on hosts belonging to Persian-speaking individuals/dissidents or Middle East (Iran/Saudi Arabia/Afghanistan) organizations",
+    "Note: no public file hashes, C2 domains, or IP indicators were enumerated in the accessible reporting for Cadelspy — detection must lean on the behavioral composite above rather than atomic IOCs"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [],
+    "emails": [],
+    "hashes": [],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "low-medium",
+  "notes": "SINGLE-SOURCE, DATED INTELLIGENCE. All technical content derives from one primary source — Symantec's December 2015 report 'Iran-based attackers use back door threats to spy on Middle Eastern targets' — whose original blog is now offline; the content is corroborated only through secondary re-reporting (SecurityWeek, Security Affairs, Dark Reading) that traces back to the same Symantec original, and through MITRE ATT&CK Software entry Cadelspy S0454 (which itself cites the same Symantec report). Per the confidence framework, this is a single-origin claim from a historically reliable vendor with technically plausible detail = low-medium. ATTRIBUTION is likewise low-medium: Iran-nexus is inferred from operational tempo (Iranian work week/timezone), Solar Hijri calendar strings, and dissident-focused victimology, not from a hard technical link to a named state entity. ALIAS GATE OBSERVED: aliases[] contains ONLY Cadelle's own names (Cadelle, Backdoor.Cadelspy). Chafer/APT39 — the sister group documented in the SAME Symantec 2015 report and already covered by the library's apt39 pack — is deliberately kept OUT of aliases[] and placed in related_clusters[]; none of Chafer's TTPs (Remexi, SQL injection, etc.) were copied into this pack. Note the modern complication that MITRE ATT&CK now attributes the Cadelspy backdoor (S0454) to APT39/G0087; this pack nonetheless tracks Cadelle as the distinct cluster Symantec originally named, per tasking, and this is flagged in related_clusters[]. All 8 technique IDs are taken directly from MITRE ATT&CK Software S0454 and map to genuine, still-current ATT&CK technique/sub-technique IDs (T1056.001, T1115, T1113, T1123, T1010, T1120, T1082, T1560); none were invented. TTP count is intentionally modest (8) — no padding, and no Chafer behaviors borrowed. IOCs: the accessible reporting enumerates NO file hashes, C2 domains, or IP addresses for Cadelspy (Symantec's original IOC/hash appendix is not preserved in the surviving secondary sources), so all iocs arrays are empty rather than fabricated; if the original Symantec technical appendix or its STIX package can be recovered, hashes/C2 should be ingested there. DETECTION POSTURE: no high-feasibility atomic IOC detections exist for this actor today; the only durable detection surface is the behavioral composite of a single process performing multi-sensor surveillance (keylog + screen + webcam + mic + clipboard) with .cab staging — this makes the pack predominantly a HUNTING candidate (T1560 archive-staging is the most detection-leaning at 'medium'; the surveillance-collection techniques are 'low' = hunt-only)."
+}

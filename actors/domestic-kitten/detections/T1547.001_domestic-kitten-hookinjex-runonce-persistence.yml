@@ -1,0 +1,41 @@
+title: Domestic Kitten HookInjEx RunOnce Persistence (SunJavaHtml / DevNicJava)
+id: 814b7ed8-0883-4d4b-8db0-721ca6288c5f
+status: experimental
+description: |
+    Detects the HookInjEx (Rampant Kitten) loader establishing persistence via a Run/RunOnce registry
+    value (T1547.001 Registry Run Keys / Startup Folder). The stealer registers under the
+    actor-specific value names 'SunJavaHtml' or 'DevNicJava' to relaunch its loader at logon. Keys on
+    creation of those named values under any Run/RunOnce key, plus a broader selection for RunOnce
+    values whose data points to a user-writable path (temp/appdata/roaming) - the durable behavioural
+    variant if the actor renames the value.
+references:
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: registry_set
+    product: windows
+detection:
+    selection_named:
+        TargetObject|contains:
+            - '\CurrentVersion\Run\'
+            - '\CurrentVersion\RunOnce\'
+        TargetObject|endswith:
+            - 'SunJavaHtml'
+            - 'DevNicJava'
+    selection_runonce_path:
+        TargetObject|contains: '\CurrentVersion\RunOnce\'
+        Details|contains:
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+    condition: 1 of selection_*
+falsepositives:
+    - Installers and updaters legitimately using RunOnce with staging paths under ProgramData/AppData
+      - baseline by the writing process and value data
+level: high

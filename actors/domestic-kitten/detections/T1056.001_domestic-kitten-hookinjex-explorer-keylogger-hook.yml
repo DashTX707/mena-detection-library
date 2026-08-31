@@ -1,0 +1,33 @@
+title: Domestic Kitten HookInjEx Keylogger Hook Install via Remote Thread in explorer.exe
+id: 59c88d4f-3dfa-4a44-95af-1c8361052a9b
+status: experimental
+description: |
+    Detects the HookInjEx (Rampant Kitten) stealer installing its keyboard/input hook by creating a
+    remote thread inside explorer.exe (T1056.001 Input Capture: Keylogging). HookInjEx keylogs the
+    victim from within the injected, trusted explorer process; the injection is observable as a
+    cross-process thread creation targeting explorer.exe from a non-system source image. Requires
+    Sysmon Event ID 8 (CreateRemoteThread). This is the input-capture/hook-installation facet of the
+    same behaviour whose module-load facet is covered by the T1055.001 rule.
+references:
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.collection
+    - attack.t1056.001
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: create_remote_thread
+    product: windows
+detection:
+    selection:
+        TargetImage|endswith: '\explorer.exe'
+    filter_system:
+        SourceImage|startswith:
+            - 'C:\Windows\System32\'
+            - 'C:\Windows\SysWOW64\'
+    condition: selection and not filter_system
+falsepositives:
+    - Security products, accessibility tools or shell customisation utilities that legitimately inject
+      threads into explorer.exe - allowlist by SourceImage and signer
+level: high

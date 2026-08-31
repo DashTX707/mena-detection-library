@@ -1,0 +1,46 @@
+title: Group5 Spearphishing PPSX PowerPoint Spawning Child Process
+id: 3383275b-9427-4132-939b-47ce8e50d847
+status: experimental
+description: |
+    Detects Group5 (suspected Iranian-nexus, Syrian-opposition targeting) spearphishing via
+    malicious PowerPoint slideshow (PPSX) attachments (T1566.001). Group5's campaign against
+    Syrian opposition figures opened with a 2015-10-03 spearphishing email delivering PPSX files
+    that embedded OLE Package objects triggered on animation to drop and execute njRAT / NanoCore.
+    This rule keys on POWERPNT.EXE spawning anomalous child processes (script hosts, shells, or
+    executables written to user-writable paths) - the observable tail end of an opened weaponized
+    slideshow. Pair with email-gateway attachment inspection for PPSX/PPT files containing OLE
+    Package streams for delivery-side coverage.
+references:
+    - https://citizenlab.ca/2016/08/group5-syria/
+    - https://attack.mitre.org/groups/G0043/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+    - mena-detection-library.group5
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith: '\POWERPNT.EXE'
+    selection_child:
+        - Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+            - '\mshta.exe'
+            - '\rundll32.exe'
+            - '\regsvr32.exe'
+            - '\schtasks.exe'
+        - Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+    condition: selection_parent and selection_child
+falsepositives:
+    - Legitimate PowerPoint add-ins or macro-enabled corporate templates that shell out to
+      approved automation - baseline per environment and allowlist known signed tooling
+level: high

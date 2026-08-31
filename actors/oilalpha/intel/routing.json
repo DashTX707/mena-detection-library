@@ -1,0 +1,91 @@
+{
+  "actor": "OilAlpha",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1036",
+      "technique_name": "Masquerading",
+      "tactic": "stealth",
+      "rationale": "medium — app-name/package/icon impersonation of known org brands is huntable via mobile app-inventory review and brand/lookalike-app monitoring in app stores and MDM catalogs, though enterprise endpoint visibility is limited"
+    },
+    {
+      "technique_id": "T1568",
+      "technique_name": "Dynamic Resolution",
+      "tactic": "command-and-control",
+      "rationale": "medium — outbound resolution/connections to the specific OilAlpha DDNS domains, and DDNS usage broadly, are detectable via DNS and proxy/network telemetry and threat-intel domain matching where the mobile traffic transits corporate networks"
+    },
+    {
+      "technique_id": "T1571",
+      "technique_name": "Non-Standard Port",
+      "tactic": "command-and-control",
+      "rationale": "medium — outbound connections to high non-standard ports 44414/44449 toward DDNS destinations are detectable via network flow/firewall telemetry and make a reasonable network-rule signal when combined with the DDNS domains"
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "rationale": "medium — connections to the credential-theft domain kssnew.online (paths /care, /page) are detectable via DNS/proxy/web telemetry and TI domain matching; the fake portal itself is huntable via urlscan/DomainTools-style monitoring"
+    },
+    {
+      "technique_id": "T1071",
+      "technique_name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "rationale": "medium — persistent beaconing from mobile devices to known OilAlpha DDNS C2 endpoints is detectable via network/DNS telemetry when device traffic transits monitored networks, but is limited off-network"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "low — WhatsApp-delivered links and mobile APK sideloading occur off enterprise network telemetry; primarily an awareness/hunt candidate (user-reported lures, mobile EMM/MDM install logs) rather than a rule-able signal"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "low — APK install/execution and accessibility-service enablement are visible only on the mobile device (MDM/MTD telemetry); hunt candidate for organizations with mobile threat defense, not a server-side detection"
+    },
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — adversary domain registration is off-victim; intel/infrastructure-tracking candidate (WHOIS, passive DNS, DDNS-provider patterns) rather than an endpoint detection"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — tool acquisition itself is off-endpoint; downstream RAT execution/C2 is where detection lands (this entry is an intel/hunt anchor for the SpyNote/njRAT families)"
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "rationale": "low — camera access by a malicious app is observable only on-device via mobile threat defense/permission auditing; not detectable from server/network logs"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "low — microphone access is device-local telemetry surfaced only by MDM/MTD permission monitoring; hunt candidate on managed mobile fleets"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — bulk on-device collection of SMS/contacts/storage is visible only through mobile threat defense; hunt candidate, not a network-rule signal"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "low — exfiltration is bundled into the encrypted/opaque mobile RAT C2 stream and is largely off-network; hunt candidate via anomalous volume to DDNS C2 where visible"
+    }
+  ],
+  "summary": {
+    "total": 13,
+    "detection": 5,
+    "hunt": 8
+  }
+}

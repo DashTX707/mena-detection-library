@@ -1,0 +1,97 @@
+{
+  "actor": "Madi",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — attachment-based spearphishing is observable at the mail gateway (attachment type/name, .pps carrying macros/activated content, RTLO characters in filenames), though this campaign is retired and detection is historical/reference"
+    },
+    {
+      "technique_id": "T1036.002",
+      "technique_name": "Masquerading: Right-to-Left Override",
+      "tactic": "stealth",
+      "rationale": "medium — presence of the RTLO/U+202E character in filenames and mismatched extension/icon is a concrete, high-signal detection at the mail gateway and endpoint, but historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — child processes spawned by POWERPNT.EXE / a .pps opening, or a .scr executing from a user directory, are observable in endpoint process telemetry, but this is historical for a retired campaign"
+    },
+    {
+      "technique_id": "T1027.002",
+      "technique_name": "Obfuscated Files or Information: Software Packing",
+      "tactic": "stealth",
+      "rationale": "medium — UPX-packed sections are detectable via static packer heuristics/section-name analysis, but UPX is extremely common and low-specificity on its own"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — an 'iexplore.exe' running from a Templates/Printhood user directory rather than Program Files is a name/path-mismatch detectable via process-image-path baselining, historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP beaconing to the known Madi C2 IP ranges/hosts is observable in proxy/network logs (the campaign was sinkholed on this basis), but infrastructure is long dead — historical/reference only"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — download of follow-on modules and creation of the plain-text locator / .dll config files (FIE.dll, xdat.dll, SIK.dll) in user directories are observable via file-creation and network telemetry, but historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound HTTP uploads to the known Madi C2 hosts are observable in proxy/egress logs, but the infrastructure is dead — historical/reference only"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "low — keystroke logging via API hooking produces little discrete host signal on its own; hunt-only, and historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low — screen-capture API use is not readily distinguishable in logs; hunt-only, and historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "low — microphone access and WAV file creation give minimal telemetry; hunt-only, and historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "rationale": "low — file/directory enumeration is common and noisy; hunt-only in context, and historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "low — local file collection blends with legitimate use; hunt-only, and historical for this retired campaign"
+    },
+    {
+      "technique_id": "T1095",
+      "technique_name": "Non-Application Layer Protocol",
+      "tactic": "command-and-control",
+      "rationale": "low — ICMP checks to a fixed host are subtle and rarely monitored; hunt-only, and historical for this retired campaign"
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "detection": 8,
+    "hunt": 6
+  }
+}

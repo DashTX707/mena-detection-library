@@ -1,0 +1,33 @@
+title: Madi HTTP C2 Communication to Historical Infrastructure
+id: 4803da9d-57ee-49da-8343-090bef473755
+status: experimental
+description: |
+    Detects HTTP command-and-control communication associated with the Madi / Mahdi campaign
+    (T1071.001 Application Layer Protocol: Web Protocols). Infected hosts beaconed over HTTP to a small
+    set of Microsoft IIS 7.0 servers running a custom C# server-manager, and early downloaders resolved
+    the domain maja.in (later variants hard-coded IPs in the 174.142.57.0/24 and 67.205.106.0/24
+    ranges). This infrastructure was SINKHOLED in 2012 and is dead — the rule is historical/reference
+    only and any hit today most likely indicates sinkhole traffic, research, or IP re-use, not a live
+    Madi infection. Keys on proxy/DNS records for the historical C2 host/prefixes.
+references:
+    - https://securelist.com/the-madi-campaign-part-i-5/33693/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.madi
+logsource:
+    category: proxy
+detection:
+    selection_domain:
+        c-uri|contains: 'maja.in'
+    selection_dst:
+        dst_ip|cidr:
+            - '174.142.57.0/24'
+            - '67.205.106.0/24'
+    condition: 1 of selection_*
+falsepositives:
+    - The C2 was sinkholed in 2012 and IP ranges may have been reassigned to unrelated hosting - any
+      current match is almost certainly benign re-use or sinkhole/research traffic, not a live infection
+level: medium

@@ -1,0 +1,27 @@
+title: Ferocious Kitten Right-to-Left Override Filename Masquerade
+id: b8e1d5f9-0c3e-4a7b-9d8e-9a2c6e7f1b3d
+status: experimental
+description: |
+    Detects the Ferocious Kitten use of the Right-to-Left Override control character (U+202E) to reverse
+    executable file names so .exe payloads appear as benign media files (T1036.002). Keys on file-creation
+    events whose TargetFilename contains the U+202E codepoint. Applies to dropped/downloaded files on the
+    endpoint.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+    - https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.stealth
+    - attack.t1036.002
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        TargetFilename|contains: "‮"
+    condition: selection
+falsepositives:
+    - Extremely rare - legitimate use of the RTLO character in filenames is virtually never seen in enterprise environments
+level: high

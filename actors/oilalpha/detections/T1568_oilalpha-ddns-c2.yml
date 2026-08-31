@@ -1,0 +1,47 @@
+title: OilAlpha Dynamic-DNS C2 Domain Resolution
+id: 0b13d499-b63f-4c13-8c6c-ce7255b4290a
+status: experimental
+description: |
+    Detects DNS resolution of the dynamic-DNS command-and-control domains operated by OilAlpha
+    (likely pro-Houthi / Yemen-nexus Android espionage group) as reported in Recorded Future
+    Insikt Group CTA-2024-0709 (T1568 Dynamic Resolution). OilAlpha almost exclusively uses
+    dynamic DNS (ddns.net, sytes.net, dynns.com, serveftp.com) for SpyNote/SpyMax Android RAT C2.
+    This rule fires where infected mobile or Windows (njRAT) device traffic transits a monitored
+    corporate DNS resolver. Domain list taken verbatim from the report Appendix A.
+references:
+    - https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf
+    - https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1568
+    - mena-detection-library.oilalpha
+logsource:
+    category: dns
+detection:
+    selection:
+        query:
+            - 'carversion.ddns.net'
+            - 'ho1hm2.ddns.net'
+            - 'ho2hm1.ddns.net'
+            - 'ksrversionhid.sytes.net'
+            - 'nrcversion.ddns.net'
+            - 'nrcversionhid.sytes.net'
+            - 'carversionhid.sytes.net'
+            - 'ksrversion.ddns.net'
+            - 'unsversion.ddns.net'
+            - 'unsversionhid.sytes.net'
+            - 'ufufw.dynns.com'
+            - 'midrmversion.ddns.net'
+            - 'golom.dynns.com'
+            - 'coldrmversion.ddns.net'
+            - 'reportss.serveftp.com'
+            - 'hotrmversion.ddns.net'
+            - 'sh1177.ddns.net'
+            - 'euseus.dynns.com'
+    condition: selection
+falsepositives:
+    - None expected - these are dedicated adversary dynamic-DNS domains with no legitimate use.
+      Confirm the resolving host and treat any hit as high-priority.
+level: high

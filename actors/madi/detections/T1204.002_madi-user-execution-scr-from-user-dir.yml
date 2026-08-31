@@ -1,0 +1,50 @@
+title: Madi User Execution of Screensaver Payload from User Directory
+id: 935f31ab-e7eb-472c-82d5-b4ccd381c3ee
+status: experimental
+description: |
+    Detects the Madi / Mahdi user-execution step (T1204.002 User Execution: Malicious File) in which a
+    victim double-clicks an RTLO-disguised screensaver (.scr) or a downloader executable that runs from
+    a user-profile directory (Documents and Settings / Users profile, Temp, Downloads, AppData) rather
+    than a legitimate system location. Keys on a .scr process, or an executable launched by a mail/
+    browser/archive parent, executing out of a user-writable path — the behavioral moment the lure
+    payload runs. RETIRED campaign; behavioral/reference coverage.
+references:
+    - https://securelist.com/the-madi-campaign-part-i-5/33693/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.madi
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_scr_userpath:
+        Image|endswith: '.scr'
+        Image|contains:
+            - '\Documents and Settings\'
+            - '\Users\'
+            - '\AppData\'
+            - '\Temp\'
+            - '\Downloads\'
+    selection_delivered_exec:
+        ParentImage|endswith:
+            - '\OUTLOOK.EXE'
+            - '\iexplore.exe'
+            - '\chrome.exe'
+            - '\firefox.exe'
+            - '\winrar.exe'
+            - '\7zFM.exe'
+            - '\explorer.exe'
+        Image|contains:
+            - '\AppData\Local\Temp\'
+            - '\Downloads\'
+        Image|endswith:
+            - '.exe'
+            - '.scr'
+    condition: 1 of selection_*
+falsepositives:
+    - Legitimate installers or portable applications run by users from Downloads/Temp
+    - Screensavers legitimately stored in user profiles - baseline by signer and expected software
+level: medium

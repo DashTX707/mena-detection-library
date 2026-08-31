@@ -1,0 +1,198 @@
+{
+  "name": "Domestic Kitten - MENA Detection Library",
+  "versions": {
+    "attack": "14",
+    "navigator": "4.9.1",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Domestic Kitten coverage: red=Sigma detection, orange=hunt hypothesis.",
+  "techniques": [
+    {
+      "techniqueID": "T1566.002",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1608.006",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1204.002",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1036.005",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1547",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1123",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1125",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1113",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1115",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1056.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1005",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1119",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1082",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1518",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1120",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1111",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1555.003",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1555.005",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1056.003",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1554",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1547.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1055.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1560",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1071.001",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1105",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1041",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    },
+    {
+      "techniqueID": "T1048",
+      "score": 2,
+      "comment": "detection: Sigma rule",
+      "color": "#e2504a"
+    },
+    {
+      "techniqueID": "T1585.001",
+      "score": 1,
+      "comment": "hunt: hypothesis",
+      "color": "#f6b26b"
+    }
+  ],
+  "gradient": {
+    "colors": [
+      "#ffffff",
+      "#e2504a"
+    ],
+    "minValue": 0,
+    "maxValue": 2
+  },
+  "legendItems": [
+    {
+      "label": "detection (Sigma)",
+      "color": "#e2504a"
+    },
+    {
+      "label": "hunt hypothesis",
+      "color": "#f6b26b"
+    }
+  ]
+}

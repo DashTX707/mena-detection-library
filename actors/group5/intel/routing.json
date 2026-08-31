@@ -1,0 +1,103 @@
+{
+  "actor": "Group5",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.001",
+      "technique_name": "Phishing: Spearphishing Attachment",
+      "tactic": "initial-access",
+      "rationale": "medium — inbound PPSX/PPT attachments with embedded OLE Package objects are detectable via email-gateway attachment inspection and endpoint child-process spawning from POWERPNT.EXE, but require content-level visibility"
+    },
+    {
+      "technique_id": "T1189",
+      "technique_name": "Drive-by Compromise",
+      "tactic": "initial-access",
+      "rationale": "medium — fake-update lures and drive-by download chains are detectable via proxy/DNS reputation on the actor domain and browser-spawned executable-download telemetry, but the specific one-off site limits generalizable signatures"
+    },
+    {
+      "technique_id": "T1203",
+      "technique_name": "Exploitation for Client Execution",
+      "tactic": "execution",
+      "rationale": "medium — CVE-2014-4114 exploitation is detectable via patch-state monitoring and anomalous child processes / file writes from POWERPNT.EXE (e.g. INF/OLE package execution), but is dated and requires Office process visibility"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "medium — execution of user-opened droppers with decoy names/icons is detectable via endpoint process-creation telemetry and mark-of-the-web/downloaded-executable launches, but depends on user action and endpoint coverage"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "medium — second-stage payload retrieval is detectable via process-spawned outbound connections and new-executable file writes, but the commodity single-server C2 gives limited network signature"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "medium — binaries named putty.exe/dwm.exe running from unexpected paths or with wrong signatures/hashes are detectable via name-vs-path/signature baselining, but require endpoint image-metadata visibility"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1583.001",
+      "technique_name": "Acquire Infrastructure: Domains",
+      "tactic": "resource-development",
+      "rationale": "low — domain registration and hosting acquisition occur off-victim; hunt/intel candidate via WHOIS/passive-DNS monitoring and identity-abuse tracking, not endpoint telemetry"
+    },
+    {
+      "technique_id": "T1588.002",
+      "technique_name": "Obtain Capabilities: Tool",
+      "tactic": "resource-development",
+      "rationale": "low — capability acquisition is off-victim; the downstream execution of each RAT is where detection lands. Intel/hunt candidate via crypter/PDB-string and commodity-RAT family tracking"
+    },
+    {
+      "technique_id": "T1608.001",
+      "technique_name": "Stage Capabilities: Upload Malware",
+      "tactic": "resource-development",
+      "rationale": "low — malware staging on adversary infrastructure is off-victim; hunt/intel candidate via URL/content monitoring of known actor domains"
+    },
+    {
+      "technique_id": "T1027.013",
+      "technique_name": "Obfuscated Files or Information: Encrypted/Encoded File",
+      "tactic": "stealth",
+      "rationale": "low — the packing itself is designed to defeat static signatures; hunt candidate via crypter-stub/YARA and PDB-string artifacts, with behavioral detection deferred to runtime RAT activity. This is one of the four techniques MITRE attributes to G0043"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "low — RAT keylogging leaves little discrete host signal; hunt candidate via keyboard-hook/API-callback and RAT-process behavioral telemetry rather than a specific event"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "low — RAT screen capture is difficult to distinguish from legitimate screen APIs; hunt candidate via RAT-process behavior correlation, not a standalone signal"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "low — microphone access by a RAT is hard to separate from legitimate audio use; hunt candidate via device-access/RAT-behavior telemetry"
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "rationale": "low — RAT webcam access closely mimics legitimate camera use; hunt candidate via device-access/RAT-behavior telemetry"
+    },
+    {
+      "technique_id": "T1070.004",
+      "technique_name": "Indicator Removal: File Deletion",
+      "tactic": "stealth",
+      "rationale": "low — individual file deletions blend with normal activity; hunt candidate via file-deletion auditing correlated with RAT process lineage"
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "detection": 6,
+    "hunt": 9
+  }
+}

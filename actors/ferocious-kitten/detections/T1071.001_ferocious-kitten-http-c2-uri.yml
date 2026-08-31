@@ -1,0 +1,35 @@
+title: Ferocious Kitten MarkiRAT HTTP C2 URI Patterns
+id: f2c5b9d3-4a7c-4e1f-9b2c-3e6a0b1d5f7b
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT HTTP C2 protocol (T1071.001). MarkiRAT registers to /i.php?u=..&i=..
+    (registration POST), beacons to /ech/echo.php?req=rr&u=.. (expecting response '3 LOK 0'), and lists
+    directories via /ech/rite.php. Keys on the fixed URI patterns, optionally combined with the known C2
+    domains for higher fidelity.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+    - https://www.picussecurity.com/resource/blog/ferocious-kitten-apt-exposed-inside-the-iran-focused-espionage-campaign
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1071.001
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: proxy
+detection:
+    selection_uris:
+        c-uri|contains:
+            - '/ech/echo.php?req=rr'
+            - '/ech/rite.php'
+    selection_ipath:
+        c-uri|contains: '/i.php?u='
+    selection_domains:
+        c-uri|contains:
+            - 'updatei.com'
+            - 'com-view.space'
+            - 'com-view.org'
+    condition: selection_uris or (selection_ipath and selection_domains)
+falsepositives:
+    - Generic /i.php on unrelated sites - constrained by pairing with the actor C2 domains; /ech/echo.php?req=rr and /ech/rite.php are actor-specific
+level: high

@@ -1,0 +1,34 @@
+title: Ferocious Kitten Malicious Document User Execution Dropping PE to Public
+id: b2e5d9f3-4c7e-4a1b-9d28-3a6c0e1f5b7d
+status: experimental
+description: |
+    Detects the user-execution stage of the Ferocious Kitten MarkiRAT chain (T1204.002), where the victim
+    opens the decoy .doc and enables macros, causing WINWORD.EXE to write and/or launch a PE named
+    update.exe from the Public folder. Keys on the process-lineage of an Office application executing a
+    binary from a user-writable staging location.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.execution
+    - attack.t1204.002
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        ParentImage|endswith:
+            - '\WINWORD.EXE'
+            - '\EXCEL.EXE'
+            - '\POWERPNT.EXE'
+        Image|contains:
+            - '\Users\Public\'
+    selection_name:
+        ParentImage|endswith: '\WINWORD.EXE'
+        Image|endswith: '\update.exe'
+    condition: selection or selection_name
+falsepositives:
+    - Office add-in installers or legitimate document automation that writes to shared/public paths - rare, baseline per environment
+level: high

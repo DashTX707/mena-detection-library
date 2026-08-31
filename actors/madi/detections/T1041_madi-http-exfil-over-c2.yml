@@ -1,0 +1,35 @@
+title: Madi Data Exfiltration via HTTP Upload to Historical C2
+id: 0ec86a68-9070-4f8b-9186-fdb0430eee70
+status: experimental
+description: |
+    Detects outbound data exfiltration associated with the Madi / Mahdi campaign (T1041 Exfiltration
+    Over C2 Channel). The infostealer uploaded stolen screenshots, keylog data, documents/contracts and
+    WAV audio over the same HTTP channel to its IIS 7.0 servers, which doubled as stolen-data drops.
+    Keys on outbound HTTP POST/PUT requests to the historical Madi C2 domain (maja.in) or IP prefixes
+    (174.142.57.0/24, 67.205.106.0/24). The infrastructure was SINKHOLED in 2012 and is dead — this is
+    historical/reference coverage; a current match most likely reflects sinkhole traffic or IP re-use.
+references:
+    - https://securelist.com/the-madi-campaign-part-ii/33701/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.exfiltration
+    - attack.t1041
+    - mena-detection-library.madi
+logsource:
+    category: proxy
+detection:
+    selection_method:
+        cs-method:
+            - 'POST'
+            - 'PUT'
+    selection_dest:
+        - c-uri|contains: 'maja.in'
+        - dst_ip|cidr:
+            - '174.142.57.0/24'
+            - '67.205.106.0/24'
+    condition: selection_method and selection_dest
+falsepositives:
+    - The C2 was sinkholed in 2012 and the IP ranges may now serve unrelated legitimate sites - any
+      current upload match is almost certainly benign re-use, not live Madi exfiltration
+level: medium

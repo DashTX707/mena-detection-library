@@ -1,0 +1,47 @@
+title: Group5 Fake Flash Update Drive-by Dropper from Browser
+id: b8b2807a-4aca-45f6-af50-2275f9c7770d
+status: experimental
+description: |
+    Detects Group5 drive-by compromise (T1189) via the watering-hole site assadcrimes.info, which
+    presented a fake Adobe Flash Player update page that triggered download and execution of decoy
+    droppers carrying njRAT / NanoCore. This rule keys on a web browser directly spawning an
+    executable freshly written to a user-writable download path - the behavioral signature of a
+    fake-update lure delivering a payload. The specific 2015-2016 actor domain is aged, so the
+    generalizable detection surface is browser-parented execution of downloaded binaries.
+references:
+    - https://citizenlab.ca/2016/08/group5-syria/
+    - https://attack.mitre.org/groups/G0043/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.initial-access
+    - attack.t1189
+    - mena-detection-library.group5
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_browser:
+        ParentImage|endswith:
+            - '\chrome.exe'
+            - '\firefox.exe'
+            - '\msedge.exe'
+            - '\iexplore.exe'
+            - '\opera.exe'
+            - '\brave.exe'
+    selection_dropper:
+        Image|endswith: '.exe'
+        Image|contains:
+            - '\Downloads\'
+            - '\AppData\Local\Temp\'
+            - '\Users\Public\'
+    filter_updaters:
+        Image|endswith:
+            - '\GoogleUpdate.exe'
+            - '\MicrosoftEdgeUpdate.exe'
+            - '\setup.exe'
+    condition: selection_browser and selection_dropper and not filter_updaters
+falsepositives:
+    - Users legitimately downloading and running installers from the browser download folder -
+      correlate with proxy/DNS reputation and code-signing status to reduce noise
+level: medium

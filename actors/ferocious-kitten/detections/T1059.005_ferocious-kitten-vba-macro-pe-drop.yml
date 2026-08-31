@@ -1,0 +1,37 @@
+title: Ferocious Kitten VBA Macro Writing PE to Public Folder
+id: c3f6e0a4-5d8f-4b2c-8e39-4b7d1f2a6c8e
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT VBA dropper (T1059.005), where the document macro decodes an
+    embedded hexadecimal blob into a PE and writes it to the Public folder as update.exe. Keys on an
+    Office process creating an executable file under \Users\Public\ - the file-write half of the
+    write-then-execute macro chain.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.execution
+    - attack.t1059.005
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        Image|endswith:
+            - '\WINWORD.EXE'
+            - '\EXCEL.EXE'
+            - '\POWERPNT.EXE'
+        TargetFilename|contains: '\Users\Public\'
+        TargetFilename|endswith:
+            - '.exe'
+            - '.scr'
+            - '.dll'
+    selection_updatename:
+        Image|endswith: '\WINWORD.EXE'
+        TargetFilename|endswith: '\update.exe'
+    condition: selection or selection_updatename
+falsepositives:
+    - Legitimate Office templates or add-ins writing binaries to public paths - uncommon, baseline expected authors
+level: high

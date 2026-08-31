@@ -1,0 +1,41 @@
+title: Group5 Staged NanoCore Retrieval via Fake PuTTY Downloader
+id: 64465ec6-69f7-4c1e-9fc9-2ad721a91daf
+status: experimental
+description: |
+    Detects Group5 ingress tool transfer (T1105) in its multi-stage delivery chain: a first-stage
+    .NET downloader delivered as putty.exe retrieved and installed the second-stage NanoCore RAT,
+    which was dropped and run as dwm.exe. This rule keys on two observables of that chain - a
+    process named putty.exe from a user-writable path making an outbound network connection
+    (the download of the second stage), and a spoofed dwm.exe executing from a non-System32 path
+    (the dropped NanoCore payload). Either behavior is anomalous for the legitimate namesakes.
+references:
+    - https://citizenlab.ca/2016/08/group5-syria/
+    - https://attack.mitre.org/groups/G0043/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.group5
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_putty:
+        Image|endswith: '\putty.exe'
+        Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Downloads\'
+            - '\Users\Public\'
+    selection_dwm:
+        Image|endswith: '\dwm.exe'
+    filter_dwm_legit:
+        Image|startswith:
+            - 'C:\Windows\System32\'
+            - 'C:\Windows\SysWOW64\'
+    condition: selection_putty or (selection_dwm and not filter_dwm_legit)
+falsepositives:
+    - Portable PuTTY builds run from a user profile that legitimately open SSH connections -
+      confirm the binary is the genuine signed PuTTY and destination is an expected SSH host
+level: high

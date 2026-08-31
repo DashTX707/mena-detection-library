@@ -1,0 +1,31 @@
+title: Domestic Kitten Telegram Updater.exe Tamper (Compromise Host Software Binary)
+id: 63ab8795-8e44-4d38-a884-186c9a4bd555
+status: experimental
+description: |
+    Detects modification or replacement of Telegram Desktop's Updater.exe by a process other than
+    Telegram, consistent with the TelB / TelAndExt (Rampant Kitten) stealers hijacking Telegram's
+    auto-update mechanism for persistent execution (T1554 Compromise Host Software Binary). Keys on a
+    file-create/write to an 'Updater.exe' under a Telegram Desktop directory where the writing process
+    is not Telegram itself. Requires Sysmon Event ID 11 (FileCreate).
+references:
+    - https://research.checkpoint.com/2020/rampant-kitten-an-iranian-espionage-campaign/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.persistence
+    - attack.t1554
+    - mena-detection-library.domestic-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        TargetFilename|contains: '\Telegram Desktop\'
+        TargetFilename|endswith: '\Updater.exe'
+    filter_telegram:
+        Image|endswith: '\Telegram.exe'
+    condition: selection and not filter_telegram
+falsepositives:
+    - A legitimate Telegram Desktop install/upgrade performed by an installer or package manager (e.g.
+      winget/choco) rather than Telegram.exe - confirm the writing process and signature
+level: high

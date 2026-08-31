@@ -1,0 +1,30 @@
+title: Ferocious Kitten MarkiRAT Screenshot Artifact scr.jpg
+id: d0a3f7b1-2e5a-4c9d-9f0a-1c4e8a9b3d5f
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT screen-capture artifact (T1113). The implant saves desktop
+    screenshots locally as scr.jpg in its working/repository directory (%PUBLIC%\AppData\Windows) prior to
+    exfiltration. Keys on creation of a file named scr.jpg within the implant's staging path - the
+    screen-capture API call itself is low-signal, so the artifact is the observable.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.collection
+    - attack.t1113
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_name:
+        TargetFilename|endswith: '\scr.jpg'
+    selection_path:
+        TargetFilename|contains:
+            - '\Users\Public\AppData\Windows\'
+            - '\AppData\Libs\'
+    condition: selection_name and selection_path
+falsepositives:
+    - A user-created file coincidentally named scr.jpg in these specific implant staging paths is unlikely; broaden/narrow path per environment
+level: high

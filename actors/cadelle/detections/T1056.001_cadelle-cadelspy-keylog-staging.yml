@@ -1,0 +1,51 @@
+title: Cadelle Cadelspy Keystroke-Log Staging in User-Writable Directories
+id: 588ffd36-dc33-4aa4-9125-575862666631
+status: experimental
+description: |
+    Detects the file-write behavior associated with Backdoor.Cadelspy (Cadelle, Iran-nexus
+    surveillance actor, ~2014-2015) keylogging (T1056.001 Input Capture: Keylogging). Cadelspy
+    logs keystrokes on the compromised host and stages the captured input to disk before bundling
+    it into .cab archives for exfiltration. This rule keys on the creation of small log/data files
+    with keystroke-log style names or extensions written into user-writable staging locations
+    (user profile, Temp, ProgramData, AppData) by non-system processes. Keylogging produces limited
+    discrete host telemetry on its own, so treat a single hit as a hunt lead and correlate with the
+    companion .cab archive-staging rule and any concurrent screen/webcam/microphone/clipboard access
+    from the same process to raise confidence toward the Cadelspy multi-sensor surveillance composite.
+references:
+    - https://attack.mitre.org/software/S0454/
+    - https://www.securityweek.com/apparently-linked-iran-spy-groups-target-middle-east/
+    - https://securityaffairs.com/42641/breaking-news/cadelle-and-chafer-iranian-hackers.html
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.credential-access
+    - attack.t1056.001
+    - mena-detection-library.cadelle
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_name:
+        TargetFilename|contains:
+            - 'keylog'
+            - 'keystroke'
+            - 'klog'
+    selection_ext:
+        TargetFilename|endswith:
+            - '.klg'
+            - '.log'
+            - '.dat'
+            - '.tmp'
+    selection_path:
+        TargetFilename|contains:
+            - '\AppData\Local\Temp\'
+            - '\AppData\Roaming\'
+            - '\ProgramData\'
+            - '\Users\Public\'
+    condition: selection_name or (selection_ext and selection_path)
+falsepositives:
+    - Legitimate applications, IME/input software, and diagnostics tooling that write .log/.dat/.tmp
+      files into user-writable directories - baseline per environment and scope by the writing process
+    - Accessibility software or keyboard utilities that legitimately reference "keylog"/"keystroke"
+      in filenames
+level: medium

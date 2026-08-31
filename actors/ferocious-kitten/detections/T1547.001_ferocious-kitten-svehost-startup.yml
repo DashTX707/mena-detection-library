@@ -1,0 +1,31 @@
+title: Ferocious Kitten svehost.exe Startup Folder Persistence
+id: d4a7f1b5-6e9a-4c3d-9f4a-5c8e2a3b7d9f
+status: experimental
+description: |
+    Detects the Ferocious Kitten MarkiRAT autostart persistence (T1547.001), which copies the dropped
+    payload into the user Startup folder as svehost.exe (masquerading as the legitimate svchost.exe) so
+    the implant re-executes at every logon. Keys on creation of an executable in a Startup path, with a
+    high-fidelity selector for the svehost.exe name.
+references:
+    - https://securelist.com/ferocious-kitten-6-years-of-covert-surveillance-in-iran/102806/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.persistence
+    - attack.t1547.001
+    - mena-detection-library.ferocious-kitten
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_startup:
+        TargetFilename|contains: '\Start Menu\Programs\Startup\'
+        TargetFilename|endswith:
+            - '.exe'
+            - '.scr'
+    selection_svehost:
+        TargetFilename|endswith: '\svehost.exe'
+    condition: selection_startup or selection_svehost
+falsepositives:
+    - Legitimate applications that place a launcher in the Startup folder - baseline known-good binaries; svehost.exe is not a legitimate Windows binary
+level: high

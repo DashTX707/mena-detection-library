@@ -1,0 +1,38 @@
+title: OilAlpha Brand-Impersonating Lookalike Domain Access
+id: 38192d13-5d12-490f-af9e-9c3d9e21cb62
+status: experimental
+description: |
+    Detects DNS/proxy access to OilAlpha's brand-impersonating lookalike dynamic-DNS domains that
+    masquerade as trusted humanitarian and UN organizations (T1036 Masquerading). OilAlpha registers
+    'version'-themed DDNS domains spoofing CARE (carversion), NRC (nrcversion), King Salman Relief
+    (ksrversion) and the UN (unsversion), and delivers spoofed UNICEF/UN/WFP/NRC/CARE/KSR Android
+    apps. This is the network-observable surface of the impersonation tradecraft where mobile/desktop
+    traffic transits a monitored network. Complements the on-device MDM/MTD app-inventory hunt.
+references:
+    - https://assets.recordedfuture.com/insikt-report-pdfs/2024/cta-2024-0709.pdf
+    - https://www.recordedfuture.com/research/oilalpha-likely-pro-houthi-group-targeting-arabian-peninsula
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.stealth
+    - attack.t1036
+    - mena-detection-library.oilalpha
+logsource:
+    category: dns
+detection:
+    selection:
+        query:
+            - 'carversion.ddns.net'
+            - 'carversionhid.sytes.net'
+            - 'nrcversion.ddns.net'
+            - 'nrcversionhid.sytes.net'
+            - 'ksrversion.ddns.net'
+            - 'ksrversionhid.sytes.net'
+            - 'unsversion.ddns.net'
+            - 'unsversionhid.sytes.net'
+            - 'kssnew.online'
+    condition: selection
+falsepositives:
+    - None expected - these lookalike domains impersonate humanitarian brands and have no legitimate
+      use. Confirm the resolving host and treat any hit as targeting of Yemen-focused staff.
+level: high

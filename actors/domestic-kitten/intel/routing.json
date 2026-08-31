@@ -1,0 +1,181 @@
+{
+  "actor": "Domestic Kitten",
+  "provenance": "Stage-2 lane split applying the decision-agent's documented routing rule (detect-vs-hunt by detection feasibility, not severity: low=hunt, medium/high=detect) deterministically from each TTP's Stage-1 detection_feasibility assessment. Partition validated to cover the Stage-1 seed exactly with no overlap/dup; all ids verified present in the CI's bundled ATT&CK dataset.",
+  "detection_candidates": [
+    {
+      "technique_id": "T1566.002",
+      "technique_name": "Phishing: Spearphishing Link",
+      "tactic": "initial-access",
+      "rationale": "medium — malicious download links and phishing URLs are observable in SMS/messaging gateway, proxy, and DNS telemetry when the actor domains are known, but mobile-side click telemetry is sparse"
+    },
+    {
+      "technique_id": "T1113",
+      "technique_name": "Screen Capture",
+      "tactic": "collection",
+      "rationale": "medium — repeated screen-capture API use by a non-graphical process is detectable via EDR behavioral analytics but generates noise"
+    },
+    {
+      "technique_id": "T1056.001",
+      "technique_name": "Input Capture: Keylogging",
+      "tactic": "collection",
+      "rationale": "medium — keyboard hook installation and low-level input hooking are detectable via EDR API-hook and process-injection telemetry"
+    },
+    {
+      "technique_id": "T1005",
+      "technique_name": "Data from Local System",
+      "tactic": "collection",
+      "rationale": "medium — on Windows, bulk file access by extension and Telegram directory reads are detectable via file-access auditing and EDR; on mobile, local data theft is not enterprise-observable"
+    },
+    {
+      "technique_id": "T1120",
+      "technique_name": "Peripheral Device Discovery",
+      "tactic": "discovery",
+      "rationale": "medium — volume/removable-drive enumeration is detectable via device-arrival events and process behavior but is common in benign software"
+    },
+    {
+      "technique_id": "T1555.003",
+      "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
+      "tactic": "credential-access",
+      "rationale": "medium — access to browser credential stores (Login Data / logins.json / Web Data) by unexpected processes is detectable via file-access and EDR telemetry"
+    },
+    {
+      "technique_id": "T1555.005",
+      "technique_name": "Credentials from Password Stores: Password Managers",
+      "tactic": "credential-access",
+      "rationale": "medium — access to .kdbx files by non-KeePass processes is a high-signal hunt via file-access auditing and file-integrity monitoring"
+    },
+    {
+      "technique_id": "T1554",
+      "technique_name": "Compromise Host Software Binary",
+      "tactic": "persistence",
+      "rationale": "medium — modification of Telegram's Updater.exe (hash/signature change, unexpected write to the Telegram directory) is detectable via file-integrity monitoring and image-load signature checks"
+    },
+    {
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "tactic": "persistence",
+      "rationale": "high — creation of Run/RunOnce values (especially the actor-specific names SunJavaHtml / DevNicJava) is directly observable via registry-modification auditing and autoruns baselining"
+    },
+    {
+      "technique_id": "T1055.001",
+      "technique_name": "Process Injection: Dynamic-link Library Injection",
+      "tactic": "stealth",
+      "rationale": "high — DLL injection into explorer.exe (remote thread / module load of an unsigned DLL) is detectable via Sysmon EID 7/8 and EDR process-injection analytics"
+    },
+    {
+      "technique_id": "T1071.001",
+      "technique_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "command-and-control",
+      "rationale": "medium — HTTP beaconing to the named actor domains is detectable via DNS/proxy telemetry when IOCs are loaded; the ~10-second fixed-interval FurBall beacon adds a behavioral signal, but only where mobile/network egress is monitored"
+    },
+    {
+      "technique_id": "T1048",
+      "technique_name": "Exfiltration Over Alternative Protocol",
+      "tactic": "exfiltration",
+      "rationale": "medium — outbound FTP/FTPS from user endpoints to external hosts is anomalous and detectable via network/firewall egress monitoring"
+    }
+  ],
+  "hunting_candidates": [
+    {
+      "technique_id": "T1608.006",
+      "technique_name": "Stage Capabilities: SEO Poisoning",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled staging sites are off-victim infrastructure; intel/brand-monitoring and lookalike-domain tracking candidate rather than endpoint detection"
+    },
+    {
+      "technique_id": "T1204.002",
+      "technique_name": "User Execution: Malicious File",
+      "tactic": "execution",
+      "rationale": "low — APK sideloading and install events are largely invisible to enterprise telemetry on personal devices; MDM/mobile EDR app-inventory review is a hunt candidate"
+    },
+    {
+      "technique_id": "T1036.005",
+      "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
+      "tactic": "stealth",
+      "rationale": "low — impersonation of legitimate app identities is detectable via package-name/certificate reputation and app-store review, but requires mobile app-inventory visibility"
+    },
+    {
+      "technique_id": "T1547",
+      "technique_name": "Boot or Logon Autostart Execution",
+      "tactic": "persistence",
+      "rationale": "low — Android autostart receiver registration is not exposed in standard enterprise logs; visible only via static APK analysis or mobile-threat-defense agents"
+    },
+    {
+      "technique_id": "T1123",
+      "technique_name": "Audio Capture",
+      "tactic": "collection",
+      "rationale": "low — microphone activation on mobile is invisible to enterprise logs; on Windows, unexpected process access to audio-capture APIs is a hunt candidate via EDR"
+    },
+    {
+      "technique_id": "T1125",
+      "technique_name": "Video Capture",
+      "tactic": "collection",
+      "rationale": "low — on-demand camera capture on mobile is not enterprise-observable; static-analysis / mobile-threat-defense candidate"
+    },
+    {
+      "technique_id": "T1115",
+      "technique_name": "Clipboard Data",
+      "tactic": "collection",
+      "rationale": "low — clipboard reads are near-invisible on both platforms; hunt candidate on Windows via clipboard-API monitoring"
+    },
+    {
+      "technique_id": "T1119",
+      "technique_name": "Automated Collection",
+      "tactic": "collection",
+      "rationale": "low — automated on-device collection is not exposed to enterprise telemetry; static/dynamic APK analysis candidate"
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "rationale": "low — device-fingerprinting API calls on mobile are not enterprise-observable; static-analysis candidate"
+    },
+    {
+      "technique_id": "T1518",
+      "technique_name": "Software Discovery",
+      "tactic": "discovery",
+      "rationale": "low — installed-app enumeration on mobile is invisible to enterprise telemetry; static-analysis candidate"
+    },
+    {
+      "technique_id": "T1111",
+      "technique_name": "Multi-Factor Authentication Interception",
+      "tactic": "credential-access",
+      "rationale": "low — SMS interception/forwarding on a personal device is not enterprise-observable; account-side detection (unusual 2FA prompts, new device sign-ins) is the practical signal"
+    },
+    {
+      "technique_id": "T1056.003",
+      "technique_name": "Input Capture: Web Portal Capture",
+      "tactic": "credential-access",
+      "rationale": "low — in-app WebView credential capture is not enterprise-observable; account-side and phishing-domain intelligence are the practical signals"
+    },
+    {
+      "technique_id": "T1560",
+      "technique_name": "Archive Collected Data",
+      "tactic": "collection",
+      "rationale": "low — encrypted staging blends with benign archiving; hunt candidate when correlated with a preceding collection burst"
+    },
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "rationale": "low — post-install config/command fetches on mobile are not enterprise-observable; network-IOC and static-analysis candidate"
+    },
+    {
+      "technique_id": "T1041",
+      "technique_name": "Exfiltration Over C2 Channel",
+      "tactic": "exfiltration",
+      "rationale": "low — exfil over the C2 HTTP channel on mobile is not enterprise-observable; detectable only where the C2 domains/IPs are seen in network egress logs"
+    },
+    {
+      "technique_id": "T1585.001",
+      "technique_name": "Establish Accounts: Social Media Accounts",
+      "tactic": "resource-development",
+      "rationale": "low — actor-controlled messaging accounts are off-victim; intel/platform-abuse-reporting candidate"
+    }
+  ],
+  "summary": {
+    "total": 28,
+    "detection": 12,
+    "hunt": 16
+  }
+}

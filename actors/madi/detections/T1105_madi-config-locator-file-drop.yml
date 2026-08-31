@@ -1,0 +1,39 @@
+title: Madi Ingress Tool Transfer Config/Locator File Drop
+id: e4d25e24-7416-4c25-b076-8a4e175f2f0e
+status: experimental
+description: |
+    Detects the on-disk artifacts of the Madi / Mahdi downloader's ingress-tool-transfer and self-update
+    behavior (T1105 Ingress Tool Transfer): the downloader retrieved follow-on data-stealing modules and
+    wrote an updated plain-text C2 locator plus config .dll files to disk. Reported config artifact names
+    were FIE.dll, xdat.dll and SIK.dll. Keys on file-creation of these specific config artifacts in
+    user-writable directories. The filenames are historical low-durability IOCs, so this rule is
+    supplementary/context; the durable behavior (module drop to user path) is covered by the broader
+    file-drop and network telemetry. RETIRED campaign; reference coverage.
+references:
+    - https://securelist.com/the-madi-campaign-part-ii/33701/
+author: mena-detection-library
+date: 2026-08-31
+tags:
+    - attack.command-and-control
+    - attack.t1105
+    - mena-detection-library.madi
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection_config_dll:
+        TargetFilename|endswith:
+            - '\FIE.dll'
+            - '\xdat.dll'
+            - '\SIK.dll'
+    selection_userpath:
+        TargetFilename|contains:
+            - '\Documents and Settings\'
+            - '\Users\'
+            - '\AppData\'
+            - '\Temp\'
+    condition: selection_config_dll and selection_userpath
+falsepositives:
+    - Unrelated software legitimately using a file named SIK.dll / FIE.dll / xdat.dll - the names are
+      historical IOCs and low-specificity; corroborate with process provenance before alerting
+level: medium
