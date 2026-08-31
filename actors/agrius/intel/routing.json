@@ -6,121 +6,121 @@
       "technique_id": "T1190",
       "technique_name": "Exploit Public-Facing Application",
       "tactic": "initial-access",
-      "rationale": "medium \u2014 exploitation of known CVEs and SQLi is detectable via WAF/IDS signatures, vulnerable-appliance version telemetry, and anomalous post-auth VPN sessions, but n-day exploitation of edge devices often precedes visibility"
+      "rationale": "medium — exploitation of known CVEs and SQLi is detectable via WAF/IDS signatures, vulnerable-appliance version telemetry, and anomalous post-auth VPN sessions, but n-day exploitation of edge devices often precedes visibility"
     },
     {
       "technique_id": "T1505.003",
       "technique_name": "Server Software Component: Web Shell",
       "tactic": "persistence",
-      "rationale": "high \u2014 new .aspx files in web-root paths and w3wp.exe/IIS worker spawning cmd.exe are strong, well-covered detection signals"
+      "rationale": "high — new .aspx files in web-root paths and w3wp.exe/IIS worker spawning cmd.exe are strong, well-covered detection signals"
     },
     {
       "technique_id": "T1543.003",
       "technique_name": "Create or Modify System Process: Windows Service",
       "tactic": "persistence",
-      "rationale": "high \u2014 new service creation (Event ID 7045 / registry Services key writes) pointing at unusual binaries is highly detectable"
+      "rationale": "high — new service creation (Event ID 7045 / registry Services key writes) pointing at unusual binaries is highly detectable"
     },
     {
       "technique_id": "T1059.003",
       "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
       "tactic": "execution",
-      "rationale": "high \u2014 cmd.exe spawned by an IIS worker (w3wp.exe) or other web-server parent is a classic web-shell command-execution detection"
+      "rationale": "high — cmd.exe spawned by an IIS worker (w3wp.exe) or other web-server parent is a classic web-shell command-execution detection"
     },
     {
       "technique_id": "T1053.005",
       "technique_name": "Scheduled Task/Job: Scheduled Task",
       "tactic": "execution",
-      "rationale": "high \u2014 scheduled-task creation (Event ID 4698 / Task Scheduler operational) launching a one-time batch that clears logs is a strong, anomalous signal"
+      "rationale": "high — scheduled-task creation (Event ID 4698 / Task Scheduler operational) launching a one-time batch that clears logs is a strong, anomalous signal"
     },
     {
       "technique_id": "T1140",
       "technique_name": "Deobfuscate/Decode Files or Information",
-      "tactic": "defense-evasion",
-      "rationale": "medium \u2014 base64-heavy .aspx content and runtime decode routines are detectable via web-content inspection and script-block/AMSI telemetry"
+      "tactic": "stealth",
+      "rationale": "medium — base64-heavy .aspx content and runtime decode routines are detectable via web-content inspection and script-block/AMSI telemetry"
     },
     {
       "technique_id": "T1685",
       "technique_name": "Impair Defenses: Disable or Modify Tools",
-      "tactic": "defense-evasion",
-      "rationale": "medium \u2014 vulnerable-driver loads (Microsoft vulnerable-driver blocklist / Sysmon driver-load) and EDR-service tampering are detectable, but BYOVD kernel action can blind the very sensor meant to see it"
+      "tactic": "defense-impairment",
+      "rationale": "medium — vulnerable-driver loads (Microsoft vulnerable-driver blocklist / Sysmon driver-load) and EDR-service tampering are detectable, but BYOVD kernel action can blind the very sensor meant to see it"
     },
     {
       "technique_id": "T1685.005",
       "technique_name": "Indicator Removal: Clear Windows Event Logs",
-      "tactic": "defense-evasion",
-      "rationale": "high \u2014 event-log clearing (Security 1102 / System 104) is a discrete, high-fidelity signal, ideally forwarded off-host before the wipe completes"
+      "tactic": "defense-impairment",
+      "rationale": "high — event-log clearing (Security 1102 / System 104) is a discrete, high-fidelity signal, ideally forwarded off-host before the wipe completes"
     },
     {
       "technique_id": "T1003.001",
       "technique_name": "OS Credential Dumping: LSASS Memory",
       "tactic": "credential-access",
-      "rationale": "high \u2014 LSASS process access with dump rights (Sysmon EID 10 / EDR credential-theft analytics) and ProcDump against lsass are high-fidelity detections"
+      "rationale": "high — LSASS process access with dump rights (Sysmon EID 10 / EDR credential-theft analytics) and ProcDump against lsass are high-fidelity detections"
     },
     {
       "technique_id": "T1003.002",
       "technique_name": "OS Credential Dumping: Security Account Manager",
       "tactic": "credential-access",
-      "rationale": "high \u2014 SAM/registry-hive access and reg save of HKLM\\SAM are detectable via registry-access and process-command-line telemetry"
+      "rationale": "high — SAM/registry-hive access and reg save of HKLM\\SAM are detectable via registry-access and process-command-line telemetry"
     },
     {
       "technique_id": "T1110",
       "technique_name": "Brute Force",
       "tactic": "credential-access",
-      "rationale": "high \u2014 bursts of SMB/NTLM logon failures (Event ID 4625) from a single internal host are readily detectable"
+      "rationale": "high — bursts of SMB/NTLM logon failures (Event ID 4625) from a single internal host are readily detectable"
     },
     {
       "technique_id": "T1110.003",
       "technique_name": "Brute Force: Password Spraying",
       "tactic": "credential-access",
-      "rationale": "high \u2014 many accounts each seeing a single failed SMB logon from one source is a classic spray signature (4625 fan-out)"
+      "rationale": "high — many accounts each seeing a single failed SMB logon from one source is a classic spray signature (4625 fan-out)"
     },
     {
       "technique_id": "T1021.001",
       "technique_name": "Remote Services: Remote Desktop Protocol",
       "tactic": "lateral-movement",
-      "rationale": "medium \u2014 RDP tunneled over web shell / Plink shows as anomalous localhost-relayed RDP and RDP sourced from a web-server host; detectable via lateral-RDP and tunnel analytics"
+      "rationale": "medium — RDP tunneled over web shell / Plink shows as anomalous localhost-relayed RDP and RDP sourced from a web-server host; detectable via lateral-RDP and tunnel analytics"
     },
     {
       "technique_id": "T1041",
       "technique_name": "Exfiltration Over C2 Channel",
       "tactic": "exfiltration",
-      "rationale": "medium \u2014 pscp/WinSCP outbound SSH to external hosts from a server, transferring .7z/.ezip/.dmp files, is detectable via egress SSH monitoring and process-network correlation"
+      "rationale": "medium — pscp/WinSCP outbound SSH to external hosts from a server, transferring .7z/.ezip/.dmp files, is detectable via egress SSH monitoring and process-network correlation"
     },
     {
       "technique_id": "T1485",
       "technique_name": "Data Destruction",
       "tactic": "impact",
-      "rationale": "medium \u2014 mass file overwrite/deletion produces a detectable burst of file-modification and I/O; detection value is early containment, since by wipe time impact is occurring. Prioritize pre-wipe precursors (BYOVD, log clearing, VSS deletion)"
+      "rationale": "medium — mass file overwrite/deletion produces a detectable burst of file-modification and I/O; detection value is early containment, since by wipe time impact is occurring. Prioritize pre-wipe precursors (BYOVD, log clearing, VSS deletion)"
     },
     {
       "technique_id": "T1486",
       "technique_name": "Data Encrypted for Impact",
       "tactic": "impact",
-      "rationale": "medium \u2014 high-rate file encryption with extension changes and ransom-note drops is detectable via file-entropy/canary and note-creation analytics, but the fake-ransomware ruse means recovery may be impossible regardless"
+      "rationale": "medium — high-rate file encryption with extension changes and ransom-note drops is detectable via file-entropy/canary and note-creation analytics, but the fake-ransomware ruse means recovery may be impossible regardless"
     },
     {
       "technique_id": "T1490",
       "technique_name": "Inhibit System Recovery",
       "tactic": "impact",
-      "rationale": "high \u2014 shadow-copy deletion (vssadmin/wmic/WMI) and VSS service removal are high-fidelity ransomware/wiper precursors and among the most reliable early-warning detections"
+      "rationale": "high — shadow-copy deletion (vssadmin/wmic/WMI) and VSS service removal are high-fidelity ransomware/wiper precursors and among the most reliable early-warning detections"
     },
     {
       "technique_id": "T1561.001",
       "technique_name": "Disk Wipe: Disk Content Wipe",
       "tactic": "impact",
-      "rationale": "medium \u2014 large sequential raw writes to physical drives / mass overwrite of file content is detectable via disk-I/O and raw-device-handle telemetry, but is concurrent with the impact itself"
+      "rationale": "medium — large sequential raw writes to physical drives / mass overwrite of file content is detectable via disk-I/O and raw-device-handle telemetry, but is concurrent with the impact itself"
     },
     {
       "technique_id": "T1561.002",
       "technique_name": "Disk Wipe: Disk Structure Wipe",
       "tactic": "impact",
-      "rationale": "high \u2014 a user-mode process obtaining a raw \\\\.\\PhysicalDrive handle and writing to the boot sector/MBR is a rare, high-fidelity destructive signal (EDR raw-disk-write analytics)"
+      "rationale": "high — a user-mode process obtaining a raw \\\\.\\PhysicalDrive handle and writing to the boot sector/MBR is a rare, high-fidelity destructive signal (EDR raw-disk-write analytics)"
     },
     {
       "technique_id": "T1489",
       "technique_name": "Service Stop",
       "tactic": "impact",
-      "rationale": "medium \u2014 abnormal stopping/removal of security and VSS services (service-state change events) is detectable, though driver-level process termination may bypass service-control logging"
+      "rationale": "medium — abnormal stopping/removal of security and VSS services (service-state change events) is detectable, though driver-level process termination may bypass service-control logging"
     }
   ],
   "hunting_candidates": [
@@ -128,85 +128,85 @@
       "technique_id": "T1583",
       "technique_name": "Acquire Infrastructure",
       "tactic": "resource-development",
-      "rationale": "low \u2014 off-victim infrastructure acquisition is not observable in defender host/network logs; hunt candidate via inbound-connection geo/ASN anomaly analytics (commercial-VPN egress hitting exposed apps/RDP)"
+      "rationale": "low — off-victim infrastructure acquisition is not observable in defender host/network logs; hunt candidate via inbound-connection geo/ASN anomaly analytics (commercial-VPN egress hitting exposed apps/RDP)"
     },
     {
       "technique_id": "T1078.002",
       "technique_name": "Valid Accounts: Domain Accounts",
       "tactic": "initial-access",
-      "rationale": "low \u2014 authentication with legitimate credentials blends with normal activity; hunt candidate via impossible-travel, off-hours logon, and RDP-from-web-shell-host correlation"
+      "rationale": "low — authentication with legitimate credentials blends with normal activity; hunt candidate via impossible-travel, off-hours logon, and RDP-from-web-shell-host correlation"
     },
     {
       "technique_id": "T1036",
       "technique_name": "Masquerading",
-      "tactic": "defense-evasion",
-      "rationale": "low \u2014 renamed-binary masquerading evades name-based rules; hunt candidate via original-filename (PE VERSIONINFO) vs on-disk-name mismatch and known-tool hash matching"
+      "tactic": "stealth",
+      "rationale": "low — renamed-binary masquerading evades name-based rules; hunt candidate via original-filename (PE VERSIONINFO) vs on-disk-name mismatch and known-tool hash matching"
     },
     {
       "technique_id": "T1070.004",
       "technique_name": "Indicator Removal: File Deletion",
-      "tactic": "defense-evasion",
-      "rationale": "medium \u2014 self-deletion of just-created executables is detectable via file-create-then-delete sequences in EDR, but overlaps with benign cleanup"
+      "tactic": "stealth",
+      "rationale": "medium — self-deletion of just-created executables is detectable via file-create-then-delete sequences in EDR, but overlaps with benign cleanup"
     },
     {
       "technique_id": "T1070.006",
       "technique_name": "Indicator Removal: Timestomp",
-      "tactic": "defense-evasion",
-      "rationale": "low \u2014 timestamp manipulation leaves minimal live telemetry; hunt candidate via MFT $STANDARD_INFORMATION vs $FILE_NAME timestamp divergence in forensic triage"
+      "tactic": "stealth",
+      "rationale": "low — timestamp manipulation leaves minimal live telemetry; hunt candidate via MFT $STANDARD_INFORMATION vs $FILE_NAME timestamp divergence in forensic triage"
     },
     {
       "technique_id": "T1027.009",
       "technique_name": "Obfuscated Files or Information: Embedded Payloads",
-      "tactic": "defense-evasion",
-      "rationale": "low \u2014 embedded payloads are opaque until extraction; hunt candidate via static/entropy analysis of the sample rather than host log detection"
+      "tactic": "stealth",
+      "rationale": "low — embedded payloads are opaque until extraction; hunt candidate via static/entropy analysis of the sample rather than host log detection"
     },
     {
       "technique_id": "T1046",
       "technique_name": "Network Service Discovery",
       "tactic": "discovery",
-      "rationale": "medium \u2014 internal horizontal port-scanning generates detectable connection fan-out and unusual scanner-binary execution, though scan tooling is easily renamed"
+      "rationale": "medium — internal horizontal port-scanning generates detectable connection fan-out and unusual scanner-binary execution, though scan tooling is easily renamed"
     },
     {
       "technique_id": "T1018",
       "technique_name": "Remote System Discovery",
       "tactic": "discovery",
-      "rationale": "medium \u2014 NetBIOS name-scan bursts across a subnet and NBTscan execution are detectable, but blend with legitimate admin discovery"
+      "rationale": "medium — NetBIOS name-scan bursts across a subnet and NBTscan execution are detectable, but blend with legitimate admin discovery"
     },
     {
       "technique_id": "T1570",
       "technique_name": "Lateral Tool Transfer",
       "tactic": "lateral-movement",
-      "rationale": "medium \u2014 internal SMB tool copies and downloads from consumer file-sharing sites are detectable via proxy category and internal file-write telemetry, but ride trusted transfer channels"
+      "rationale": "medium — internal SMB tool copies and downloads from consumer file-sharing sites are detectable via proxy category and internal file-write telemetry, but ride trusted transfer channels"
     },
     {
       "technique_id": "T1005",
       "technique_name": "Data from Local System",
       "tactic": "collection",
-      "rationale": "low \u2014 reading local files/DB content is high-volume normal activity; hunt candidate via bulk-access-then-stage-then-wipe sequencing correlation"
+      "rationale": "low — reading local files/DB content is high-volume normal activity; hunt candidate via bulk-access-then-stage-then-wipe sequencing correlation"
     },
     {
       "technique_id": "T1119",
       "technique_name": "Automated Collection",
       "tactic": "collection",
-      "rationale": "medium \u2014 a non-application process issuing bulk SQL SELECT queries against DB servers and writing large CSVs is detectable via DB audit logs and endpoint file-create telemetry"
+      "rationale": "medium — a non-application process issuing bulk SQL SELECT queries against DB servers and writing large CSVs is detectable via DB audit logs and endpoint file-create telemetry"
     },
     {
       "technique_id": "T1074.001",
       "technique_name": "Data Staged: Local Data Staging",
       "tactic": "collection",
-      "rationale": "medium \u2014 accumulation of archive/CSV/.dmp files in C:\\windows\\temp\\s\\ is a detectable staging pattern via file-path monitoring"
+      "rationale": "medium — accumulation of archive/CSV/.dmp files in C:\\windows\\temp\\s\\ is a detectable staging pattern via file-path monitoring"
     },
     {
       "technique_id": "T1560.001",
       "technique_name": "Archive Collected Data: Archive via Utility",
       "tactic": "collection",
-      "rationale": "medium \u2014 7zip/archive utility spawning against staged data directories is detectable via process-command-line telemetry, though archiving is common admin activity"
+      "rationale": "medium — 7zip/archive utility spawning against staged data directories is detectable via process-command-line telemetry, though archiving is common admin activity"
     },
     {
       "technique_id": "T1529",
       "technique_name": "System Shutdown/Reboot",
       "tactic": "impact",
-      "rationale": "low \u2014 a shutdown/reboot call is trivially common and only meaningful as the terminal step of a wipe chain; hunt candidate via correlation with preceding raw-disk-write/log-clear events"
+      "rationale": "low — a shutdown/reboot call is trivially common and only meaningful as the terminal step of a wipe chain; hunt candidate via correlation with preceding raw-disk-write/log-clear events"
     }
   ],
   "summary": {

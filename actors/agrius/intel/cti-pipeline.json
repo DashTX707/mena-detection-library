@@ -1,6 +1,6 @@
 {
-  "report_title": "Agrius / Agonizing Serpens (G1030) Actor Intelligence Pack \u2014 Stage-1 CTI Extraction",
-  "source": "MITRE ATT&CK G1030 (https://attack.mitre.org/groups/G1030/); SentinelLabs 'From Wiper to Ransomware | The Evolution of Agrius', Amitai Ben Shushan Ehrlich, 2021-05-25 (https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/); Palo Alto Unit 42 'Agonizing Serpens (Aka Agrius) Targeting the Israeli Higher Education and Tech Sectors', 2023-11 (https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/). Additional corroboration referenced by the above: ESET WeLiveSecurity 'Fantasy \u2014 a new Agrius wiper deployed through a supply-chain attack'; Check Point 'Agrius Deploys Moneybird'. This actor has NO local seed; the TTP set is built from G1030 (22 group-level techniques) enriched with Impact/defense-evasion tradecraft from the two named vendor reports.",
+  "report_title": "Agrius / Agonizing Serpens (G1030) Actor Intelligence Pack — Stage-1 CTI Extraction",
+  "source": "MITRE ATT&CK G1030 (https://attack.mitre.org/groups/G1030/); SentinelLabs 'From Wiper to Ransomware | The Evolution of Agrius', Amitai Ben Shushan Ehrlich, 2021-05-25 (https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/); Palo Alto Unit 42 'Agonizing Serpens (Aka Agrius) Targeting the Israeli Higher Education and Tech Sectors', 2023-11 (https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/). Additional corroboration referenced by the above: ESET WeLiveSecurity 'Fantasy — a new Agrius wiper deployed through a supply-chain attack'; Check Point 'Agrius Deploys Moneybird'. This actor has NO local seed; the TTP set is built from G1030 (22 group-level techniques) enriched with Impact/defense-evasion tradecraft from the two named vendor reports.",
   "publication_date": "2026-08-29",
   "actor": {
     "name": "Agrius",
@@ -48,9 +48,9 @@
         "source_url": "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
       },
       {
-        "name": "Agonizing Serpens \u2014 Israeli higher-education and tech sector attacks",
+        "name": "Agonizing Serpens — Israeli higher-education and tech sector attacks",
         "date": "2023 (Jan to Oct, reported 2023-11)",
-        "summary": "Data-theft-then-destruction campaign against Israeli higher-education and technology organizations. The group stole PII and IP using a custom database extractor (Sqlextractor / sql.net4.exe), then deployed three novel wipers \u2014 MultiLayer, PartialWasher, and BFG Agonizer \u2014 to cover tracks and render endpoints unusable. Used ASPXSpy-variant web shells (Uploader.aspx, xcopy.aspx, css.aspx), Mimikatz, SMB brute/spray, GMER and Rentdrv2 vulnerable drivers to disable security tooling, and PuTTY/pscp for exfiltration.",
+        "summary": "Data-theft-then-destruction campaign against Israeli higher-education and technology organizations. The group stole PII and IP using a custom database extractor (Sqlextractor / sql.net4.exe), then deployed three novel wipers — MultiLayer, PartialWasher, and BFG Agonizer — to cover tracks and render endpoints unusable. Used ASPXSpy-variant web shells (Uploader.aspx, xcopy.aspx, css.aspx), Mimikatz, SMB brute/spray, GMER and Rentdrv2 vulnerable drivers to disable security tooling, and PuTTY/pscp for exfiltration.",
         "source_url": "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       }
     ]
@@ -114,7 +114,7 @@
       "observed_tooling": [
         "ProtonVPN"
       ],
-      "detection_feasibility": "low \u2014 off-victim infrastructure acquisition is not observable in defender host/network logs; hunt candidate via inbound-connection geo/ASN anomaly analytics (commercial-VPN egress hitting exposed apps/RDP)",
+      "detection_feasibility": "low — off-victim infrastructure acquisition is not observable in defender host/network logs; hunt candidate via inbound-connection geo/ASN anomaly analytics (commercial-VPN egress hitting exposed apps/RDP)",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
@@ -126,7 +126,7 @@
       "tactic": "initial-access",
       "procedure_description": "Agrius exploits internet-facing applications for initial access, including widespread attempts to exploit CVE-2018-13379 in Fortinet FortiOS SSL-VPN and SQL-injection activity against web applications.",
       "observed_tooling": [],
-      "detection_feasibility": "medium \u2014 exploitation of known CVEs and SQLi is detectable via WAF/IDS signatures, vulnerable-appliance version telemetry, and anomalous post-auth VPN sessions, but n-day exploitation of edge devices often precedes visibility",
+      "detection_feasibility": "medium — exploitation of known CVEs and SQLi is detectable via WAF/IDS signatures, vulnerable-appliance version telemetry, and anomalous post-auth VPN sessions, but n-day exploitation of edge devices often precedes visibility",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
@@ -138,7 +138,7 @@
       "tactic": "initial-access",
       "procedure_description": "Agrius acquires valid domain credentials through brute force, spraying and dumping, then reuses them for follow-on lateral movement and RDP access via compromised accounts.",
       "observed_tooling": [],
-      "detection_feasibility": "low \u2014 authentication with legitimate credentials blends with normal activity; hunt candidate via impossible-travel, off-hours logon, and RDP-from-web-shell-host correlation",
+      "detection_feasibility": "low — authentication with legitimate credentials blends with normal activity; hunt candidate via impossible-travel, off-hours logon, and RDP-from-web-shell-host correlation",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -152,7 +152,7 @@
       "observed_tooling": [
         "ASPXSpy"
       ],
-      "detection_feasibility": "high \u2014 new .aspx files in web-root paths and w3wp.exe/IIS worker spawning cmd.exe are strong, well-covered detection signals",
+      "detection_feasibility": "high — new .aspx files in web-root paths and w3wp.exe/IIS worker spawning cmd.exe are strong, well-covered detection signals",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -166,7 +166,7 @@
       "observed_tooling": [
         "IPsec Helper"
       ],
-      "detection_feasibility": "high \u2014 new service creation (Event ID 7045 / registry Services key writes) pointing at unusual binaries is highly detectable",
+      "detection_feasibility": "high — new service creation (Event ID 7045 / registry Services key writes) pointing at unusual binaries is highly detectable",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
@@ -181,7 +181,7 @@
         "ASPXSpy",
         "cmd.exe"
       ],
-      "detection_feasibility": "high \u2014 cmd.exe spawned by an IIS worker (w3wp.exe) or other web-server parent is a classic web-shell command-execution detection",
+      "detection_feasibility": "high — cmd.exe spawned by an IIS worker (w3wp.exe) or other web-server parent is a classic web-shell command-execution detection",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
@@ -195,7 +195,7 @@
       "observed_tooling": [
         "MultiLayer wiper"
       ],
-      "detection_feasibility": "high \u2014 scheduled-task creation (Event ID 4698 / Task Scheduler operational) launching a one-time batch that clears logs is a strong, anomalous signal",
+      "detection_feasibility": "high — scheduled-task creation (Event ID 4698 / Task Scheduler operational) launching a one-time batch that clears logs is a strong, anomalous signal",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -203,12 +203,12 @@
     {
       "technique_id": "T1140",
       "technique_name": "Deobfuscate/Decode Files or Information",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "Agrius deployed base64-encoded variants of the ASPXSpy web shell that decode at runtime to evade static detection.",
       "observed_tooling": [
         "ASPXSpy"
       ],
-      "detection_feasibility": "medium \u2014 base64-heavy .aspx content and runtime decode routines are detectable via web-content inspection and script-block/AMSI telemetry",
+      "detection_feasibility": "medium — base64-heavy .aspx content and runtime decode routines are detectable via web-content inspection and script-block/AMSI telemetry",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
@@ -217,15 +217,15 @@
     {
       "technique_id": "T1685",
       "technique_name": "Impair Defenses: Disable or Modify Tools",
-      "tactic": "defense-evasion",
-      "procedure_description": "Agrius used several mechanisms to disable security tooling: modifying EDR-related services to prevent auto-start on reboot, and abusing vulnerable signed drivers \u2014 GMER64.sys/gmer64.sys (renamed AGMT.sys, via loader agmt.exe) and Rentdrv2 (via loader drvIX.exe) \u2014 to selectively stop and remove security-software processes (BYOVD).",
+      "tactic": "defense-impairment",
+      "procedure_description": "Agrius used several mechanisms to disable security tooling: modifying EDR-related services to prevent auto-start on reboot, and abusing vulnerable signed drivers — GMER64.sys/gmer64.sys (renamed AGMT.sys, via loader agmt.exe) and Rentdrv2 (via loader drvIX.exe) — to selectively stop and remove security-software processes (BYOVD).",
       "observed_tooling": [
         "GMER64.sys",
         "Rentdrv2 driver",
         "agmt.exe",
         "drvIX.exe"
       ],
-      "detection_feasibility": "medium \u2014 vulnerable-driver loads (Microsoft vulnerable-driver blocklist / Sysmon driver-load) and EDR-service tampering are detectable, but BYOVD kernel action can blind the very sensor meant to see it",
+      "detection_feasibility": "medium — vulnerable-driver loads (Microsoft vulnerable-driver blocklist / Sysmon driver-load) and EDR-service tampering are detectable, but BYOVD kernel action can blind the very sensor meant to see it",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -234,12 +234,12 @@
     {
       "technique_id": "T1685.005",
       "technique_name": "Indicator Removal: Clear Windows Event Logs",
-      "tactic": "defense-evasion",
+      "tactic": "defense-impairment",
       "procedure_description": "The MultiLayer wiper clears all Windows Event Logs via a scheduled batch script as an anti-forensic step during its destructive routine.",
       "observed_tooling": [
         "MultiLayer wiper"
       ],
-      "detection_feasibility": "high \u2014 event-log clearing (Security 1102 / System 104) is a discrete, high-fidelity signal, ideally forwarded off-host before the wipe completes",
+      "detection_feasibility": "high — event-log clearing (Security 1102 / System 104) is a discrete, high-fidelity signal, ideally forwarded off-host before the wipe completes",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -247,13 +247,13 @@
     {
       "technique_id": "T1036",
       "technique_name": "Masquerading",
-      "tactic": "defense-evasion",
-      "procedure_description": "Agrius masqueraded tooling by renaming binaries \u2014 e.g. the Plink tunneling tool renamed to systems.exe, and the GMER driver renamed AGMT.sys \u2014 to blend with legitimate system files.",
+      "tactic": "stealth",
+      "procedure_description": "Agrius masqueraded tooling by renaming binaries — e.g. the Plink tunneling tool renamed to systems.exe, and the GMER driver renamed AGMT.sys — to blend with legitimate system files.",
       "observed_tooling": [
         "Plink",
         "GMER64.sys"
       ],
-      "detection_feasibility": "low \u2014 renamed-binary masquerading evades name-based rules; hunt candidate via original-filename (PE VERSIONINFO) vs on-disk-name mismatch and known-tool hash matching",
+      "detection_feasibility": "low — renamed-binary masquerading evades name-based rules; hunt candidate via original-filename (PE VERSIONINFO) vs on-disk-name mismatch and known-tool hash matching",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -262,12 +262,12 @@
     {
       "technique_id": "T1070.004",
       "technique_name": "Indicator Removal: File Deletion",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "The MultiLayer wiper removes all files it uses (dropped assembly, batch scripts, itself) after execution to remain stealthy and hinder forensics.",
       "observed_tooling": [
         "MultiLayer wiper"
       ],
-      "detection_feasibility": "medium \u2014 self-deletion of just-created executables is detectable via file-create-then-delete sequences in EDR, but overlaps with benign cleanup",
+      "detection_feasibility": "medium — self-deletion of just-created executables is detectable via file-create-then-delete sequences in EDR, but overlaps with benign cleanup",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -275,12 +275,12 @@
     {
       "technique_id": "T1070.006",
       "technique_name": "Indicator Removal: Timestomp",
-      "tactic": "defense-evasion",
-      "procedure_description": "The MultiLayer wiper timestomps files by overwriting LastAccessTime, LastWriteTime and CreationTime \u2014 setting NTFS timestamps to 1601-01-01 and non-NTFS to 1980-01-01 \u2014 a well-known anti-forensic technique.",
+      "tactic": "stealth",
+      "procedure_description": "The MultiLayer wiper timestomps files by overwriting LastAccessTime, LastWriteTime and CreationTime — setting NTFS timestamps to 1601-01-01 and non-NTFS to 1980-01-01 — a well-known anti-forensic technique.",
       "observed_tooling": [
         "MultiLayer wiper"
       ],
-      "detection_feasibility": "low \u2014 timestamp manipulation leaves minimal live telemetry; hunt candidate via MFT $STANDARD_INFORMATION vs $FILE_NAME timestamp divergence in forensic triage",
+      "detection_feasibility": "low — timestamp manipulation leaves minimal live telemetry; hunt candidate via MFT $STANDARD_INFORMATION vs $FILE_NAME timestamp divergence in forensic triage",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -288,12 +288,12 @@
     {
       "technique_id": "T1027.009",
       "technique_name": "Obfuscated Files or Information: Embedded Payloads",
-      "tactic": "defense-evasion",
-      "procedure_description": "Agrius wipers (e.g. MultiLayer) carry embedded payloads \u2014 a dropped assembly file and batch scripts \u2014 that are written out and executed at runtime, then deleted.",
+      "tactic": "stealth",
+      "procedure_description": "Agrius wipers (e.g. MultiLayer) carry embedded payloads — a dropped assembly file and batch scripts — that are written out and executed at runtime, then deleted.",
       "observed_tooling": [
         "MultiLayer wiper"
       ],
-      "detection_feasibility": "low \u2014 embedded payloads are opaque until extraction; hunt candidate via static/entropy analysis of the sample rather than host log detection",
+      "detection_feasibility": "low — embedded payloads are opaque until extraction; hunt candidate via static/entropy analysis of the sample rather than host log detection",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -307,7 +307,7 @@
         "Mimikatz",
         "ProcDump"
       ],
-      "detection_feasibility": "high \u2014 LSASS process access with dump rights (Sysmon EID 10 / EDR credential-theft analytics) and ProcDump against lsass are high-fidelity detections",
+      "detection_feasibility": "high — LSASS process access with dump rights (Sysmon EID 10 / EDR credential-theft analytics) and ProcDump against lsass are high-fidelity detections",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -319,7 +319,7 @@
       "tactic": "credential-access",
       "procedure_description": "Agrius dumped the SAM database on victim machines to capture local account credentials.",
       "observed_tooling": [],
-      "detection_feasibility": "high \u2014 SAM/registry-hive access and reg save of HKLM\\SAM are detectable via registry-access and process-command-line telemetry",
+      "detection_feasibility": "high — SAM/registry-hive access and reg save of HKLM\\SAM are detectable via registry-access and process-command-line telemetry",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -331,7 +331,7 @@
       "tactic": "credential-access",
       "procedure_description": "Agrius engaged in brute-forcing activity via SMB within victim environments to obtain valid credentials.",
       "observed_tooling": [],
-      "detection_feasibility": "high \u2014 bursts of SMB/NTLM logon failures (Event ID 4625) from a single internal host are readily detectable",
+      "detection_feasibility": "high — bursts of SMB/NTLM logon failures (Event ID 4625) from a single internal host are readily detectable",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -343,7 +343,7 @@
       "tactic": "credential-access",
       "procedure_description": "Agrius performed password spraying via SMB against many accounts in victim environments.",
       "observed_tooling": [],
-      "detection_feasibility": "high \u2014 many accounts each seeing a single failed SMB logon from one source is a classic spray signature (4625 fan-out)",
+      "detection_feasibility": "high — many accounts each seeing a single failed SMB logon from one source is a classic spray signature (4625 fan-out)",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -353,12 +353,12 @@
       "technique_id": "T1046",
       "technique_name": "Network Service Discovery",
       "tactic": "discovery",
-      "procedure_description": "Agrius used open-source port scanners \u2014 WinEggDrop and NimScan \u2014 to perform detailed scans of hosts of interest inside victim networks.",
+      "procedure_description": "Agrius used open-source port scanners — WinEggDrop and NimScan — to perform detailed scans of hosts of interest inside victim networks.",
       "observed_tooling": [
         "WinEggDrop",
         "NimScan"
       ],
-      "detection_feasibility": "medium \u2014 internal horizontal port-scanning generates detectable connection fan-out and unusual scanner-binary execution, though scan tooling is easily renamed",
+      "detection_feasibility": "medium — internal horizontal port-scanning generates detectable connection fan-out and unusual scanner-binary execution, though scan tooling is easily renamed",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -372,7 +372,7 @@
       "observed_tooling": [
         "NBTscan"
       ],
-      "detection_feasibility": "medium \u2014 NetBIOS name-scan bursts across a subnet and NBTscan execution are detectable, but blend with legitimate admin discovery",
+      "detection_feasibility": "medium — NetBIOS name-scan bursts across a subnet and NBTscan execution are detectable, but blend with legitimate admin discovery",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -387,7 +387,7 @@
         "ASPXSpy",
         "Plink"
       ],
-      "detection_feasibility": "medium \u2014 RDP tunneled over web shell / Plink shows as anomalous localhost-relayed RDP and RDP sourced from a web-server host; detectable via lateral-RDP and tunnel analytics",
+      "detection_feasibility": "medium — RDP tunneled over web shell / Plink shows as anomalous localhost-relayed RDP and RDP sourced from a web-server host; detectable via lateral-RDP and tunnel analytics",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
@@ -403,7 +403,7 @@
         "easyupload.io",
         "Plink"
       ],
-      "detection_feasibility": "medium \u2014 internal SMB tool copies and downloads from consumer file-sharing sites are detectable via proxy category and internal file-write telemetry, but ride trusted transfer channels",
+      "detection_feasibility": "medium — internal SMB tool copies and downloads from consumer file-sharing sites are detectable via proxy category and internal file-write telemetry, but ride trusted transfer channels",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/"
@@ -417,7 +417,7 @@
       "observed_tooling": [
         "Sqlextractor"
       ],
-      "detection_feasibility": "low \u2014 reading local files/DB content is high-volume normal activity; hunt candidate via bulk-access-then-stage-then-wipe sequencing correlation",
+      "detection_feasibility": "low — reading local files/DB content is high-volume normal activity; hunt candidate via bulk-access-then-stage-then-wipe sequencing correlation",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -432,7 +432,7 @@
         "Sqlextractor",
         "sql.net4.exe"
       ],
-      "detection_feasibility": "medium \u2014 a non-application process issuing bulk SQL SELECT queries against DB servers and writing large CSVs is detectable via DB audit logs and endpoint file-create telemetry",
+      "detection_feasibility": "medium — a non-application process issuing bulk SQL SELECT queries against DB servers and writing large CSVs is detectable via DB audit logs and endpoint file-create telemetry",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -444,7 +444,7 @@
       "tactic": "collection",
       "procedure_description": "Agrius staged data for exfiltration in a local working folder, C:\\windows\\temp\\s\\, before archiving and transfer.",
       "observed_tooling": [],
-      "detection_feasibility": "medium \u2014 accumulation of archive/CSV/.dmp files in C:\\windows\\temp\\s\\ is a detectable staging pattern via file-path monitoring",
+      "detection_feasibility": "medium — accumulation of archive/CSV/.dmp files in C:\\windows\\temp\\s\\ is a detectable staging pattern via file-path monitoring",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -458,7 +458,7 @@
       "observed_tooling": [
         "7zip"
       ],
-      "detection_feasibility": "medium \u2014 7zip/archive utility spawning against staged data directories is detectable via process-command-line telemetry, though archiving is common admin activity",
+      "detection_feasibility": "medium — 7zip/archive utility spawning against staged data directories is detectable via process-command-line telemetry, though archiving is common admin activity",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -474,7 +474,7 @@
         "pscp.exe",
         "WinSCP"
       ],
-      "detection_feasibility": "medium \u2014 pscp/WinSCP outbound SSH to external hosts from a server, transferring .7z/.ezip/.dmp files, is detectable via egress SSH monitoring and process-network correlation",
+      "detection_feasibility": "medium — pscp/WinSCP outbound SSH to external hosts from a server, transferring .7z/.ezip/.dmp files, is detectable via egress SSH monitoring and process-network correlation",
       "sources": [
         "https://attack.mitre.org/groups/G1030/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -484,7 +484,7 @@
       "technique_id": "T1485",
       "technique_name": "Data Destruction",
       "tactic": "impact",
-      "procedure_description": "Agrius's defining behavior: after data theft, it deploys wipers (Apostle, DEADWOOD/Detbosit, Fantasy, MultiLayer, PartialWasher, BFG Agonizer) to destroy data on victim endpoints and servers, rendering them unusable and covering the actors' tracks \u2014 often masqueraded as ransomware.",
+      "procedure_description": "Agrius's defining behavior: after data theft, it deploys wipers (Apostle, DEADWOOD/Detbosit, Fantasy, MultiLayer, PartialWasher, BFG Agonizer) to destroy data on victim endpoints and servers, rendering them unusable and covering the actors' tracks — often masqueraded as ransomware.",
       "observed_tooling": [
         "Apostle",
         "DEADWOOD",
@@ -493,7 +493,7 @@
         "PartialWasher wiper",
         "BFG Agonizer wiper"
       ],
-      "detection_feasibility": "medium \u2014 mass file overwrite/deletion produces a detectable burst of file-modification and I/O; detection value is early containment, since by wipe time impact is occurring. Prioritize pre-wipe precursors (BYOVD, log clearing, VSS deletion)",
+      "detection_feasibility": "medium — mass file overwrite/deletion produces a detectable burst of file-modification and I/O; detection value is early containment, since by wipe time impact is occurring. Prioritize pre-wipe precursors (BYOVD, log clearing, VSS deletion)",
       "sources": [
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -508,7 +508,7 @@
         "Apostle",
         "Moneybird"
       ],
-      "detection_feasibility": "medium \u2014 high-rate file encryption with extension changes and ransom-note drops is detectable via file-entropy/canary and note-creation analytics, but the fake-ransomware ruse means recovery may be impossible regardless",
+      "detection_feasibility": "medium — high-rate file encryption with extension changes and ransom-note drops is detectable via file-entropy/canary and note-creation analytics, but the fake-ransomware ruse means recovery may be impossible regardless",
       "sources": [
         "https://www.sentinelone.com/labs/from-wiper-to-ransomware-the-evolution-of-agrius/",
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
@@ -522,7 +522,7 @@
       "observed_tooling": [
         "MultiLayer wiper"
       ],
-      "detection_feasibility": "high \u2014 shadow-copy deletion (vssadmin/wmic/WMI) and VSS service removal are high-fidelity ransomware/wiper precursors and among the most reliable early-warning detections",
+      "detection_feasibility": "high — shadow-copy deletion (vssadmin/wmic/WMI) and VSS service removal are high-fidelity ransomware/wiper precursors and among the most reliable early-warning detections",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -531,13 +531,13 @@
       "technique_id": "T1561.001",
       "technique_name": "Disk Wipe: Disk Content Wipe",
       "tactic": "impact",
-      "procedure_description": "Agrius wipers destroy on-disk content \u2014 e.g. BFG Agonizer offers modes to write ~420 MB of binary data to a target device to make a drive unusable and to wipe files in specified folders; MultiLayer and PartialWasher similarly overwrite/destroy file and drive content.",
+      "procedure_description": "Agrius wipers destroy on-disk content — e.g. BFG Agonizer offers modes to write ~420 MB of binary data to a target device to make a drive unusable and to wipe files in specified folders; MultiLayer and PartialWasher similarly overwrite/destroy file and drive content.",
       "observed_tooling": [
         "BFG Agonizer wiper",
         "MultiLayer wiper",
         "PartialWasher wiper"
       ],
-      "detection_feasibility": "medium \u2014 large sequential raw writes to physical drives / mass overwrite of file content is detectable via disk-I/O and raw-device-handle telemetry, but is concurrent with the impact itself",
+      "detection_feasibility": "medium — large sequential raw writes to physical drives / mass overwrite of file content is detectable via disk-I/O and raw-device-handle telemetry, but is concurrent with the impact itself",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -551,7 +551,7 @@
         "BFG Agonizer wiper",
         "MultiLayer wiper"
       ],
-      "detection_feasibility": "high \u2014 a user-mode process obtaining a raw \\\\.\\PhysicalDrive handle and writing to the boot sector/MBR is a rare, high-fidelity destructive signal (EDR raw-disk-write analytics)",
+      "detection_feasibility": "high — a user-mode process obtaining a raw \\\\.\\PhysicalDrive handle and writing to the boot sector/MBR is a rare, high-fidelity destructive signal (EDR raw-disk-write analytics)",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -560,13 +560,13 @@
       "technique_id": "T1489",
       "technique_name": "Service Stop",
       "tactic": "impact",
-      "procedure_description": "Agrius stops and removes services to enable destruction and disable defenses \u2014 abusing GMER/Rentdrv2 drivers to stop and remove security-software processes/services, and removing the Volume Shadow Copy (VSS) service during the MultiLayer wipe.",
+      "procedure_description": "Agrius stops and removes services to enable destruction and disable defenses — abusing GMER/Rentdrv2 drivers to stop and remove security-software processes/services, and removing the Volume Shadow Copy (VSS) service during the MultiLayer wipe.",
       "observed_tooling": [
         "MultiLayer wiper",
         "GMER64.sys",
         "Rentdrv2 driver"
       ],
-      "detection_feasibility": "medium \u2014 abnormal stopping/removal of security and VSS services (service-state change events) is detectable, though driver-level process termination may bypass service-control logging",
+      "detection_feasibility": "medium — abnormal stopping/removal of security and VSS services (service-state change events) is detectable, though driver-level process termination may bypass service-control logging",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -580,7 +580,7 @@
         "MultiLayer wiper",
         "BFG Agonizer wiper"
       ],
-      "detection_feasibility": "low \u2014 a shutdown/reboot call is trivially common and only meaningful as the terminal step of a wipe chain; hunt candidate via correlation with preceding raw-disk-write/log-clear events",
+      "detection_feasibility": "low — a shutdown/reboot call is trivially common and only meaningful as the terminal step of a wipe chain; hunt candidate via correlation with preceding raw-disk-write/log-clear events",
       "sources": [
         "https://unit42.paloaltonetworks.com/agonizing-serpens-targets-israeli-tech-higher-ed-sectors/"
       ]
@@ -588,17 +588,17 @@
   ],
   "detection_signals": [
     "New or modified .aspx file in an IIS web root (Uploader.aspx / xcopy.aspx / css.aspx or base64-heavy ASPXSpy content) followed by w3wp.exe spawning cmd.exe",
-    "RDP session sourced from an internet-facing web server, or RDP relayed through Plink/localhost tunnel \u2014 web-shell-tunneled lateral movement",
-    "Vulnerable-driver load of gmer64.sys / AGMT.sys or Rentdrv2 (agmt.exe / drvIX.exe loaders) \u2014 BYOVD to kill security tooling (Microsoft vulnerable-driver blocklist / Sysmon EID 6)",
+    "RDP session sourced from an internet-facing web server, or RDP relayed through Plink/localhost tunnel — web-shell-tunneled lateral movement",
+    "Vulnerable-driver load of gmer64.sys / AGMT.sys or Rentdrv2 (agmt.exe / drvIX.exe loaders) — BYOVD to kill security tooling (Microsoft vulnerable-driver blocklist / Sysmon EID 6)",
     "EDR/AV service configuration changed to disable auto-start on reboot, or security services stopped/removed shortly before mass file activity",
-    "Volume Shadow Copy deletion AND removal of the VSS service (vssadmin/wmic/WMI) \u2014 high-fidelity wiper/ransomware precursor",
-    "User-mode process opening a raw \\\\.\\PhysicalDrive0 handle and writing to the boot sector / first sectors (MBR/GPT) \u2014 disk-structure wipe (MultiLayer / BFG Agonizer)",
-    "Scheduled task created to run a one-time batch that clears all Windows Event Logs (4698 followed by 1102/104) \u2014 MultiLayer DeleteLogs()",
-    "Mimikatz (Mimi.exe) or ProcDump accessing lsass.exe, or reg save of HKLM\\SAM \u2014 credential dumping",
-    "SMB logon-failure fan-out from one internal host (4625) across many accounts \u2014 password spraying/brute force",
+    "Volume Shadow Copy deletion AND removal of the VSS service (vssadmin/wmic/WMI) — high-fidelity wiper/ransomware precursor",
+    "User-mode process opening a raw \\\\.\\PhysicalDrive0 handle and writing to the boot sector / first sectors (MBR/GPT) — disk-structure wipe (MultiLayer / BFG Agonizer)",
+    "Scheduled task created to run a one-time batch that clears all Windows Event Logs (4698 followed by 1102/104) — MultiLayer DeleteLogs()",
+    "Mimikatz (Mimi.exe) or ProcDump accessing lsass.exe, or reg save of HKLM\\SAM — credential dumping",
+    "SMB logon-failure fan-out from one internal host (4625) across many accounts — password spraying/brute force",
     "sql.net4.exe (Sqlextractor) or a non-application process issuing bulk SQL queries and writing large CSV files, then 7zip archiving to C:\\windows\\temp\\s\\",
-    "pscp.exe / WinSCP outbound SSH from a server transferring .7z / .ezip / .dmp files \u2014 exfiltration over C2",
-    "Internal file-create-then-self-delete of a just-dropped executable plus timestomping to 1601-01-01 / 1980-01-01 \u2014 wiper anti-forensics"
+    "pscp.exe / WinSCP outbound SSH from a server transferring .7z / .ezip / .dmp files — exfiltration over C2",
+    "Internal file-create-then-self-delete of a just-dropped executable plus timestomping to 1601-01-01 / 1980-01-01 — wiper anti-forensics"
   ],
   "iocs": {
     "ips": [
@@ -638,5 +638,5 @@
   },
   "yara_rules": [],
   "confidence": "high",
-  "notes": "TTP set built from MITRE ATT&CK G1030 (22 group-level techniques, all retained: T1583, T1560.001, T1119, T1110, T1110.003, T1059.003, T1543.003, T1005, T1074.001, T1140, T1685, T1041, T1190, T1570, T1036, T1046, T1003.001, T1003.002, T1021.001, T1018, T1505.003, T1078.002) and enriched with Impact and defense-evasion tradecraft sourced directly from the two named vendor reports. 12 techniques added beyond the G1030 group set, each vendor-cited: T1053.005, T1685.005, T1070.004, T1070.006, T1027.009, T1485, T1486, T1490, T1561.001, T1561.002, T1489, T1529. Total 34 techniques. FRAMEWORK-VERSION NOTE: in this ATT&CK build, 'Disable or Modify Tools' is the current top-level technique T1685 (tactic defense-impairment) with sub-technique T1685.005 'Clear Windows Event Logs'; the legacy T1562.001 is REVOKED. IDs are emitted per the current authoritative dataset (verified via get_technique). IMPACT TACTIC (7 techniques \u2014 the library's first destructive actor, well represented): T1485 Data Destruction, T1486 Data Encrypted for Impact (wiper-as-ransomware ruse + Apostle-to-ransomware + Moneybird), T1490 Inhibit System Recovery (VSS deletion + VSS service removal), T1561.001 Disk Content Wipe, T1561.002 Disk Structure Wipe (BFG boot-sector / MultiLayer PhysicalDrive0 first-512-byte overwrite), T1489 Service Stop, T1529 System Shutdown/Reboot. The wipers named \u2014 Apostle, DEADWOOD/Detbosit, Fantasy, MultiLayer, PartialWasher, BFG Agonizer \u2014 show code overlap (shared codebase / same developers) per Unit 42. LOW detection-feasibility techniques (route to HUNTING, not signature detection): T1583 (off-victim VPN infra), T1078.002 (valid-account reuse), T1036 (renamed-binary masquerading \u2014 Plink->systems.exe, GMER->AGMT.sys), T1070.006 (timestomp \u2014 forensic-triage only), T1027.009 (embedded payloads \u2014 sample analysis), T1005 (bulk local read), T1529 (shutdown only meaningful in wipe-chain correlation). HIGHEST-VALUE EARLY-WARNING detections (route to DETECTION): T1490 (shadow-copy + VSS-service deletion), T1561.002 (raw \\\\.\\PhysicalDrive0 boot-sector write), T1685.005 (event-log clearing), T1505.003 (web-shell drop), T1003.001 (LSASS access) \u2014 these fire BEFORE or AT the moment of destruction and are the practical containment window for a wiper actor. IOCs are from the Unit 42 Agonizing Serpens report (2023) IOC appendix: 6 C2 IPs, 19 SHA-256 hashes (ASPXSpy web shells, NBTscan, WinEggDrop, NimScan, Mimikatz, ProcDump, Plink, Sqlextractor, pscp, and the MultiLayer/PartialWasher/BFG Agonizer wipers, GMER and Rentdrv2 driver loaders+drivers), and CVE-2018-13379 (FortiOS, exploited for initial access per SentinelLabs/MITRE). IOCs are host/campaign-specific and expire fast \u2014 TTPs and detection_signals are the durable value. No domains/emails were published in these sources; arrays left empty rather than fabricated. No verbatim YARA rule appeared in the two source reports, so yara_rules is empty (never authored from scratch)."
+  "notes": "TTP set built from MITRE ATT&CK G1030 (22 group-level techniques, all retained: T1583, T1560.001, T1119, T1110, T1110.003, T1059.003, T1543.003, T1005, T1074.001, T1140, T1685, T1041, T1190, T1570, T1036, T1046, T1003.001, T1003.002, T1021.001, T1018, T1505.003, T1078.002) and enriched with Impact and defense-evasion tradecraft sourced directly from the two named vendor reports. 12 techniques added beyond the G1030 group set, each vendor-cited: T1053.005, T1685.005, T1070.004, T1070.006, T1027.009, T1485, T1486, T1490, T1561.001, T1561.002, T1489, T1529. Total 34 techniques. FRAMEWORK-VERSION NOTE: in this ATT&CK build, 'Disable or Modify Tools' is the current top-level technique T1685 (tactic defense-impairment) with sub-technique T1685.005 'Clear Windows Event Logs'; the legacy T1562.001 is REVOKED. IDs are emitted per the current authoritative dataset (verified via get_technique). IMPACT TACTIC (7 techniques — the library's first destructive actor, well represented): T1485 Data Destruction, T1486 Data Encrypted for Impact (wiper-as-ransomware ruse + Apostle-to-ransomware + Moneybird), T1490 Inhibit System Recovery (VSS deletion + VSS service removal), T1561.001 Disk Content Wipe, T1561.002 Disk Structure Wipe (BFG boot-sector / MultiLayer PhysicalDrive0 first-512-byte overwrite), T1489 Service Stop, T1529 System Shutdown/Reboot. The wipers named — Apostle, DEADWOOD/Detbosit, Fantasy, MultiLayer, PartialWasher, BFG Agonizer — show code overlap (shared codebase / same developers) per Unit 42. LOW detection-feasibility techniques (route to HUNTING, not signature detection): T1583 (off-victim VPN infra), T1078.002 (valid-account reuse), T1036 (renamed-binary masquerading — Plink->systems.exe, GMER->AGMT.sys), T1070.006 (timestomp — forensic-triage only), T1027.009 (embedded payloads — sample analysis), T1005 (bulk local read), T1529 (shutdown only meaningful in wipe-chain correlation). HIGHEST-VALUE EARLY-WARNING detections (route to DETECTION): T1490 (shadow-copy + VSS-service deletion), T1561.002 (raw \\\\.\\PhysicalDrive0 boot-sector write), T1685.005 (event-log clearing), T1505.003 (web-shell drop), T1003.001 (LSASS access) — these fire BEFORE or AT the moment of destruction and are the practical containment window for a wiper actor. IOCs are from the Unit 42 Agonizing Serpens report (2023) IOC appendix: 6 C2 IPs, 19 SHA-256 hashes (ASPXSpy web shells, NBTscan, WinEggDrop, NimScan, Mimikatz, ProcDump, Plink, Sqlextractor, pscp, and the MultiLayer/PartialWasher/BFG Agonizer wipers, GMER and Rentdrv2 driver loaders+drivers), and CVE-2018-13379 (FortiOS, exploited for initial access per SentinelLabs/MITRE). IOCs are host/campaign-specific and expire fast — TTPs and detection_signals are the durable value. No domains/emails were published in these sources; arrays left empty rather than fabricated. No verbatim YARA rule appeared in the two source reports, so yara_rules is empty (never authored from scratch)."
 }

@@ -3,7 +3,7 @@
 > **Attribution:** Iran-nexus — medium confidence  
 > **MENA targeting:** Israel, Mediterranean / Eastern Mediterranean maritime routes  
 > **Sectors:** Transportation, Logistics, Maritime / shipping, Technology, Defense, Energy  
-> **Aliases:** CURIUM, Yellow Liderc (PwC), Tortoiseshell (Microsoft/others, overlapping), Crimson Sandstorm (Microsoft), TA456 (Proofpoint, adjacent/overlapping), Earth Kapre / cluster tracked publicly near MITRE G0135 Tortoiseshell (cited only as source, not this actor id)
+> **Aliases:** Imperial Kitten, CURIUM, Yellow Liderc, TA456, Crimson Sandstorm
 
 ## Summary
 

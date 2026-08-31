@@ -63,18 +63,63 @@
       }
     ]
   },
-  "threat_actors": ["MuddyWater"],
-  "targeted_regions": ["UAE", "Saudi Arabia", "Israel", "Turkey", "Iraq", "Jordan", "Egypt"],
-  "targeted_sectors": ["Telecommunications", "Government", "Finance", "Defense", "Oil & gas / energy", "Marine services"],
+  "threat_actors": [
+    "MuddyWater"
+  ],
+  "targeted_regions": [
+    "UAE",
+    "Saudi Arabia",
+    "Israel",
+    "Turkey",
+    "Iraq",
+    "Jordan",
+    "Egypt"
+  ],
+  "targeted_sectors": [
+    "Telecommunications",
+    "Government",
+    "Finance",
+    "Defense",
+    "Oil & gas / energy",
+    "Marine services"
+  ],
   "malware": [
-    "POWERSTATS", "PowGoop", "Small Sieve", "STARWHALE (Canopy)", "Mori", "RustyWater",
-    "MuddyViper", "SHARPSTATS", "MuddyC2", "Out1", "Browser64"
+    "POWERSTATS",
+    "PowGoop",
+    "Small Sieve",
+    "STARWHALE (Canopy)",
+    "Mori",
+    "RustyWater",
+    "MuddyViper",
+    "SHARPSTATS",
+    "MuddyC2",
+    "Out1",
+    "Browser64"
   ],
   "tooling_observed": [
-    "Mimikatz", "procdump64.exe", "LaZagne", "Invoke-Obfuscation", "Empire", "CrackMapExec",
-    "Koadic", "PowerSploit", "Rclone", "makecab.exe", "csc.exe", "mshta.exe", "CMSTP.exe",
-    "rundll32.exe", "ScreenConnect (ConnectWise)", "AteraAgent", "SimpleHelp", "Action1",
-    "Level", "PDQ", "RemoteUtilities", "NordVPN", "go-socks5"
+    "Mimikatz",
+    "procdump64.exe",
+    "LaZagne",
+    "Invoke-Obfuscation",
+    "Empire",
+    "CrackMapExec",
+    "Koadic",
+    "PowerSploit",
+    "Rclone",
+    "makecab.exe",
+    "csc.exe",
+    "mshta.exe",
+    "CMSTP.exe",
+    "rundll32.exe",
+    "ScreenConnect (ConnectWise)",
+    "AteraAgent",
+    "SimpleHelp",
+    "Action1",
+    "Level",
+    "PDQ",
+    "RemoteUtilities",
+    "NordVPN",
+    "go-socks5"
   ],
   "ttps": [
     {
@@ -82,180 +127,264 @@
       "technique_name": "OS Credential Dumping: LSASS Memory",
       "tactic": "credential-access",
       "procedure_description": "MuddyWater has performed credential dumping with Mimikatz and procdump64.exe.",
-      "observed_tooling": ["Mimikatz", "procdump64.exe"],
+      "observed_tooling": [
+        "Mimikatz",
+        "procdump64.exe"
+      ],
       "detection_feasibility": "high — process access to lsass.exe and procdump command-line / Mimikatz signatures are highly observable in EDR and process-creation logs",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1003.004",
       "technique_name": "OS Credential Dumping: LSA Secrets",
       "tactic": "credential-access",
       "procedure_description": "MuddyWater has performed credential dumping with LaZagne.",
-      "observed_tooling": ["LaZagne"],
+      "observed_tooling": [
+        "LaZagne"
+      ],
       "detection_feasibility": "high — LaZagne execution and registry/LSA secret access are detectable via process and registry telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1003.005",
       "technique_name": "OS Credential Dumping: Cached Domain Credentials",
       "tactic": "credential-access",
       "procedure_description": "MuddyWater has performed credential dumping with LaZagne.",
-      "observed_tooling": ["LaZagne"],
+      "observed_tooling": [
+        "LaZagne"
+      ],
       "detection_feasibility": "medium — cached-credential access is subtler; best caught via LaZagne process/behavior signatures",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1016",
       "technique_name": "System Network Configuration Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used malware to collect the victim's IP address and domain name.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "medium — built-in recon commands (ipconfig) are common but suspicious in tight process-lineage context",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1027.003",
       "technique_name": "Obfuscated Files or Information: Steganography",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has stored obfuscated JavaScript code in an image file named temp.jpg.",
       "observed_tooling": [],
       "detection_feasibility": "low — payload hidden in image files leaves little log signal; better suited to hunting on temp.jpg-style artifacts and script-from-image patterns",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1027.004",
       "technique_name": "Obfuscated Files or Information: Compile After Delivery",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has used the .NET csc.exe tool to compile executables from downloaded C# code.",
-      "observed_tooling": ["csc.exe"],
+      "observed_tooling": [
+        "csc.exe"
+      ],
       "detection_feasibility": "high — csc.exe spawned by script interpreters (mshta/powershell/wscript) is a strong, log-visible anomaly",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1027.010",
       "technique_name": "Obfuscated Files or Information: Command Obfuscation",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has used Daniel Bohannon's Invoke-Obfuscation framework and obfuscated PowerShell scripts, plus Base64 obfuscation of VBScripts and PowerShell commands.",
-      "observed_tooling": ["Invoke-Obfuscation"],
+      "observed_tooling": [
+        "Invoke-Obfuscation"
+      ],
       "detection_feasibility": "high — obfuscated/encoded PowerShell is detectable via script-block logging and entropy/encoding heuristics",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1033",
       "technique_name": "System Owner/User Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used malware that can collect the victim's username.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "medium — whoami/username enumeration is common; value is in process-lineage correlation",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1036.005",
       "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has disguised malicious executables and used filenames and Registry key names associated with Windows Defender.",
       "observed_tooling": [],
       "detection_feasibility": "medium — Defender-themed filenames/registry keys in non-standard paths are detectable but require baselining",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1041",
       "technique_name": "Exfiltration Over C2 Channel",
       "tactic": "exfiltration",
       "procedure_description": "MuddyWater has used C2 infrastructure to receive exfiltrated data.",
-      "observed_tooling": ["POWERSTATS", "MuddyC2"],
+      "observed_tooling": [
+        "POWERSTATS",
+        "MuddyC2"
+      ],
       "detection_feasibility": "medium — exfil over C2 blends with C2 traffic; detectable via volume/beacon anomalies rather than discrete signatures",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1047",
       "technique_name": "Windows Management Instrumentation",
       "tactic": "execution",
       "procedure_description": "MuddyWater has used malware that leveraged WMI for execution and querying host information.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "high — WMI process creation and WMI-Activity operational logs provide strong telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1049",
       "technique_name": "System Network Connections Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used a PowerShell backdoor to check for Skype connections on the target machine.",
-      "observed_tooling": ["PowerShell backdoor"],
+      "observed_tooling": [
+        "PowerShell backdoor"
+      ],
       "detection_feasibility": "medium — netstat-style checks are common; the Skype-connectivity check pattern is a distinctive hunt indicator",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1053.005",
       "technique_name": "Scheduled Task/Job: Scheduled Task",
       "tactic": "persistence",
       "procedure_description": "MuddyWater has used scheduled tasks to establish persistence.",
-      "observed_tooling": ["schtasks.exe"],
+      "observed_tooling": [
+        "schtasks.exe"
+      ],
       "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Security-Task Scheduler) and highly detectable",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1057",
       "technique_name": "Process Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used malware to obtain a list of running processes on the system.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "medium — tasklist/Get-Process enumeration is common but meaningful in process-lineage context",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1059.001",
       "technique_name": "Command and Scripting Interpreter: PowerShell",
       "tactic": "execution",
       "procedure_description": "MuddyWater has used PowerShell for execution.",
-      "observed_tooling": ["PowerShell", "POWERSTATS", "SHARPSTATS"],
+      "observed_tooling": [
+        "PowerShell",
+        "POWERSTATS",
+        "SHARPSTATS"
+      ],
       "detection_feasibility": "high — script-block/module logging and suspicious PowerShell parenting are core, well-covered detections",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1059.003",
       "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
       "tactic": "execution",
       "procedure_description": "MuddyWater has used a custom tool for creating reverse shells.",
-      "observed_tooling": ["cmd.exe"],
+      "observed_tooling": [
+        "cmd.exe"
+      ],
       "detection_feasibility": "high — cmd.exe reverse-shell patterns and anomalous parent processes are visible in process-creation logs",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1059.005",
       "technique_name": "Command and Scripting Interpreter: Visual Basic",
       "tactic": "execution",
       "procedure_description": "MuddyWater has used VBScript files to execute its POWERSTATS payload, as well as macros.",
-      "observed_tooling": ["wscript.exe", "cscript.exe", "POWERSTATS"],
+      "observed_tooling": [
+        "wscript.exe",
+        "cscript.exe",
+        "POWERSTATS"
+      ],
       "detection_feasibility": "high — wscript/cscript executing VBS, especially spawned by Office, is a strong detectable signal",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1059.006",
       "technique_name": "Command and Scripting Interpreter: Python",
       "tactic": "execution",
       "procedure_description": "MuddyWater has developed tools in Python including Out1.",
-      "observed_tooling": ["Out1"],
+      "observed_tooling": [
+        "Out1"
+      ],
       "detection_feasibility": "low — Python interpreter presence on Windows endpoints is unusual but under-instrumented; hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1059.007",
       "technique_name": "Command and Scripting Interpreter: JavaScript",
       "tactic": "execution",
       "procedure_description": "MuddyWater has used JavaScript files to execute its POWERSTATS payload.",
-      "observed_tooling": ["wscript.exe", "POWERSTATS"],
+      "observed_tooling": [
+        "wscript.exe",
+        "POWERSTATS"
+      ],
       "detection_feasibility": "high — JS executed via wscript/mshta, especially from Office lineage, is detectable in process logs",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1071.001",
       "technique_name": "Application Layer Protocol: Web Protocols",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has used HTTP for C2 communications.",
-      "observed_tooling": ["POWERSTATS", "MuddyC2"],
+      "observed_tooling": [
+        "POWERSTATS",
+        "MuddyC2"
+      ],
       "detection_feasibility": "medium — HTTP C2 detectable via proxy/beacon analytics and JA3/URI anomalies, but blends with normal web traffic",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1074.001",
@@ -264,133 +393,194 @@
       "procedure_description": "MuddyWater has stored a decoy PDF file within a victim's %temp% folder.",
       "observed_tooling": [],
       "detection_feasibility": "low — local staging in %temp% is common and noisy; better as a hunt over file-write telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1082",
       "technique_name": "System Information Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used malware that can collect the victim's OS version and machine name.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "medium — systeminfo-style discovery is common; suspicious mainly in process-lineage context",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1083",
       "technique_name": "File and Directory Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used malware that checked if the ProgramData folder had folders or files with keywords 'Kasper,' 'Panda,' or 'ESET.'",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "medium — the specific AV-vendor keyword enumeration is a distinctive behavioral pattern worth a targeted rule/hunt",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1087.002",
       "technique_name": "Account Discovery: Domain Account",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used cmd.exe net user /domain to enumerate domain users.",
-      "observed_tooling": ["net.exe", "cmd.exe"],
+      "observed_tooling": [
+        "net.exe",
+        "cmd.exe"
+      ],
       "detection_feasibility": "high — 'net user /domain' and net group commands are directly observable in command-line logging",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1090",
       "technique_name": "Proxy",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has used NordVPN to proxy phishing emails, making them appear to originate from France.",
-      "observed_tooling": ["NordVPN"],
+      "observed_tooling": [
+        "NordVPN"
+      ],
       "detection_feasibility": "low — commercial-VPN sender infrastructure is largely off-endpoint; hunt/enrichment candidate via email-header and geo analysis",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1090.002",
       "technique_name": "Proxy: External Proxy",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has controlled POWERSTATS from behind a proxy network to obfuscate C2 location, used compromised websites that victims connected to randomly to relay information to C2, and used go-socks5 variants to bypass firewalls and NAT.",
-      "observed_tooling": ["POWERSTATS", "go-socks5"],
+      "observed_tooling": [
+        "POWERSTATS",
+        "go-socks5"
+      ],
       "detection_feasibility": "low — external proxy relays via compromised sites are hard to distinguish at the endpoint; network/hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1102.002",
       "technique_name": "Web Service: Bidirectional Communication",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has used web services including OneHub to distribute remote access tools.",
-      "observed_tooling": ["OneHub"],
+      "observed_tooling": [
+        "OneHub"
+      ],
       "detection_feasibility": "low — legitimate cloud/web services as C2 blend with normal traffic; hunt on proxy logs for anomalous file-sharing access",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1104",
       "technique_name": "Multi-Stage Channels",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has used one C2 to obtain enumeration scripts and monitor web logs, but a different C2 to send data back.",
-      "observed_tooling": ["MuddyC2"],
+      "observed_tooling": [
+        "MuddyC2"
+      ],
       "detection_feasibility": "low — multi-stage channel separation is an architectural trait inferred from network analysis; hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1105",
       "technique_name": "Ingress Tool Transfer",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has used malware that can upload additional files to the victim's machine and used PowerShell commands to install remote management and monitoring (RMM) software on the victim's machine.",
-      "observed_tooling": ["PowerShell", "RMM installers"],
+      "observed_tooling": [
+        "PowerShell",
+        "RMM installers"
+      ],
       "detection_feasibility": "high — PowerShell downloads (Invoke-WebRequest/DownloadFile) and unexpected RMM installers are strongly detectable",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1113",
       "technique_name": "Screen Capture",
       "tactic": "collection",
       "procedure_description": "MuddyWater has used malware that can capture screenshots of the victim's machine.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "low — screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1132.001",
       "technique_name": "Data Encoding: Standard Encoding",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has used tools to encode C2 communications including Base64 encoding.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "medium — Base64-encoded C2 detectable via network content inspection and encoding heuristics where TLS is not used",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1137.001",
       "technique_name": "Office Application Startup: Office Template Macros",
       "tactic": "persistence",
       "procedure_description": "MuddyWater has used a Word Template, Normal.dotm, for persistence.",
-      "observed_tooling": ["Normal.dotm"],
+      "observed_tooling": [
+        "Normal.dotm"
+      ],
       "detection_feasibility": "high — modification of Normal.dotm / Word startup templates is a specific, detectable file-write persistence pattern",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1140",
       "technique_name": "Deobfuscate/Decode Files or Information",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has decoded base64-encoded PowerShell, JavaScript, and VBScript.",
-      "observed_tooling": ["PowerShell"],
+      "observed_tooling": [
+        "PowerShell"
+      ],
       "detection_feasibility": "medium — decode routines (FromBase64String, certutil -decode) are observable in script-block and command-line logging",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1190",
       "technique_name": "Exploit Public-Facing Application",
       "tactic": "initial-access",
       "procedure_description": "MuddyWater has exploited the Microsoft Exchange memory corruption vulnerability (CVE-2020-0688).",
-      "observed_tooling": ["CVE-2020-0688"],
+      "observed_tooling": [
+        "CVE-2020-0688"
+      ],
       "detection_feasibility": "medium — Exchange exploitation detectable via web/IIS logs and post-exploit child processes of w3wp.exe",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1203",
       "technique_name": "Exploitation for Client Execution",
       "tactic": "execution",
       "procedure_description": "MuddyWater has exploited the Office vulnerability CVE-2017-0199 for execution.",
-      "observed_tooling": ["CVE-2017-0199"],
+      "observed_tooling": [
+        "CVE-2017-0199"
+      ],
       "detection_feasibility": "high — CVE-2017-0199 triggers Office spawning network/script children, a well-detected process-lineage anomaly",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1204.001",
@@ -399,88 +589,133 @@
       "procedure_description": "MuddyWater has distributed URLs in phishing e-mails that link to lure documents.",
       "observed_tooling": [],
       "detection_feasibility": "medium — malicious-link clicks detectable via email/URL gateway and proxy logs; endpoint signal is indirect",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1204.002",
       "technique_name": "User Execution: Malicious File",
       "tactic": "execution",
       "procedure_description": "MuddyWater has attempted to get users to open malicious PDF attachments and to enable macros and launch malicious Microsoft Word documents, including a Word document with a malicious VBA macro.",
-      "observed_tooling": ["Cybersecurity.doc"],
+      "observed_tooling": [
+        "Cybersecurity.doc"
+      ],
       "detection_feasibility": "high — Office apps spawning script/child processes after macro enablement is a core detectable behavior",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1204.004",
       "technique_name": "User Execution: Malicious Copy and Paste",
       "tactic": "execution",
       "procedure_description": "MuddyWater has leveraged ClickFix type tactics enticing victims to copy and paste malicious PowerShell code.",
-      "observed_tooling": ["PowerShell"],
+      "observed_tooling": [
+        "PowerShell"
+      ],
       "detection_feasibility": "medium — ClickFix leaves PowerShell launched from explorer/RunMRU; detectable via command-line and RunMRU registry hunting",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1210",
       "technique_name": "Exploitation of Remote Services",
       "tactic": "lateral-movement",
       "procedure_description": "MuddyWater has exploited the Microsoft Netlogon vulnerability (CVE-2020-1472, Zerologon).",
-      "observed_tooling": ["CVE-2020-1472"],
+      "observed_tooling": [
+        "CVE-2020-1472"
+      ],
       "detection_feasibility": "high — Zerologon exploitation is detectable via Netlogon (4742/5805) and DC event anomalies",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1218.003",
       "technique_name": "System Binary Proxy Execution: CMSTP",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has used CMSTP.exe and a malicious INF to execute its POWERSTATS payload.",
-      "observed_tooling": ["CMSTP.exe", "POWERSTATS"],
+      "observed_tooling": [
+        "CMSTP.exe",
+        "POWERSTATS"
+      ],
       "detection_feasibility": "high — CMSTP.exe with an INF is a rare LOLBin pattern with very low false-positive rate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1218.005",
       "technique_name": "System Binary Proxy Execution: Mshta",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has used mshta.exe to execute its POWERSTATS payload and to pass a PowerShell one-liner for execution.",
-      "observed_tooling": ["mshta.exe", "POWERSTATS"],
+      "observed_tooling": [
+        "mshta.exe",
+        "POWERSTATS"
+      ],
       "detection_feasibility": "high — mshta.exe spawning PowerShell / with remote or scripted args is a strong, well-covered LOLBin detection",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1218.011",
       "technique_name": "System Binary Proxy Execution: Rundll32",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "MuddyWater has used malware that leveraged rundll32.exe in a Registry Run key to execute a .dll.",
-      "observed_tooling": ["rundll32.exe"],
+      "observed_tooling": [
+        "rundll32.exe"
+      ],
       "detection_feasibility": "high — rundll32 launching non-standard DLLs from Run keys is detectable via process + registry telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1219.002",
       "technique_name": "Remote Access Software: Remote Desktop Software",
       "tactic": "command-and-control",
       "procedure_description": "MuddyWater has leveraged RMM solutions including ScreenConnect, AteraAgent, SimpleHelp, Action1, Level, and PDQ to facilitate follow-on actions.",
-      "observed_tooling": ["ScreenConnect", "AteraAgent", "SimpleHelp", "Action1", "Level", "PDQ"],
+      "observed_tooling": [
+        "ScreenConnect",
+        "AteraAgent",
+        "SimpleHelp",
+        "Action1",
+        "Level",
+        "PDQ"
+      ],
       "detection_feasibility": "high — unsanctioned RMM installs/execution are detectable via process, service, and known-binary/network signatures (a signature MuddyWater TTP)",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1518",
       "technique_name": "Software Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used a PowerShell backdoor to check for Skype connectivity on the target machine.",
-      "observed_tooling": ["PowerShell backdoor"],
+      "observed_tooling": [
+        "PowerShell backdoor"
+      ],
       "detection_feasibility": "medium — the Skype-connectivity software check is a distinctive PowerShell behavior visible in script-block logs",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1518.001",
       "technique_name": "Software Discovery: Security Software Discovery",
       "tactic": "discovery",
       "procedure_description": "MuddyWater has used malware to check running processes against a hard-coded list of security tools often used by malware researchers.",
-      "observed_tooling": ["POWERSTATS"],
+      "observed_tooling": [
+        "POWERSTATS"
+      ],
       "detection_feasibility": "medium — AV/security-tool enumeration is a distinctive pattern detectable in script/command telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1534",
@@ -489,7 +724,9 @@
       "procedure_description": "MuddyWater has used compromised mailboxes within target organizations to send spearphishing emails.",
       "observed_tooling": [],
       "detection_feasibility": "medium — internal-origin phishing detectable via mail-flow anomalies and unusual send patterns from compromised accounts",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1547.001",
@@ -498,7 +735,9 @@
       "procedure_description": "MuddyWater has added Registry Run key HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\SystemTextEncoding to establish persistence.",
       "observed_tooling": [],
       "detection_feasibility": "high — Run-key creation (esp. the 'SystemTextEncoding' value) is directly detectable via registry-modification telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1548.002",
@@ -507,7 +746,9 @@
       "procedure_description": "MuddyWater uses various techniques to bypass UAC.",
       "observed_tooling": [],
       "detection_feasibility": "medium — known UAC-bypass patterns (fodhelper, eventvwr, etc.) are detectable but the source is generic; baselining needed",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1552.001",
@@ -516,25 +757,37 @@
       "procedure_description": "MuddyWater has run a tool that steals passwords saved in victim email.",
       "observed_tooling": [],
       "detection_feasibility": "low — reading credential files leaves little discrete log signal; hunt candidate via file-access telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1555",
       "technique_name": "Credentials from Password Stores",
       "tactic": "credential-access",
       "procedure_description": "MuddyWater has performed credential dumping with LaZagne and other tools, including by dumping passwords saved in victim email.",
-      "observed_tooling": ["LaZagne", "Browser64"],
+      "observed_tooling": [
+        "LaZagne",
+        "Browser64"
+      ],
       "detection_feasibility": "medium — credential-store access detectable mainly through known tool (LaZagne) execution signatures",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1555.003",
       "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
       "tactic": "credential-access",
       "procedure_description": "MuddyWater has run tools including Browser64 to steal passwords saved in victim web browsers.",
-      "observed_tooling": ["Browser64", "LaZagne"],
+      "observed_tooling": [
+        "Browser64",
+        "LaZagne"
+      ],
       "detection_feasibility": "medium — access to browser credential stores (Login Data files) detectable via file-access and known-tool telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1559.001",
@@ -543,25 +796,35 @@
       "procedure_description": "MuddyWater has used malware that has the capability to execute malicious code via COM, DCOM, and Outlook.",
       "observed_tooling": [],
       "detection_feasibility": "low — COM/DCOM abuse is under-instrumented and noisy; hunt candidate via DCOM lateral/execution telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1559.002",
       "technique_name": "Inter-Process Communication: Dynamic Data Exchange",
       "tactic": "execution",
       "procedure_description": "MuddyWater has used malware that can execute PowerShell scripts via DDE.",
-      "observed_tooling": ["PowerShell"],
+      "observed_tooling": [
+        "PowerShell"
+      ],
       "detection_feasibility": "high — DDE causing Office to spawn PowerShell is a strong, detectable process-lineage anomaly",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1560.001",
       "technique_name": "Archive Collected Data: Archive via Utility",
       "tactic": "collection",
       "procedure_description": "MuddyWater has used the native Windows cabinet creation tool, makecab.exe, likely to compress stolen data.",
-      "observed_tooling": ["makecab.exe"],
+      "observed_tooling": [
+        "makecab.exe"
+      ],
       "detection_feasibility": "medium — makecab.exe used outside servicing contexts is a detectable LOLBin staging pattern",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1566",
@@ -570,16 +833,23 @@
       "procedure_description": "MuddyWater has sent phishing emails to targets from the email address support@microsoftonlines[.]com.",
       "observed_tooling": [],
       "detection_feasibility": "medium — phishing detectable at email gateway via sender reputation and lookalike-domain analysis",
-      "sources": ["https://attack.mitre.org/groups/G0069/", "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/",
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a"
+      ]
     },
     {
       "technique_id": "T1566.001",
       "technique_name": "Phishing: Spearphishing Attachment",
       "tactic": "initial-access",
       "procedure_description": "MuddyWater has compromised third parties and used compromised accounts to send spearphishing emails with targeted attachments, including the attachment Cybersecurity.doc which served as the primary payload.",
-      "observed_tooling": ["Cybersecurity.doc"],
+      "observed_tooling": [
+        "Cybersecurity.doc"
+      ],
       "detection_feasibility": "medium — attachment-based spearphishing detectable via mail sandboxing and macro-content analysis",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1566.002",
@@ -588,16 +858,23 @@
       "procedure_description": "MuddyWater has sent targeted spearphishing e-mails with malicious links.",
       "observed_tooling": [],
       "detection_feasibility": "medium — link-based spearphishing detectable via URL rewriting/detonation and proxy telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1567.002",
       "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
       "tactic": "exfiltration",
       "procedure_description": "MuddyWater has attempted to exfiltrate data to Wasabi, a cloud storage service, using Rclone.",
-      "observed_tooling": ["Rclone", "Wasabi"],
+      "observed_tooling": [
+        "Rclone",
+        "Wasabi"
+      ],
       "detection_feasibility": "medium — Rclone process/command-line and connections to Wasabi/cloud-storage endpoints are detectable via process + network telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1571",
@@ -606,7 +883,9 @@
       "procedure_description": "MuddyWater has used ports 8043 and 8848 for botnet C2 communication.",
       "observed_tooling": [],
       "detection_feasibility": "medium — traffic to ports 8043/8848 is detectable via netflow/firewall analytics as a network-side indicator",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1573.001",
@@ -615,7 +894,9 @@
       "procedure_description": "MuddyWater has used AES to encrypt C2 responses.",
       "observed_tooling": [],
       "detection_feasibility": "low — custom AES-encrypted C2 payloads defeat content inspection; hunt on beacon/traffic-shape anomalies",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1574.001",
@@ -624,7 +905,9 @@
       "procedure_description": "MuddyWater maintains persistence on victim networks through side-loading DLLs to trick legitimate programs into running malware.",
       "observed_tooling": [],
       "detection_feasibility": "medium — DLL side-loading detectable via unsigned/anomalous module loads from unexpected paths (requires image-load telemetry)",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1583.001",
@@ -633,16 +916,24 @@
       "procedure_description": "MuddyWater has established domains, some of which appeared to spoof legitimate domains for use in operations.",
       "observed_tooling": [],
       "detection_feasibility": "low — off-victim infrastructure acquisition is not endpoint-observable; intel/hunt candidate via registration and lookalike-domain monitoring",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1583.006",
       "technique_name": "Acquire Infrastructure: Web Services",
       "tactic": "resource-development",
       "procedure_description": "MuddyWater has used file sharing services including OneHub, Sync, and TeraBox to distribute tools.",
-      "observed_tooling": ["OneHub", "Sync", "TeraBox"],
+      "observed_tooling": [
+        "OneHub",
+        "Sync",
+        "TeraBox"
+      ],
       "detection_feasibility": "low — adversary use of legitimate file-sharing services is off-endpoint; hunt candidate via proxy access to these services",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1588.001",
@@ -651,16 +942,24 @@
       "procedure_description": "MuddyWater has used publicly available malware for operations, likely to blend in with other cybercriminals.",
       "observed_tooling": [],
       "detection_feasibility": "low — capability acquisition is not directly observable in victim telemetry; intelligence/hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1588.002",
       "technique_name": "Obtain Capabilities: Tool",
       "tactic": "resource-development",
       "procedure_description": "MuddyWater has used legitimate tools ConnectWise, RemoteUtilities, and SimpleHelp to gain access to the target environment.",
-      "observed_tooling": ["ConnectWise", "RemoteUtilities", "SimpleHelp"],
+      "observed_tooling": [
+        "ConnectWise",
+        "RemoteUtilities",
+        "SimpleHelp"
+      ],
       "detection_feasibility": "low — tool acquisition itself is off-endpoint; downstream use maps to T1219.002 which is detectable — this entry is a hunt/intel candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1590.004",
@@ -669,7 +968,9 @@
       "procedure_description": "MuddyWater has mapped target networks; access to this information and more is then shared/sold to other Iran threat actors.",
       "observed_tooling": [],
       "detection_feasibility": "low — external recon and access-brokering are not endpoint-observable; strategic intel/hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     },
     {
       "technique_id": "T1684.001",
@@ -678,16 +979,21 @@
       "procedure_description": "MuddyWater has used support@microsoftonlines[.]com to send phishing emails masquerading as Microsoft security updates, and has impersonated TMCell (Altyn Asyr CJSC), the primary mobile operator in Turkmenistan.",
       "observed_tooling": [],
       "detection_feasibility": "low — impersonation is a lure/branding trait best countered via email lookalike-brand analysis and user awareness; hunt candidate",
-      "sources": ["https://attack.mitre.org/groups/G0069/", "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/",
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-055a"
+      ]
     },
     {
       "technique_id": "T1685",
       "technique_name": "Disable or Modify Tools",
-      "tactic": "defense-evasion",
+      "tactic": "defense-impairment",
       "procedure_description": "MuddyWater can disable the system's local proxy settings.",
       "observed_tooling": [],
       "detection_feasibility": "medium — changes to proxy settings (ProxyEnable/ProxyServer registry values) are detectable via registry-modification telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0069/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0069/"
+      ]
     }
   ],
   "detection_signals": [
@@ -707,9 +1013,16 @@
   ],
   "iocs": {
     "ips": [],
-    "domains": ["microsoftonlines[.]com"],
-    "emails": ["support@microsoftonlines[.]com"],
-    "ports": ["8043", "8848"],
+    "domains": [
+      "microsoftonlines[.]com"
+    ],
+    "emails": [
+      "support@microsoftonlines[.]com"
+    ],
+    "ports": [
+      "8043",
+      "8848"
+    ],
     "hashes": []
   },
   "yara_rules": [],

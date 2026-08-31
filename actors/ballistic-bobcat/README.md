@@ -3,7 +3,7 @@
 > **Attribution:** Iran-nexus — medium confidence  
 > **MENA targeting:** Israel, United Arab Emirates  
 > **Sectors:** Automotive, Manufacturing, Engineering, Financial services / insurance, Media / communications, Healthcare  
-> **Aliases:** APT35, Charming Kitten, Phosphorus, Mint Sandstorm, TA453, Newscaster, MITRE Group G0058 (Charming Kitten, cited for overlap only)
+> **Aliases:** Ballistic Bobcat, APT35-adjacent (ESET-tracked activity group), Sponsor (backdoor operator)
 
 ## Summary
 

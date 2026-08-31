@@ -3,7 +3,7 @@
 > **Attribution:** Iran-nexus — medium-high confidence  
 > **MENA targeting:** Saudi Arabia, Israel, United Arab Emirates, Kuwait, Bahrain, Qatar  
 > **Sectors:** IT / managed service providers (supply-chain pivot), Maritime / shipping, Transportation & logistics, Defense / aerospace, Technology, Energy  
-> **Aliases:** Imperial Kitten, Yellow Liderc, TA456, Crimson Sandstorm, Curium, CURIUM, Smoke Sandstorm, Cuboid Sandstorm
+> **Aliases:** Tortoiseshell, Smoke Sandstorm, Cuboid Sandstorm, DEV-0056, DEV-0228, Operation Tortoiseshell
 
 ## Summary
 

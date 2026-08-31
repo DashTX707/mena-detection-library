@@ -7,17 +7,17 @@
     "mitre_id": "",
     "mitre_canonical_name": "",
     "aliases": [
+      "Imperial Kitten",
       "CURIUM",
-      "Yellow Liderc (PwC)",
-      "Tortoiseshell (Microsoft/others, overlapping)",
-      "Crimson Sandstorm (Microsoft)",
-      "TA456 (Proofpoint, adjacent/overlapping)",
-      "Earth Kapre / cluster tracked publicly near MITRE G0135 Tortoiseshell (cited only as source, not this actor id)"
+      "Yellow Liderc",
+      "TA456",
+      "Crimson Sandstorm"
     ],
     "related_clusters": [
       "Tortoiseshell (MITRE G0135) — significant TTP and targeting overlap, but tracked here as its own Imperial Kitten cluster per CrowdStrike",
       "TA456 / Tortoiseshell fake-persona social-engineering operations (Proofpoint) — overlapping long-running fake-recruiter persona tradecraft",
-      "GhostLoader (2020 AppDomainManager-injection PoC re-used by IMAPLoader)"
+      "GhostLoader (2020 AppDomainManager-injection PoC re-used by IMAPLoader)",
+      "Overlaps / tracked adjacent to Tortoiseshell (the separate tortoiseshell pack in this repo)."
     ],
     "attribution": "Iran-nexus, assessed with moderate confidence to operate in support of Iranian state interest and likely aligned with the Islamic Revolutionary Guard Corps (IRGC). CrowdStrike tracks the group as IMPERIAL KITTEN, active since at least 2017, conducting cyber-espionage and enabling operations primarily against Israeli organizations. There is meaningful overlap with clusters other vendors call Tortoiseshell/Crimson Sandstorm/TA456; the overlap is noted honestly, but the IMAPLoader-centric activity here is treated as its own Imperial Kitten/Yellow Liderc cluster. Attribution to Iran/IRGC is medium (moderate) confidence; the specific IRGC sub-unit is not publicly confirmed.",
     "attribution_confidence": "medium",
@@ -52,9 +52,28 @@
       }
     ]
   },
-  "threat_actors": ["Imperial Kitten", "CURIUM", "Yellow Liderc", "Tortoiseshell", "Crimson Sandstorm", "TA456"],
-  "targeted_regions": ["Israel", "Mediterranean", "Middle East"],
-  "targeted_sectors": ["Transportation", "Logistics", "Maritime", "Technology", "Defense", "Energy", "Telecommunications"],
+  "threat_actors": [
+    "Imperial Kitten",
+    "CURIUM",
+    "Yellow Liderc",
+    "Tortoiseshell",
+    "Crimson Sandstorm",
+    "TA456"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "Mediterranean",
+    "Middle East"
+  ],
+  "targeted_sectors": [
+    "Transportation",
+    "Logistics",
+    "Maritime",
+    "Technology",
+    "Defense",
+    "Energy",
+    "Telecommunications"
+  ],
   "malware": [
     "IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)",
     "StandardKeyboard (email-C2 implant, Windows Service variant, WindowsServiceLive.exe)",
@@ -78,16 +97,23 @@
       "procedure_description": "Actors compromised legitimate Israeli websites/servers and used them as watering holes, embedding malicious JavaScript to profile visitors before staging follow-on payloads.",
       "observed_tooling": [],
       "detection_feasibility": "low — compromise of third-party/victim-adjacent web servers is off the defender's own endpoints; intel/hunt candidate via web-integrity monitoring and threat-intel on compromised-site infrastructure",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/", "https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/",
+        "https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"
+      ]
     },
     {
       "technique_id": "T1608.004",
       "technique_name": "Stage Capabilities: Drive-by Target",
       "tactic": "resource-development",
       "procedure_description": "Actors staged malicious JavaScript on compromised Israeli sites, in several cases delivered/profiled via the Matomo analytics platform and CDN-mimicking domains, to fingerprint visitors and deliver drive-by content to selected targets.",
-      "observed_tooling": ["Matomo (open-source web analytics, abused for watering-hole visitor profiling)"],
+      "observed_tooling": [
+        "Matomo (open-source web analytics, abused for watering-hole visitor profiling)"
+      ],
       "detection_feasibility": "low — actor-side staging of drive-by targets occurs on infrastructure the defender does not control; hunt/intel candidate via watering-hole domain intelligence",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1583.001",
@@ -96,7 +122,9 @@
       "procedure_description": "Actors registered numerous CDN/analytics-masquerading domains (e.g. jquery-cdn.online, cdn.jguery.org, cdn-analytics.co, fastanalytics.live, hotjar.info) to host watering-hole scripts, profiling beacons and second-stage infrastructure.",
       "observed_tooling": [],
       "detection_feasibility": "low — adversary domain registration is off-victim; intel/hunt candidate via passive DNS, registration-pattern and typosquat monitoring",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1585.002",
@@ -105,7 +133,9 @@
       "procedure_description": "Actors created attacker-controlled Yandex webmail accounts (and update-platform-check.online mailboxes) used as IMAP command-and-control endpoints for IMAPLoader and StandardKeyboard.",
       "observed_tooling": [],
       "detection_feasibility": "low — creation of actor webmail accounts is off-victim; intel candidate, though the mailbox addresses themselves are usable network IOCs",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1587.001",
@@ -114,7 +144,9 @@
       "procedure_description": "Actors developed custom .NET implants (IMAPLoader, StandardKeyboard) and predecessor Python IMAP implants, iterating on injection technique (AppDomainManager injection derived from the 2020 GhostLoader PoC).",
       "observed_tooling": [],
       "detection_feasibility": "low — malware development is off-victim; intel candidate. Downstream execution of the implants is where host detection lands",
-      "sources": ["https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"]
+      "sources": [
+        "https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"
+      ]
     },
     {
       "technique_id": "T1585.001",
@@ -123,7 +155,10 @@
       "procedure_description": "Consistent with the cluster's long-running fake-persona social engineering (TA456/Tortoiseshell tradecraft), actors maintain fabricated recruiter/professional personas used to build rapport and deliver CV/recruitment-themed lures to targets.",
       "observed_tooling": [],
       "detection_feasibility": "low — actor-controlled personas live on third-party social platforms; intel/brand-monitoring candidate",
-      "sources": ["https://thehackernews.com/2023/11/iran-linked-imperial-kitten-cyber-group.html", "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://thehackernews.com/2023/11/iran-linked-imperial-kitten-cyber-group.html",
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1189",
@@ -132,7 +167,9 @@
       "procedure_description": "Signature initial-access vector: strategic web compromise (watering hole). Victims visiting compromised legitimate Israeli websites were fingerprinted by injected JavaScript (public IP, browser/screen data) and, if of interest, delivered follow-on content leading to implant deployment.",
       "observed_tooling": [],
       "detection_feasibility": "medium — beaconing from user browsers to CDN/analytics-masquerading domains and unexpected outbound JS callbacks are detectable via web-proxy/DNS telemetry against the known watering-hole domains, but the initial profiling blends with normal web traffic",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1190",
@@ -141,7 +178,9 @@
       "procedure_description": "Actors gained access using public one-day exploits and SQL injection against internet-facing applications of target organizations.",
       "observed_tooling": [],
       "detection_feasibility": "medium — exploitation and SQLi attempts against public-facing apps are observable via WAF/web-server logs and IDS signatures, but attribution to this actor requires corroborating infrastructure",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1133",
@@ -150,7 +189,9 @@
       "procedure_description": "Actors used stolen VPN credentials to authenticate to victim remote-access services and obtain initial network access.",
       "observed_tooling": [],
       "detection_feasibility": "medium — VPN logons with stolen credentials are detectable via authentication analytics (impossible travel, new device/ASN, off-hours) but blend with legitimate remote access",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1566.001",
@@ -159,7 +200,9 @@
       "procedure_description": "Actors delivered phishing emails carrying malicious Office documents, including macro-enabled Excel workbooks and CV/recruitment-themed lures aligned with fake-persona social engineering.",
       "observed_tooling": [],
       "detection_feasibility": "medium — inbound macro-enabled Office attachments are detectable via mail-gateway sandboxing and attachment-type policy, but delivery itself is probabilistic to catch",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1204.002",
@@ -168,7 +211,9 @@
       "procedure_description": "Delivery relied on the victim opening a weaponized Excel workbook and enabling macros, which executed the embedded VBA to drop and run a Python reverse shell.",
       "observed_tooling": [],
       "detection_feasibility": "high — Office applications (EXCEL.EXE/WINWORD.EXE) spawning script interpreters or writing executable content is a high-fidelity child-process detection via EDR process-lineage",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1059.005",
@@ -177,7 +222,9 @@
       "procedure_description": "Malicious Excel lures used embedded VBA macros to stage and launch the next-stage Python reverse shell on execution.",
       "observed_tooling": [],
       "detection_feasibility": "high — VBA macro execution spawning child processes / writing files is detectable via AMSI, macro-execution telemetry and Office-to-interpreter process lineage",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1059.006",
@@ -186,25 +233,35 @@
       "procedure_description": "A Python reverse shell was dropped by the macro-enabled Excel lure and executed to provide interactive command execution and callback to actor infrastructure.",
       "observed_tooling": [],
       "detection_feasibility": "medium — Python interpreter execution originating from an Office-spawned process and connecting outbound is detectable via process and network telemetry, though Python is common in some environments",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1059.003",
       "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
       "tactic": "execution",
       "procedure_description": "Post-exploitation actions used the Windows command shell to run reconnaissance, deploy tooling (PAExec, NetScan, ProcDump) and stage implants.",
-      "observed_tooling": ["PAExec (PsExec alternative, lateral movement / remote execution)"],
+      "observed_tooling": [
+        "PAExec (PsExec alternative, lateral movement / remote execution)"
+      ],
       "detection_feasibility": "medium — cmd.exe usage is ubiquitous; value comes from suspicious command-line content and process lineage from implants/Office parents",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1574.014",
       "technique_name": "Hijack Execution Flow: AppDomainManager",
       "tactic": "stealth",
       "procedure_description": "IMAPLoader uses AppDomainManager injection (a technique first demonstrated in the 2020 GhostLoader PoC) to load its .NET payload into a benign host process, circumventing tools that watch for classic DLL/EXE loading on Windows.",
-      "observed_tooling": ["IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)"],
+      "observed_tooling": [
+        "IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)"
+      ],
       "detection_feasibility": "medium — AppDomainManager hijacking is detectable via unexpected .config files / APPDOMAIN_MANAGER environment variables and anomalous managed-DLL loads into .NET hosts, but requires .NET-aware instrumentation",
-      "sources": ["https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"]
+      "sources": [
+        "https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"
+      ]
     },
     {
       "technique_id": "T1547.001",
@@ -213,7 +270,9 @@
       "procedure_description": "Actors established persistence via Registry Run keys to auto-execute their implants at logon.",
       "observed_tooling": [],
       "detection_feasibility": "high — creation/modification of Run-key values pointing at implant paths is directly observable via registry-modification telemetry (Sysmon EID 13) and autostart auditing",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1053.005",
@@ -222,34 +281,48 @@
       "procedure_description": "Actors created scheduled tasks to persist and periodically execute their implants.",
       "observed_tooling": [],
       "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and tasks executing binaries from unusual paths are strong detection candidates",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1543.003",
       "technique_name": "Create or Modify System Process: Windows Service",
       "tactic": "persistence",
       "procedure_description": "The StandardKeyboard implant was installed and persisted as a Windows Service (e.g. WindowsServiceLive.exe), running with SYSTEM privileges and re-launching after reboot.",
-      "observed_tooling": ["StandardKeyboard (email-C2 implant, Windows Service variant, WindowsServiceLive.exe)"],
+      "observed_tooling": [
+        "StandardKeyboard (email-C2 implant, Windows Service variant, WindowsServiceLive.exe)"
+      ],
       "detection_feasibility": "high — service installation (Event ID 7045) of an unsigned/unusual binary and service names like WindowsServiceLive are directly observable via service-creation auditing",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1055.001",
       "technique_name": "Process Injection: Dynamic-link Library Injection",
       "tactic": "stealth",
       "procedure_description": "IMAPLoader injects its .NET DLL payload into a host process (via the AppDomainManager mechanism) so that malicious code runs under the context of a legitimate process.",
-      "observed_tooling": ["IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)"],
+      "observed_tooling": [
+        "IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)"
+      ],
       "detection_feasibility": "medium — cross-process/managed-DLL injection is detectable via EDR image-load and injection telemetry, but AppDomainManager loading is subtler than classic CreateRemoteThread injection",
-      "sources": ["https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"]
+      "sources": [
+        "https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"
+      ]
     },
     {
       "technique_id": "T1003.001",
       "technique_name": "OS Credential Dumping: LSASS Memory",
       "tactic": "credential-access",
       "procedure_description": "Actors used ProcDump to dump LSASS process memory and harvest credentials for reuse and lateral movement.",
-      "observed_tooling": ["ProcDump (LSASS memory dumping)"],
+      "observed_tooling": [
+        "ProcDump (LSASS memory dumping)"
+      ],
       "detection_feasibility": "high — procdump/comsvcs.dll accessing lsass.exe and writing a dump file is a high-fidelity detection via process-access (Sysmon EID 10) and command-line telemetry",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1552",
@@ -258,25 +331,36 @@
       "procedure_description": "Actors harvested and reused stolen credentials (including VPN credentials) obtained from compromised hosts to expand access.",
       "observed_tooling": [],
       "detection_feasibility": "low — harvesting credentials from files/config leaves little discrete signal; hunt candidate via file-access telemetry and honeytokens",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1595",
       "technique_name": "Active Scanning",
       "tactic": "reconnaissance",
       "procedure_description": "Actors used public scanning tools such as nmap to identify exposed services and hosts of interest.",
-      "observed_tooling": ["nmap (public scanning / service discovery)"],
+      "observed_tooling": [
+        "nmap (public scanning / service discovery)"
+      ],
       "detection_feasibility": "low — external scanning of the target's perimeter is largely off-victim from an endpoint perspective; medium at the network edge but weakly attributable",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1046",
       "technique_name": "Network Service Discovery",
       "tactic": "discovery",
       "procedure_description": "After gaining a foothold, actors ran NetScan (SoftPerfect) and nmap internally to enumerate hosts and services for lateral movement.",
-      "observed_tooling": ["NetScan (SoftPerfect network scanner, internal reconnaissance)", "nmap (public scanning / service discovery)"],
+      "observed_tooling": [
+        "NetScan (SoftPerfect network scanner, internal reconnaissance)",
+        "nmap (public scanning / service discovery)"
+      ],
       "detection_feasibility": "medium — internal scanning bursts and known scanner binaries (netscan.exe, nmap) are detectable via connection-fanout/east-west analytics and process signatures",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1082",
@@ -285,52 +369,78 @@
       "procedure_description": "Implants and hands-on-keyboard activity enumerated host details (system, network and browser/visitor information) to profile victims and select high-value targets.",
       "observed_tooling": [],
       "detection_feasibility": "low — host-info enumeration is common and low-signal; hunt candidate via recon-burst process-lineage correlation",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1570",
       "technique_name": "Lateral Tool Transfer",
       "tactic": "lateral-movement",
       "procedure_description": "Actors transferred tooling (PAExec, NetScan, ProcDump, implants) across the network to additional hosts during lateral movement.",
-      "observed_tooling": ["PAExec (PsExec alternative, lateral movement / remote execution)", "NetScan (SoftPerfect network scanner, internal reconnaissance)"],
+      "observed_tooling": [
+        "PAExec (PsExec alternative, lateral movement / remote execution)",
+        "NetScan (SoftPerfect network scanner, internal reconnaissance)"
+      ],
       "detection_feasibility": "medium — copying of tool binaries over SMB admin shares and their execution on new hosts is detectable via file-write plus remote-execution telemetry",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1021.002",
       "technique_name": "Remote Services: SMB/Windows Admin Shares",
       "tactic": "lateral-movement",
       "procedure_description": "Actors used PAExec (a PsExec alternative) to execute code remotely over SMB/admin shares and move laterally after harvesting credentials.",
-      "observed_tooling": ["PAExec (PsExec alternative, lateral movement / remote execution)"],
+      "observed_tooling": [
+        "PAExec (PsExec alternative, lateral movement / remote execution)"
+      ],
       "detection_feasibility": "high — PAExec/PsExec service creation (PAEXEC-* service names, Event ID 7045) and Type-3 admin-share logons (4624/5140) are high-fidelity lateral-movement detections",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1071.003",
       "technique_name": "Application Layer Protocol: Mail Protocols",
       "tactic": "command-and-control",
       "procedure_description": "Signature C2 mechanism: IMAPLoader and StandardKeyboard communicate over IMAP email, polling attacker-controlled Yandex (and update-platform-check.online) mailboxes for tasking and retrieving payloads/results as email content — using legitimate mail infrastructure as the channel.",
-      "observed_tooling": ["IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)", "StandardKeyboard (email-C2 implant, Windows Service variant, WindowsServiceLive.exe)"],
+      "observed_tooling": [
+        "IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)",
+        "StandardKeyboard (email-C2 implant, Windows Service variant, WindowsServiceLive.exe)"
+      ],
       "detection_feasibility": "medium — non-mail-client processes making IMAP/SSL (port 993) connections to consumer webmail (imap.yandex.com) or update-platform-check.online is an anomalous and detectable pattern via network+process correlation, though it hides inside legitimate mail traffic",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/", "https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/",
+        "https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence/yellow-liderc-ships-its-scripts-delivers-imaploader-malware.html"
+      ]
     },
     {
       "technique_id": "T1102",
       "technique_name": "Web Service",
       "tactic": "command-and-control",
       "procedure_description": "A Discord-based RAT variant used Discord as a C2/relay channel, and watering-hole profiling abused the Matomo analytics service as an intermediary for visitor data.",
-      "observed_tooling": ["Discord-based RAT (final-stage remote access)", "Matomo (open-source web analytics, abused for watering-hole visitor profiling)"],
+      "observed_tooling": [
+        "Discord-based RAT (final-stage remote access)",
+        "Matomo (open-source web analytics, abused for watering-hole visitor profiling)"
+      ],
       "detection_feasibility": "medium — beaconing to Discord API/webhook endpoints from non-user processes is detectable via proxy/DNS and process correlation, but blends with legitimate Discord usage",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1219",
       "technique_name": "Remote Access Tools",
       "tactic": "command-and-control",
       "procedure_description": "Actors deployed MeshAgent (MeshCentral) to maintain interactive remote access to compromised hosts.",
-      "observed_tooling": ["MeshAgent / MeshCentral (remote access)"],
+      "observed_tooling": [
+        "MeshAgent / MeshCentral (remote access)"
+      ],
       "detection_feasibility": "high — unsanctioned MeshAgent installation and outbound connections to MeshCentral endpoints are detectable via known-binary/process signatures and RMM-allowlist policy",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1071.001",
@@ -339,7 +449,9 @@
       "procedure_description": "Some implants and the watering-hole beacons communicated over HTTP/HTTPS to hardcoded actor infrastructure (CDN/analytics-masquerading domains and VPS IPs).",
       "observed_tooling": [],
       "detection_feasibility": "medium — HTTP(S) callbacks to the known actor domains/IPs are detectable via proxy/DNS blocklisting and JA3/beacon analytics, but HTTPS C2 blends with normal web traffic absent IOC context",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1005",
@@ -348,16 +460,23 @@
       "procedure_description": "Actors collected files and data of interest from compromised hosts for espionage purposes.",
       "observed_tooling": [],
       "detection_feasibility": "low — local data collection is common; suspicious mainly via staging patterns and process-lineage context; hunt candidate",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1041",
       "technique_name": "Exfiltration Over C2 Channel",
       "tactic": "exfiltration",
       "procedure_description": "Stolen data and command output were exfiltrated back through the implants' C2 channels — notably as IMAP email content to attacker-controlled mailboxes and via the Discord/HTTP channels.",
-      "observed_tooling": ["IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)", "StandardKeyboard (email-C2 implant, Windows Service variant, WindowsServiceLive.exe)"],
+      "observed_tooling": [
+        "IMAPLoader (.NET DLL implant, IMAP/email C2, AppDomainManager injection)",
+        "StandardKeyboard (email-C2 implant, Windows Service variant, WindowsServiceLive.exe)"
+      ],
       "detection_feasibility": "medium — outbound IMAP/email uploads from non-mail processes and data volumes to webmail/Discord are detectable via network+process correlation, but exfil hidden in email traffic is challenging to isolate",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1036",
@@ -366,7 +485,9 @@
       "procedure_description": "Actors masqueraded infrastructure and files as legitimate CDN/analytics services (jquery-cdn.online, cdn.jguery.org, hotjar.info) and named implant service binaries innocuously (e.g. WindowsServiceLive.exe) to blend in.",
       "observed_tooling": [],
       "detection_feasibility": "medium — CDN/analytics-lookalike domains and innocuously named service binaries in unusual paths are detectable via name/path baselining and domain-similarity analytics",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1027",
@@ -375,7 +496,9 @@
       "procedure_description": "Implants and delivery scripts (VBA/Python, .NET payloads) were obfuscated/encoded to hinder static detection and analysis.",
       "observed_tooling": [],
       "detection_feasibility": "medium — high-entropy/encoded payloads and obfuscated script content are detectable via entropy analytics and AMSI script-block logging, but require dedicated scanning",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     },
     {
       "technique_id": "T1105",
@@ -384,7 +507,9 @@
       "procedure_description": "Implants retrieved additional payloads/tooling from actor infrastructure — including next-stage payloads pulled as IMAP email attachments/content and downloads from hardcoded domains/IPs.",
       "observed_tooling": [],
       "detection_feasibility": "medium — post-foothold downloads from actor domains/IPs and files written after implant callbacks are detectable via network + file-creation telemetry when correlated to known IOCs",
-      "sources": ["https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"]
+      "sources": [
+        "https://www.crowdstrike.com/en-us/blog/imperial-kitten-deploys-novel-malware-families/"
+      ]
     }
   ],
   "detection_signals": [

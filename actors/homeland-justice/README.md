@@ -3,7 +3,7 @@
 > **Attribution:** Iran-nexus — high confidence  
 > **MENA targeting:** Israel  
 > **Sectors:** Government (national / public administration), Public services and critical government IT systems, Israel-linked private-sector and organizational targets  
-> **Aliases:** Homeland Justice, Storm-0842, DEV-0842, Karma (leak persona), HomeLand Justice
+> **Aliases:** Homeland Justice, Storm-0842, DEV-0842
 
 ## Summary
 

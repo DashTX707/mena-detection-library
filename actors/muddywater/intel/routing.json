@@ -20,17 +20,17 @@
     {
       "technique_id": "T1027.004",
       "technique_name": "Obfuscated Files or Information: Compile After Delivery",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1027.010",
       "technique_name": "Obfuscated Files or Information: Command Obfuscation",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1036.005",
       "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1047",
@@ -85,7 +85,7 @@
     {
       "technique_id": "T1140",
       "technique_name": "Deobfuscate/Decode Files or Information",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1203",
@@ -105,17 +105,17 @@
     {
       "technique_id": "T1218.003",
       "technique_name": "System Binary Proxy Execution: CMSTP",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1218.005",
       "technique_name": "System Binary Proxy Execution: Mshta",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1218.011",
       "technique_name": "System Binary Proxy Execution: Rundll32",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1219.002",
@@ -165,7 +165,7 @@
     {
       "technique_id": "T1685",
       "technique_name": "Disable or Modify Tools",
-      "tactic": "defense-evasion"
+      "tactic": "defense-impairment"
     }
   ],
   "hunting_candidates": [
@@ -177,7 +177,7 @@
     {
       "technique_id": "T1027.003",
       "technique_name": "Obfuscated Files or Information: Steganography",
-      "tactic": "defense-evasion"
+      "tactic": "stealth"
     },
     {
       "technique_id": "T1033",

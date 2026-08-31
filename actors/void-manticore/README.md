@@ -3,7 +3,7 @@
 > **Attribution:** Iran-nexus — high confidence  
 > **MENA targeting:** Israel  
 > **Sectors:** Government, Public sector / national statistics (INSTAT Albania), Critical infrastructure, Enterprises / high-value Israeli organizations (40+ claimed by Karma)  
-> **Aliases:** Void Manticore, Storm-842, Storm-0842, Karma, KarMa, Homeland Justice
+> **Aliases:** Void Manticore, Storm-1084, Karma
 
 ## Summary
 

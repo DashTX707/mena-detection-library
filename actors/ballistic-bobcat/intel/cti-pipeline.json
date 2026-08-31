@@ -7,17 +7,14 @@
     "mitre_id": "",
     "mitre_canonical_name": "Charming Kitten (overlapping cluster; ESET tracks the Ballistic Bobcat activity group distinctly)",
     "aliases": [
-      "APT35",
-      "Charming Kitten",
-      "Phosphorus",
-      "Mint Sandstorm",
-      "TA453",
-      "Newscaster",
-      "MITRE Group G0058 (Charming Kitten, cited for overlap only)"
+      "Ballistic Bobcat",
+      "APT35-adjacent (ESET-tracked activity group)",
+      "Sponsor (backdoor operator)"
     ],
     "related_clusters": [
       "APT35 / Charming Kitten / Phosphorus (activity overlaps; ESET treats Ballistic Bobcat as its own cluster while noting the overlap)",
-      "PowerLess backdoor operators (prior Ballistic Bobcat toolset; C2 162.55.137.20 overlaps into the Sponsor timeframe)"
+      "PowerLess backdoor operators (prior Ballistic Bobcat toolset; C2 162.55.137.20 overlaps into the Sponsor timeframe)",
+      "Overlaps Charming Kitten / APT35 / Phosphorus / Mint Sandstorm / TA453 / Newscaster (MITRE G0059) - ESET tracks Ballistic Bobcat as a distinct activity group within that overlap; those names identify Charming Kitten (the separate charming-kitten pack), not this cluster."
     ],
     "attribution": "Iran-aligned activity group. ESET tracks Ballistic Bobcat as a distinct cluster whose activity overlaps with the group publicly reported as APT35 / Charming Kitten / Phosphorus / Mint Sandstorm. The overlap is acknowledged honestly rather than collapsed into a single identity — infrastructure, victimology (Israel-heavy), and the Sponsor backdoor are the ESET-tracked basis. This is opportunistic 'scan-and-exploit' targeting of already-vulnerable, in some cases already-known-victim, internet-facing hosts rather than deliberate spearphishing of specific organizations.",
     "attribution_confidence": "medium",
@@ -49,9 +46,32 @@
       }
     ]
   },
-  "threat_actors": ["Ballistic Bobcat", "APT35", "Charming Kitten", "Phosphorus", "Mint Sandstorm", "TA453"],
-  "targeted_regions": ["Israel", "United Arab Emirates", "Brazil"],
-  "targeted_sectors": ["Automotive", "Manufacturing", "Engineering", "Financial services", "Insurance", "Media", "Healthcare", "Technology", "Telecommunications", "Retail", "Legal"],
+  "threat_actors": [
+    "Ballistic Bobcat",
+    "APT35",
+    "Charming Kitten",
+    "Phosphorus",
+    "Mint Sandstorm",
+    "TA453"
+  ],
+  "targeted_regions": [
+    "Israel",
+    "United Arab Emirates",
+    "Brazil"
+  ],
+  "targeted_sectors": [
+    "Automotive",
+    "Manufacturing",
+    "Engineering",
+    "Financial services",
+    "Insurance",
+    "Media",
+    "Healthcare",
+    "Technology",
+    "Telecommunications",
+    "Retail",
+    "Legal"
+  ],
   "malware": [
     "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)",
     "PowerLess (prior Ballistic Bobcat backdoor; infrastructure overlap)"
@@ -77,25 +97,43 @@
       "procedure_description": "Ballistic Bobcat conducts 'scan-and-exploit' behavior — mass scanning the internet for hosts with unpatched, exploitable vulnerabilities (notably Microsoft Exchange) and treating any vulnerable host as an opportunity rather than pursuing pre-selected targets.",
       "observed_tooling": [],
       "detection_feasibility": "low — off-victim internet-wide scanning is not endpoint-observable; inbound probes may register at the perimeter but attribution to this actor is weak; hunt/intel candidate via external attack-surface monitoring",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1587.001",
       "technique_name": "Develop Capabilities: Malware",
       "tactic": "resource-development",
       "procedure_description": "The actor develops and iterates its own Sponsor backdoor across at least five versions (v1-v5, the last aka Alumina), evolving configuration handling, service naming, and evasion between builds.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "low — malware development occurs off-victim; the resulting binaries are where detection lands; intel/hunt candidate via sample tracking and YARA over the Sponsor family",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1588.002",
       "technique_name": "Obtain Capabilities: Tool",
       "tactic": "resource-development",
       "procedure_description": "The actor obtains and operationalizes publicly available offensive and dual-use tools: Mimikatz, ProcDump, WebBrowserPassView, Host2IP, SharpTShipper, SQLExtractor, Plink, RevSocks, GOST, and Chisel.",
-      "observed_tooling": ["Mimikatz (mi.exe)", "ProcDump (procdump64.exe)", "WebBrowserPassView", "Host2IP (host2ip.exe)", "SharpTShipper", "Plink (plink.exe)", "RevSocks (dropped as CSRSS.EXE)", "GOST (gost.exe)", "Chisel (chisel.exe)"],
+      "observed_tooling": [
+        "Mimikatz (mi.exe)",
+        "ProcDump (procdump64.exe)",
+        "WebBrowserPassView",
+        "Host2IP (host2ip.exe)",
+        "SharpTShipper",
+        "Plink (plink.exe)",
+        "RevSocks (dropped as CSRSS.EXE)",
+        "GOST (gost.exe)",
+        "Chisel (chisel.exe)"
+      ],
       "detection_feasibility": "low — tool acquisition itself is off-endpoint; downstream execution of each tool is the detection surface; intel/hunt candidate",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1190",
@@ -104,7 +142,9 @@
       "procedure_description": "Primary initial-access vector: exploitation of internet-facing Microsoft Exchange servers (ProxyLogon/ProxyShell-era, CVE-2021-26855) on already-vulnerable, sometimes already-known-victim hosts, to gain a foothold before dropping the Sponsor backdoor.",
       "observed_tooling": [],
       "detection_feasibility": "high — exploitation of CVE-2021-26855 on Exchange is a strong detection surface: IIS/Exchange request logs, W3SVC anomalies, unexpected child processes of w3wp.exe/UMWorkerProcess, webshell writes to Exchange web roots, and version/patch-state monitoring all apply",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1505.003",
@@ -113,70 +153,101 @@
       "procedure_description": "Following Exchange exploitation the actor stages files under the Exchange/IIS web root and related paths (e.g. %SYSTEMDRIVE%\\inetpub\\wwwroot\\aspnet_client\\, %WINDIR%\\INF\\MSExchange Delivery DSN\\) consistent with webshell-mediated access on the compromised server prior to backdoor installation.",
       "observed_tooling": [],
       "detection_feasibility": "high — file-integrity monitoring on Exchange/IIS web roots (inetpub\\wwwroot\\aspnet_client) and anomalous file writes by w3wp.exe are high-fidelity, actor-relevant detections",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1059.003",
       "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
       "tactic": "execution",
       "procedure_description": "Installation and operation are driven by batch scripts (install.bat, Uninstall.bat) executed via cmd.exe; the Sponsor backdoor's 'e' operator command runs arbitrary shell commands with cmd.exe /c.",
-      "observed_tooling": ["cmd.exe / batch scripts (install.bat, Uninstall.bat)"],
+      "observed_tooling": [
+        "cmd.exe / batch scripts (install.bat, Uninstall.bat)"
+      ],
       "detection_feasibility": "high — cmd.exe spawning from a service process or from batch installers, and cmd.exe /c children of the Sponsor service binary, are directly observable via process-creation telemetry (Event ID 4688 / Sysmon 1)",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1204",
       "technique_name": "User Execution",
       "tactic": "execution",
       "procedure_description": "The Sponsor backdoor requires the 'install' runtime argument to execute its installation routine, invoked by the actor's batch-file installer rather than the victim; captured here as the controlled-argument launch behavior of the dropper chain.",
-      "observed_tooling": ["cmd.exe / batch scripts (install.bat, Uninstall.bat)"],
+      "observed_tooling": [
+        "cmd.exe / batch scripts (install.bat, Uninstall.bat)"
+      ],
       "detection_feasibility": "medium — the specific 'install' command-line argument on the Sponsor binary is a detectable string in process-creation logs, but requires knowing the binary name/argument pattern",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1543.003",
       "technique_name": "Create or Modify System Process: Windows Service",
       "tactic": "persistence",
       "procedure_description": "The batch installer registers the Sponsor backdoor as a Windows service configured for automatic startup with full access — named 'SystemNetwork' in v1 and 'Update' in v2 through v5 — providing boot-persistent execution.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "high — service creation (Event ID 7045 / 4697) with the names SystemNetwork or Update pointing at an unsigned binary in an unusual path is a high-fidelity, actor-specific detection",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1569.002",
       "technique_name": "System Services: Service Execution",
       "tactic": "execution",
       "procedure_description": "The Sponsor backdoor runs as a registered Windows service; execution of the payload is achieved through the Service Control Manager starting the SystemNetwork/Update service.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "high — services.exe launching an unsigned backdoor binary from a non-standard path is observable via service-start and process-lineage telemetry",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1140",
       "technique_name": "Deobfuscate/Decode Files or Information",
       "tactic": "stealth",
       "procedure_description": "Sponsor reads configuration and C2 parameters from on-disk config files (config.txt, node.txt, error.txt) and decodes/decrypts its command-and-control messages (Base64 + RC4) at runtime.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "medium — the on-disk config files (config.txt, node.txt, error.txt) co-located with the service binary are a detectable file-artifact pattern, though the decode logic itself is in-memory",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1027",
       "technique_name": "Obfuscated Files or Information",
       "tactic": "stealth",
       "procedure_description": "Sponsor stores its operational parameters in obfuscated on-disk configuration files and obfuscates its network traffic; ESET notes evasion improvements across backdoor versions.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "medium — high-entropy config files adjacent to a service binary are detectable via file-entropy analytics, but need dedicated scanning",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1036.005",
       "technique_name": "Masquerading: Match Legitimate Resource Name or Location",
       "tactic": "stealth",
       "procedure_description": "The actor names its service 'SystemNetwork'/'Update' and drops the RevSocks reverse-proxy tool as CSRSS.EXE to masquerade as the legitimate Windows Client/Server Runtime Subsystem; tooling is staged in Windows-legitimate paths such as %WINDIR%\\Tasks\\ and %WINDIR%\\INF\\.",
-      "observed_tooling": ["RevSocks (dropped as CSRSS.EXE)", "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "RevSocks (dropped as CSRSS.EXE)",
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "high — a CSRSS.EXE running from a path other than %WINDIR%\\System32 (or with a non-Microsoft signature) is a rare, high-fidelity masquerade detection via image-path/signature analytics",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1078.003",
@@ -185,169 +256,249 @@
       "procedure_description": "The actor leverages valid local accounts on compromised hosts (following credential theft) to execute tooling with elevated privileges and to blend backdoor operations with legitimate activity.",
       "observed_tooling": [],
       "detection_feasibility": "medium — reuse of local credentials is detectable via anomalous local-logon analytics but blends with legitimate administration",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1003.001",
       "technique_name": "OS Credential Dumping: LSASS Memory",
       "tactic": "credential-access",
       "procedure_description": "The actor deploys ProcDump (procdump64.exe) to dump LSASS process memory and Mimikatz (mi.exe) to extract credentials from that memory / the local system.",
-      "observed_tooling": ["ProcDump (procdump64.exe)", "Mimikatz (mi.exe)"],
+      "observed_tooling": [
+        "ProcDump (procdump64.exe)",
+        "Mimikatz (mi.exe)"
+      ],
       "detection_feasibility": "high — procdump against lsass.exe (command line containing lsass / -ma) and process access to lsass by Mimikatz are highly observable via EDR process-access and command-line telemetry",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1555.003",
       "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
       "tactic": "credential-access",
       "procedure_description": "The actor runs WebBrowserPassView to extract stored credentials from web browsers on compromised hosts.",
-      "observed_tooling": ["WebBrowserPassView"],
+      "observed_tooling": [
+        "WebBrowserPassView"
+      ],
       "detection_feasibility": "high — WebBrowserPassView execution and its access to browser credential stores (Login Data files) are detectable via known-tool hashes/signatures and file-access telemetry",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1082",
       "technique_name": "System Information Discovery",
       "tactic": "discovery",
       "procedure_description": "On check-in, the Sponsor backdoor collects extensive host information: hostname, BIOS info, processor details, Windows version, domain membership, username, and AC/battery power status.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "medium — the discovery happens inside the backdoor via API calls rather than spawned commands, so it is subtle; detection leans on catching the backdoor process/beacon rather than the enumeration itself",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1614.001",
       "technique_name": "System Location Discovery: System Language Discovery",
       "tactic": "discovery",
       "procedure_description": "The Sponsor backdoor collects the host timezone and locale/language settings as part of its initial reconnaissance report to the C2.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "low — locale/timezone queries are in-process and indistinguishable from benign activity; hunt candidate only in the context of the backdoor",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1057",
       "technique_name": "Process Discovery",
       "tactic": "discovery",
       "procedure_description": "The Sponsor backdoor's 'p' operator command returns a process ID to the operator, providing basic process-context discovery.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "low — a single PID lookup inside the backdoor is not meaningfully observable on its own; hunt candidate tied to the backdoor",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1018",
       "technique_name": "Remote System Discovery",
       "tactic": "discovery",
       "procedure_description": "The actor runs Host2IP (host2ip.exe) to resolve hostnames to IP addresses and map remote systems on the victim network in preparation for lateral movement and tunneling.",
-      "observed_tooling": ["Host2IP (host2ip.exe)"],
+      "observed_tooling": [
+        "Host2IP (host2ip.exe)"
+      ],
       "detection_feasibility": "medium — execution of host2ip.exe (a non-standard utility) and bursts of name-resolution/host enumeration are detectable via process and DNS telemetry",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1046",
       "technique_name": "Network Service Discovery",
       "tactic": "discovery",
       "procedure_description": "Following the Host2IP mapping, the actor identifies reachable internal services/hosts to plan pivoting and tunneling deeper into the network.",
-      "observed_tooling": ["Host2IP (host2ip.exe)"],
+      "observed_tooling": [
+        "Host2IP (host2ip.exe)"
+      ],
       "detection_feasibility": "medium — internal service discovery / connection fan-out is detectable via east-west network analytics, though it can blend with legitimate scanning tools",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1071.001",
       "technique_name": "Application Layer Protocol: Web Protocols",
       "tactic": "command-and-control",
       "procedure_description": "The Sponsor backdoor communicates with its C2 over HTTP on port 80, polling at a configurable interval defined in config.txt.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "high — periodic HTTP/80 beacons from a service process to the known Sponsor C2 IPs are detectable via network/proxy telemetry and beacon-interval analytics, especially when correlated with the C2 IOCs",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1573.001",
       "technique_name": "Encrypted Channel: Symmetric Cryptography",
       "tactic": "command-and-control",
       "procedure_description": "Sponsor encrypts its C2 message contents with RC4 (a symmetric cipher) before transmission over HTTP.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "medium — RC4-encrypted payloads inside plain HTTP produce high-entropy bodies over port 80 that can be flagged heuristically, but confirmation needs payload inspection",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1132.001",
       "technique_name": "Data Encoding: Standard Encoding",
       "tactic": "command-and-control",
       "procedure_description": "Sponsor Base64-encodes its (RC4-encrypted) C2 messages before sending them over HTTP.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "medium — Base64-encoded blobs in HTTP request/response bodies to the Sponsor C2 are detectable heuristically, particularly combined with the beacon interval and C2 IOCs",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1001",
       "technique_name": "Data Obfuscation",
       "tactic": "command-and-control",
       "procedure_description": "Sponsor obscures its command-and-control traffic by layering RC4 encryption and Base64 encoding, disguising the true content of operator commands and exfiltrated host data.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "medium — obfuscated C2 is best caught via anomaly on the HTTP/80 channel to the Sponsor C2 IPs rather than content signatures",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1105",
       "technique_name": "Ingress Tool Transfer",
       "tactic": "command-and-control",
       "procedure_description": "The Sponsor backdoor's 'd' and 'u' operator commands download and execute additional files, with 'u' using the URLDownloadToFileW API; dedicated tool-delivery servers were used to stage the open-source toolset.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "high — the Sponsor service or a URLDownloadToFileW call fetching an executable followed by its execution is detectable via process+network+file-write correlation; outbound to the tool-delivery IOCs (5.255.97.172, 198.144.189.74) adds fidelity",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1090",
       "technique_name": "Proxy",
       "tactic": "command-and-control",
       "procedure_description": "The actor deploys RevSocks (as CSRSS.EXE) and GOST to establish reverse SOCKS proxies / TCP-UDP relays out of the victim network, and Chisel for HTTP/SSH-tunneled proxying.",
-      "observed_tooling": ["RevSocks (dropped as CSRSS.EXE)", "GOST (gost.exe)", "Chisel (chisel.exe)"],
+      "observed_tooling": [
+        "RevSocks (dropped as CSRSS.EXE)",
+        "GOST (gost.exe)",
+        "Chisel (chisel.exe)"
+      ],
       "detection_feasibility": "high — execution of RevSocks/GOST/Chisel (by known hash or renamed CSRSS.EXE outside System32) and their outbound reverse-proxy connections are detectable via process and network telemetry",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1572",
       "technique_name": "Protocol Tunneling",
       "tactic": "command-and-control",
       "procedure_description": "The actor uses Plink (plink.exe) for SSH tunneling and GOST/Chisel to tunnel TCP/UDP/HTTP traffic, relaying connections to bypass network controls and reach internal systems.",
-      "observed_tooling": ["Plink (plink.exe)", "GOST (gost.exe)", "Chisel (chisel.exe)"],
+      "observed_tooling": [
+        "Plink (plink.exe)",
+        "GOST (gost.exe)",
+        "Chisel (chisel.exe)"
+      ],
       "detection_feasibility": "high — plink.exe/gost.exe/chisel.exe execution and their tunneling connections are detectable via process command-line and outbound-connection telemetry",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1021.004",
       "technique_name": "Remote Services: SSH",
       "tactic": "lateral-movement",
       "procedure_description": "The actor uses Plink (the PuTTY command-line SSH client) to establish SSH connections/tunnels for pivoting between and accessing compromised systems.",
-      "observed_tooling": ["Plink (plink.exe)"],
+      "observed_tooling": [
+        "Plink (plink.exe)"
+      ],
       "detection_feasibility": "medium — plink.exe execution and outbound SSH from unusual internal hosts are detectable via process and network telemetry, though SSH can be legitimate in some environments",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1041",
       "technique_name": "Exfiltration Over C2 Channel",
       "tactic": "exfiltration",
       "procedure_description": "Collected host reconnaissance and command output are returned to the operator over the same Base64+RC4-obfuscated HTTP/80 Sponsor C2 channel.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)"
+      ],
       "detection_feasibility": "medium — outbound data returned over the beacon channel is detectable as part of the C2 flow to the Sponsor IOCs, but distinguishing exfil volume from beaconing requires flow analysis",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1070.004",
       "technique_name": "Indicator Removal: File Deletion",
       "tactic": "stealth",
       "procedure_description": "The Sponsor backdoor's 's' operator command runs Uninstall.bat to remove the backdoor and its artifacts from disk, cleaning up indicators when the operator ends access.",
-      "observed_tooling": ["Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)", "cmd.exe / batch scripts (install.bat, Uninstall.bat)"],
+      "observed_tooling": [
+        "Sponsor (modular Windows-service backdoor; versions v1-v5, v5 aka Alumina)",
+        "cmd.exe / batch scripts (install.bat, Uninstall.bat)"
+      ],
       "detection_feasibility": "medium — execution of Uninstall.bat and deletion of the service binary/config files (config.txt, node.txt, error.txt) are detectable via process-creation and file-delete telemetry if captured before cleanup completes",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     },
     {
       "technique_id": "T1005",
       "technique_name": "Data from Local System",
       "tactic": "collection",
       "procedure_description": "The actor uses SQLExtractor (sqlextractor.exe) to interact with and extract data from SQL databases on compromised hosts, and collects local host data via the backdoor.",
-      "observed_tooling": ["SQLExtractor (sqlextractor.exe)"],
+      "observed_tooling": [
+        "SQLExtractor (sqlextractor.exe)"
+      ],
       "detection_feasibility": "medium — execution of a non-standard sqlextractor.exe and bulk local database reads are detectable via process and file/DB-access telemetry, though it can resemble legitimate DBA activity",
-      "sources": ["https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"]
+      "sources": [
+        "https://www.welivesecurity.com/en/eset-research/sponsor-batch-filed-whiskers-ballistic-bobcats-scan-strike-backdoor/"
+      ]
     }
   ],
   "detection_signals": [

@@ -80,18 +80,57 @@
       }
     ]
   },
-  "threat_actors": ["Gaza Cybergang", "Molerats", "TA402"],
-  "targeted_regions": ["Palestinian Territories", "Israel", "Jordan", "Egypt", "Lebanon", "Saudi Arabia", "UAE", "Turkey"],
-  "targeted_sectors": ["Government", "Diplomatic", "Military / defense", "Media / journalism", "Political activists", "Financial", "Telecommunications"],
+  "threat_actors": [
+    "Gaza Cybergang",
+    "Molerats",
+    "TA402"
+  ],
+  "targeted_regions": [
+    "Palestinian Territories",
+    "Israel",
+    "Jordan",
+    "Egypt",
+    "Lebanon",
+    "Saudi Arabia",
+    "UAE",
+    "Turkey"
+  ],
+  "targeted_sectors": [
+    "Government",
+    "Diplomatic",
+    "Military / defense",
+    "Media / journalism",
+    "Political activists",
+    "Financial",
+    "Telecommunications"
+  ],
   "malware": [
-    "Spark", "Pierogi", "DropBook", "SharpStage", "MoleNet", "IronWind", "NimbleMamba",
-    "Molerats RAT toolset (SneakyPastes)", "XMRig?", "BrowserPasswordDump10"
+    "Spark",
+    "Pierogi",
+    "DropBook",
+    "SharpStage",
+    "MoleNet",
+    "IronWind",
+    "NimbleMamba",
+    "Molerats RAT toolset (SneakyPastes)",
+    "XMRig?",
+    "BrowserPasswordDump10"
   ],
   "tooling_observed": [
-    "BrowserPasswordDump10", "PyInstaller (DropBook packaging)", "msiexec.exe", "schtasks.exe",
-    "wscript.exe / cscript.exe", "powershell.exe", "cmd.exe", "Dropbox API", "Google Drive",
-    "Facebook / Simplenote / Quora (C2 dead-drops)", "Pastebin / Github (SneakyPastes stagers)",
-    "XLL Excel add-ins", "Microsoft Access .accdb droppers", "forged Microsoft code-signing certificates"
+    "BrowserPasswordDump10",
+    "PyInstaller (DropBook packaging)",
+    "msiexec.exe",
+    "schtasks.exe",
+    "wscript.exe / cscript.exe",
+    "powershell.exe",
+    "cmd.exe",
+    "Dropbox API",
+    "Google Drive",
+    "Facebook / Simplenote / Quora (C2 dead-drops)",
+    "Pastebin / Github (SneakyPastes stagers)",
+    "XLL Excel add-ins",
+    "Microsoft Access .accdb droppers",
+    "forged Microsoft code-signing certificates"
   ],
   "ttps": [
     {
@@ -99,54 +138,96 @@
       "technique_name": "Phishing: Spearphishing Attachment",
       "tactic": "initial-access",
       "procedure_description": "Gaza Cybergang sends spearphishing emails with malicious Microsoft Word/Excel and PDF attachments carrying regional-politics lures (Israeli-Palestinian affairs, Hamas/Fatah, diplomatic themes) to deliver Spark, SharpStage and IronWind.",
-      "observed_tooling": ["Spark", "SharpStage", "IronWind"],
+      "observed_tooling": [
+        "Spark",
+        "SharpStage",
+        "IronWind"
+      ],
       "detection_feasibility": "medium — attachment-based spearphishing is detectable via mail sandboxing and macro/XLL/.accdb content analysis at the gateway",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://unit42.paloaltonetworks.com/molerats-delivers-spark-backdoor/", "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://unit42.paloaltonetworks.com/molerats-delivers-spark-backdoor/",
+        "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"
+      ]
     },
     {
       "technique_id": "T1566.002",
       "technique_name": "Phishing: Spearphishing Link",
       "tactic": "initial-access",
       "procedure_description": "Gaza Cybergang sends phishing emails containing malicious links, including geofenced links (NimbleMamba) and Dropbox-hosted links (IronWind) that gate delivery to intended regional victims.",
-      "observed_tooling": ["NimbleMamba", "IronWind"],
+      "observed_tooling": [
+        "NimbleMamba",
+        "IronWind"
+      ],
       "detection_feasibility": "medium — link-based spearphishing is detectable via URL rewriting/detonation and proxy telemetry, though geofencing degrades sandbox coverage",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"
+      ]
     },
     {
       "technique_id": "T1204.001",
       "technique_name": "User Execution: Malicious Link",
       "tactic": "execution",
       "procedure_description": "Sends malicious links via email that trick users into opening a RAR/archive and running an embedded executable.",
-      "observed_tooling": ["NimbleMamba"],
+      "observed_tooling": [
+        "NimbleMamba"
+      ],
       "detection_feasibility": "medium — link clicks are visible in email/URL-gateway and proxy logs; endpoint signal is indirect until the archive is opened",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1204.002",
       "technique_name": "User Execution: Malicious File",
       "tactic": "execution",
       "procedure_description": "Delivers files via email that trick users into clicking Enable Content to run an embedded macro, or into opening weaponized XLL/.accdb files leading to IronWind.",
-      "observed_tooling": ["SharpStage", "IronWind"],
+      "observed_tooling": [
+        "SharpStage",
+        "IronWind"
+      ],
       "detection_feasibility": "high — Office/Excel spawning script or child processes after macro/XLL enablement is a core detectable behavior",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"
+      ]
     },
     {
       "technique_id": "T1059.001",
       "technique_name": "Command and Scripting Interpreter: PowerShell",
       "tactic": "execution",
       "procedure_description": "Uses PowerShell implants and PowerShell execution stages (observed in SharpStage and MoleNet chains).",
-      "observed_tooling": ["SharpStage", "MoleNet"],
+      "observed_tooling": [
+        "SharpStage",
+        "MoleNet"
+      ],
       "detection_feasibility": "high — script-block/module logging and suspicious PowerShell parenting (Office->PowerShell) are well-covered detections",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://attack.mitre.org/software/S0546/", "https://attack.mitre.org/software/S0553/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://attack.mitre.org/software/S0546/",
+        "https://attack.mitre.org/software/S0553/"
+      ]
     },
     {
       "technique_id": "T1059.003",
       "technique_name": "Command and Scripting Interpreter: Windows Command Shell",
       "tactic": "execution",
       "procedure_description": "Spark, SharpStage, DropBook, MoleNet and Pierogi execute commands via the Windows command shell (cmd.exe).",
-      "observed_tooling": ["Spark", "SharpStage", "DropBook", "MoleNet", "Pierogi"],
+      "observed_tooling": [
+        "Spark",
+        "SharpStage",
+        "DropBook",
+        "MoleNet",
+        "Pierogi"
+      ],
       "detection_feasibility": "high — cmd.exe execution with anomalous parents (Office, script hosts, backdoor processes) is visible in process-creation logs",
-      "sources": ["https://attack.mitre.org/software/S0543/", "https://attack.mitre.org/software/S0546/", "https://attack.mitre.org/software/S0547/", "https://attack.mitre.org/software/S0553/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/",
+        "https://attack.mitre.org/software/S0546/",
+        "https://attack.mitre.org/software/S0547/",
+        "https://attack.mitre.org/software/S0553/"
+      ]
     },
     {
       "technique_id": "T1059.005",
@@ -155,16 +236,23 @@
       "procedure_description": "Uses various implants built with VBScript on target machines, including macro-embedded VBS droppers.",
       "observed_tooling": [],
       "detection_feasibility": "high — wscript/cscript executing VBS, especially spawned by Office, is a strong detectable signal",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1059.006",
       "technique_name": "Command and Scripting Interpreter: Python",
       "tactic": "execution",
       "procedure_description": "DropBook is a Python-based backdoor compiled with PyInstaller, executing Python-implemented backdoor logic on the victim.",
-      "observed_tooling": ["DropBook"],
+      "observed_tooling": [
+        "DropBook"
+      ],
       "detection_feasibility": "medium — PyInstaller-packed binaries are detectable via unusual temp _MEI extraction folders and bundled-python process behavior rather than a python.exe command line",
-      "sources": ["https://attack.mitre.org/software/S0547/", "https://www.cybereason.com/blog/new-malware-arsenal-abusing-cloud-services-in-middle-east-espionage-campaign"]
+      "sources": [
+        "https://attack.mitre.org/software/S0547/",
+        "https://www.cybereason.com/blog/new-malware-arsenal-abusing-cloud-services-in-middle-east-espionage-campaign"
+      ]
     },
     {
       "technique_id": "T1059.007",
@@ -173,151 +261,234 @@
       "procedure_description": "Uses various implants including those built with JavaScript on target machines.",
       "observed_tooling": [],
       "detection_feasibility": "medium — wscript/mshta-hosted JS is detectable via script-host process lineage and script-block logging",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1047",
       "technique_name": "Windows Management Instrumentation",
       "tactic": "execution",
       "procedure_description": "SharpStage and MoleNet use WMI for execution and host reconnaissance.",
-      "observed_tooling": ["SharpStage", "MoleNet"],
+      "observed_tooling": [
+        "SharpStage",
+        "MoleNet"
+      ],
       "detection_feasibility": "high — WMI process creation and WMI-Activity operational logs provide strong telemetry",
-      "sources": ["https://attack.mitre.org/software/S0546/", "https://attack.mitre.org/software/S0553/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0546/",
+        "https://attack.mitre.org/software/S0553/"
+      ]
     },
     {
       "technique_id": "T1053.005",
       "technique_name": "Scheduled Task/Job: Scheduled Task",
       "tactic": "persistence",
       "procedure_description": "Creates scheduled tasks to persistently run VBScripts and to relaunch the SharpStage backdoor.",
-      "observed_tooling": ["SharpStage"],
+      "observed_tooling": [
+        "SharpStage"
+      ],
       "detection_feasibility": "high — scheduled-task creation is logged (Event ID 4698 / Task Scheduler operational) and highly detectable, especially with script actions",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://attack.mitre.org/software/S0546/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://attack.mitre.org/software/S0546/"
+      ]
     },
     {
       "technique_id": "T1547.001",
       "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
       "tactic": "persistence",
       "procedure_description": "Saves malicious files within AppData and Startup folders and sets Run keys to maintain persistence (SharpStage, MoleNet).",
-      "observed_tooling": ["SharpStage", "MoleNet"],
+      "observed_tooling": [
+        "SharpStage",
+        "MoleNet"
+      ],
       "detection_feasibility": "high — Run-key writes and Startup-folder file drops are detectable via registry and file-creation telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://attack.mitre.org/software/S0546/", "https://attack.mitre.org/software/S0553/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://attack.mitre.org/software/S0546/",
+        "https://attack.mitre.org/software/S0553/"
+      ]
     },
     {
       "technique_id": "T1055",
       "technique_name": "Process Injection",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "The IronWind multi-stage loader downloads and injects shellcode into a target process to run follow-on stages in memory.",
-      "observed_tooling": ["IronWind"],
+      "observed_tooling": [
+        "IronWind"
+      ],
       "detection_feasibility": "medium — injection is detectable via EDR memory/API telemetry (CreateRemoteThread, RWX allocations) but requires endpoint depth",
-      "sources": ["https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"]
+      "sources": [
+        "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"
+      ]
     },
     {
       "technique_id": "T1218.007",
       "technique_name": "System Binary Proxy Execution: Msiexec",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "Uses msiexec.exe to execute an MSI payload as a proxy for malicious code execution.",
       "observed_tooling": [],
       "detection_feasibility": "high — msiexec.exe executing MSI packages from user-writable/temp paths or with network sources is a detectable LOLBin pattern",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1553.002",
       "technique_name": "Subvert Trust Controls: Code Signing",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "Uses forged/abused Microsoft code-signing certificates on malware to appear trusted.",
       "observed_tooling": [],
       "detection_feasibility": "medium — signed-malware is detectable via certificate-reputation/thumbprint hunting and signature-anomaly analytics on loaded binaries",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1027.002",
       "technique_name": "Obfuscated Files or Information: Software Packing",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "The Spark backdoor is packed (Enigma protector) to hinder static analysis and detection.",
-      "observed_tooling": ["Spark"],
+      "observed_tooling": [
+        "Spark"
+      ],
       "detection_feasibility": "low — packed binaries are common and packing alone is weakly indicative; hunt candidate via packer-signature/entropy analytics rather than a standalone alert",
-      "sources": ["https://attack.mitre.org/software/S0543/", "https://unit42.paloaltonetworks.com/molerats-delivers-spark-backdoor/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/",
+        "https://unit42.paloaltonetworks.com/molerats-delivers-spark-backdoor/"
+      ]
     },
     {
       "technique_id": "T1027.006",
       "technique_name": "Obfuscated Files or Information: HTML Smuggling",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "IronWind initial-access chains use HTML smuggling to reconstruct and drop the malicious archive/payload client-side, evading gateway inspection.",
-      "observed_tooling": ["IronWind"],
+      "observed_tooling": [
+        "IronWind"
+      ],
       "detection_feasibility": "medium — HTML smuggling is detectable via JS blob/anchor-download inspection at the proxy and browser-download telemetry, but bypasses attachment scanning",
-      "sources": ["https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"]
+      "sources": [
+        "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"
+      ]
     },
     {
       "technique_id": "T1027.015",
       "technique_name": "Obfuscated Files or Information: Compression",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "Delivers compressed executables within ZIP/RAR files to victims to evade content inspection.",
       "observed_tooling": [],
       "detection_feasibility": "low — archive delivery is ubiquitous; better as gateway archive-inspection/hunt than a standalone endpoint detection",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1140",
       "technique_name": "Deobfuscate/Decode Files or Information",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "Decompresses ZIP files once on the victim machine and decodes staged/encoded payloads at runtime (Spark, SharpStage, DropBook).",
-      "observed_tooling": ["Spark", "SharpStage", "DropBook"],
+      "observed_tooling": [
+        "Spark",
+        "SharpStage",
+        "DropBook"
+      ],
       "detection_feasibility": "medium — runtime decode routines are detectable via script-block logging and certutil/PowerShell decode command-lines where used",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://attack.mitre.org/software/S0543/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://attack.mitre.org/software/S0543/"
+      ]
     },
     {
       "technique_id": "T1497.002",
       "technique_name": "Virtualization/Sandbox Evasion: User Activity Based Checks",
-      "tactic": "defense-evasion",
+      "tactic": "stealth",
       "procedure_description": "Spark performs anti-analysis/user-activity checks before executing to avoid detonating in sandboxes.",
-      "observed_tooling": ["Spark"],
+      "observed_tooling": [
+        "Spark"
+      ],
       "detection_feasibility": "low — pre-payload sandbox/user-activity checks leave little host log signal; hunt candidate via static analysis of the sample",
-      "sources": ["https://attack.mitre.org/software/S0543/", "https://unit42.paloaltonetworks.com/molerats-delivers-spark-backdoor/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/",
+        "https://unit42.paloaltonetworks.com/molerats-delivers-spark-backdoor/"
+      ]
     },
     {
       "technique_id": "T1614.001",
       "technique_name": "System Location Discovery: System Language Discovery",
       "tactic": "discovery",
       "procedure_description": "Spark, DropBook and SharpStage check the system's keyboard/language settings so the malware runs only on Arabic-language systems; NimbleMamba similarly geofences delivery — a signature Gaza Cybergang victim-gating behavior.",
-      "observed_tooling": ["Spark", "DropBook", "SharpStage", "NimbleMamba"],
+      "observed_tooling": [
+        "Spark",
+        "DropBook",
+        "SharpStage",
+        "NimbleMamba"
+      ],
       "detection_feasibility": "low — a single locale/keyboard-layout API query is near-invisible in host logs; hunt candidate via sample analysis, not endpoint detection",
-      "sources": ["https://attack.mitre.org/software/S0543/", "https://attack.mitre.org/software/S0547/", "https://attack.mitre.org/software/S0546/", "https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/",
+        "https://attack.mitre.org/software/S0547/",
+        "https://attack.mitre.org/software/S0546/",
+        "https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"
+      ]
     },
     {
       "technique_id": "T1082",
       "technique_name": "System Information Discovery",
       "tactic": "discovery",
       "procedure_description": "Spark, DropBook, SharpStage and MoleNet collect host information (OS, hostname, hardware) and report it to C2.",
-      "observed_tooling": ["Spark", "DropBook", "SharpStage", "MoleNet"],
+      "observed_tooling": [
+        "Spark",
+        "DropBook",
+        "SharpStage",
+        "MoleNet"
+      ],
       "detection_feasibility": "medium — systeminfo-style discovery is common; suspicious mainly in tight backdoor process-lineage context",
-      "sources": ["https://attack.mitre.org/software/S0543/", "https://attack.mitre.org/software/S0547/", "https://attack.mitre.org/software/S0546/", "https://attack.mitre.org/software/S0553/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/",
+        "https://attack.mitre.org/software/S0547/",
+        "https://attack.mitre.org/software/S0546/",
+        "https://attack.mitre.org/software/S0553/"
+      ]
     },
     {
       "technique_id": "T1033",
       "technique_name": "System Owner/User Discovery",
       "tactic": "discovery",
       "procedure_description": "Spark gathers the victim's username/owner information as part of host profiling.",
-      "observed_tooling": ["Spark"],
+      "observed_tooling": [
+        "Spark"
+      ],
       "detection_feasibility": "medium — whoami/user-context queries are common; value is in process-lineage correlation with the backdoor",
-      "sources": ["https://attack.mitre.org/software/S0543/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/"
+      ]
     },
     {
       "technique_id": "T1083",
       "technique_name": "File and Directory Discovery",
       "tactic": "discovery",
       "procedure_description": "DropBook enumerates files and directories on the victim to select data of interest.",
-      "observed_tooling": ["DropBook"],
+      "observed_tooling": [
+        "DropBook"
+      ],
       "detection_feasibility": "low — file/directory enumeration is high-volume and hard to isolate; behavioral hunt candidate",
-      "sources": ["https://attack.mitre.org/software/S0547/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0547/"
+      ]
     },
     {
       "technique_id": "T1518.001",
       "technique_name": "Software Discovery: Security Software Discovery",
       "tactic": "discovery",
       "procedure_description": "MoleNet enumerates installed security/AV software on the victim to inform follow-on tooling.",
-      "observed_tooling": ["MoleNet"],
+      "observed_tooling": [
+        "MoleNet"
+      ],
       "detection_feasibility": "medium — AV-product enumeration (WMI SecurityCenter / registry / service queries) is detectable when tied to a backdoor's process lineage",
-      "sources": ["https://attack.mitre.org/software/S0553/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0553/"
+      ]
     },
     {
       "technique_id": "T1057",
@@ -326,97 +497,156 @@
       "procedure_description": "Obtains a list of active processes on the victim and sends them to C2 servers.",
       "observed_tooling": [],
       "detection_feasibility": "medium — process enumeration is common but meaningful in backdoor process-lineage context",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1555.003",
       "technique_name": "Credentials from Password Stores: Credentials from Web Browsers",
       "tactic": "credential-access",
       "procedure_description": "Uses the public tool BrowserPasswordDump10 to dump passwords saved in victim browsers.",
-      "observed_tooling": ["BrowserPasswordDump10"],
+      "observed_tooling": [
+        "BrowserPasswordDump10"
+      ],
       "detection_feasibility": "medium — access to browser Login Data stores and known-tool execution are detectable via file-access and process signatures",
-      "sources": ["https://attack.mitre.org/groups/G0021/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/"
+      ]
     },
     {
       "technique_id": "T1113",
       "technique_name": "Screen Capture",
       "tactic": "collection",
       "procedure_description": "SharpStage and the Pierogi backdoor capture screenshots of the victim's desktop for espionage.",
-      "observed_tooling": ["SharpStage", "Pierogi"],
+      "observed_tooling": [
+        "SharpStage",
+        "Pierogi"
+      ],
       "detection_feasibility": "low — screen-capture APIs leave little discrete log signal; behavioral/EDR hunt candidate",
-      "sources": ["https://attack.mitre.org/software/S0546/", "https://www.cybereason.com/blog/operation-bearded-barbie-apt-c-23-campaign-targeting-israeli-officials"]
+      "sources": [
+        "https://attack.mitre.org/software/S0546/",
+        "https://www.cybereason.com/blog/operation-bearded-barbie-apt-c-23-campaign-targeting-israeli-officials"
+      ]
     },
     {
       "technique_id": "T1105",
       "technique_name": "Ingress Tool Transfer",
       "tactic": "command-and-control",
       "procedure_description": "Uses executables and backdoors (DropBook, SharpStage, MoleNet, IronWind, Pierogi) to download additional malicious files and follow-on stages onto the victim.",
-      "observed_tooling": ["DropBook", "SharpStage", "MoleNet", "IronWind", "Pierogi"],
+      "observed_tooling": [
+        "DropBook",
+        "SharpStage",
+        "MoleNet",
+        "IronWind",
+        "Pierogi"
+      ],
       "detection_feasibility": "high — remote downloads and unexpected inbound file writes are strongly detectable in process + network telemetry",
-      "sources": ["https://attack.mitre.org/groups/G0021/", "https://attack.mitre.org/software/S0547/", "https://attack.mitre.org/software/S0546/", "https://attack.mitre.org/software/S0553/"]
+      "sources": [
+        "https://attack.mitre.org/groups/G0021/",
+        "https://attack.mitre.org/software/S0547/",
+        "https://attack.mitre.org/software/S0546/",
+        "https://attack.mitre.org/software/S0553/"
+      ]
     },
     {
       "technique_id": "T1071.001",
       "technique_name": "Application Layer Protocol: Web Protocols",
       "tactic": "command-and-control",
       "procedure_description": "Spark and IronWind communicate with C2 over HTTP/web protocols.",
-      "observed_tooling": ["Spark", "IronWind"],
+      "observed_tooling": [
+        "Spark",
+        "IronWind"
+      ],
       "detection_feasibility": "medium — HTTP C2 is detectable via proxy/beacon analytics and URI/JA3 anomalies but blends with normal web traffic",
-      "sources": ["https://attack.mitre.org/software/S0543/", "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/",
+        "https://www.proofpoint.com/us/blog/threat-insight/ta402-uses-complex-ironwind-infection-chain-target-middle-east"
+      ]
     },
     {
       "technique_id": "T1132.001",
       "technique_name": "Data Encoding: Standard Encoding",
       "tactic": "command-and-control",
       "procedure_description": "Spark encodes C2 data using standard encoding (e.g. base64) before transmission.",
-      "observed_tooling": ["Spark"],
+      "observed_tooling": [
+        "Spark"
+      ],
       "detection_feasibility": "medium — base64-encoded C2 content is detectable via network inspection and encoding heuristics where TLS is absent",
-      "sources": ["https://attack.mitre.org/software/S0543/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/"
+      ]
     },
     {
       "technique_id": "T1102",
       "technique_name": "Web Service",
       "tactic": "command-and-control",
       "procedure_description": "DropBook and SharpStage use legitimate web/cloud services (Dropbox, Google Drive, Facebook, Simplenote, Quora) as the C2 medium to blend with normal SaaS traffic — a signature Gaza Cybergang tradecraft.",
-      "observed_tooling": ["DropBook", "SharpStage"],
+      "observed_tooling": [
+        "DropBook",
+        "SharpStage"
+      ],
       "detection_feasibility": "low — cloud-service C2 rides trusted SaaS domains and TLS; not detectable by domain reputation alone. Hunt candidate via anomalous process-to-SaaS-API behavior (backdoor/PyInstaller process talking to Dropbox/Facebook APIs) and CASB/egress analytics",
-      "sources": ["https://attack.mitre.org/software/S0547/", "https://attack.mitre.org/software/S0546/", "https://www.cybereason.com/blog/new-malware-arsenal-abusing-cloud-services-in-middle-east-espionage-campaign"]
+      "sources": [
+        "https://attack.mitre.org/software/S0547/",
+        "https://attack.mitre.org/software/S0546/",
+        "https://www.cybereason.com/blog/new-malware-arsenal-abusing-cloud-services-in-middle-east-espionage-campaign"
+      ]
     },
     {
       "technique_id": "T1102.002",
       "technique_name": "Web Service: Bidirectional Communication",
       "tactic": "command-and-control",
       "procedure_description": "DropBook receives commands and NimbleMamba tasks/returns data through the Dropbox/Facebook/Simplenote APIs, using the cloud service for full bidirectional C2.",
-      "observed_tooling": ["DropBook", "NimbleMamba"],
+      "observed_tooling": [
+        "DropBook",
+        "NimbleMamba"
+      ],
       "detection_feasibility": "low — bidirectional SaaS-API C2 is indistinguishable from legitimate cloud use at the network layer; hunt candidate via endpoint process-behavior baselining and cloud-app API-token anomaly detection",
-      "sources": ["https://www.cybereason.com/blog/new-malware-arsenal-abusing-cloud-services-in-middle-east-espionage-campaign", "https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"]
+      "sources": [
+        "https://www.cybereason.com/blog/new-malware-arsenal-abusing-cloud-services-in-middle-east-espionage-campaign",
+        "https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"
+      ]
     },
     {
       "technique_id": "T1041",
       "technique_name": "Exfiltration Over C2 Channel",
       "tactic": "exfiltration",
       "procedure_description": "Spark exfiltrates collected victim data back over its established C2 channel.",
-      "observed_tooling": ["Spark"],
+      "observed_tooling": [
+        "Spark"
+      ],
       "detection_feasibility": "medium — exfil over the C2 channel is detectable via outbound-volume/beacon analytics on the same session, but blends with C2 traffic",
-      "sources": ["https://attack.mitre.org/software/S0543/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0543/"
+      ]
     },
     {
       "technique_id": "T1567",
       "technique_name": "Exfiltration Over Web Service",
       "tactic": "exfiltration",
       "procedure_description": "DropBook exfiltrates stolen data to attacker-controlled cloud-service accounts rather than dedicated C2 infrastructure.",
-      "observed_tooling": ["DropBook"],
+      "observed_tooling": [
+        "DropBook"
+      ],
       "detection_feasibility": "low — exfil to trusted SaaS blends with sanctioned cloud use; hunt candidate via DLP/CASB upload-volume anomalies and unusual process-to-cloud API activity",
-      "sources": ["https://attack.mitre.org/software/S0547/"]
+      "sources": [
+        "https://attack.mitre.org/software/S0547/"
+      ]
     },
     {
       "technique_id": "T1567.002",
       "technique_name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage",
       "tactic": "exfiltration",
       "procedure_description": "NimbleMamba and DropBook exfiltrate collected files to actor-controlled Dropbox cloud storage.",
-      "observed_tooling": ["NimbleMamba", "DropBook"],
+      "observed_tooling": [
+        "NimbleMamba",
+        "DropBook"
+      ],
       "detection_feasibility": "low — uploads to Dropbox are trusted by default; hunt candidate via CASB/egress upload-size anomalies and non-browser processes calling cloud-storage APIs",
-      "sources": ["https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"]
+      "sources": [
+        "https://www.proofpoint.com/us/blog/threat-insight/nimblemamba-investigating-ta402-molerats-espionage-trojan"
+      ]
     }
   ],
   "detection_signals": [
