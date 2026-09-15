@@ -6,7 +6,7 @@ Most public detection collections (SigmaHQ, Elastic detection-rules) are excelle
 
 This project fills that gap. For each tracked actor you get a **pack**: Sigma detections, threat-hunt hypotheses, an ATT&CK technique map, a Navigator layer, and (where responsibly sourced) IOCs — every item traceable to a public source.
 
-> **Companion to** the [MENA Threat Actor Tracker](https://github.com/DashTX707/MENA-Threat-Actor-Tracker), which answers *"who targets this region."* This repo answers *"and how do I detect and hunt them."*
+> This repo answers *"how do I detect and hunt the actors targeting this region."*
 
 ## How content is produced
 
